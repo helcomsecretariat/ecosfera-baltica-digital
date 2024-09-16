@@ -1,6 +1,6 @@
 # Ecosfera Baltica Digital
 
-Ecosfera Baltica Digital is a digital adaptation of the original [Ecosfera](https://www.julibert.com/ecosfera) game made by Julibert games. Ecosfera Baltica is also a remix of the original game with more baltic sea related themes.
+Ecosfera Baltica Digital is a digital adaptation of the original [Ecosfera](https://www.julibert.com/ecosfera) game made by Julibert games. Ecosfera Baltica is also a remix of the original game with more Baltic Sea related themes.
 
 ## Technologies Used
 
@@ -26,7 +26,7 @@ npm run dev
 ## Configuration
 
 ```
-Add Netlfify details here
+Add Netlify details here
 ```
 
 ## License

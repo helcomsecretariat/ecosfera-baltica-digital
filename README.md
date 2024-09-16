@@ -24,11 +24,9 @@ Ecosfera Baltica Digital is a digital adaptation of the original [Ecosfera](http
    npm run dev
    ```
 
-## Configuration
+## CI/CD
 
-```
-Add Netlify details here
-```
+We use [Netlify](https://app.netlify.com/sites/ecosfera) to deploy the project. To access Netlify account ask [@i-j-r](https://github.com/i-j-r) for details.
 
 ## License
 

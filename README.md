@@ -4,24 +4,25 @@ Ecosfera Baltica Digital is a digital adaptation of the original [Ecosfera](http
 
 ## Technologies Used
 
-- React + TypeScript
+- React + TypeScript + Tailwind
 - React Three Fiber + Framer Motion
 - Netlify
 
-## Installation
+## Development
 
-This installs all of the required dependencies to run this project:
+1. Install [`pre-commit`](https://pre-commit.com/#install)
 
-```
-npm i
-```
+2. Configure git hooks. **Please don't skip** our hooks only test for secrets being leaked. Takes few milliseconds.
 
-This starts a locally hosted development server for the project:
+   ```shell
+   pre-commit install
+   ```
 
-```
-npm run dev
-```
+3. Run the dev server:
 
+   ```shell
+   npm run dev
+   ```
 
 ## Configuration
 

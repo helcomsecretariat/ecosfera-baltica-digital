@@ -4,8 +4,7 @@ import Grid from "./Grid";
 import { useControls } from "leva";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
-import Deck from "./Deck";
-import Card from "./Card";
+import Market from "./Market";
 
 function GameBoard() {
   const aspect = 16 / 10;
@@ -18,7 +17,6 @@ function GameBoard() {
     gridDivisions: 16,
     orbitControls: false,
   });
-  const [cards,setCards] = useState<Array<{ x: number, y: number }>>([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -34,18 +32,16 @@ function GameBoard() {
   }, [aspect]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-[#171717]">
+    <div className="h-full w-full flex flex-col items-center justify-center bg-[white]">
       <Canvas
         className="relative"
         style={{ width: size.width, height: size.height }}
       >
-        <color attach="background" args={["#171717"]} />
+        <color attach="background" args={["#B2D0CE"]} />
         {showGrid && <Grid divisions={gridDivisions} />}
-        {cards.map((card, index) => <Card key={index} x={card.x} y={card.y} />)}
-        <Deck x={-50} y={37.5} color={"lightblue"} name="Animals" onClick={({x, y}: {x: number, y: number}) => {setCards([...cards, {x, y}])}} />
-        <Deck x={-50} y={7.5} color={"lightgreen"} name="Plants" onClick={({x, y}: {x: number, y: number}) => {setCards([...cards, {x, y}])}} />
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
         {orbitControls && <OrbitControls />}
+        <Market />
       </Canvas>
     </div>
   );

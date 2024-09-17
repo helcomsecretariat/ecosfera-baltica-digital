@@ -1,7 +1,7 @@
 import { Text } from "@react-three/drei";
 import { lowerXBoundary, upperYBoundary } from "../constants/gameBoard";
 
-const Grid = ({divisions}: {divisions: number}) => {
+const Grid = ({ divisions }: { divisions: number }) => {
   return (
     <group>
       {[...Array(divisions + 1)].map((_, index) => {
@@ -9,7 +9,13 @@ const Grid = ({divisions}: {divisions: number}) => {
         return (
           <mesh key={index} position={[x, 0, 0]}>
             <boxGeometry args={[0.1, upperYBoundary * 2, 0]} />
-            <Text position={[0,upperYBoundary + 5,0]} fontSize={2}>{x}</Text>
+            <Text
+              position={[0, upperYBoundary + 2.5, 0]}
+              fontSize={2}
+              color="black"
+            >
+              {x}
+            </Text>
             <meshBasicMaterial color="green" />
           </mesh>
         );
@@ -19,7 +25,13 @@ const Grid = ({divisions}: {divisions: number}) => {
         return (
           <mesh key={index} position={[0, y, 0]}>
             <boxGeometry args={[lowerXBoundary * -2, 0.1, 0]} />
-            <Text position={[lowerXBoundary-5,0,0]} fontSize={2}>{y}</Text>
+            <Text
+              position={[lowerXBoundary - 2.5, 0, 0]}
+              fontSize={2}
+              color="black"
+            >
+              {y}
+            </Text>
             <meshBasicMaterial color="red" />
           </mesh>
         );

@@ -7,13 +7,13 @@ import { cameraZoom } from "../constants/gameBoard";
 import Market from "./Market";
 
 function GameBoard() {
-  const aspect = 16 / 10;
+  const aspect = 3 / 2;
   const [size, setSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
   const { showGrid, gridDivisions, orbitControls } = useControls({
-    showGrid: true,
+    showGrid: false,
     gridDivisions: 16,
     orbitControls: false,
   });

@@ -1,9 +1,10 @@
 import './App.css'
+import GameBoard from './components/GameBoard'
 
 function App() {
   return (
-    <div className="flex w-full justify-center p-6">
-      <h1 className="text-xl font-bold">Ecosfera Baltica Game</h1>
+    <div className="flex w-full justify-center h-full">
+      <GameBoard />
     </div>
   )
 }

@@ -15,13 +15,6 @@ const drawAnimalCards = () => {
   }));
 };
 
-const drawPlantCards = () => {
-  return [...Array.from(Array(4)).keys()].map((index) => ({
-    x: marketXStart + (index + 1) * cardXOffset,
-    y: marketYStart - cardYOffset,
-  }));
-};
-
 const drawElementCards = () => {
   return [...Array.from(Array(5)).keys()].map((index) => ({
     x: marketXStart + index * cardXOffset,
@@ -29,11 +22,24 @@ const drawElementCards = () => {
   }));
 };
 
-const Market = () => {
+const Market = ({ gameState }: { gameState: any }) => {
+  const drawAnimalCards = () => {
+    return gameState.animalMarket.table.map((card: any, index: number) => ({
+      x: marketXStart + (index + 1) * cardXOffset,
+      y: marketYStart,
+    }));
+  };
+  const drawPlantCards = () => {
+    return gameState.plantMarket.table.map((card: any, index: number) => ({
+      x: marketXStart + (index + 1) * cardXOffset,
+      y: marketYStart - cardYOffset,
+    }));
+  };
+
   const initialCards = [...drawAnimalCards(), ...drawPlantCards()];
   const [cards, setCards] =
     useState<Array<{ x: number; y: number }>>(initialCards);
-  console.log(drawElementCards())
+  console.log(drawElementCards());
 
   return (
     <>
@@ -57,7 +63,7 @@ const Market = () => {
         x={marketXStart}
         y={marketYStart}
         color={"blue"}
-        name="Animals"
+        name={`Animals \n${gameState.animalMarket.deck.length} left`}
         onClick={({ x, y }: { x: number; y: number }) => {
           setCards([...cards, { x, y }]);
         }}
@@ -66,7 +72,7 @@ const Market = () => {
         x={marketXStart}
         y={marketYStart - cardYOffset}
         color={"green"}
-        name="Plants"
+        name={`Plants \n${gameState.plantMarket.deck.length} left`}
         onClick={({ x, y }: { x: number; y: number }) => {
           setCards([...cards, { x, y }]);
         }}

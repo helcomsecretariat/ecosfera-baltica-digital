@@ -24,23 +24,26 @@ const calculateXStart = (numberOfCards: number) => {
 
 const PlayerCards = () => {
   const [cards, setCards] = useState(drawPlayerCards());
-  const abilities = [
+  const [abilities, setAbilities] = useState([
     {
       name: "Move",
-      x: calculateXStart(numberOfCards) - cardXOffset,
-      y: playerCardsYStart + cardHeight * 0.8,
+      x: 0 - abilityOffset,
+      y: playerCardsYStart + cardHeight * 1.2,
+      available: true,
     },
     {
       name: "Refresh",
-      x: calculateXStart(numberOfCards) - cardXOffset + abilityOffset,
-      y: playerCardsYStart + cardHeight * 0.8,
+      x: 0,
+      y: playerCardsYStart + cardHeight * 1.2,
+      available: true,
     },
     {
       name: "Plus",
-      x: calculateXStart(numberOfCards) - cardXOffset + 2 * abilityOffset,
-      y: playerCardsYStart + cardHeight * 0.8,
+      x: 0 + abilityOffset,
+      y: playerCardsYStart + cardHeight * 1.2,
+      available: true,
     },
-  ];
+  ]);
 
   return (
     <>
@@ -48,7 +51,22 @@ const PlayerCards = () => {
         <Card key={index} x={card.x} y={card.y} />
       ))}
       {abilities.map((ability, index) => (
-        <AbilityTile key={index} x={ability.x} y={ability.y} />
+        <AbilityTile
+          key={index}
+          x={ability.x}
+          y={ability.y}
+          name={ability.name}
+          available={ability.available}
+          onClick={() =>
+            setAbilities(
+              abilities.map((innerAbility, innerIndex) =>
+                index === innerIndex
+                  ? { ...innerAbility, available: !innerAbility.available }
+                  : innerAbility,
+              ),
+            )
+          }
+        />
       ))}
       <Deck
         x={calculateXStart(numberOfCards)}

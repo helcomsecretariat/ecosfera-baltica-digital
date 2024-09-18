@@ -10,6 +10,7 @@ import { useState } from "react";
 
 const Card = ({ x, y }: { x: number; y: number }) => {
   const [dragging, setDragging] = useState(false);
+  const [hovered, setHovered] = useState<boolean>(false);
 
   return (
     <DragControls
@@ -27,7 +28,12 @@ const Card = ({ x, y }: { x: number; y: number }) => {
         [0, 0],
       ]}
     >
-      <mesh position={[x, y, 0]}>
+      <mesh
+        position={[x, y, 0]}
+        scale={hovered ? 1.25 : 1}
+        onPointerOver={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
+      >
         <boxGeometry
           args={[
             cardWidth * (dragging ? 1.2 : 1),

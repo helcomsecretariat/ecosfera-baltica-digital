@@ -28,7 +28,13 @@ const Card = ({ x, y }: { x: number; y: number }) => {
       ]}
     >
       <mesh position={[x, y, 0]}>
-        <boxGeometry args={[cardWidth * (dragging ? 1.2 : 1), cardHeight * (dragging ? 1.2 : 1), 0]} />
+        <boxGeometry
+          args={[
+            cardWidth * (dragging ? 1.2 : 1),
+            cardHeight * (dragging ? 1.2 : 1),
+            0,
+          ]}
+        />
       </mesh>
     </DragControls>
   );

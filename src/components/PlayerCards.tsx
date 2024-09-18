@@ -25,10 +25,22 @@ const calculateXStart = (numberOfCards: number) => {
 const PlayerCards = () => {
   const [cards, setCards] = useState(drawPlayerCards());
   const abilities = [
-    { name: "Move", x: calculateXStart(numberOfCards), y: playerCardsYStart + cardHeight * 0.8 },
-    { name: "Refresh", x: calculateXStart(numberOfCards) + abilityOffset, y: playerCardsYStart + cardHeight * 0.8 },
-    { name: "Plus", x: calculateXStart(numberOfCards) + 2 * abilityOffset, y: playerCardsYStart + cardHeight * 0.8 },
-  ]
+    {
+      name: "Move",
+      x: calculateXStart(numberOfCards) - cardXOffset,
+      y: playerCardsYStart + cardHeight * 0.8,
+    },
+    {
+      name: "Refresh",
+      x: calculateXStart(numberOfCards) - cardXOffset + abilityOffset,
+      y: playerCardsYStart + cardHeight * 0.8,
+    },
+    {
+      name: "Plus",
+      x: calculateXStart(numberOfCards) - cardXOffset + 2 * abilityOffset,
+      y: playerCardsYStart + cardHeight * 0.8,
+    },
+  ];
 
   return (
     <>

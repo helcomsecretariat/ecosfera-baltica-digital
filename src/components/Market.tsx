@@ -30,18 +30,28 @@ const drawElementCards = () => {
 };
 
 const Market = () => {
-  const initialCards = [
-    ...drawAnimalCards(),
-    ...drawPlantCards(),
-    ...drawElementCards(),
-  ];
+  const initialCards = [...drawAnimalCards(), ...drawPlantCards()];
   const [cards, setCards] =
     useState<Array<{ x: number; y: number }>>(initialCards);
+  console.log(drawElementCards())
 
   return (
     <>
       {cards.map((card, index) => (
         <Card key={index} x={card.x} y={card.y} />
+      ))}
+      {drawElementCards().map((card, index) => (
+        <Deck
+          key={index}
+          name="Elements"
+          color="gray"
+          textColor="black"
+          x={card.x}
+          y={card.y}
+          onClick={({ x, y }: { x: number; y: number }) => {
+            setCards([...cards, { x, y }]);
+          }}
+        />
       ))}
       <Deck
         x={marketXStart}
@@ -57,6 +67,16 @@ const Market = () => {
         y={marketYStart - cardYOffset}
         color={"green"}
         name="Plants"
+        onClick={({ x, y }: { x: number; y: number }) => {
+          setCards([...cards, { x, y }]);
+        }}
+      />
+      <Deck
+        x={marketXStart - cardXOffset}
+        y={marketYStart - 2 * cardYOffset}
+        color={"red"}
+        textColor="black"
+        name="Disasters"
         onClick={({ x, y }: { x: number; y: number }) => {
           setCards([...cards, { x, y }]);
         }}

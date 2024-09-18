@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Grid from "./Grid";
 import { useControls } from "leva";
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
 import Market from "./Market";
 import PlayerCards from "./PlayerCards";
 import ExtinctionTiles from "./ExtinctionTiles";
 import BiomeTiles from "./BiomeTiles";
+import { PointLight } from "three";
 
 function GameBoard() {
   const aspect = 3 / 2;
@@ -23,7 +24,7 @@ function GameBoard() {
 
   useEffect(() => {
     const handleResize = () => {
-      const width = Math.min(window.innerWidth, 2000);
+      const width = Math.min(window.innerWidth, 3000);
       const height = width / aspect;
       setSize({ width, height });
     };

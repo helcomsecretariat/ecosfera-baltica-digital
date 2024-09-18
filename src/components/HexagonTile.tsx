@@ -1,6 +1,14 @@
 import { DragControls } from "@react-three/drei";
 
-const HexagonTile = ({ x, y, color }: { x: number; y: number, color: string }) => {
+const HexagonTile = ({
+  x,
+  y,
+  color,
+}: {
+  x: number;
+  y: number;
+  color: string;
+}) => {
   return (
     <DragControls>
       <mesh position={[x, y, 0]} rotation={[1.57, 0, 0]}>

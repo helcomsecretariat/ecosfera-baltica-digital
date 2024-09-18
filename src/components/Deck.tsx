@@ -5,12 +5,14 @@ const Deck = ({
   x,
   y,
   color,
+  textColor = "white",
   name,
   onClick,
 }: {
   x: number;
   y: number;
   color: string;
+  textColor?: string;
   name: string;
   onClick: ({ x, y }: { x: number; y: number }) => void;
 }) => {
@@ -23,7 +25,7 @@ const Deck = ({
     >
       <boxGeometry args={[cardWidth, cardHeight, 0]} />
       <meshBasicMaterial color={color} />
-      <Text color="white" fontSize={2}>
+      <Text color={textColor} fontSize={2}>
         {name}
       </Text>
     </mesh>

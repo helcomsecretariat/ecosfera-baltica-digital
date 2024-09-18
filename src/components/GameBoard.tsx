@@ -5,6 +5,9 @@ import { useControls } from "leva";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
 import Market from "./Market";
+import PlayerCards from "./PlayerCards";
+import ExtinctionTiles from "./ExtinctionTiles";
+import BiomeTiles from "./BiomeTiles";
 
 function GameBoard() {
   const aspect = 3 / 2;
@@ -42,6 +45,9 @@ function GameBoard() {
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
         {orbitControls && <OrbitControls />}
         <Market />
+        <PlayerCards />
+        <ExtinctionTiles />
+        <BiomeTiles />
       </Canvas>
     </div>
   );

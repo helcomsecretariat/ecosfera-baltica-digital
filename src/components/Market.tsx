@@ -7,6 +7,7 @@ import {
   marketXStart,
   marketYStart,
 } from "../constants/gameBoard";
+import { GameState } from "./GameBoard";
 
 const drawElementCards = () => {
   return [...Array.from(Array(5)).keys()].map((index) => ({
@@ -15,24 +16,27 @@ const drawElementCards = () => {
   }));
 };
 
-const Market = ({ gameState }: { gameState: any }) => {
+const Market = ({ gameState }: { gameState: GameState }) => {
   const drawAnimalCards = () => {
-    return gameState.animalMarket.table.map((_: any, index: number) => ({
-      x: marketXStart + (index + 1) * cardXOffset,
-      y: marketYStart,
-    }));
+    return gameState.animalMarket.table.map(
+      (_: { name: string; id: string }, index: number) => ({
+        x: marketXStart + (index + 1) * cardXOffset,
+        y: marketYStart,
+      }),
+    );
   };
   const drawPlantCards = () => {
-    return gameState.plantMarket.table.map((_: any, index: number) => ({
-      x: marketXStart + (index + 1) * cardXOffset,
-      y: marketYStart - cardYOffset,
-    }));
+    return gameState.plantMarket.table.map(
+      (_: { name: string; id: string }, index: number) => ({
+        x: marketXStart + (index + 1) * cardXOffset,
+        y: marketYStart - cardYOffset,
+      }),
+    );
   };
 
   const initialCards = [...drawAnimalCards(), ...drawPlantCards()];
   const [cards, setCards] =
     useState<Array<{ x: number; y: number }>>(initialCards);
-  console.log(drawElementCards());
 
   return (
     <>

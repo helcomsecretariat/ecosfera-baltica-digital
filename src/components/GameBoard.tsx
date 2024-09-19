@@ -75,6 +75,17 @@ const plants = [
   { name: "Viruses", id: uuid() },
 ];
 
+export type GameState = {
+  animalMarket: {
+    deck: { name: string; id: string }[];
+    table: { name: string; id: string }[];
+  };
+  plantMarket: {
+    deck: { name: string; id: string }[];
+    table: { name: string; id: string }[];
+  };
+};
+
 function GameBoard() {
   const aspect = 3 / 2;
   const [size, setSize] = useState({
@@ -87,8 +98,7 @@ function GameBoard() {
     orbitControls: false,
   });
 
-  const gameState = {
-    player: [],
+  const gameState: GameState = {
     plantMarket: {
       deck: plants.slice(4, plants.length),
       table: plants.slice(0, 4),
@@ -97,8 +107,6 @@ function GameBoard() {
       deck: animals.slice(4, animals.length),
       table: animals.slice(0, 4),
     },
-    elementMarket: { deck: [], table: [] },
-    disasterMarket: { deck: [], table: [] },
   };
 
   useEffect(() => {

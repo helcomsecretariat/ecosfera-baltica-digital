@@ -1,12 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Grid from "./Grid";
 import { useControls } from "leva";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
 import Market from "./Market";
+import { spawnDeck } from "~/state/game-state";
+import deckConfig from "~/decks/ecosfera-baltica.deck.json";
 
 function GameBoard() {
+  const deck = useMemo(() => spawnDeck(deckConfig), []);
+  useEffect(() => {
+    console.log(deck);
+  }, [deck]);
+
   const aspect = 3 / 2;
   const [size, setSize] = useState({
     width: window.innerWidth,

@@ -42,5 +42,8 @@
     "vite": "^5.4.1",
     "zod": "^3.23.8",
     "zod-error": "^1.5.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.6.1"
   }
 }

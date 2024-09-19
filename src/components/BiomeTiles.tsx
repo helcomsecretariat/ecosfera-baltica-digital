@@ -18,8 +18,12 @@ const biomes = [
 const BiomeTiles = () => {
   return biomes.map((biome, index) => (
     <HexagonTile
-      x={hexagonTileXStart + (index % 4) * hexagonTileXOffset}
-      y={index <= 3 ? biomeTileYStart : biomeTileYStart - hexagonTileYOffset}
+      key={biome}
+      position={[
+        hexagonTileXStart + (index % 4) * hexagonTileXOffset,
+        index <= 3 ? biomeTileYStart : biomeTileYStart - hexagonTileYOffset,
+        0,
+      ]}
       color="#2cba16"
       name={biome}
     />

@@ -7,14 +7,16 @@ import {
 import HexagonTile from "./HexagonTile";
 
 const ExtinctionTiles = () => {
-  return [...Array.from(Array(7).keys())].map((x) => (
+  return [...Array.from(Array(7).keys())].map((index) => (
     <HexagonTile
-      x={hexagonTileXStart + (x % 4) * hexagonTileXOffset}
-      y={
-        x <= 3
+      key={index}
+      position={[
+        hexagonTileXStart + (index % 4) * hexagonTileXOffset,
+        index <= 3
           ? extinctionTileYStart
-          : extinctionTileYStart - hexagonTileYOffset
-      }
+          : extinctionTileYStart - hexagonTileYOffset,
+        0,
+      ]}
       color="#8a6541"
     />
   ));

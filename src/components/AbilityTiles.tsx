@@ -28,6 +28,7 @@ const AbilityTiles = () => {
 
   return abilities.map((ability, index) => (
     <GameElement
+      key={ability.name}
       position={[ability.x, ability.y, 0]}
       height={8}
       width={8}

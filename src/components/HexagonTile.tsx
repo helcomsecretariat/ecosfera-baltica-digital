@@ -2,19 +2,17 @@ import { Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 
 const HexagonTile = ({
-  x,
-  y,
+  position,
   color,
   name = "",
 }: {
-  x: number;
-  y: number;
+  position: [number, number, number];
   color: string;
   name?: string;
 }) => {
   return (
     <GameElement
-      position={[x, y, 0]}
+      position={position}
       rotation={[-1.57, 0, 0]}
       height={6}
       width={10}

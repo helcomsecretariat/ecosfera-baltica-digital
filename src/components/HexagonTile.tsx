@@ -1,5 +1,5 @@
-import { DragControls, Text } from "@react-three/drei";
-import { useState } from "react";
+import { Text } from "@react-three/drei";
+import GameElement from "./GameElement";
 
 const HexagonTile = ({
   x,
@@ -12,24 +12,24 @@ const HexagonTile = ({
   color: string;
   name?: string;
 }) => {
-  const [hovered, setHovered] = useState<boolean>(false);
-
   return (
-    <DragControls>
-      <mesh
-        scale={hovered ? 1.25 : 1}
-        position={[x, y, 0]}
+    <GameElement
+      position={[x, y, 0]}
+      rotation={[-1.57, 0, 0]}
+      height={6}
+      width={10}
+    >
+      <cylinderGeometry args={[5, 5, 0.1, 6, 1]} />
+      <meshBasicMaterial color={color} />
+      <Text
+        fontSize={1}
+        color="black"
         rotation={[1.57, 0, 0]}
-        onPointerOver={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
+        position={[0, -0.1, 0]}
       >
-        <cylinderGeometry args={[5, 5, 0.1, 6, 1]} />
-        <meshBasicMaterial color={color} />
-        <Text color="white" fontSize={2}>
-          Hello
-        </Text>
-      </mesh>
-    </DragControls>
+        {name}
+      </Text>
+    </GameElement>
   );
 };
 

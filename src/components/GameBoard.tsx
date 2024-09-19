@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Grid from "./Grid";
 import { useControls } from "leva";
-import {
-  Environment,
-  OrbitControls,
-  PerspectiveCamera,
-} from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
 import Market from "./Market";
 import PlayerCards from "./PlayerCards";
@@ -78,8 +74,6 @@ const plants = [
   { name: "Fontinalis antipyretica", id: uuid() },
   { name: "Viruses", id: uuid() },
 ];
-const elements = [];
-const disasters = [];
 
 function GameBoard() {
   const aspect = 3 / 2;
@@ -129,7 +123,7 @@ function GameBoard() {
         <color attach="background" args={["#B2D0CE"]} />
         {showGrid && <Grid divisions={gridDivisions} />}
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
-        {orbitControls && <OrbitControls />} 
+        {orbitControls && <OrbitControls />}
         <Market gameState={gameState} />
         <PlayerCards />
         <ExtinctionTiles />

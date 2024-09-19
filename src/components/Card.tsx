@@ -1,48 +1,11 @@
-import { DragControls } from "@react-three/drei";
 import { cardHeight, cardWidth } from "../constants/card";
-import {
-  lowerXBoundary,
-  lowerYBoundary,
-  upperXBoundary,
-  upperYBoundary,
-} from "../constants/gameBoard";
-import { useState } from "react";
+import GameElement from "./GameElement";
 
 const Card = ({ x, y }: { x: number; y: number }) => {
-  const [dragging, setDragging] = useState(false);
-  const [hovered, setHovered] = useState<boolean>(false);
-
   return (
-    <DragControls
-      onDrag={() => setDragging(true)}
-      onDragEnd={() => setDragging(false)}
-      dragLimits={[
-        [
-          lowerXBoundary + x * -1 + cardWidth / 2,
-          upperXBoundary + x * -1 - cardWidth / 2,
-        ],
-        [
-          lowerYBoundary + y * -1 + cardHeight / 2,
-          upperYBoundary + y * -1 - cardHeight / 2,
-        ],
-        [0, 0],
-      ]}
-    >
-      <mesh
-        position={[x, y, 0]}
-        scale={hovered ? 1.25 : 1}
-        onPointerOver={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
-      >
-        <boxGeometry
-          args={[
-            cardWidth * (dragging ? 1.2 : 1),
-            cardHeight * (dragging ? 1.2 : 1),
-            0,
-          ]}
-        />
-      </mesh>
-    </DragControls>
+    <GameElement position={[x, y, 0]} width={cardWidth} height={cardHeight}>
+      <boxGeometry args={[cardWidth, cardHeight]} />
+    </GameElement>
   );
 };
 

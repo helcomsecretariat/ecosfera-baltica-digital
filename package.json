@@ -4,9 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "preinstall": "node -v | grep '^v20\\.' || { echo '\\033[1;31mPlease use Node.js version 20.x\\033[0m'; exit 1; }",
     "dev": "npx check-dependencies --scope-list devDependencies && vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test": "npx jest",
+    "typecheck": "tsc -p ./tsconfig.app.json --noEmit --pretty && tsc -p ./tsconfig.node.json --noEmit --pretty",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -14,12 +17,15 @@
     "@react-three/fiber": "^8.17.7",
     "@types/three": "^0.168.0",
     "leva": "^0.9.35",
+    "lodash-es": "^4.17.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "three": "^0.168.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@types/jest": "^29.5.13",
+    "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
@@ -28,10 +34,20 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
+    "lodash": "^4.17.21",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
+    "ts-jest": "^29.2.5",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "zod": "^3.23.8",
+    "zod-error": "^1.5.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.6.1"
+  },
+  "engines": {
+    "node": ">= 20.17.0"
   }
 }

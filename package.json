@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "preinstall": "node -v | grep '^v20\\.' || { echo '\\033[1;31mPlease use Node.js version 20.x\\033[0m'; exit 1; }",
     "dev": "npx check-dependencies --scope-list devDependencies && vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -45,5 +46,8 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.6.1"
+  },
+  "engines": {
+    "node": ">= 20.17.0"
   }
 }

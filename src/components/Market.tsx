@@ -15,15 +15,15 @@ const drawElementCards = () => {
   }));
 };
 
-const Market = ({ gameState }: { gameState: unknown }) => {
+const Market = ({ gameState }: { gameState: any }) => {
   const drawAnimalCards = () => {
-    return gameState.animalMarket.table.map((_, index: number) => ({
+    return gameState.animalMarket.table.map((_: any, index: number) => ({
       x: marketXStart + (index + 1) * cardXOffset,
       y: marketYStart,
     }));
   };
   const drawPlantCards = () => {
-    return gameState.plantMarket.table.map((_, index: number) => ({
+    return gameState.plantMarket.table.map((_: any, index: number) => ({
       x: marketXStart + (index + 1) * cardXOffset,
       y: marketYStart - cardYOffset,
     }));

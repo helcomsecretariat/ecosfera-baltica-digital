@@ -10,15 +10,17 @@ Ecosfera Baltica Digital is a digital adaptation of the original [Ecosfera](http
 
 ## Development
 
-1. Install [`pre-commit`](https://pre-commit.com/#install)
+1. Install [`nvm`](https://github.com/nvm-sh/nvm?tab=readme-ov-file#install--update-script)
 
-2. Configure git hooks. **Please don't skip** our hooks only test for secrets being leaked. Takes few milliseconds.
+2. Install [`pre-commit`](https://pre-commit.com/#install)
+
+3. Configure git hooks. **Please don't skip** our hooks only test for secrets being leaked. Takes few milliseconds.
 
    ```shell
    pre-commit install
    ```
 
-3. Run the dev server:
+4. Run the dev server:
 
    ```shell
    npm run dev

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Grid from "./Grid";
 import { useControls } from "leva";
@@ -9,6 +9,8 @@ import PlayerCards from "./PlayerCards";
 import ExtinctionTiles from "./ExtinctionTiles";
 import BiomeTiles from "./BiomeTiles";
 import { v4 as uuid } from "uuid";
+import { spawnDeck } from "~/state/game-state";
+import deckConfig from "~/decks/ecosfera-baltica.deck.json";
 
 const animals = [
   { name: "Calanoida", id: uuid() },
@@ -87,6 +89,11 @@ export type GameState = {
 };
 
 function GameBoard() {
+  const deck = useMemo(() => spawnDeck(deckConfig), []);
+  useEffect(() => {
+    console.log(deck);
+  }, [deck]);
+
   const aspect = 3 / 2;
   const [size, setSize] = useState({
     width: window.innerWidth,

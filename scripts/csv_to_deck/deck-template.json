@@ -1,0 +1,51 @@
+{
+  "per_player": {
+    "abilities": {
+      "plus": { "count": 1 },
+      "refresh": { "count": 1 },
+      "move": { "count": 1 }
+    },
+    "disasters": {
+      "flood": { "count": 1 },
+      "fire": { "count": 1 }
+    },
+    "elements": {
+      "sun": { "count": 1 },
+      "oxygen": { "count": 1 },
+      "salinity": { "count": 1 },
+      "nutrients": { "count": 1 },
+      "temperature": { "count": 1 }
+    }
+  },
+  "abilities": {
+    "plus": {},
+    "refresh": {},
+    "move": {},
+    "special": {}
+  },
+  "elements": {
+    "sun": { "count": 12 },
+    "oxygen": { "count": 12 },
+    "salinity": { "count": 12 },
+    "nutrients": { "count": 12 },
+    "temperature": { "count": 12 }
+  },
+  "biomes": {
+    "ice": {},
+    "coast": {},
+    "pelagic": {},
+    "rivers": {},
+    "soft bottom": {},
+    "hard benthic": {}
+  },
+  "extinctions": {
+    "extinction": { "count": 6 }
+  },
+  "disasters": {
+    "flood": { "count": 17 },
+    "fire": { "count": 17 },
+    "tornado": { "count": 16 }
+  },
+  "plants": {},
+  "animals": {}
+}

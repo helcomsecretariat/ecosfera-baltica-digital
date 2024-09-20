@@ -1,6 +1,13 @@
 // import deckConfig from "~/decks/ecosfera-baltica.deck.json";
 import type { DeckConfig } from "~/decks/schema";
-import type { GamePiece, GameState, Market, PieceToConfig } from "./types";
+import type {
+  GamePiece,
+  GamePieceBase,
+  GameState,
+  Market,
+  PieceToConfig,
+  PlayerState,
+} from "./types";
 import { shuffle } from "./utils";
 import { Croupier } from "./croupier";
 import { entries, find, pull, without } from "lodash-es";
@@ -14,7 +21,7 @@ function spawnAllPieces<T extends GamePiece>(
   );
 }
 
-function prepareMarket<T extends GamePiece>(
+function prepareMarket<T extends GamePieceBase>(
   items: T[],
   initialTableSize = 0,
   seed: string
@@ -23,7 +30,7 @@ function prepareMarket<T extends GamePiece>(
   const table = deck.slice(0, initialTableSize);
 
   return {
-    type: deck[0].type ?? "",
+    type: deck[0].type,
     deck: without(deck, ...table),
     table,
   };
@@ -64,27 +71,32 @@ export function spawnDeck(
 
   const players = Array(playerCount)
     .fill(null)
-    .map(() => ({
-      // pull "elements" and "disasters" from spawned deck
-      deck: [
-        ...entries(config.per_player.elements).flatMap(([name, { count }]) =>
-          Array(count)
-            .fill(1)
-            .map(() => find(elements, { name }))
+    .map(() => {
+      const deck = [
+        ...entries(config.per_player.elements).flatMap(
+          ([name, { count = 1 }]) =>
+            Array(count)
+              .fill(1)
+              .map(() => find(elements, { name }))
         ),
-        ...entries(config.per_player.disasters).flatMap(([name, { count }]) =>
-          Array(count)
-            .fill(1)
-            .map(() => find(disasters, { name }))
+        ...entries(config.per_player.disasters).flatMap(
+          ([name, { count = 1 }]) =>
+            Array(count)
+              .fill(1)
+              .map(() => find(disasters, { name }))
         ),
-      ].filter((a) => a !== undefined), // TS quirk =(
-      hand: [],
-      discard: [],
-      ability: spawnAllPieces(
-        config.per_player.abilities,
-        croupier.spawnAbilityTiles.bind(croupier)
-      ),
-    }));
+      ].filter((a) => a !== undefined);
+
+      return {
+        deck,
+        hand: [],
+        discard: [],
+        ability: spawnAllPieces(
+          config.per_player.abilities,
+          croupier.spawnAbilityTiles.bind(croupier)
+        ),
+      } as PlayerState;
+    });
 
   players.forEach(({ deck }) => {
     pull(elements, ...deck);
@@ -96,7 +108,6 @@ export function spawnDeck(
     plantMarket: prepareMarket(plants, 5, seed),
     animalMarket: prepareMarket(animals, 5, seed),
     elementMarket: prepareMarket(elements, 0, seed),
-
     extinctMarket: prepareMarket(extinctions, 0, seed),
     biomeMarket: prepareMarket(biomes, 0, seed),
     disasterMarket: prepareMarket(disasters, 0, seed),

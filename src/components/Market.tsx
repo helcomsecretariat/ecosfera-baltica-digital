@@ -1,6 +1,5 @@
 import Deck from "./Deck";
 import Card from "./Card";
-import { useState } from "react";
 import {
   cardXOffset,
   cardYOffset,
@@ -9,17 +8,20 @@ import {
 } from "../constants/gameBoard";
 import { GameState } from "./GameBoard";
 
-const drawElementCards = () => {
-  return [...Array.from(Array(5)).keys()].map((index) => ({
-    x: marketXStart + index * cardXOffset,
-    y: marketYStart - 2 * cardYOffset,
-  }));
-};
-
-const Market = ({ gameState }: { gameState: GameState }) => {
+const Market = ({
+  gameState,
+  onDraw,
+}: {
+  gameState: GameState;
+  onDraw: (
+    id: string,
+    type: "animal" | "plant" | "element" | "disaster",
+  ) => void;
+}) => {
   const drawAnimalCards = () => {
     return gameState.animalMarket.table.map(
-      (_: { name: string; id: string }, index: number) => ({
+      (card: { name: string; id: string }, index: number) => ({
+        name: card.name,
         x: marketXStart + (index + 1) * cardXOffset,
         y: marketYStart,
       }),
@@ -27,62 +29,97 @@ const Market = ({ gameState }: { gameState: GameState }) => {
   };
   const drawPlantCards = () => {
     return gameState.plantMarket.table.map(
-      (_: { name: string; id: string }, index: number) => ({
+      (card: { name: string; id: string }, index: number) => ({
+        name: card.name,
         x: marketXStart + (index + 1) * cardXOffset,
         y: marketYStart - cardYOffset,
       }),
     );
   };
-
-  const initialCards = [...drawAnimalCards(), ...drawPlantCards()];
-  const [cards, setCards] =
-    useState<Array<{ x: number; y: number }>>(initialCards);
+  const drawElementCards = () => {
+    return gameState.elementMarket.table.map(
+      (card: { name: string; id: string }, index: number) => ({
+        name: card.name,
+        x: marketXStart + (index + 1) * cardXOffset,
+        y: marketYStart - 3 * cardYOffset,
+      }),
+    );
+  };
+  const drawDisasterCards = () => {
+    return gameState.disasterMarket.table.map(
+      (card: { name: string; id: string }) => ({
+        name: card.name,
+        x: marketXStart - 2 * cardXOffset,
+        y: marketYStart - 2 * cardYOffset,
+      }),
+    );
+  };
+  const drawElementDecks = () => {
+    return Array.from(
+      new Set(gameState.elementMarket.deck.map((card) => card.name)),
+    ).map((elementName: string, index: number) => ({
+      name: elementName,
+      x: marketXStart + index * cardXOffset,
+      y: marketYStart - 2 * cardYOffset,
+    }));
+  };
 
   return (
     <>
-      {cards.map((card, index) => (
-        <Card key={index} x={card.x} y={card.y} />
+      {drawAnimalCards().map((card, index) => (
+        <Card name={card.name} key={index} position={[card.x, card.y, 0]} />
+      ))}
+      {drawPlantCards().map((card, index) => (
+        <Card name={card.name} key={index} position={[card.x, card.y, 0]} />
       ))}
       {drawElementCards().map((card, index) => (
+        <Card name={card.name} key={index} position={[card.x, card.y, 0]} />
+      ))}
+      {drawDisasterCards().map((card, index) => (
+        <Card name={card.name} key={index} position={[card.x, card.y, 0]} />
+      ))}
+      {drawElementDecks().map((card, index) => (
         <Deck
           key={index}
-          name="Elements"
+          name={`${card.name}\n${
+            gameState.elementMarket.deck.filter(
+              (elementCard) => elementCard.name === card.name,
+            ).length
+          } left`}
           color="gray"
           textColor="black"
-          x={card.x}
-          y={card.y}
-          onClick={({ x, y }: { x: number; y: number }) => {
-            setCards([...cards, { x, y }]);
-          }}
+          position={[card.x, card.y, 0]}
+          cards={gameState.elementMarket.deck.filter(
+            (elementCard) => elementCard.name === card.name,
+          )}
+          onDraw={(id: string) => onDraw(id, "element")}
         />
       ))}
       <Deck
-        x={marketXStart}
-        y={marketYStart}
+        position={[marketXStart, marketYStart, 0]}
         color={"blue"}
         name={`Animals \n${gameState.animalMarket.deck.length} left`}
-        onClick={({ x, y }: { x: number; y: number }) => {
-          setCards([...cards, { x, y }]);
-        }}
+        cards={gameState.animalMarket.deck}
+        onDraw={(id: string) => onDraw(id, "animal")}
       />
       <Deck
-        x={marketXStart}
-        y={marketYStart - cardYOffset}
+        position={[marketXStart, marketYStart - cardYOffset, 0]}
         color={"green"}
         name={`Plants \n${gameState.plantMarket.deck.length} left`}
-        onClick={({ x, y }: { x: number; y: number }) => {
-          setCards([...cards, { x, y }]);
-        }}
+        cards={gameState.plantMarket.deck}
+        onDraw={(id: string) => onDraw(id, "plant")}
       />
       <Deck
-        x={marketXStart - cardXOffset}
-        y={marketYStart - 2 * cardYOffset}
+        position={[
+          marketXStart - cardXOffset,
+          marketYStart - 2 * cardYOffset,
+          0,
+        ]}
         color={"red"}
         textColor="black"
-        name="Disasters"
-        onClick={({ x, y }: { x: number; y: number }) => {
-          setCards([...cards, { x, y }]);
-        }}
+        name={`Disasters \n${gameState.disasterMarket.deck.length} left`}
+        cards={gameState.disasterMarket.deck}
+        onDraw={(id: string) => onDraw(id, "disaster")}
       />
     </>
   );

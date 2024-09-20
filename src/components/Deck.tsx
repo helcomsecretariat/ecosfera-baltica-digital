@@ -1,34 +1,38 @@
 import { cardHeight, cardWidth } from "../constants/card";
 import { Text } from "@react-three/drei";
+import GameElement from "./GameElement";
 
 const Deck = ({
-  x,
-  y,
+  position,
   color,
   textColor = "white",
   name,
-  onClick,
+  onDraw,
+  cards,
 }: {
-  x: number;
-  y: number;
+  position: [number, number, number];
   color: string;
   textColor?: string;
   name: string;
-  onClick: ({ x, y }: { x: number; y: number }) => void;
+  onDraw: (id: string) => void;
+  cards: { name: string; id: string }[];
 }) => {
   return (
-    <mesh
-      position={[x, y, 0]}
-      onClick={() => {
-        onClick({ x: x - 20, y });
+    <GameElement
+      position={position}
+      height={cardHeight}
+      width={cardWidth}
+      options={{
+        draggable: false,
       }}
+      onClick={() => onDraw(cards[0].id)}
     >
       <boxGeometry args={[cardWidth, cardHeight, 0]} />
       <meshBasicMaterial color={color} />
       <Text color={textColor} fontSize={2}>
         {name}
       </Text>
-    </mesh>
+    </GameElement>
   );
 };
 

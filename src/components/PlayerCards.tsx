@@ -23,17 +23,15 @@ const PlayerCards = () => {
   return (
     <>
       {cards.map((card, index) => (
-        <Card key={index} x={card.x} y={card.y} />
+        <Card name="Name" key={index} position={[card.x, card.y, 0]} />
       ))}
       <AbilityTiles />
       <Deck
-        x={calculateXStart(numberOfCards)}
-        y={playerCardsYStart}
+        position={[calculateXStart(numberOfCards), playerCardsYStart, 0]}
         color="purple"
         name="Supply"
-        onClick={({ x, y }: { x: number; y: number }) => {
-          setCards([...cards, { x, y }]);
-        }}
+        cards={[]}
+        onDraw={() => {}}
       />
     </>
   );

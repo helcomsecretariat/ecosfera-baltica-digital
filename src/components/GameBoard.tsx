@@ -169,7 +169,7 @@ function GameBoard() {
       window.removeEventListener("resize", handleResize);
       screen.orientation.removeEventListener("change", handleResize);
     };
-  }, []);
+  }, [aspect]);
 
   const drawCard = (
     id: string,

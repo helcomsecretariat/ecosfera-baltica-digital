@@ -18,7 +18,7 @@ const calculateXStart = (numberOfCards: number) => {
 };
 
 const PlayerCards = () => {
-  const [cards, setCards] = useState(drawPlayerCards());
+  const [cards, _] = useState(drawPlayerCards());
 
   return (
     <>

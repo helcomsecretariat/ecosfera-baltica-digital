@@ -23,7 +23,7 @@ describe("DeckConfig Schema Validation", () => {
       if (!result.success) {
         expect(
           (result as SafeParseError<typeof result> & { error: unknown }).error
-            .message
+            .message,
         ).toBe("");
       }
     });

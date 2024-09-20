@@ -1,9 +1,6 @@
 name: Code checks
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -19,6 +16,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Automatic Rebase
+        uses: cirrus-actions/rebase@1.8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4

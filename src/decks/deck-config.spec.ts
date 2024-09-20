@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import * as fs from "fs";
 import * as path from "path";
 import { DeckConfigSchema } from "./schema";
@@ -22,7 +23,7 @@ describe("DeckConfig Schema Validation", () => {
       if (!result.success) {
         expect(
           (result as SafeParseError<typeof result> & { error: unknown }).error
-            .message,
+            .message
         ).toBe("");
       }
     });

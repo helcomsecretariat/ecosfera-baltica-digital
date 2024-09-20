@@ -9,7 +9,7 @@
     "build": "tsc -b && vite build",
     "checks": "npm-run-all -p lint typecheck test format-check",
     "lint": "eslint .",
-    "test": "npx jest",
+    "test": "npx vitest",
     "typecheck": "tsc -p ./tsconfig.app.json --noEmit --pretty && tsc -p ./tsconfig.node.json --noEmit --pretty",
     "import-deck-csv": "node ./scripts/csv_to_deck/csv_to_deck.js './scripts/csv_to_deck/Baltic Ecosphere Species Cards.csv' ./src/decks/ecosfera-baltica.deck.json",
     "format": "npx prettier --write ./",
@@ -29,7 +29,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
-    "@types/jest": "^29.5.13",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -47,10 +46,10 @@
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
-    "ts-jest": "^29.2.5",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1",
+    "vitest": "^2.1.1",
     "zod": "^3.23.8",
     "zod-error": "^1.5.0"
   },

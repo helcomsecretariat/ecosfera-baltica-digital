@@ -4,7 +4,7 @@ import {
   hexagonTileXStart,
   biomeTileYStart,
 } from "../constants/gameBoard";
-import HexagonTile from "./HexagonTile";
+import Tile from "./Tile";
 
 const biomes = [
   "Ice",
@@ -17,13 +17,14 @@ const biomes = [
 
 const BiomeTiles = () => {
   return biomes.map((biome, index) => (
-    <HexagonTile
+    <Tile
       key={biome}
       position={[
         hexagonTileXStart + (index % 4) * hexagonTileXOffset,
         index <= 3 ? biomeTileYStart : biomeTileYStart - hexagonTileYOffset,
         0,
       ]}
+      rotation={[-1.57, 1.04*index, 0]}
       color="#2cba16"
       name={biome}
     />

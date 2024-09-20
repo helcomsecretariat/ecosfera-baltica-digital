@@ -1,23 +1,25 @@
 import { Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 
-const HexagonTile = ({
+const Tile = ({
   position,
+  rotation = [0, 0, 0],
   color,
   name = "",
 }: {
   position: [number, number, number];
+  rotation?: [number, number, number];
   color: string;
   name?: string;
 }) => {
   return (
     <GameElement
       position={position}
-      rotation={[-1.57, 0, 0]}
+      rotation={rotation}
       height={6}
       width={10}
     >
-      <cylinderGeometry args={[5, 5, 0.1, 6, 1]} />
+      <cylinderGeometry args={[5, 5, 0.1, 3, 1]} />
       <meshBasicMaterial color={color} />
       <Text
         fontSize={1}
@@ -31,4 +33,4 @@ const HexagonTile = ({
   );
 };
 
-export default HexagonTile;
+export default Tile;

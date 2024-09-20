@@ -9,6 +9,7 @@ import { spawnDeck } from "~/state/game-state";
 import deckConfig from "~/decks/ecosfera-baltica.deck.json";
 
 function GameBoard() {
+  //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
   const deck = useMemo(() => spawnDeck(deckConfig), []);
   useEffect(() => {
     console.log(deck);

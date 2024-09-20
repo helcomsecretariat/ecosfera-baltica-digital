@@ -5,7 +5,29 @@ const DeckItemConfigSchema = z.object({
   count: z.number().optional(),
 });
 
-const abilityName = z.enum(["move", "plus", "refresh"]);
+const abilityNameSchema = z.enum(["move", "plus", "refresh", "special"]);
+const floraTypeSchema = z.enum([
+  "bacteria",
+  "benthic microalgae",
+  "brown algae",
+  "ciliate",
+  "cyanobacteria",
+  "diatom",
+  "dinoflagellate",
+  "green algae",
+  "phytoplankton",
+  "picocyanobacteria",
+  "red algae",
+  "vascular plant",
+  "viruses",
+]);
+const faunaTypeSchema = z.enum([
+  "zooplankton",
+  "birds",
+  "fish/elasmobranch",
+  "mammals",
+  "zoobenthos",
+]);
 
 function deckItemConfig<T extends ZodRawShape>(shape = {} as T) {
   return z.object(shape).merge(DeckItemConfigSchema);
@@ -20,12 +42,14 @@ const DisasterConfigSchema = deckItemConfig();
 const PlantConfigSchema = deckItemConfig({
   elements: z.array(z.string()),
   biomes: z.array(z.string()),
-  abilities: z.array(abilityName),
+  abilities: z.array(abilityNameSchema),
+  flora_type: floraTypeSchema,
 });
 
 const AnimalConfigSchema = deckItemConfig({
   biomes: z.array(z.string()),
-  abilities: z.array(abilityName),
+  abilities: z.array(abilityNameSchema),
+  fauna_type: faunaTypeSchema,
 });
 
 function getRelatedFeildRefiner(

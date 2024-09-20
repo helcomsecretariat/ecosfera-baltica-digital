@@ -5,8 +5,8 @@ import {
   DisasterConfig,
   ElementConfig,
   ExtinctionConfig,
-  PlantConfig
-} from '~/decks/schema';
+  PlantConfig,
+} from "~/decks/schema";
 
 export interface GameState {
   players: PlayerState[];
@@ -26,15 +26,15 @@ export interface PlayerState {
 }
 
 export interface AbilityTile extends GamePieceBase {
-  type: 'ability';
+  type: "ability";
 }
 
 export interface BiomeTile extends GamePieceBase {
-  type: 'biome';
+  type: "biome";
 }
 
 export interface ExtinctionTile extends GamePieceBase {
-  type: 'extinction';
+  type: "extinction";
 }
 
 export interface GamePieceBase {
@@ -95,26 +95,26 @@ export interface AnimalCard extends GamePieceBase {
 }
 
 export interface PlantCard extends GamePieceBase {
-  type: 'plant';
+  type: "plant";
   biomes: string[];
   abilities: AbilityName[];
   elements: string[];
 }
 
 export interface ElementCard extends GamePieceBase {
-  type: 'element';
+  type: "element";
 }
 
 export interface DisasterCard extends GamePieceBase {
-  type: 'disaster';
+  type: "disaster";
 }
 
-type AbilityName = 'plus' | 'refresh' | 'move';
+type AbilityName = "plus" | "refresh" | "move" | "special";
 type GamePieceType =
-  | 'animal'
-  | 'plant'
-  | 'element'
-  | 'disaster'
-  | 'extinction'
-  | 'biome'
-  | 'ability';
+  | "animal"
+  | "plant"
+  | "element"
+  | "disaster"
+  | "extinction"
+  | "biome"
+  | "ability";

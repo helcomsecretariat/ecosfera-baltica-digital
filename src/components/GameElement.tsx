@@ -1,11 +1,13 @@
 import { DragControls } from "@react-three/drei";
-import { ReactNode, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import {
   lowerXBoundary,
   lowerYBoundary,
   upperXBoundary,
   upperYBoundary,
 } from "../constants/gameBoard";
+import { decomposeMatrix } from "~/utils/3d";
+import { Mesh } from "three";
 
 type GameElementProps = {
   position: [number, number, number];
@@ -17,6 +19,7 @@ type GameElementProps = {
     showHoverAnimation?: boolean;
   };
   onClick?: () => void;
+  onDragEnd?: (position: [number, number, number]) => void;
   children: ReactNode;
 };
 
@@ -30,9 +33,19 @@ const GameElement = ({
     showHoverAnimation: true,
   },
   onClick,
+  onDragEnd,
   children,
 }: GameElementProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
+  const ref = useRef<Mesh>(null);
+
+  const handleDragEnd = () => {
+    setHovered(false);
+    if (onDragEnd === undefined || ref?.current?.matrixWorld === undefined)
+      return;
+    const updatedPosition = decomposeMatrix(ref.current.matrixWorld).position;
+    onDragEnd([updatedPosition.x, updatedPosition.y, updatedPosition.z]);
+  };
 
   return (
     <DragControls
@@ -49,9 +62,10 @@ const GameElement = ({
       ]}
       dragConfig={{ enabled: options?.draggable ?? true }}
       onDragStart={() => setHovered(true)}
-      onDragEnd={() => setHovered(false)}
+      onDragEnd={() => handleDragEnd()}
     >
       <mesh
+        ref={ref}
         scale={hovered && (options?.showHoverAnimation ?? true) ? 1.15 : 1}
         position={position}
         rotation={rotation}

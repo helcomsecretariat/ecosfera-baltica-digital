@@ -24,6 +24,7 @@ const Deck = ({
       width={cardWidth}
       options={{
         draggable: false,
+        showHoverAnimation: false
       }}
       onClick={() => onDraw(cards[0].id)}
     >

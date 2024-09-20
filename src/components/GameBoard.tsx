@@ -4,118 +4,108 @@ import Grid from "./Grid";
 import { useControls } from "leva";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
-import Market from "./Market";
-import PlayerCards from "./PlayerCards";
 import ExtinctionTiles from "./ExtinctionTiles";
 import BiomeTiles from "./BiomeTiles";
 import { v4 as uuid } from "uuid";
 import { spawnDeck } from "~/state/game-state";
 import deckConfig from "~/decks/ecosfera-baltica.deck.json";
+import Croupier from "./Croupier";
+import { shuffle } from "~/state/utils";
+import { Card, CardType, Market } from "~/types/general";
 
-const animals = [
-  { name: "Calanoida", id: uuid() },
-  { name: "Rotifera", id: uuid() },
-  { name: "Clangula\n hyemalis", id: uuid() },
-  { name: "Haliaeetus\n albicilla", id: uuid() },
-  { name: "Anguilla\n anguilla", id: uuid() },
-  { name: "Pusa\n hispida", id: uuid() },
-  { name: "Lutra\n lutra", id: uuid() },
-  { name: "Larus\n fuscus", id: uuid() },
-  { name: "Somateria\n mollissima", id: uuid() },
-  { name: "Platichthys\n flesus", id: uuid() },
-  { name: "Haematopus\n ostralegus", id: uuid() },
-  { name: "Halichoerus\n grypus", id: uuid() },
-  { name: "Gasterosteus\n aculeatus", id: uuid() },
-  { name: "Squalus\n acanthias", id: uuid() },
-  { name: "Phocoena\n phocoena", id: uuid() },
-  { name: "Gadus\n morhua", id: uuid() },
-  { name: "Protists", id: uuid() },
-  { name: "Clupea\n harengus", id: uuid() },
-  { name: "Alca\n torda", id: uuid() },
-  { name: "Mergus\n merganser", id: uuid() },
-  { name: "Mytilus\n edulis", id: uuid() },
-  { name: "Salmo\n salar", id: uuid() },
-  { name: "Idotea\n baltica", id: uuid() },
-  { name: "Acipenser\n oxyrinchus", id: uuid() },
-  { name: "Myoxocephalus\n quadricornis", id: uuid() },
-  { name: "Perca\n fluviatilis", id: uuid() },
-  { name: "Esox\n lucius", id: uuid() },
-  { name: "Saduria\n entomon", id: uuid() },
-  { name: "Cygnus\n olor", id: uuid() },
-  { name: "Macoma\n balthic", id: uuid() },
+const animals: Card[] = [
+  { name: "Calanoida", id: uuid(), type: "animal" },
+  { name: "Rotifera", id: uuid(), type: "animal" },
+  { name: "Clangula\n hyemalis", id: uuid(), type: "animal" },
+  { name: "Haliaeetus\n albicilla", id: uuid(), type: "animal" },
+  { name: "Anguilla\n anguilla", id: uuid(), type: "animal" },
+  { name: "Pusa\n hispida", id: uuid(), type: "animal" },
+  { name: "Lutra\n lutra", id: uuid(), type: "animal" },
+  { name: "Larus\n fuscus", id: uuid(), type: "animal" },
+  { name: "Somateria\n mollissima", id: uuid(), type: "animal" },
+  { name: "Platichthys\n flesus", id: uuid(), type: "animal" },
+  { name: "Haematopus\n ostralegus", id: uuid(), type: "animal" },
+  { name: "Halichoerus\n grypus", id: uuid(), type: "animal" },
+  { name: "Gasterosteus\n aculeatus", id: uuid(), type: "animal" },
+  { name: "Squalus\n acanthias", id: uuid(), type: "animal" },
+  { name: "Phocoena\n phocoena", id: uuid(), type: "animal" },
+  { name: "Gadus\n morhua", id: uuid(), type: "animal" },
+  { name: "Protists", id: uuid(), type: "animal" },
+  { name: "Clupea\n harengus", id: uuid(), type: "animal" },
+  { name: "Alca\n torda", id: uuid(), type: "animal" },
+  { name: "Mergus\n merganser", id: uuid(), type: "animal" },
+  { name: "Mytilus\n edulis", id: uuid(), type: "animal" },
+  { name: "Salmo\n salar", id: uuid(), type: "animal" },
+  { name: "Idotea\n baltica", id: uuid(), type: "animal" },
+  { name: "Acipenser\n oxyrinchus", id: uuid(), type: "animal" },
+  { name: "Myoxocephalus\n quadricornis", id: uuid(), type: "animal" },
+  { name: "Perca\n fluviatilis", id: uuid(), type: "animal" },
+  { name: "Esox\n lucius", id: uuid(), type: "animal" },
+  { name: "Saduria\n entomon", id: uuid(), type: "animal" },
+  { name: "Cygnus\n olor", id: uuid(), type: "animal" },
+  { name: "Macoma\n balthic", id: uuid(), type: "animal" },
 ];
-const plants = [
-  { name: "Myriophyllum\n spicatum", id: uuid() },
-  { name: "Potamogeton\n perfoliatus", id: uuid() },
-  { name: "Chrysochomulina", id: uuid() },
-  { name: "Ascophyllym\n nodosum", id: uuid() },
-  { name: "Synechococcus", id: uuid() },
-  { name: "Ruppia\n spp.", id: uuid() },
-  { name: "Najas\n marina", id: uuid() },
-  { name: "Fragmites\n australis", id: uuid() },
-  { name: "Fucus\n vesiculosus", id: uuid() },
-  { name: "Cladophora\n glomerata", id: uuid() },
-  { name: "Planothidium\n spp.", id: uuid() },
-  { name: "Pilayella\n littoralis", id: uuid() },
-  { name: "Zostera\n marina", id: uuid() },
-  { name: "Biecheleria\n baltica", id: uuid() },
-  { name: "Pauliella\n taeniata", id: uuid() },
-  { name: "Ulva\n lactuta", id: uuid() },
-  { name: "Chara\n ssp.", id: uuid() },
-  { name: "Mesodinium\n rubrum", id: uuid() },
-  { name: "Nodularia\n spumigena", id: uuid() },
-  { name: "Aphanizomenon\n flosaquae", id: uuid() },
-  { name: "Furcellaria\n lumbricalis", id: uuid() },
-  { name: "Oocystis\n borgei", id: uuid() },
-  { name: "Zanichellia\n palustris", id: uuid() },
-  { name: "Skeletonema\n marinoi", id: uuid() },
-  { name: "Vertebrata\n lanosa", id: uuid() },
-  { name: "Bacteria", id: uuid() },
-  { name: "Nitzschia\n filifomis", id: uuid() },
-  { name: "Ceramium\n tenuicorne", id: uuid() },
-  { name: "Fontinalis\n antipyretica", id: uuid() },
-  { name: "Viruses", id: uuid() },
+const plants: Card[] = [
+  { name: "Myriophyllum\n spicatum", id: uuid(), type: "plant" },
+  { name: "Potamogeton\n perfoliatus", id: uuid(), type: "plant" },
+  { name: "Chrysochomulina", id: uuid(), type: "plant" },
+  { name: "Ascophyllym\n nodosum", id: uuid(), type: "plant" },
+  { name: "Synechococcus", id: uuid(), type: "plant" },
+  { name: "Ruppia\n spp.", id: uuid(), type: "plant" },
+  { name: "Najas\n marina", id: uuid(), type: "plant" },
+  { name: "Fragmites\n australis", id: uuid(), type: "plant" },
+  { name: "Fucus\n vesiculosus", id: uuid(), type: "plant" },
+  { name: "Cladophora\n glomerata", id: uuid(), type: "plant" },
+  { name: "Planothidium\n spp.", id: uuid(), type: "plant" },
+  { name: "Pilayella\n littoralis", id: uuid(), type: "plant" },
+  { name: "Zostera\n marina", id: uuid(), type: "plant" },
+  { name: "Biecheleria\n baltica", id: uuid(), type: "plant" },
+  { name: "Pauliella\n taeniata", id: uuid(), type: "plant" },
+  { name: "Ulva\n lactuta", id: uuid(), type: "plant" },
+  { name: "Chara\n ssp.", id: uuid(), type: "plant" },
+  { name: "Mesodinium\n rubrum", id: uuid(), type: "plant" },
+  { name: "Nodularia\n spumigena", id: uuid(), type: "plant" },
+  { name: "Aphanizomenon\n flosaquae", id: uuid(), type: "plant" },
+  { name: "Furcellaria\n lumbricalis", id: uuid(), type: "plant" },
+  { name: "Oocystis\n borgei", id: uuid(), type: "plant" },
+  { name: "Zanichellia\n palustris", id: uuid(), type: "plant" },
+  { name: "Skeletonema\n marinoi", id: uuid(), type: "plant" },
+  { name: "Vertebrata\n lanosa", id: uuid(), type: "plant" },
+  { name: "Bacteria", id: uuid(), type: "plant" },
+  { name: "Nitzschia\n filifomis", id: uuid(), type: "plant" },
+  { name: "Ceramium\n tenuicorne", id: uuid(), type: "plant" },
+  { name: "Fontinalis\n antipyretica", id: uuid(), type: "plant" },
+  { name: "Viruses", id: uuid(), type: "plant" },
 ];
-const elements = [
+const elements: Card[] = [
   ...Array.from(Array(8).keys()).map((_) => {
-    return { name: "Sun", id: uuid() };
+    return { name: "Sun", id: uuid(), type: "element" as CardType };
   }),
   ...Array.from(Array(8).keys()).map((_) => {
-    return { name: "Oxygen", id: uuid() };
+    return { name: "Oxygen", id: uuid(), type: "element" as CardType };
   }),
   ...Array.from(Array(8).keys()).map((_) => {
-    return { name: "Salinity", id: uuid() };
+    return { name: "Salinity", id: uuid(), type: "element" as CardType };
   }),
   ...Array.from(Array(8).keys()).map((_) => {
-    return { name: "Nutrients", id: uuid() };
+    return { name: "Nutrients", id: uuid(), type: "element" as CardType };
   }),
   ...Array.from(Array(8).keys()).map((_) => {
-    return { name: "Temperature", id: uuid() };
+    return { name: "Temperature", id: uuid(), type: "element" as CardType };
   }),
 ];
-const disasters = [
+const disasters: Card[] = [
   ...Array.from(Array(30).keys()).map((_) => {
-    return { name: "Storm", id: uuid() };
+    return { name: "Storm", id: uuid(), type: "disaster" as CardType };
   }),
 ];
 
 export type GameState = {
-  animalMarket: {
-    deck: { name: string; id: string }[];
-    table: { name: string; id: string }[];
-  };
-  plantMarket: {
-    deck: { name: string; id: string }[];
-    table: { name: string; id: string }[];
-  };
-  elementMarket: {
-    deck: { name: string; id: string }[];
-    table: { name: string; id: string }[];
-  };
-  disasterMarket: {
-    deck: { name: string; id: string }[];
-    table: { name: string; id: string }[];
-  };
+  players: Market[];
+  animalMarket: Market;
+  plantMarket: Market;
+  elementMarket: Market;
+  disasterMarket: Market;
 };
 
 function GameBoard() {
@@ -135,7 +125,17 @@ function GameBoard() {
     orbitControls: false,
   });
 
+  const playerDeck = shuffle(
+    [...disasters.slice(0, 2), ...elements.slice(0, 4)],
+    new Date().getMilliseconds().toString(),
+  );
   const [gameState, setGameState] = useState<GameState>({
+    players: [
+      {
+        deck: playerDeck.slice(4, playerDeck.length),
+        table: playerDeck.slice(0, 4),
+      },
+    ],
     plantMarket: {
       deck: plants.slice(4, plants.length),
       table: plants.slice(0, 4),
@@ -145,11 +145,11 @@ function GameBoard() {
       table: animals.slice(0, 4),
     },
     elementMarket: {
-      deck: elements,
+      deck: elements.slice(4, elements.length),
       table: [],
     },
     disasterMarket: {
-      deck: disasters,
+      deck: disasters.slice(2, disasters.length),
       table: [],
     },
   });
@@ -171,65 +171,154 @@ function GameBoard() {
     };
   }, [aspect]);
 
-  const drawCard = (
+  const updateMarket = (
+    market: Market,
     id: string,
-    type: "animal" | "plant" | "element" | "disaster",
+    direction: "out" | "in",
   ) => {
-    switch (type) {
-      case "animal":
-        setGameState({
-          ...gameState,
-          animalMarket: {
-            deck: gameState.animalMarket.deck.filter((card) => card.id !== id),
-            table: [
-              ...gameState.animalMarket.table,
-              gameState.animalMarket.deck.filter((card) => card.id === id)[0],
-            ],
-          },
-        });
-        break;
-      case "plant":
-        setGameState({
-          ...gameState,
-          plantMarket: {
-            deck: gameState.plantMarket.deck.filter((card) => card.id !== id),
-            table: [
-              ...gameState.plantMarket.table,
-              gameState.plantMarket.deck.filter((card) => card.id === id)[0],
-            ],
-          },
-        });
-        break;
-      case "element":
-        setGameState({
-          ...gameState,
-          elementMarket: {
-            deck: gameState.elementMarket.deck.filter((card) => card.id !== id),
-            table: [
-              ...gameState.elementMarket.table,
-              gameState.elementMarket.deck.filter((card) => card.id === id)[0],
-            ],
-          },
-        });
-        break;
-      case "disaster":
-        setGameState({
-          ...gameState,
-          disasterMarket: {
-            deck: gameState.disasterMarket.deck.filter(
-              (card) => card.id !== id,
-            ),
-            table: [
-              ...gameState.disasterMarket.table,
-              gameState.disasterMarket.deck.filter((card) => card.id === id)[0],
-            ],
-          },
-        });
-        break;
-    }
+    const from = direction === "out" ? market.deck : market.table;
+    const to = direction === "out" ? market.table : market.deck;
+
+    const card = from.find((card: Card) => card.id === id);
+    if (!card) return market;
+
+    return {
+      deck:
+        direction === "out"
+          ? from.filter((card: Card) => card.id !== id)
+          : [...to, card],
+      table:
+        direction === "in"
+          ? from.filter((card: Card) => card.id !== id)
+          : [...to, card],
+    };
   };
 
-  useEffect(() => console.log(gameState), [gameState])
+  const drawCard = (
+    id: string,
+    type: "animal" | "plant" | "element" | "disaster" | "player",
+    direction: "out" | "in" | "transfer" = "out",
+  ) => {
+    if (direction === "transfer" && type !== "player") {
+      transferCard(id, type);
+      return;
+    } else if (direction === "transfer") {
+      return;
+    }
+
+    setGameState((prevGameState) => {
+      switch (type) {
+        case "animal":
+          return {
+            ...prevGameState,
+            animalMarket: updateMarket(
+              prevGameState.animalMarket,
+              id,
+              direction,
+            ),
+          };
+        case "plant":
+          return {
+            ...prevGameState,
+            plantMarket: updateMarket(prevGameState.plantMarket, id, direction),
+          };
+        case "element":
+          return {
+            ...prevGameState,
+            elementMarket: updateMarket(
+              prevGameState.elementMarket,
+              id,
+              direction,
+            ),
+          };
+        case "disaster":
+          return {
+            ...prevGameState,
+            disasterMarket: updateMarket(
+              prevGameState.disasterMarket,
+              id,
+              direction,
+            ),
+          };
+        case "player":
+          return {
+            ...prevGameState,
+            players: [updateMarket(prevGameState.players[0], id, direction)],
+          };
+        default:
+          return prevGameState;
+      }
+    });
+  };
+
+  const transferCard = (id: string, type: CardType) => {
+    const moveCardFromTableToDeck = (prevGameState: GameState) => {
+      return {
+        ...prevGameState,
+        players: prevGameState.players.map((player: Market) => ({
+          ...player,
+          deck: [
+            ...player.deck,
+            ...player.table.filter((card: Card) => card.id === id),
+          ],
+          table: player.table.filter((card: Card) => card.id !== id),
+        })),
+      };
+    };
+
+    const moveCardFromMarketToDeck = (
+      prevGameState: GameState,
+      market: Market,
+    ) => {
+      return {
+        ...prevGameState,
+        players: prevGameState.players.map((player: Market) => ({
+          ...player,
+          deck: [
+            ...player.deck,
+            ...market.table.filter((card: Card) => card.id === id),
+          ],
+        })),
+        [type + "Market"]: {
+          ...market,
+          table: market.table.filter((card: Card) => card.id !== id),
+        },
+      };
+    };
+
+    setGameState((prevGameState) => {
+      if (prevGameState.players[0].table.some((card: Card) => card.id === id)) {
+        return moveCardFromTableToDeck(prevGameState);
+      }
+
+      switch (type) {
+        case "animal":
+          return moveCardFromMarketToDeck(
+            prevGameState,
+            prevGameState.animalMarket,
+          );
+        case "plant":
+          return moveCardFromMarketToDeck(
+            prevGameState,
+            prevGameState.plantMarket,
+          );
+        case "disaster":
+          return moveCardFromMarketToDeck(
+            prevGameState,
+            prevGameState.disasterMarket,
+          );
+        case "element":
+          return moveCardFromMarketToDeck(
+            prevGameState,
+            prevGameState.elementMarket,
+          );
+        default:
+          return prevGameState;
+      }
+    });
+  };
+
+  useEffect(() => console.log(gameState), [gameState]);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-[white]">
@@ -241,14 +330,11 @@ function GameBoard() {
         {showGrid && <Grid divisions={gridDivisions} />}
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
         {orbitControls && <OrbitControls />}
-        <Market
+        <Croupier
           gameState={gameState}
-          onDraw={(
-            id: string,
-            type: "animal" | "plant" | "element" | "disaster",
-          ) => drawCard(id, type)}
+          onDraw={(id, type, direction) => drawCard(id, type, direction)}
         />
-        <PlayerCards />
+
         <ExtinctionTiles />
         <BiomeTiles />
       </Canvas>

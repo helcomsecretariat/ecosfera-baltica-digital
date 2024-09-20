@@ -5,14 +5,21 @@ import { Text } from "@react-three/drei";
 const Card = ({
   position,
   name,
+  onDragEnd,
 }: {
   position: [number, number, number];
   name: string;
+  onDragEnd?: (position: [number, number, number]) => void;
 }) => {
   return (
-    <GameElement position={position} width={cardWidth} height={cardHeight}>
+    <GameElement
+      position={position}
+      width={cardWidth}
+      height={cardHeight}
+      onDragEnd={onDragEnd}
+    >
       <boxGeometry args={[cardWidth, cardHeight, 0]} />
-      <Text color="black" fontSize={2} position={[0,0,0.1]}>
+      <Text color="black" fontSize={2}>
         {name}
       </Text>
     </GameElement>

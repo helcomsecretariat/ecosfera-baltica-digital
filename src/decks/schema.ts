@@ -54,10 +54,10 @@ const AnimalConfigSchema = deckItemConfig({
 
 function getRelatedFeildRefiner(
   items: string[],
-  relatedField: string
+  relatedField: string,
 ): [
   (data: Record<string, unknown>) => boolean,
-  (data: Record<string, unknown>) => { message: string }
+  (data: Record<string, unknown>) => { message: string },
 ] {
   return [
     (data: Record<string, unknown>) =>

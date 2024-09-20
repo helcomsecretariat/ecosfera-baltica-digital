@@ -13,12 +13,7 @@ const Tile = ({
   name?: string;
 }) => {
   return (
-    <GameElement
-      position={position}
-      rotation={rotation}
-      height={6}
-      width={10}
-    >
+    <GameElement position={position} rotation={rotation} height={6} width={10}>
       <cylinderGeometry args={[5, 5, 0.1, 3, 1]} />
       <meshBasicMaterial color={color} />
       <Text

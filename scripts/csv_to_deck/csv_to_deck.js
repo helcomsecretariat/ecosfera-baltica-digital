@@ -28,7 +28,7 @@ try {
 } catch (error) {
   console.error(
     "Error reading or parsing the template JSON file:",
-    error.message
+    error.message,
   );
   process.exit(1);
 }
@@ -114,7 +114,7 @@ fs.createReadStream(inputCsv)
   .pipe(
     csvParser({
       skipLines: 1,
-    })
+    }),
   )
   .on("data", (row) => {
     processRow(row);

@@ -7,11 +7,13 @@
     "preinstall": "node -v | grep '^v20\\.' || { echo '\\033[1;31mPlease use Node.js version 20.x\\033[0m'; exit 1; }",
     "dev": "npx check-dependencies --scope-list devDependencies && vite",
     "build": "tsc -b && vite build",
-    "checks": "npm-run-all -p lint typecheck test",
+    "checks": "npm-run-all -p lint typecheck test format-check",
     "lint": "eslint .",
     "test": "npx jest",
     "typecheck": "tsc -p ./tsconfig.app.json --noEmit --pretty && tsc -p ./tsconfig.node.json --noEmit --pretty",
     "import-deck-csv": "node ./scripts/csv_to_deck/csv_to_deck.js './scripts/csv_to_deck/Baltic Ecosphere Species Cards.csv' ./src/decks/ecosfera-baltica.deck.json",
+    "format": "npx prettier --write ./",
+    "format-check": "npx prettier -c ./",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -36,6 +38,8 @@
     "autoprefixer": "^10.4.20",
     "csv-parser": "^3.0.0",
     "eslint": "^9.9.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",

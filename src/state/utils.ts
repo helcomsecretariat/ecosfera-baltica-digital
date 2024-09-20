@@ -9,7 +9,7 @@ export function shuffle<T>(items: T[], seed: string): T[] {
   return items;
 }
 
-export function rng(seed = '') {
+export function rng(seed = "") {
   let x = 0;
   let y = 0;
   let z = 0;

@@ -3,7 +3,8 @@
   width: 100%;
 }
 
-html, body {
+html,
+body {
   height: 100vh;
   width: 100vw;
   margin: 0;

@@ -1,31 +1,28 @@
-import { DragControls } from "@react-three/drei";
 import { cardHeight, cardWidth } from "../constants/card";
-import {
-  lowerXBoundary,
-  lowerYBoundary,
-  upperXBoundary,
-  upperYBoundary,
-} from "../constants/gameBoard";
+import GameElement from "./GameElement";
+import { Text } from "@react-three/drei";
 
-const Card = ({ x, y }: { x: number; y: number }) => {
+const Card = ({
+  position,
+  name,
+  onDragEnd,
+}: {
+  position: [number, number, number];
+  name: string;
+  onDragEnd?: (position: [number, number, number]) => void;
+}) => {
   return (
-    <DragControls
-      dragLimits={[
-        [
-          lowerXBoundary + x * -1 + cardWidth / 2,
-          upperXBoundary + x * -1 - cardWidth / 2,
-        ],
-        [
-          lowerYBoundary + y * -1 + cardHeight / 2,
-          upperYBoundary + y * -1 - cardHeight / 2,
-        ],
-        [0, 0],
-      ]}
+    <GameElement
+      position={position}
+      width={cardWidth}
+      height={cardHeight}
+      onDragEnd={onDragEnd}
     >
-      <mesh position={[x, y, 0]}>
-        <boxGeometry args={[cardWidth, cardHeight, 0]} />
-      </mesh>
-    </DragControls>
+      <boxGeometry args={[cardWidth, cardHeight, 0]} />
+      <Text color="black" fontSize={2}>
+        {name}
+      </Text>
+    </GameElement>
   );
 };
 

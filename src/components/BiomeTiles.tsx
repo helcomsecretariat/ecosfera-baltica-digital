@@ -24,7 +24,7 @@ const BiomeTiles = () => {
         index <= 3 ? biomeTileYStart : biomeTileYStart - hexagonTileYOffset,
         0,
       ]}
-      rotation={[-1.57, 1.04*index, 0]}
+      rotation={[-1.57, 1.04 * index, 0]}
       color="#2cba16"
       name={biome}
     />

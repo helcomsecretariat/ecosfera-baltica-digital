@@ -55,33 +55,33 @@ export type Card = AnimalCard | PlantCard | ElementCard | DisasterCard;
 export type ConfigToPiece<T> = T extends PlantConfig
   ? PlantCard
   : T extends AnimalConfig
-  ? AnimalCard
-  : T extends ElementConfig
-  ? ElementCard
-  : T extends DisasterConfig
-  ? DisasterCard
-  : T extends AbilityConfig
-  ? AbilityTile
-  : T extends BiomeConfig
-  ? BiomeTile
-  : T extends ExtinctionConfig
-  ? ExtinctionTile
-  : never;
+    ? AnimalCard
+    : T extends ElementConfig
+      ? ElementCard
+      : T extends DisasterConfig
+        ? DisasterCard
+        : T extends AbilityConfig
+          ? AbilityTile
+          : T extends BiomeConfig
+            ? BiomeTile
+            : T extends ExtinctionConfig
+              ? ExtinctionTile
+              : never;
 export type PieceToConfig<T> = T extends PlantCard
   ? PlantConfig
   : T extends AnimalCard
-  ? AnimalConfig
-  : T extends ElementCard
-  ? ElementConfig
-  : T extends DisasterCard
-  ? DisasterConfig
-  : T extends AbilityTile
-  ? AbilityConfig
-  : T extends BiomeTile
-  ? BiomeConfig
-  : T extends ExtinctionTile
-  ? ExtinctionConfig
-  : never;
+    ? AnimalConfig
+    : T extends ElementCard
+      ? ElementConfig
+      : T extends DisasterCard
+        ? DisasterConfig
+        : T extends AbilityTile
+          ? AbilityConfig
+          : T extends BiomeTile
+            ? BiomeConfig
+            : T extends ExtinctionTile
+              ? ExtinctionConfig
+              : never;
 
 export interface Market<GamePiece> {
   type: GamePieceType;

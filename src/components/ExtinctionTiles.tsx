@@ -17,7 +17,7 @@ const ExtinctionTiles = () => {
           : extinctionTileYStart - hexagonTileYOffset,
         0,
       ]}
-      rotation={[-1.57, 1.04*index, 0]}
+      rotation={[-1.57, 1.04 * index, 0]}
       color="#8a6541"
     />
   ));

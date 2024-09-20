@@ -1,9 +1,6 @@
 name: Code checks
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -19,6 +16,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Rebase to target branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin
+          git rebase origin/${{ github.event.pull_request.base.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4

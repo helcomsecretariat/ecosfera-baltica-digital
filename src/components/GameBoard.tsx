@@ -7,11 +7,11 @@ import { cameraZoom } from "../constants/gameBoard";
 import ExtinctionTiles from "./ExtinctionTiles";
 import BiomeTiles from "./BiomeTiles";
 import { v4 as uuid } from "uuid";
-import { spawnDeck } from "~/state/game-state";
-import deckConfig from "~/decks/ecosfera-baltica.deck.json";
+import { spawnDeck } from "@/state/game-state";
+import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
-import { shuffle } from "~/state/utils";
-import { Card, CardType, Market } from "~/types/general";
+import { shuffle } from "@/state/utils";
+import { Card, CardType, Market } from "@/types/general";
 
 const animals: Card[] = [
   { name: "Calanoida", id: uuid(), type: "animal" },
@@ -319,6 +319,29 @@ function GameBoard() {
     });
   };
 
+  const shuffleDeck = (type: "player") => {
+    switch (type) {
+      case "player":
+        setGameState((prevGameState) => {
+          return {
+            ...prevGameState,
+            players: prevGameState.players.map((player) => {
+              return {
+                ...player,
+                deck: shuffle(
+                  player.deck,
+                  new Date().getMilliseconds().toString(),
+                ),
+              };
+            }),
+          };
+        });
+        return;
+      default:
+        return;
+    }
+  };
+
   useEffect(() => console.log(gameState), [gameState]);
 
   return (
@@ -334,6 +357,7 @@ function GameBoard() {
         <Croupier
           gameState={gameState}
           onDraw={(id, type, direction) => drawCard(id, type, direction)}
+          onShuffle={(type) => shuffleDeck(type)}
         />
 
         <ExtinctionTiles />

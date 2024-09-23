@@ -4,19 +4,20 @@ import {
   marketXStart,
   marketYStart,
   playerCardsYStart,
-} from "~/constants/gameBoard";
+} from "@/constants/gameBoard";
 import { GameState } from "./GameBoard";
 import { default as CardComponent } from "./Card";
-import { calculateDistance } from "~/utils/3d";
+import { calculateDistance } from "@/utils/3d";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { Card } from "~/types/general";
+import { Card } from "@/types/general";
 
 type PositionedCard = Card & { x: number; y: number };
 
 const Croupier = ({
   gameState,
   onDraw,
+  onShuffle,
 }: {
   gameState: GameState;
   onDraw: (
@@ -24,6 +25,7 @@ const Croupier = ({
     type: "animal" | "plant" | "element" | "disaster" | "player",
     direction?: "out" | "in" | "transfer",
   ) => void;
+  onShuffle: (type: "player") => void;
 }) => {
   const animalDeckPosition: [number, number, number] = [
     marketXStart,
@@ -222,6 +224,8 @@ const Croupier = ({
         name="Supply"
         cards={gameState.players[0].deck}
         onDraw={(id: string) => onDraw(id, "player")}
+        onShuffle={() => onShuffle("player")}
+        options={{ shuffleable: true }}
       />
     </>
   );

@@ -109,12 +109,6 @@ export interface DisasterCard extends GamePieceBase {
   type: "disaster";
 }
 
-type AbilityName = "plus" | "refresh" | "move" | "special";
-type GamePieceType =
-  | "animal"
-  | "plant"
-  | "element"
-  | "disaster"
-  | "extinction"
-  | "biome"
-  | "ability";
+export type AbilityName = "plus" | "refresh" | "move" | "special";
+export type CardType = "animal" | "plant" | "disaster" | "element";
+export type GamePieceType = CardType | "biome" | "ability" | "extinction";

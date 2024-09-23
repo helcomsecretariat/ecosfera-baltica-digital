@@ -13,8 +13,10 @@ import { shuffle } from "@/state/utils";
 import { Card, GamePiece, GameState, Market, PlayerState } from "@/state/types";
 
 function GameBoard() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const seed = searchParams.get("seed") ?? "42";
   //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
-  const deck = useMemo(() => spawnDeck(deckConfig), []);
+  const deck = useMemo(() => spawnDeck(deckConfig, 1, seed), [seed]);
   const [gameState, setGameState] = useState(deck);
 
   const aspect = 3 / 2;

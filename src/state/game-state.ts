@@ -1,4 +1,4 @@
-// import deckConfig from "~/decks/ecosfera-baltica.deck.json";
+// import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import type { DeckConfig } from "@/decks/schema";
 import type {
   GamePiece,

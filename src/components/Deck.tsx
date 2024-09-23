@@ -34,11 +34,11 @@ const Deck = ({
           draggable: false,
           showHoverAnimation: false,
         }}
-        onClick={() => onDraw(cards[0])}
+        onClick={() => (cards.length > 0 ? onDraw(cards[0]) : null)}
       >
         <boxGeometry args={[cardWidth, cardHeight, 0]} />
         <meshBasicMaterial color={color} />
-        <Text color={textColor} fontSize={2}>
+        <Text textAlign="center" color={textColor} fontSize={2}>
           {name}
         </Text>
         <Html wrapperClass="!-top-[12%] bg-blue-500 left-0" center>

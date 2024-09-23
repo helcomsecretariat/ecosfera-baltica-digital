@@ -19,7 +19,13 @@ const Card = ({
       onDragEnd={onDragEnd}
     >
       <boxGeometry args={[cardWidth, cardHeight, 0]} />
-      <Text color="black" fontSize={2}>
+      <Text
+        color="black"
+        fontSize={2}
+        overflowWrap="break-word"
+        maxWidth={12}
+        textAlign="center"
+      >
         {name}
       </Text>
     </GameElement>

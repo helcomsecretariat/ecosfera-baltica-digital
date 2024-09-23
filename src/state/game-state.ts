@@ -105,8 +105,8 @@ export function spawnDeck(
 
   return {
     players,
-    plantMarket: prepareMarket(plants, 5, seed),
-    animalMarket: prepareMarket(animals, 5, seed),
+    plantMarket: prepareMarket(plants, 4, seed),
+    animalMarket: prepareMarket(animals, 4, seed),
     elementMarket: prepareMarket(elements, 0, seed),
     extinctMarket: prepareMarket(extinctions, 0, seed),
     biomeMarket: prepareMarket(biomes, 0, seed),

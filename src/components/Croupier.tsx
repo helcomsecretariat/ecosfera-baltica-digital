@@ -221,7 +221,7 @@ const Croupier = ({
       <Deck
         position={supplyDeckPosition}
         color="purple"
-        name="Supply"
+        name={`Supply \n${gameState.players[0].deck.length} left`}
         cards={gameState.players[0].deck}
         onDraw={(id: string) => onDraw(id, "player")}
         onShuffle={() => onShuffle("player")}

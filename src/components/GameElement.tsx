@@ -6,7 +6,7 @@ import {
   upperXBoundary,
   upperYBoundary,
 } from "../constants/gameBoard";
-import { decomposeMatrix } from "~/utils/3d";
+import { decomposeMatrix } from "@/utils/3d";
 import { Mesh } from "three";
 
 type GameElementProps = {

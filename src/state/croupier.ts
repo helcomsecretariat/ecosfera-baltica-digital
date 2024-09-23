@@ -6,7 +6,7 @@ import type {
   ElementConfig,
   ExtinctionConfig,
   PlantConfig,
-} from "~/decks/schema";
+} from "@/decks/schema";
 import {
   AbilityTile,
   AnimalCard,

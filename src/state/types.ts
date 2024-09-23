@@ -6,7 +6,7 @@ import {
   ElementConfig,
   ExtinctionConfig,
   PlantConfig,
-} from "~/decks/schema";
+} from "@/decks/schema";
 
 export interface GameState {
   players: PlayerState[];

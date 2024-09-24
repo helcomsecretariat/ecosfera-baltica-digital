@@ -7,7 +7,7 @@ import {
 import Tile from "./Tile";
 
 const ExtinctionTiles = () => {
-  return [...Array.from(Array(7).keys())].map((_, index, { length }) => (
+  return [...Array.from(Array(6).keys())].map((_, index, { length }) => (
     <Tile
       key={index}
       position={[

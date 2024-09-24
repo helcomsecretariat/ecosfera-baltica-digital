@@ -14,7 +14,7 @@ import { Card, GamePiece, GameState, Market, PlayerState } from "@/state/types";
 
 function GameBoard() {
   const searchParams = new URLSearchParams(window.location.search);
-  const seed = searchParams.get("seed") ?? "42";
+  const seed = searchParams.get("seed");
   //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
   const deck = useMemo(() => spawnDeck(deckConfig, 1, seed), [seed]);
   const [gameState, setGameState] = useState(deck);
@@ -50,7 +50,7 @@ function GameBoard() {
   const shiftMarketCard = <T extends GamePiece>(
     market: Market<T>,
     uid: string,
-    direction: "out" | "in",
+    direction: "out" | "in"
   ) => {
     const from = direction === "out" ? market.deck : market.table;
     const to = direction === "out" ? market.table : market.deck;
@@ -74,7 +74,7 @@ function GameBoard() {
   const shiftPlayerCard = (
     player: PlayerState,
     uid: string,
-    direction: "out" | "in",
+    direction: "out" | "in"
   ) => {
     const from = direction === "out" ? player.deck : player.hand;
     const to = direction === "out" ? player.hand : player.deck;
@@ -98,7 +98,7 @@ function GameBoard() {
   const moveCard = (
     card: GamePiece,
     deckType: "market" | "player",
-    direction: "in" | "out" | "transfer",
+    direction: "in" | "out" | "transfer"
   ) => {
     if (direction === "transfer") {
       transferCard(card);
@@ -114,7 +114,7 @@ function GameBoard() {
               animalMarket: shiftMarketCard(
                 prevGameState.animalMarket,
                 card.uid,
-                direction,
+                direction
               ),
             };
           case "plant":
@@ -123,7 +123,7 @@ function GameBoard() {
               plantMarket: shiftMarketCard(
                 prevGameState.plantMarket,
                 card.uid,
-                direction,
+                direction
               ),
             };
           case "element":
@@ -132,7 +132,7 @@ function GameBoard() {
               elementMarket: shiftMarketCard(
                 prevGameState.elementMarket,
                 card.uid,
-                direction,
+                direction
               ),
             };
           case "disaster":
@@ -141,7 +141,7 @@ function GameBoard() {
               disasterMarket: shiftMarketCard(
                 prevGameState.disasterMarket,
                 card.uid,
-                direction,
+                direction
               ),
             };
           default:
@@ -153,7 +153,7 @@ function GameBoard() {
         return {
           ...prevGameState,
           players: prevGameState.players.map((player: PlayerState) =>
-            shiftPlayerCard(player, card.uid, direction),
+            shiftPlayerCard(player, card.uid, direction)
           ),
         };
       });
@@ -163,7 +163,7 @@ function GameBoard() {
   const transferCard = (card: GamePiece) => {
     const moveCardFromMarketToDeck = <T extends GamePiece>(
       prevGameState: GameState,
-      market: Market<T>,
+      market: Market<T>
     ) => {
       return {
         ...prevGameState,
@@ -172,14 +172,14 @@ function GameBoard() {
           deck: [
             ...player.deck,
             ...market.table.filter(
-              (existingCard: T) => existingCard.uid === card.uid,
+              (existingCard: T) => existingCard.uid === card.uid
             ),
           ],
         })),
         [market.type + "Market"]: {
           ...market,
           table: market.table.filter(
-            (existingCard: T) => existingCard.uid !== card.uid,
+            (existingCard: T) => existingCard.uid !== card.uid
           ),
         },
       };
@@ -188,13 +188,13 @@ function GameBoard() {
     setGameState((prevGameState: GameState) => {
       if (
         prevGameState.players[0].hand.some(
-          (existingCard: Card) => existingCard.uid === card.uid,
+          (existingCard: Card) => existingCard.uid === card.uid
         )
       ) {
         return {
           ...prevGameState,
           players: prevGameState.players.map((player) =>
-            shiftPlayerCard(player, card.uid, "in"),
+            shiftPlayerCard(player, card.uid, "in")
           ),
         };
       }
@@ -204,28 +204,28 @@ function GameBoard() {
           return {
             ...moveCardFromMarketToDeck(
               prevGameState,
-              prevGameState.animalMarket,
+              prevGameState.animalMarket
             ),
           };
         case "plant":
           return {
             ...moveCardFromMarketToDeck(
               prevGameState,
-              prevGameState.plantMarket,
+              prevGameState.plantMarket
             ),
           };
         case "disaster":
           return {
             ...moveCardFromMarketToDeck(
               prevGameState,
-              prevGameState.disasterMarket,
+              prevGameState.disasterMarket
             ),
           };
         case "element":
           return {
             ...moveCardFromMarketToDeck(
               prevGameState,
-              prevGameState.elementMarket,
+              prevGameState.elementMarket
             ),
           };
         default:
@@ -245,7 +245,7 @@ function GameBoard() {
                 ...player,
                 deck: shuffle(
                   player.deck,
-                  new Date().getMilliseconds().toString(),
+                  new Date().getMilliseconds().toString()
                 ),
               };
             }),

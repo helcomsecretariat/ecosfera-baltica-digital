@@ -3,6 +3,7 @@ import { Html, Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { Button } from "./ui/button";
 import { GiCardExchange } from "react-icons/gi";
+import { GamePiece } from "@/state/types";
 
 const Deck = ({
   position,
@@ -18,9 +19,9 @@ const Deck = ({
   color: string;
   textColor?: string;
   name: string;
-  onDraw: (id: string) => void;
+  onDraw: (card: GamePiece) => void;
   onShuffle?: () => void;
-  cards: { name: string; id: string }[];
+  cards: GamePiece[];
   options?: { shuffleable: boolean };
 }) => {
   return (
@@ -33,11 +34,11 @@ const Deck = ({
           draggable: false,
           showHoverAnimation: false,
         }}
-        onClick={() => onDraw(cards[0].id)}
+        onClick={() => (cards.length > 0 ? onDraw(cards[0]) : null)}
       >
         <boxGeometry args={[cardWidth, cardHeight, 0]} />
         <meshBasicMaterial color={color} />
-        <Text color={textColor} fontSize={2}>
+        <Text textAlign="center" color={textColor} fontSize={2}>
           {name}
         </Text>
         <Html wrapperClass="!-top-[12%] bg-blue-500 left-0" center>

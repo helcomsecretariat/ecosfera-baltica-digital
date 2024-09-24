@@ -6,114 +6,16 @@ import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
 import ExtinctionTiles from "./ExtinctionTiles";
 import BiomeTiles from "./BiomeTiles";
-import { v4 as uuid } from "uuid";
 import { spawnDeck } from "@/state/game-state";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
 import { shuffle } from "@/state/utils";
-import { Card, CardType, Market } from "@/types/general";
-
-const animals: Card[] = [
-  { name: "Calanoida", id: uuid(), type: "animal" },
-  { name: "Rotifera", id: uuid(), type: "animal" },
-  { name: "Clangula\n hyemalis", id: uuid(), type: "animal" },
-  { name: "Haliaeetus\n albicilla", id: uuid(), type: "animal" },
-  { name: "Anguilla\n anguilla", id: uuid(), type: "animal" },
-  { name: "Pusa\n hispida", id: uuid(), type: "animal" },
-  { name: "Lutra\n lutra", id: uuid(), type: "animal" },
-  { name: "Larus\n fuscus", id: uuid(), type: "animal" },
-  { name: "Somateria\n mollissima", id: uuid(), type: "animal" },
-  { name: "Platichthys\n flesus", id: uuid(), type: "animal" },
-  { name: "Haematopus\n ostralegus", id: uuid(), type: "animal" },
-  { name: "Halichoerus\n grypus", id: uuid(), type: "animal" },
-  { name: "Gasterosteus\n aculeatus", id: uuid(), type: "animal" },
-  { name: "Squalus\n acanthias", id: uuid(), type: "animal" },
-  { name: "Phocoena\n phocoena", id: uuid(), type: "animal" },
-  { name: "Gadus\n morhua", id: uuid(), type: "animal" },
-  { name: "Protists", id: uuid(), type: "animal" },
-  { name: "Clupea\n harengus", id: uuid(), type: "animal" },
-  { name: "Alca\n torda", id: uuid(), type: "animal" },
-  { name: "Mergus\n merganser", id: uuid(), type: "animal" },
-  { name: "Mytilus\n edulis", id: uuid(), type: "animal" },
-  { name: "Salmo\n salar", id: uuid(), type: "animal" },
-  { name: "Idotea\n baltica", id: uuid(), type: "animal" },
-  { name: "Acipenser\n oxyrinchus", id: uuid(), type: "animal" },
-  { name: "Myoxocephalus\n quadricornis", id: uuid(), type: "animal" },
-  { name: "Perca\n fluviatilis", id: uuid(), type: "animal" },
-  { name: "Esox\n lucius", id: uuid(), type: "animal" },
-  { name: "Saduria\n entomon", id: uuid(), type: "animal" },
-  { name: "Cygnus\n olor", id: uuid(), type: "animal" },
-  { name: "Macoma\n balthic", id: uuid(), type: "animal" },
-];
-const plants: Card[] = [
-  { name: "Myriophyllum\n spicatum", id: uuid(), type: "plant" },
-  { name: "Potamogeton\n perfoliatus", id: uuid(), type: "plant" },
-  { name: "Chrysochomulina", id: uuid(), type: "plant" },
-  { name: "Ascophyllym\n nodosum", id: uuid(), type: "plant" },
-  { name: "Synechococcus", id: uuid(), type: "plant" },
-  { name: "Ruppia\n spp.", id: uuid(), type: "plant" },
-  { name: "Najas\n marina", id: uuid(), type: "plant" },
-  { name: "Fragmites\n australis", id: uuid(), type: "plant" },
-  { name: "Fucus\n vesiculosus", id: uuid(), type: "plant" },
-  { name: "Cladophora\n glomerata", id: uuid(), type: "plant" },
-  { name: "Planothidium\n spp.", id: uuid(), type: "plant" },
-  { name: "Pilayella\n littoralis", id: uuid(), type: "plant" },
-  { name: "Zostera\n marina", id: uuid(), type: "plant" },
-  { name: "Biecheleria\n baltica", id: uuid(), type: "plant" },
-  { name: "Pauliella\n taeniata", id: uuid(), type: "plant" },
-  { name: "Ulva\n lactuta", id: uuid(), type: "plant" },
-  { name: "Chara\n ssp.", id: uuid(), type: "plant" },
-  { name: "Mesodinium\n rubrum", id: uuid(), type: "plant" },
-  { name: "Nodularia\n spumigena", id: uuid(), type: "plant" },
-  { name: "Aphanizomenon\n flosaquae", id: uuid(), type: "plant" },
-  { name: "Furcellaria\n lumbricalis", id: uuid(), type: "plant" },
-  { name: "Oocystis\n borgei", id: uuid(), type: "plant" },
-  { name: "Zanichellia\n palustris", id: uuid(), type: "plant" },
-  { name: "Skeletonema\n marinoi", id: uuid(), type: "plant" },
-  { name: "Vertebrata\n lanosa", id: uuid(), type: "plant" },
-  { name: "Bacteria", id: uuid(), type: "plant" },
-  { name: "Nitzschia\n filifomis", id: uuid(), type: "plant" },
-  { name: "Ceramium\n tenuicorne", id: uuid(), type: "plant" },
-  { name: "Fontinalis\n antipyretica", id: uuid(), type: "plant" },
-  { name: "Viruses", id: uuid(), type: "plant" },
-];
-const elements: Card[] = [
-  ...Array.from(Array(8).keys()).map((_) => {
-    return { name: "Sun", id: uuid(), type: "element" as CardType };
-  }),
-  ...Array.from(Array(8).keys()).map((_) => {
-    return { name: "Oxygen", id: uuid(), type: "element" as CardType };
-  }),
-  ...Array.from(Array(8).keys()).map((_) => {
-    return { name: "Salinity", id: uuid(), type: "element" as CardType };
-  }),
-  ...Array.from(Array(8).keys()).map((_) => {
-    return { name: "Nutrients", id: uuid(), type: "element" as CardType };
-  }),
-  ...Array.from(Array(8).keys()).map((_) => {
-    return { name: "Temperature", id: uuid(), type: "element" as CardType };
-  }),
-];
-const disasters: Card[] = [
-  ...Array.from(Array(30).keys()).map((_) => {
-    return { name: "Storm", id: uuid(), type: "disaster" as CardType };
-  }),
-];
-
-export type GameState = {
-  players: Market[];
-  animalMarket: Market;
-  plantMarket: Market;
-  elementMarket: Market;
-  disasterMarket: Market;
-};
+import { Card, GamePiece, GameState, Market, PlayerState } from "@/state/types";
 
 function GameBoard() {
   //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
   const deck = useMemo(() => spawnDeck(deckConfig), []);
-  useEffect(() => {
-    console.log(deck);
-  }, [deck]);
+  const [gameState, setGameState] = useState(deck);
 
   const aspect = 3 / 2;
   const [size, setSize] = useState({
@@ -124,35 +26,6 @@ function GameBoard() {
     showGrid: false,
     gridDivisions: 16,
     orbitControls: false,
-  });
-
-  const playerDeck = shuffle(
-    [...disasters.slice(0, 2), ...elements.slice(0, 4)],
-    new Date().getMilliseconds().toString(),
-  );
-  const [gameState, setGameState] = useState<GameState>({
-    players: [
-      {
-        deck: playerDeck.slice(4, playerDeck.length),
-        table: playerDeck.slice(0, 4),
-      },
-    ],
-    plantMarket: {
-      deck: plants.slice(4, plants.length),
-      table: plants.slice(0, 4),
-    },
-    animalMarket: {
-      deck: animals.slice(4, animals.length),
-      table: animals.slice(0, 4),
-    },
-    elementMarket: {
-      deck: elements.slice(4, elements.length),
-      table: [],
-    },
-    disasterMarket: {
-      deck: disasters.slice(2, disasters.length),
-      table: [],
-    },
   });
 
   useEffect(() => {
@@ -172,147 +45,187 @@ function GameBoard() {
     };
   }, [aspect]);
 
-  const updateMarket = (
-    market: Market,
-    id: string,
+  const shiftMarketCard = <T extends GamePiece>(
+    market: Market<T>,
+    uid: string,
     direction: "out" | "in",
   ) => {
     const from = direction === "out" ? market.deck : market.table;
     const to = direction === "out" ? market.table : market.deck;
 
-    const card = from.find((card: Card) => card.id === id);
+    const card = from.find((card: T) => card.uid === uid);
     if (!card) return market;
 
     return {
+      ...market,
       deck:
         direction === "out"
-          ? from.filter((card: Card) => card.id !== id)
+          ? from.filter((card: T) => card.uid !== uid)
           : [...to, card],
       table:
         direction === "in"
-          ? from.filter((card: Card) => card.id !== id)
+          ? from.filter((card: T) => card.uid !== uid)
           : [...to, card],
     };
   };
 
-  const drawCard = (
-    id: string,
-    type: "animal" | "plant" | "element" | "disaster" | "player",
-    direction: "out" | "in" | "transfer" = "out",
+  const shiftPlayerCard = (
+    player: PlayerState,
+    uid: string,
+    direction: "out" | "in",
   ) => {
-    if (direction === "transfer" && type !== "player") {
-      transferCard(id, type);
-      return;
-    } else if (direction === "transfer") {
+    const from = direction === "out" ? player.deck : player.hand;
+    const to = direction === "out" ? player.hand : player.deck;
+
+    const card = from.find((card: Card) => card.uid === uid);
+    if (!card) return player;
+
+    return {
+      ...player,
+      deck:
+        direction === "out"
+          ? from.filter((card: Card) => card.uid !== uid)
+          : [...to, card],
+      hand:
+        direction === "in"
+          ? from.filter((card: Card) => card.uid !== uid)
+          : [...to, card],
+    };
+  };
+
+  const moveCard = (
+    card: GamePiece,
+    deckType: "market" | "player",
+    direction: "in" | "out" | "transfer",
+  ) => {
+    if (direction === "transfer") {
+      transferCard(card);
       return;
     }
 
-    setGameState((prevGameState) => {
-      switch (type) {
-        case "animal":
-          return {
-            ...prevGameState,
-            animalMarket: updateMarket(
-              prevGameState.animalMarket,
-              id,
-              direction,
-            ),
-          };
-        case "plant":
-          return {
-            ...prevGameState,
-            plantMarket: updateMarket(prevGameState.plantMarket, id, direction),
-          };
-        case "element":
-          return {
-            ...prevGameState,
-            elementMarket: updateMarket(
-              prevGameState.elementMarket,
-              id,
-              direction,
-            ),
-          };
-        case "disaster":
-          return {
-            ...prevGameState,
-            disasterMarket: updateMarket(
-              prevGameState.disasterMarket,
-              id,
-              direction,
-            ),
-          };
-        case "player":
-          return {
-            ...prevGameState,
-            players: [updateMarket(prevGameState.players[0], id, direction)],
-          };
-        default:
-          return prevGameState;
-      }
-    });
+    if (deckType === "market") {
+      setGameState((prevGameState) => {
+        switch (card.type) {
+          case "animal":
+            return {
+              ...prevGameState,
+              animalMarket: shiftMarketCard(
+                prevGameState.animalMarket,
+                card.uid,
+                direction,
+              ),
+            };
+          case "plant":
+            return {
+              ...prevGameState,
+              plantMarket: shiftMarketCard(
+                prevGameState.plantMarket,
+                card.uid,
+                direction,
+              ),
+            };
+          case "element":
+            return {
+              ...prevGameState,
+              elementMarket: shiftMarketCard(
+                prevGameState.elementMarket,
+                card.uid,
+                direction,
+              ),
+            };
+          case "disaster":
+            return {
+              ...prevGameState,
+              disasterMarket: shiftMarketCard(
+                prevGameState.disasterMarket,
+                card.uid,
+                direction,
+              ),
+            };
+          default:
+            return prevGameState;
+        }
+      });
+    } else if (deckType === "player") {
+      setGameState((prevGameState) => {
+        return {
+          ...prevGameState,
+          players: prevGameState.players.map((player: PlayerState) =>
+            shiftPlayerCard(player, card.uid, direction),
+          ),
+        };
+      });
+    }
   };
 
-  const transferCard = (id: string, type: CardType) => {
-    const moveCardFromTableToDeck = (prevGameState: GameState) => {
-      return {
-        ...prevGameState,
-        players: prevGameState.players.map((player: Market) => ({
-          ...player,
-          deck: [
-            ...player.deck,
-            ...player.table.filter((card: Card) => card.id === id),
-          ],
-          table: player.table.filter((card: Card) => card.id !== id),
-        })),
-      };
-    };
-
-    const moveCardFromMarketToDeck = (
+  const transferCard = (card: GamePiece) => {
+    const moveCardFromMarketToDeck = <T extends GamePiece>(
       prevGameState: GameState,
-      market: Market,
+      market: Market<T>,
     ) => {
       return {
         ...prevGameState,
-        players: prevGameState.players.map((player: Market) => ({
+        players: prevGameState.players.map((player: PlayerState) => ({
           ...player,
           deck: [
             ...player.deck,
-            ...market.table.filter((card: Card) => card.id === id),
+            ...market.table.filter(
+              (existingCard: T) => existingCard.uid === card.uid,
+            ),
           ],
         })),
-        [type + "Market"]: {
+        [market.type + "Market"]: {
           ...market,
-          table: market.table.filter((card: Card) => card.id !== id),
+          table: market.table.filter(
+            (existingCard: T) => existingCard.uid !== card.uid,
+          ),
         },
       };
     };
 
-    setGameState((prevGameState) => {
-      if (prevGameState.players[0].table.some((card: Card) => card.id === id)) {
-        return moveCardFromTableToDeck(prevGameState);
+    setGameState((prevGameState: GameState) => {
+      if (
+        prevGameState.players[0].hand.some(
+          (existingCard: Card) => existingCard.uid === card.uid,
+        )
+      ) {
+        return {
+          ...prevGameState,
+          players: prevGameState.players.map((player) =>
+            shiftPlayerCard(player, card.uid, "in"),
+          ),
+        };
       }
 
-      switch (type) {
+      switch (card.type) {
         case "animal":
-          return moveCardFromMarketToDeck(
-            prevGameState,
-            prevGameState.animalMarket,
-          );
+          return {
+            ...moveCardFromMarketToDeck(
+              prevGameState,
+              prevGameState.animalMarket,
+            ),
+          };
         case "plant":
-          return moveCardFromMarketToDeck(
-            prevGameState,
-            prevGameState.plantMarket,
-          );
+          return {
+            ...moveCardFromMarketToDeck(
+              prevGameState,
+              prevGameState.plantMarket,
+            ),
+          };
         case "disaster":
-          return moveCardFromMarketToDeck(
-            prevGameState,
-            prevGameState.disasterMarket,
-          );
+          return {
+            ...moveCardFromMarketToDeck(
+              prevGameState,
+              prevGameState.disasterMarket,
+            ),
+          };
         case "element":
-          return moveCardFromMarketToDeck(
-            prevGameState,
-            prevGameState.elementMarket,
-          );
+          return {
+            ...moveCardFromMarketToDeck(
+              prevGameState,
+              prevGameState.elementMarket,
+            ),
+          };
         default:
           return prevGameState;
       }
@@ -356,7 +269,9 @@ function GameBoard() {
         {orbitControls && <OrbitControls />}
         <Croupier
           gameState={gameState}
-          onDraw={(id, type, direction) => drawCard(id, type, direction)}
+          onCardMove={(card, direction, deckType) =>
+            moveCard(card, deckType, direction)
+          }
           onShuffle={(type) => shuffleDeck(type)}
         />
 

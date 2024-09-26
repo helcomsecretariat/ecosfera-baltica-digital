@@ -12,7 +12,7 @@ export const cardXOffset = cardWidth + 3;
 export const cardYOffset = cardHeight + 3;
 export const marketYStart = 1.2 * cardYOffset;
 export const marketXStart = -2 * cardXOffset;
-export const playerCardsYStart = lowerYBoundary + cardHeight/2;
+export const playerCardsYStart = lowerYBoundary + cardHeight / 2;
 export const abilityOffset = 7;
 
 // Biome and extinction tiles

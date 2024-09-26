@@ -7,7 +7,7 @@ import {
 import Tile from "./Tile";
 
 const ExtinctionTiles = () => {
-  return [...Array.from(Array(7).keys())].map((index) => (
+  return [...Array.from(Array(6).keys())].map((_, index, { length }) => (
     <Tile
       key={index}
       position={[
@@ -17,8 +17,8 @@ const ExtinctionTiles = () => {
           : extinctionTileYStart - hexagonTileYOffset,
         0,
       ]}
-      rotation={[-1.57, 1.04 * index, 0]}
-      color="#8a6541"
+      rotation={[-1.57, ((Math.PI * 2) / length) * index, 0]}
+      color="#c3b091"
     />
   ));
 };

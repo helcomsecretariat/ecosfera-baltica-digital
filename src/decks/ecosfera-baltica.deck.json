@@ -1,4 +1,5 @@
 {
+  "assets_prefix": "ecosfera_baltica",
   "per_player": {
     "abilities": {
       "plus": {
@@ -13,10 +14,7 @@
     },
     "disasters": {
       "flood": {
-        "count": 1
-      },
-      "fire": {
-        "count": 1
+        "count": 2
       }
     },
     "elements": {
@@ -75,13 +73,7 @@
   },
   "disasters": {
     "flood": {
-      "count": 17
-    },
-    "fire": {
-      "count": 17
-    },
-    "tornado": {
-      "count": 16
+      "count": 50
     }
   },
   "plants": {

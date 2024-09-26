@@ -18,6 +18,8 @@ import {
   GameState,
   PlantCard,
 } from "@/state/types";
+import { uniqBy } from "lodash-es";
+import { getCardBGColor } from "@/components/utils";
 
 type PositionedCard = Card & { x: number; y: number };
 
@@ -83,17 +85,15 @@ const Croupier = ({
       y: marketYStart - 2 * cardYOffset,
     }));
   const drawElementDecks = () => {
-    return Array.from(
-      new Set(
-        gameState.elementMarket.deck.map((card: ElementCard) => card.name),
-      ),
-    ).map((elementName: string, index: number) => {
-      return {
-        name: elementName,
-        x: marketXStart + index * cardXOffset,
-        y: marketYStart - 2 * cardYOffset,
-      };
-    });
+    return uniqBy(gameState.elementMarket.deck, "name")
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((card, index: number) => {
+        return {
+          x: marketXStart + index * cardXOffset,
+          y: marketYStart - 2 * cardYOffset,
+          ...card,
+        };
+      });
   };
   const drawPlayerCards: PositionedCard[] = gameState.players[0].hand.map(
     (card: Card, index: number) => ({
@@ -120,9 +120,8 @@ const Croupier = ({
       {/* Market Cards */}
       {drawAnimalCards.map((card: PositionedCard) => (
         <CardComponent
-          name={card.name}
+          card={card}
           key={card.uid}
-          position={[card.x, card.y, 0]}
           onDragEnd={(position: [number, number, number]) => {
             handleCardDrag(card, position, animalDeckPosition);
             handleCardDrag(card, position, supplyDeckPosition, "transfer");
@@ -131,9 +130,8 @@ const Croupier = ({
       ))}
       {drawPlantCards.map((card: PositionedCard) => (
         <CardComponent
-          name={card.name}
+          card={card}
           key={card.uid}
-          position={[card.x, card.y, 0]}
           onDragEnd={(position) => {
             handleCardDrag(card, position, plantDeckPosition);
             handleCardDrag(card, position, supplyDeckPosition, "transfer");
@@ -142,9 +140,8 @@ const Croupier = ({
       ))}
       {drawDisasterCards.map((card: PositionedCard) => (
         <CardComponent
-          name={card.name}
+          card={card}
           key={card.uid}
-          position={[card.x, card.y, 0]}
           onDragEnd={(position) => {
             handleCardDrag(card, position, disasterDeckPosition);
             handleCardDrag(card, position, supplyDeckPosition, "transfer");
@@ -160,7 +157,7 @@ const Croupier = ({
                 (elementCard) => elementCard.name === card.name,
               ).length
             } left`}
-            color="gray"
+            color={getCardBGColor(card).toString().replace("0x", "#")}
             textColor="black"
             position={[card.x, card.y, 0]}
             cards={gameState.elementMarket.deck.filter(
@@ -172,9 +169,8 @@ const Croupier = ({
             .filter((elementCard) => card.name === elementCard.name)
             .map((elementCard: PositionedCard) => (
               <CardComponent
-                name={elementCard.name}
+                card={elementCard}
                 key={elementCard.uid}
-                position={[elementCard.x, elementCard.y, 0]}
                 onDragEnd={(position) => {
                   handleCardDrag(elementCard, position, [card.x, card.y, 0]);
                   handleCardDrag(
@@ -210,13 +206,11 @@ const Croupier = ({
         cards={gameState.disasterMarket.deck}
         onDraw={(card) => onCardMove(card, "out", "market")}
       />
-
       {/* Player Cards */}
       {drawPlayerCards.map((card: PositionedCard) => (
         <CardComponent
-          name={card.name}
+          card={card}
           key={card.uid}
-          position={[card.x, card.y, 0]}
           onDragEnd={(position) =>
             handleCardDrag(card, position, supplyDeckPosition, "in", "player")
           }

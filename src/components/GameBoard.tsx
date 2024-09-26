@@ -11,10 +11,14 @@ import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
 import { shuffle } from "@/state/utils";
 import { Card, GamePiece, GameState, Market, PlayerState } from "@/state/types";
+import PreloadAssets from "@/components/PreloadAssets";
+import type { DeckConfig } from "@/decks/schema";
 
 function GameBoard() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const seed = searchParams.get("seed");
   //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
-  const deck = useMemo(() => spawnDeck(deckConfig), []);
+  const deck = useMemo(() => spawnDeck(deckConfig, 1, seed), [seed]);
   const [gameState, setGameState] = useState(deck);
 
   const aspect = 3 / 2;
@@ -259,6 +263,7 @@ function GameBoard() {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-[white]">
+      <PreloadAssets config={deckConfig as DeckConfig} />
       <Canvas
         className="relative"
         style={{ width: size.width, height: size.height }}

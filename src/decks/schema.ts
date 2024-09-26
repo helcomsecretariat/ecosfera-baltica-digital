@@ -82,6 +82,7 @@ function getRelatedFeildRefiner(
 
 const DeckConfigSchema = z
   .object({
+    assets_prefix: z.string(),
     per_player: z.object({
       abilities: z.record(AbilityConfigSchema),
       disasters: z.record(DisasterConfigSchema),

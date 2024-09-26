@@ -1,4 +1,5 @@
 import type { Card } from "@/state/types";
+import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 
 const pastelColors = {
   plantsAndAnimals: "#e1e1e1",
@@ -38,4 +39,16 @@ export function getCardBGColor(card: Card): string {
     default:
       return pastelColors.plantsAndAnimals;
   }
+}
+
+export function getAssetPath(
+  type: string,
+  name: string,
+  prefix = deckConfig.assets_prefix,
+): string {
+  const cardPrefix = type === "animal" || type === "plant" ? "entity" : type;
+  const assetPrefix = `/${prefix}/`;
+  return `${assetPrefix}${cardPrefix}_${name}.avif`
+    .replace(/\s+/g, "_")
+    .toLowerCase();
 }

@@ -2,7 +2,11 @@ import type { Card as CardType } from "@/state/types";
 import { cardHeight, cardWidth } from "../constants/card";
 import GameElement from "./GameElement";
 import { Text, useTexture } from "@react-three/drei";
-import { getCardBGColor, getElementColor } from "@/components/utils";
+import {
+  getAssetPath,
+  getCardBGColor,
+  getElementColor,
+} from "@/components/utils";
 import React from "react";
 
 const Card = ({
@@ -14,13 +18,8 @@ const Card = ({
 }) => {
   let cardFaceJSX = <></>;
   const { name, type } = card;
-  const cardPrefix =
-    type === "animal" ? "entity" : type === "plant" ? "entity" : type;
-  const assetPrefix = `/ecosfera_baltica/`;
-  const cardIMGURL = `${cardPrefix}_${name}.avif`
-    .replace(/\s+/g, "_")
-    .toLowerCase();
-  const texture = useTexture(assetPrefix + cardIMGURL);
+  const cardIMGURL = getAssetPath(type, name);
+  const texture = useTexture(cardIMGURL);
   const bgColor = getCardBGColor(card);
 
   switch (type) {

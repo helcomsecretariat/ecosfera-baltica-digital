@@ -8,11 +8,7 @@ import prettier from "eslint-config-prettier";
 export default tseslint.config(
   { ignores: ["dist"] },
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommended,
-      prettier,
-    ],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended, prettier],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2020,
@@ -24,10 +20,7 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "no-restricted-imports": [
         "error",
         {
@@ -35,8 +28,7 @@ export default tseslint.config(
             {
               name: "lodash-es",
               importNames: ["chain"],
-              message:
-                "Do not use `_.chain` (https://github.com/lodash/lodash/issues/3298#issuecomment-319978917)",
+              message: "Do not use `_.chain` (https://github.com/lodash/lodash/issues/3298#issuecomment-319978917)",
             },
           ],
         },

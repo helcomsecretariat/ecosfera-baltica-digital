@@ -16,9 +16,7 @@ const outputJson = args[1];
 const scriptUrl = import.meta.url;
 const scriptPath = fileURLToPath(scriptUrl);
 const scriptDir = path.dirname(scriptPath);
-const templateJson = args[2]
-  ? path.resolve(args[2])
-  : path.join(scriptDir, "deck-template.json");
+const templateJson = args[2] ? path.resolve(args[2]) : path.join(scriptDir, "deck-template.json");
 
 // Read the template JSON file and parse it
 let resultJson;
@@ -26,34 +24,13 @@ try {
   const templateData = fs.readFileSync(templateJson, "utf8");
   resultJson = JSON.parse(templateData);
 } catch (error) {
-  console.error(
-    "Error reading or parsing the template JSON file:",
-    error.message,
-  );
+  console.error("Error reading or parsing the template JSON file:", error.message);
   process.exit(1);
 }
 
-const habitatColumns = [
-  "Ice",
-  "Coast",
-  "Pelagic",
-  "Rivers",
-  "Soft bottom",
-  "Hard benthic",
-];
-const resourceColumns = [
-  "Sun",
-  "Oxygen",
-  "Salinity",
-  "Nutrients",
-  "Temperature",
-];
-const abilityColumns = [
-  "Pass a card",
-  "Refresh",
-  "Extra card",
-  "Lift an expansion card",
-];
+const habitatColumns = ["Ice", "Coast", "Pelagic", "Rivers", "Soft bottom", "Hard benthic"];
+const resourceColumns = ["Sun", "Oxygen", "Salinity", "Nutrients", "Temperature"];
+const abilityColumns = ["Pass a card", "Refresh", "Extra card", "Lift an expansion card"];
 const abilityMapping = {
   "Pass a card": "move",
   Refresh: "refresh",
@@ -68,8 +45,7 @@ function processRow(row) {
     return;
   }
 
-  let speciesType =
-    row["Type"].toLowerCase() === "basal producer" ? "plants" : "animals";
+  let speciesType = row["Type"].toLowerCase() === "basal producer" ? "plants" : "animals";
   let speciesName = row["Species"].trim().replace(/\s*\(.*?\)\s*/g, "");
   const catName = speciesType === "plants" ? "flora_type" : "fauna_type";
 

@@ -32,10 +32,7 @@ async function generateImage(name, type) {
 
     const imageUrl = response.data[0].url;
 
-    await urlToImageFile(
-      imageUrl,
-      path.join(imageDirPath, `${name.replace(/\s+/g, "_").toLowerCase()}.png`),
-    );
+    await urlToImageFile(imageUrl, path.join(imageDirPath, `${name.replace(/\s+/g, "_").toLowerCase()}.png`));
   } catch (error) {
     console.error(`Error generating image for ${name}:`, error);
   }

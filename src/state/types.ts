@@ -44,14 +44,7 @@ export interface GamePieceBase {
   uid: string;
 }
 
-export type GamePiece =
-  | AnimalCard
-  | PlantCard
-  | ElementCard
-  | DisasterCard
-  | BiomeTile
-  | ExtinctionTile
-  | AbilityTile;
+export type GamePiece = AnimalCard | PlantCard | ElementCard | DisasterCard | BiomeTile | ExtinctionTile | AbilityTile;
 export type Card = AnimalCard | PlantCard | ElementCard | DisasterCard;
 export type PositionedCard = Card & { x: number; y: number };
 export type ConfigToPiece<T> = T extends PlantConfig

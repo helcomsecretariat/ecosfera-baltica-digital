@@ -9,43 +9,22 @@ import {
   upperXBoundary,
   upperYBoundary,
 } from "@/constants/gameBoard";
-import {
-  AnimalCard,
-  DisasterCard,
-  ElementCard,
-  GameState,
-  PlantCard,
-  PositionedCard,
-} from "@/state/types";
+import { AnimalCard, DisasterCard, ElementCard, GameState, PlantCard, PositionedCard } from "@/state/types";
 import { uniqBy } from "lodash-es";
 
-export const animalDeckPosition: [number, number, number] = [
-  marketXStart,
-  marketYStart,
-  0,
-];
-export const plantDeckPosition: [number, number, number] = [
-  marketXStart,
-  marketYStart - cardYOffset,
-  0,
-];
+export const animalDeckPosition: [number, number, number] = [marketXStart, marketYStart, 0];
+export const plantDeckPosition: [number, number, number] = [marketXStart, marketYStart - cardYOffset, 0];
 export const disasterDeckPosition: [number, number, number] = [
   marketXStart - cardXOffset,
   marketYStart - 2 * cardYOffset,
   0,
 ];
 
-export const supplyDeckPositions = (
-  gameState: GameState,
-): [number, number, number][] => {
+export const supplyDeckPositions = (gameState: GameState): [number, number, number][] => {
   const positions: [number, number, number][] = [];
 
   if (gameState.players.length > 0) {
-    positions.push([
-      0 - Math.floor((gameState.players[0].hand.length + 1) / 2) * cardXOffset,
-      playerCardsYStart,
-      0,
-    ]);
+    positions.push([0 - Math.floor((gameState.players[0].hand.length + 1) / 2) * cardXOffset, playerCardsYStart, 0]);
   }
 
   if (gameState.players.length > 1) {

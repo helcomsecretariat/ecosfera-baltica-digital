@@ -3,6 +3,8 @@ import path from "path";
 import sharp from "sharp";
 import { ensureDir } from "fs-extra";
 
+const imgRegexp = /\.(webp|png|jpg|jpeg|svg)$/i;
+
 async function getAllImageFiles(dir, fileList = []) {
   const files = await fs.readdir(dir, { withFileTypes: true });
 
@@ -10,7 +12,7 @@ async function getAllImageFiles(dir, fileList = []) {
     const fullPath = path.join(dir, file.name);
     if (file.isDirectory()) {
       await getAllImageFiles(fullPath, fileList);
-    } else if (/\.(webp|png|jpg|jpeg)$/i.test(file.name)) {
+    } else if (imgRegexp.test(file.name)) {
       fileList.push(fullPath);
     }
   }
@@ -23,14 +25,9 @@ async function convertImagesToAvif(inputDir, outputDir) {
 
   for (const filePath of imageFiles) {
     const relativePath = path.relative(inputDir, filePath);
-    const outputFilePath = path
-      .join(outputDir, relativePath)
-      .replace(/\.(webp|png|jpg|jpeg)$/i, ".avif");
+    const outputFilePath = path.join(outputDir, relativePath).replace(imgRegexp, ".avif");
     await ensureDir(path.dirname(outputFilePath));
-    await sharp(filePath)
-      .resize(512, 512)
-      .toFormat("avif")
-      .toFile(outputFilePath);
+    await sharp(filePath).toFormat("avif").toFile(outputFilePath);
     console.log(`Converted: ${filePath} → ${outputFilePath}`);
   }
 }

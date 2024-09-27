@@ -261,14 +261,7 @@
   "animals": {
     "Calanoida": {
       "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
-      "biomes": [
-        "ice",
-        "coast",
-        "pelagic",
-        "rivers",
-        "soft bottom",
-        "hard benthic"
-      ],
+      "biomes": ["ice", "coast", "pelagic", "rivers", "soft bottom", "hard benthic"],
       "abilities": [],
       "fauna_type": "zooplankton"
     },

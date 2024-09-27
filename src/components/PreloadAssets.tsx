@@ -11,9 +11,7 @@ interface PreloadAssetsProps {
 const PreloadAssets: React.FC<PreloadAssetsProps> = ({ config }) => {
   const { assets_prefix } = config;
   const generateAssetPaths = (category: keyof DeckConfig) =>
-    keys(config[category]).map((name) =>
-      getAssetPath(category.replace(/s$/, ""), name, assets_prefix),
-    );
+    keys(config[category]).map((name) => getAssetPath(category.replace(/s$/, ""), name, assets_prefix));
 
   useEffect(() => {
     const assetPaths = [

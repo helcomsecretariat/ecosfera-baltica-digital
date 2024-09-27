@@ -9,11 +9,7 @@ const Grid = ({ divisions }: { divisions: number }) => {
         return (
           <mesh key={index} position={[x, 0, 0]}>
             <boxGeometry args={[0.1, upperYBoundary * 2, 0]} />
-            <Text
-              position={[0, upperYBoundary + 2.5, 0]}
-              fontSize={2}
-              color="black"
-            >
+            <Text position={[0, upperYBoundary + 2.5, 0]} fontSize={2} color="black">
               {x}
             </Text>
             <meshBasicMaterial color="green" />
@@ -25,11 +21,7 @@ const Grid = ({ divisions }: { divisions: number }) => {
         return (
           <mesh key={index} position={[0, y, 0]}>
             <boxGeometry args={[lowerXBoundary * -2, 0.1, 0]} />
-            <Text
-              position={[lowerXBoundary - 2.5, 0, 0]}
-              fontSize={2}
-              color="black"
-            >
+            <Text position={[lowerXBoundary - 2.5, 0, 0]} fontSize={2} color="black">
               {y}
             </Text>
             <meshBasicMaterial color="red" />

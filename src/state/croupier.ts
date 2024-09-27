@@ -7,15 +7,7 @@ import type {
   ExtinctionConfig,
   PlantConfig,
 } from "@/decks/schema";
-import {
-  AbilityTile,
-  AnimalCard,
-  BiomeTile,
-  DisasterCard,
-  ElementCard,
-  ExtinctionTile,
-  PlantCard,
-} from "./types";
+import { AbilityTile, AnimalCard, BiomeTile, DisasterCard, ElementCard, ExtinctionTile, PlantCard } from "./types";
 
 export class Croupier {
   private uid = 0;
@@ -77,10 +69,7 @@ export class Croupier {
     }));
   }
 
-  spawnExtinctionTiles(
-    name: string,
-    config: ExtinctionConfig,
-  ): ExtinctionTile[] {
+  spawnExtinctionTiles(name: string, config: ExtinctionConfig): ExtinctionTile[] {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "extinction",

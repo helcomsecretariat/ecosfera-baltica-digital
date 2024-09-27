@@ -39,16 +39,13 @@ const GameElement = ({
 }: GameElementProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
   const [dragging, setDragging] = useState<boolean>(false);
-  const [rotationOverride, setRotationOverride] = useState<
-    [number, number, number] | null
-  >(null);
+  const [rotationOverride, setRotationOverride] = useState<[number, number, number] | null>(null);
   const ref = useRef<Mesh>(null);
 
   const handleDragEnd = () => {
     setDragging(false);
     setHovered(false);
-    if (onDragEnd === undefined || ref?.current?.matrixWorld === undefined)
-      return;
+    if (onDragEnd === undefined || ref?.current?.matrixWorld === undefined) return;
     const updatedPosition = decomposeMatrix(ref.current.matrixWorld).position;
     onDragEnd([updatedPosition.x, updatedPosition.y, updatedPosition.z]);
     if (updatedPosition.x > upperXBoundary * rotationOverrideThreshold) {
@@ -66,14 +63,8 @@ const GameElement = ({
   return (
     <DragControls
       dragLimits={[
-        [
-          lowerXBoundary + position[0] * -1 + width / 2,
-          upperXBoundary + position[0] * -1 - width / 2,
-        ],
-        [
-          lowerYBoundary + position[1] * -1 + height / 2,
-          upperYBoundary + position[1] * -1 - height / 2,
-        ],
+        [lowerXBoundary + position[0] * -1 + width / 2, upperXBoundary + position[0] * -1 - width / 2],
+        [lowerYBoundary + position[1] * -1 + height / 2, upperYBoundary + position[1] * -1 - height / 2],
         [0, 0],
       ]}
       dragConfig={{ enabled: options?.draggable ?? true }}
@@ -83,12 +74,8 @@ const GameElement = ({
     >
       <mesh
         ref={ref}
-        scale={
-          (hovered || dragging) && (options?.showHoverAnimation ?? true)
-            ? 1.15
-            : 1
-        }
-        position={dragging ? [position[0], position[1], 1] : position}
+        scale={(hovered || dragging) && (options?.showHoverAnimation ?? true) ? 1.15 : 1}
+        position={dragging ? [position[0], position[1], 3] : position}
         rotation={rotationOverride ?? rotation}
         onPointerOver={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}

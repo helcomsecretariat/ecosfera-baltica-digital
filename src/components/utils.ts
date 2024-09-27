@@ -4,11 +4,12 @@ import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 const pastelColors = {
   plantsAndAnimals: "#e1e1e1",
   elements: {
-    salinity: "#add8e6",
-    sun: "#ffffb3",
-    nutrients: "#b3ffb3",
-    temperature: "#ff9999",
-    oxygen: "#dda0dd",
+    sun: "#F8AE58",
+    temperature: "#0290BD",
+    nutrients: "#D85365",
+
+    salinity: "#66A468",
+    oxygen: "#934786",
   },
 };
 
@@ -41,14 +42,8 @@ export function getCardBGColor(card: Card): string {
   }
 }
 
-export function getAssetPath(
-  type: string,
-  name: string,
-  prefix = deckConfig.assets_prefix,
-): string {
+export function getAssetPath(type: string, name: string, prefix = deckConfig.assets_prefix): string {
   const cardPrefix = type === "animal" || type === "plant" ? "entity" : type;
   const assetPrefix = `/${prefix}/`;
-  return `${assetPrefix}${cardPrefix}_${name}.avif`
-    .replace(/\s+/g, "_")
-    .toLowerCase();
+  return `${assetPrefix}${cardPrefix}_${name}.avif`.replace(/\s+/g, "_").toLowerCase();
 }

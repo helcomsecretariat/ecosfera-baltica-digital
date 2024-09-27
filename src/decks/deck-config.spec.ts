@@ -9,9 +9,7 @@ describe("DeckConfig Schema Validation", () => {
   const directoryPath = path.join(__dirname, "./");
 
   // Read all JSON files from the directory
-  const jsonFiles = fs
-    .readdirSync(directoryPath)
-    .filter((file) => file.endsWith(".deck.json"));
+  const jsonFiles = fs.readdirSync(directoryPath).filter((file) => file.endsWith(".deck.json"));
 
   jsonFiles.forEach((file) => {
     it(`should have a valid deck config in ${file}`, () => {
@@ -21,10 +19,7 @@ describe("DeckConfig Schema Validation", () => {
         delimiter: { error: "\n" },
       });
       if (!result.success) {
-        expect(
-          (result as SafeParseError<typeof result> & { error: unknown }).error
-            .message,
-        ).toBe("");
+        expect((result as SafeParseError<typeof result> & { error: unknown }).error.message).toBe("");
       }
     });
   });

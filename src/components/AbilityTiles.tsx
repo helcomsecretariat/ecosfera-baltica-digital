@@ -3,13 +3,7 @@ import GameElement from "./GameElement";
 import { abilityOffset } from "../constants/gameBoard";
 import { useState } from "react";
 
-const AbilityTiles = ({
-  xStart,
-  rotation = [0, 0, 0],
-}: {
-  xStart: number;
-  rotation?: [number, number, number];
-}) => {
+const AbilityTiles = ({ xStart, rotation = [0, 0, 0] }: { xStart: number; rotation?: [number, number, number] }) => {
   const [abilities, setAbilities] = useState([
     {
       name: "move",
@@ -38,9 +32,7 @@ const AbilityTiles = ({
       onClick={() =>
         setAbilities(
           abilities.map((innerAbility, innerIndex) =>
-            index === innerIndex
-              ? { ...innerAbility, available: !innerAbility.available }
-              : innerAbility,
+            index === innerIndex ? { ...innerAbility, available: !innerAbility.available } : innerAbility,
           ),
         )
       }

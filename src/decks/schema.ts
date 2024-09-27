@@ -21,13 +21,7 @@ const floraTypeSchema = z.enum([
   "vascular plant",
   "viruses",
 ]);
-const faunaTypeSchema = z.enum([
-  "zooplankton",
-  "birds",
-  "fish/elasmobranch",
-  "mammals",
-  "zoobenthos",
-]);
+const faunaTypeSchema = z.enum(["zooplankton", "birds", "fish/elasmobranch", "mammals", "zoobenthos"]);
 
 function deckItemConfig<T extends ZodRawShape>(shape = {} as T) {
   return z.object(shape).merge(DeckItemConfigSchema);
@@ -55,10 +49,7 @@ const AnimalConfigSchema = deckItemConfig({
 function getRelatedFeildRefiner(
   items: string[],
   relatedField: string,
-): [
-  (data: Record<string, unknown>) => boolean,
-  (data: Record<string, unknown>) => { message: string },
-] {
+): [(data: Record<string, unknown>) => boolean, (data: Record<string, unknown>) => { message: string }] {
   return [
     (data: Record<string, unknown>) =>
       chain(assign({}, ...items.map((name) => data[name])))

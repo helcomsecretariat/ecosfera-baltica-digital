@@ -1,8 +1,4 @@
-import {
-  extinctionTileYStart,
-  hexagonTileXStart,
-  tileSize,
-} from "../constants/gameBoard";
+import { extinctionTileYStart, hexagonTileXStart, tileSize } from "../constants/gameBoard";
 import Tile from "./Tile";
 
 const positions: [number, number, number][] = [

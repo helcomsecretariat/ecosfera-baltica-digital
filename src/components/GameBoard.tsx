@@ -13,28 +13,22 @@ import { shuffle } from "@/state/utils";
 import { Card } from "@/state/types";
 import PreloadAssets from "@/components/PreloadAssets";
 import type { DeckConfig } from "@/decks/schema";
-import {
-  AnimalCard,
-  DisasterCard,
-  ElementCard,
-  PlantCard,
-} from "@/state/types";
+import { AnimalCard, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 
 function GameBoard() {
   const searchParams = new URLSearchParams(window.location.search);
   const seed = searchParams.get("seed");
-  const { showGrid, gridDivisions, orbitControls, numberOfPlayers } =
-    useControls({
-      showGrid: false,
-      gridDivisions: 16,
-      orbitControls: false,
-      numberOfPlayers: {
-        value: 1,
-        min: 1,
-        max: 4,
-        step: 1,
-      },
-    });
+  const { showGrid, gridDivisions, orbitControls, numberOfPlayers } = useControls({
+    showGrid: false,
+    gridDivisions: 16,
+    orbitControls: false,
+    numberOfPlayers: {
+      value: 1,
+      min: 1,
+      max: 4,
+      step: 1,
+    },
+  });
   const deck = useMemo(
     //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
     () => spawnDeck(deckConfig, numberOfPlayers, seed),
@@ -82,10 +76,7 @@ function GameBoard() {
     playerHand: Card[];
   };
 
-  const moveCard = <
-    Origin extends keyof LocationToCardType,
-    Destination extends keyof LocationToCardType,
-  >(
+  const moveCard = <Origin extends keyof LocationToCardType, Destination extends keyof LocationToCardType>(
     card: LocationToCardType[Origin][number],
     origin: Origin,
     destination: Destination,
@@ -100,22 +91,15 @@ function GameBoard() {
       disasterTable: gameState.disasterMarket.table,
       elementDeck: gameState.elementMarket.deck,
       elementTable: gameState.elementMarket.table,
-      playerDeck:
-        gameState.players.find((player) => player.uid === playerUid)?.deck ??
-        gameState.players[0].deck,
-      playerHand:
-        gameState.players.find((player) => player.uid === playerUid)?.hand ??
-        gameState.players[1].hand,
+      playerDeck: gameState.players.find((player) => player.uid === playerUid)?.deck ?? gameState.players[0].deck,
+      playerHand: gameState.players.find((player) => player.uid === playerUid)?.hand ?? gameState.players[0].hand,
     };
 
     locations[origin] = locations[origin].filter(
       (existingCard) => existingCard.uid !== card.uid,
     ) as LocationToCardType[Origin];
 
-    locations[destination] = [
-      ...locations[destination],
-      card,
-    ] as LocationToCardType[Destination];
+    locations[destination] = [...locations[destination], card] as LocationToCardType[Destination];
 
     setGameState({
       ...gameState,
@@ -159,10 +143,7 @@ function GameBoard() {
           player.uid === playerUid
             ? {
                 ...player,
-                deck: shuffle(
-                  player.deck,
-                  new Date().getMilliseconds().toString(),
-                ),
+                deck: shuffle(player.deck, new Date().getMilliseconds().toString()),
               }
             : player,
         ),
@@ -173,21 +154,17 @@ function GameBoard() {
   useEffect(() => console.log(gameState), [gameState]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-[#032C4E]">
+    <div className="flex h-full w-full flex-col items-center justify-center">
       <PreloadAssets config={deckConfig as DeckConfig} />
-      <Canvas
-        className="relative"
-        style={{ width: size.width, height: size.height }}
-      >
-        <color attach="background" args={["#032C4E"]} />
+      <Canvas shadows className="relative" style={{ width: size.width, height: size.height }}>
+        <ambientLight intensity={1.5} />
+        {/* <color attach="background" args={["#032C4E"]} /> */}
         {showGrid && <Grid divisions={gridDivisions} />}
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
         {orbitControls && <OrbitControls />}
         <Croupier
           gameState={gameState}
-          onCardMove={(card, origin, destination, playerUid) =>
-            moveCard(card, origin, destination, playerUid)
-          }
+          onCardMove={(card, origin, destination, playerUid) => moveCard(card, origin, destination, playerUid)}
           onShuffle={(playerUid) => shuffleDeck(playerUid)}
         />
 

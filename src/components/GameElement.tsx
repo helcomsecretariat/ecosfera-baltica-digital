@@ -37,9 +37,11 @@ const GameElement = ({
   children,
 }: GameElementProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
+  const [dragging, setDragging] = useState<boolean>(false);
   const ref = useRef<Mesh>(null);
 
   const handleDragEnd = () => {
+    setDragging(false);
     setHovered(false);
     if (onDragEnd === undefined || ref?.current?.matrixWorld === undefined)
       return;
@@ -61,13 +63,18 @@ const GameElement = ({
         [0, 0],
       ]}
       dragConfig={{ enabled: options?.draggable ?? true }}
-      onDragStart={() => setHovered(true)}
+      onDragStart={() => setDragging(true)}
       onDragEnd={() => handleDragEnd()}
+      autoTransform
     >
       <mesh
         ref={ref}
-        scale={hovered && (options?.showHoverAnimation ?? true) ? 1.15 : 1}
-        position={position}
+        scale={
+          (hovered || dragging) && (options?.showHoverAnimation ?? true)
+            ? 1.15
+            : 1
+        }
+        position={dragging ? [position[0], position[1], 1] : position}
         rotation={rotation}
         onPointerOver={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}

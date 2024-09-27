@@ -72,16 +72,22 @@ function GameBoard() {
     disasterTable: DisasterCard[];
     elementDeck: ElementCard[];
     elementTable: ElementCard[];
-    playerDeck: Card[];
-    playerHand: Card[];
+    [key: `playerDeck_${string}`]: Card[];
+    [key: `playerHand_${string}`]: Card[];
   };
 
   const moveCard = <Origin extends keyof LocationToCardType, Destination extends keyof LocationToCardType>(
     card: LocationToCardType[Origin][number],
     origin: Origin,
     destination: Destination,
-    playerUid?: string,
   ) => {
+    const getPlayerUidFromLocation = (location: string) => {
+      const parts = location.split("_");
+      return parts.length > 1 ? parts[1] : null;
+    };
+    const originPlayerUid = getPlayerUidFromLocation(origin);
+    const destinationPlayerUid = getPlayerUidFromLocation(destination);
+
     const locations: LocationToCardType = {
       animalDeck: gameState.animalMarket.deck,
       animalTable: gameState.animalMarket.table,
@@ -91,8 +97,12 @@ function GameBoard() {
       disasterTable: gameState.disasterMarket.table,
       elementDeck: gameState.elementMarket.deck,
       elementTable: gameState.elementMarket.table,
-      playerDeck: gameState.players.find((player) => player.uid === playerUid)?.deck ?? gameState.players[0].deck,
-      playerHand: gameState.players.find((player) => player.uid === playerUid)?.hand ?? gameState.players[0].hand,
+      [`playerDeck_${originPlayerUid}`]: gameState.players.find((player) => player.uid === originPlayerUid)?.deck ?? [],
+      [`playerHand_${originPlayerUid}`]: gameState.players.find((player) => player.uid === originPlayerUid)?.hand ?? [],
+      [`playerDeck_${destinationPlayerUid}`]:
+        gameState.players.find((player) => player.uid === destinationPlayerUid)?.deck ?? [],
+      [`playerHand_${destinationPlayerUid}`]:
+        gameState.players.find((player) => player.uid === destinationPlayerUid)?.hand ?? [],
     };
 
     locations[origin] = locations[origin].filter(
@@ -103,15 +113,23 @@ function GameBoard() {
 
     setGameState({
       ...gameState,
-      players: gameState.players.map((player) =>
-        player.uid !== playerUid
-          ? player
-          : {
-              ...player,
-              deck: locations.playerDeck,
-              hand: locations.playerHand,
-            },
-      ),
+      players: gameState.players.map((player) => {
+        if (player.uid === originPlayerUid) {
+          return {
+            ...player,
+            deck: locations[`playerDeck_${originPlayerUid}`],
+            hand: locations[`playerHand_${originPlayerUid}`],
+          };
+        }
+        if (player.uid === destinationPlayerUid) {
+          return {
+            ...player,
+            deck: locations[`playerDeck_${destinationPlayerUid}`],
+            hand: locations[`playerHand_${destinationPlayerUid}`],
+          };
+        }
+        return player;
+      }),
       animalMarket: {
         ...gameState.animalMarket,
         deck: locations.animalDeck,
@@ -164,7 +182,7 @@ function GameBoard() {
         {orbitControls && <OrbitControls />}
         <Croupier
           gameState={gameState}
-          onCardMove={(card, origin, destination, playerUid) => moveCard(card, origin, destination, playerUid)}
+          onCardMove={(card, origin, destination) => moveCard(card, origin, destination)}
           onShuffle={(playerUid) => shuffleDeck(playerUid)}
         />
 

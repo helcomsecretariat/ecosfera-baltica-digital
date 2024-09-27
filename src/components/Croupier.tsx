@@ -21,6 +21,7 @@ import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
 
 type PositionedCard = Card & { x: number; y: number };
+
 export type CardMoveLocation =
   | "animalTable"
   | "animalDeck"
@@ -30,8 +31,8 @@ export type CardMoveLocation =
   | "elementDeck"
   | "disasterTable"
   | "disasterDeck"
-  | "playerDeck"
-  | "playerHand";
+  | `playerDeck_${string}`
+  | `playerHand_${string}`;
 
 const Croupier = ({
   gameState,
@@ -39,7 +40,7 @@ const Croupier = ({
   onShuffle,
 }: {
   gameState: GameState;
-  onCardMove: (card: Card, origin: CardMoveLocation, destination: CardMoveLocation, playerUid?: string) => void;
+  onCardMove: (card: Card, origin: CardMoveLocation, destination: CardMoveLocation) => void;
   onShuffle: (playerUid: string) => void;
 }) => {
   const handleCardDrag = (
@@ -48,10 +49,9 @@ const Croupier = ({
     comparisonPosition: [number, number, number],
     origin: CardMoveLocation,
     destination: CardMoveLocation,
-    playerUid?: string,
   ) => {
     if (calculateDistance(position, comparisonPosition) < cardWidth) {
-      onCardMove(card, origin, destination, playerUid);
+      onCardMove(card, origin, destination);
     }
   };
   const { gl } = useThree();
@@ -73,8 +73,7 @@ const Croupier = ({
                 position,
                 supplyDeckPosition,
                 "animalTable",
-                "playerDeck",
-                gameState.players[index].uid,
+                `playerDeck_${gameState.players[index].uid}`,
               );
             });
           }}
@@ -92,8 +91,7 @@ const Croupier = ({
                 position,
                 supplyDeckPosition,
                 "plantTable",
-                "playerDeck",
-                gameState.players[index].uid,
+                `playerDeck_${gameState.players[index].uid}`,
               );
             });
           }}
@@ -111,8 +109,7 @@ const Croupier = ({
                 position,
                 supplyDeckPosition,
                 "disasterTable",
-                "playerDeck",
-                gameState.players[index].uid,
+                `playerDeck_${gameState.players[index].uid}`,
               );
             });
           }}
@@ -142,8 +139,7 @@ const Croupier = ({
                       position,
                       supplyDeckPosition,
                       "elementTable",
-                      "playerDeck",
-                      gameState.players[index].uid,
+                      `playerDeck_${gameState.players[index].uid}`,
                     );
                   });
                 }}
@@ -180,7 +176,7 @@ const Croupier = ({
               position={[0, 0, 0]}
               texturePath={`/ecosfera_baltica/back.avif`}
               cards={player.deck}
-              onDraw={(card) => onCardMove(card, "playerDeck", "playerHand", player.uid)}
+              onDraw={(card) => onCardMove(card, `playerDeck_${player.uid}`, `playerHand_${player.uid}`)}
               onShuffle={() => onShuffle(player.uid)}
               options={{ shuffleable: true }}
             />
@@ -199,19 +195,20 @@ const Croupier = ({
               }}
               rotation={[0, 0, index * (Math.PI / 2)]}
               onDragEnd={(position) => {
-                handleCardDrag(
-                  card,
-                  position,
-                  supplyDeckPositions(gameState)[index],
-                  "playerHand",
-                  "playerDeck",
-                  player.uid,
-                );
+                supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
+                  handleCardDrag(
+                    card,
+                    position,
+                    supplyDeckPosition,
+                    `playerHand_${player.uid}`,
+                    `playerDeck_${gameState.players[index].uid}`,
+                  );
+                });
                 if (card.type === "animal") {
-                  handleCardDrag(card, position, animalDeckPosition, "playerHand", "animalDeck", player.uid);
+                  handleCardDrag(card, position, animalDeckPosition, `playerHand_${player.uid}`, "animalDeck");
                 }
                 if (card.type === "plant") {
-                  handleCardDrag(card, position, plantDeckPosition, "playerHand", "plantDeck", player.uid);
+                  handleCardDrag(card, position, plantDeckPosition, `playerHand_${player.uid}`, "plantDeck");
                 }
               }}
             />

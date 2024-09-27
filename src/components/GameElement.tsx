@@ -38,6 +38,9 @@ const GameElement = ({
 }: GameElementProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
   const [dragging, setDragging] = useState<boolean>(false);
+  const [rotationOverride, setRotationOverride] = useState<
+    [number, number, number] | null
+  >(null);
   const ref = useRef<Mesh>(null);
 
   const handleDragEnd = () => {
@@ -47,6 +50,16 @@ const GameElement = ({
       return;
     const updatedPosition = decomposeMatrix(ref.current.matrixWorld).position;
     onDragEnd([updatedPosition.x, updatedPosition.y, updatedPosition.z]);
+    if (updatedPosition.x > upperXBoundary * 0.7) {
+      setRotationOverride([0, 0, Math.PI / 2]);
+      return;
+    } else if (updatedPosition.x < lowerXBoundary * 0.7) {
+      setRotationOverride([0, 0, (-1 * Math.PI) / 2]);
+    } else if (updatedPosition.y > upperYBoundary * 0.7) {
+      setRotationOverride([0, 0, (2 * Math.PI) / 2]);
+    } else {
+      setRotationOverride(null);
+    }
   };
 
   return (
@@ -75,7 +88,7 @@ const GameElement = ({
             : 1
         }
         position={dragging ? [position[0], position[1], 1] : position}
-        rotation={rotation}
+        rotation={rotationOverride ?? rotation}
         onPointerOver={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
         onClick={onClick}

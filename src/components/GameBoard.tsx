@@ -10,9 +10,15 @@ import { spawnDeck } from "@/state/game-state";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
 import { shuffle } from "@/state/utils";
-import { Card, GamePiece, GameState, Market, PlayerState } from "@/state/types";
+import { Card } from "@/state/types";
 import PreloadAssets from "@/components/PreloadAssets";
 import type { DeckConfig } from "@/decks/schema";
+import {
+  AnimalCard,
+  DisasterCard,
+  ElementCard,
+  PlantCard,
+} from "@/state/types";
 
 function GameBoard() {
   const searchParams = new URLSearchParams(window.location.search);
@@ -49,190 +55,78 @@ function GameBoard() {
     };
   }, [aspect]);
 
-  const shiftMarketCard = <T extends GamePiece>(
-    market: Market<T>,
-    uid: string,
-    direction: "out" | "in",
+  type LocationToCardType = {
+    animalDeck: AnimalCard[];
+    animalTable: AnimalCard[];
+    plantDeck: PlantCard[];
+    plantTable: PlantCard[];
+    disasterDeck: DisasterCard[];
+    disasterTable: DisasterCard[];
+    elementDeck: ElementCard[];
+    elementTable: ElementCard[];
+    playerDeck: Card[];
+    playerHand: Card[];
+  };
+
+  const moveCard = <
+    Origin extends keyof LocationToCardType,
+    Destination extends keyof LocationToCardType,
+  >(
+    card: LocationToCardType[Origin][number],
+    origin: Origin,
+    destination: Destination,
   ) => {
-    const from = direction === "out" ? market.deck : market.table;
-    const to = direction === "out" ? market.table : market.deck;
-
-    const card = from.find((card: T) => card.uid === uid);
-    if (!card) return market;
-
-    return {
-      ...market,
-      deck:
-        direction === "out"
-          ? from.filter((card: T) => card.uid !== uid)
-          : [...to, card],
-      table:
-        direction === "in"
-          ? from.filter((card: T) => card.uid !== uid)
-          : [...to, card],
+    const locations: LocationToCardType = {
+      animalDeck: gameState.animalMarket.deck,
+      animalTable: gameState.animalMarket.table,
+      plantDeck: gameState.plantMarket.deck,
+      plantTable: gameState.plantMarket.table,
+      disasterDeck: gameState.disasterMarket.deck,
+      disasterTable: gameState.disasterMarket.table,
+      elementDeck: gameState.elementMarket.deck,
+      elementTable: gameState.elementMarket.table,
+      playerDeck: gameState.players[0].deck,
+      playerHand: gameState.players[0].hand,
     };
-  };
 
-  const shiftPlayerCard = (
-    player: PlayerState,
-    uid: string,
-    direction: "out" | "in",
-  ) => {
-    const from = direction === "out" ? player.deck : player.hand;
-    const to = direction === "out" ? player.hand : player.deck;
+    locations[origin] = locations[origin].filter(
+      (existingCard) => existingCard.uid !== card.uid,
+    ) as LocationToCardType[Origin];
 
-    const card = from.find((card: Card) => card.uid === uid);
-    if (!card) return player;
+    locations[destination] = [
+      ...locations[destination],
+      card,
+    ] as LocationToCardType[Destination];
 
-    return {
-      ...player,
-      deck:
-        direction === "out"
-          ? from.filter((card: Card) => card.uid !== uid)
-          : [...to, card],
-      hand:
-        direction === "in"
-          ? from.filter((card: Card) => card.uid !== uid)
-          : [...to, card],
-    };
-  };
-
-  const moveCard = (
-    card: GamePiece,
-    deckType: "market" | "player",
-    direction: "in" | "out" | "transfer",
-  ) => {
-    if (direction === "transfer") {
-      transferCard(card);
-      return;
-    }
-
-    if (deckType === "market") {
-      setGameState((prevGameState) => {
-        switch (card.type) {
-          case "animal":
-            return {
-              ...prevGameState,
-              animalMarket: shiftMarketCard(
-                prevGameState.animalMarket,
-                card.uid,
-                direction,
-              ),
-            };
-          case "plant":
-            return {
-              ...prevGameState,
-              plantMarket: shiftMarketCard(
-                prevGameState.plantMarket,
-                card.uid,
-                direction,
-              ),
-            };
-          case "element":
-            return {
-              ...prevGameState,
-              elementMarket: shiftMarketCard(
-                prevGameState.elementMarket,
-                card.uid,
-                direction,
-              ),
-            };
-          case "disaster":
-            return {
-              ...prevGameState,
-              disasterMarket: shiftMarketCard(
-                prevGameState.disasterMarket,
-                card.uid,
-                direction,
-              ),
-            };
-          default:
-            return prevGameState;
-        }
-      });
-    } else if (deckType === "player") {
-      setGameState((prevGameState) => {
-        return {
-          ...prevGameState,
-          players: prevGameState.players.map((player: PlayerState) =>
-            shiftPlayerCard(player, card.uid, direction),
-          ),
-        };
-      });
-    }
-  };
-
-  const transferCard = (card: GamePiece) => {
-    const moveCardFromMarketToDeck = <T extends GamePiece>(
-      prevGameState: GameState,
-      market: Market<T>,
-    ) => {
-      return {
-        ...prevGameState,
-        players: prevGameState.players.map((player: PlayerState) => ({
-          ...player,
-          deck: [
-            ...player.deck,
-            ...market.table.filter(
-              (existingCard: T) => existingCard.uid === card.uid,
-            ),
-          ],
-        })),
-        [market.type + "Market"]: {
-          ...market,
-          table: market.table.filter(
-            (existingCard: T) => existingCard.uid !== card.uid,
-          ),
+    setGameState({
+      ...gameState,
+      players: [
+        {
+          ...gameState.players[0],
+          deck: locations.playerDeck,
+          hand: locations.playerHand,
         },
-      };
-    };
-
-    setGameState((prevGameState: GameState) => {
-      if (
-        prevGameState.players[0].hand.some(
-          (existingCard: Card) => existingCard.uid === card.uid,
-        )
-      ) {
-        return {
-          ...prevGameState,
-          players: prevGameState.players.map((player) =>
-            shiftPlayerCard(player, card.uid, "in"),
-          ),
-        };
-      }
-
-      switch (card.type) {
-        case "animal":
-          return {
-            ...moveCardFromMarketToDeck(
-              prevGameState,
-              prevGameState.animalMarket,
-            ),
-          };
-        case "plant":
-          return {
-            ...moveCardFromMarketToDeck(
-              prevGameState,
-              prevGameState.plantMarket,
-            ),
-          };
-        case "disaster":
-          return {
-            ...moveCardFromMarketToDeck(
-              prevGameState,
-              prevGameState.disasterMarket,
-            ),
-          };
-        case "element":
-          return {
-            ...moveCardFromMarketToDeck(
-              prevGameState,
-              prevGameState.elementMarket,
-            ),
-          };
-        default:
-          return prevGameState;
-      }
+      ],
+      animalMarket: {
+        ...gameState.animalMarket,
+        deck: locations.animalDeck,
+        table: locations.animalTable,
+      },
+      plantMarket: {
+        ...gameState.plantMarket,
+        deck: locations.plantDeck,
+        table: locations.plantTable,
+      },
+      disasterMarket: {
+        ...gameState.disasterMarket,
+        deck: locations.disasterDeck,
+        table: locations.disasterTable,
+      },
+      elementMarket: {
+        ...gameState.elementMarket,
+        deck: locations.elementDeck,
+        table: locations.elementTable,
+      },
     });
   };
 
@@ -262,20 +156,20 @@ function GameBoard() {
   useEffect(() => console.log(gameState), [gameState]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-[white]">
+    <div className="h-full w-full flex flex-col items-center justify-center bg-[#032C4E]">
       <PreloadAssets config={deckConfig as DeckConfig} />
       <Canvas
         className="relative"
         style={{ width: size.width, height: size.height }}
       >
-        <color attach="background" args={["#B2D0CE"]} />
+        <color attach="background" args={["#032C4E"]} />
         {showGrid && <Grid divisions={gridDivisions} />}
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
         {orbitControls && <OrbitControls />}
         <Croupier
           gameState={gameState}
-          onCardMove={(card, direction, deckType) =>
-            moveCard(card, deckType, direction)
+          onCardMove={(card, origin, destination) =>
+            moveCard(card, origin, destination)
           }
           onShuffle={(type) => shuffleDeck(type)}
         />

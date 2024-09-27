@@ -3,7 +3,7 @@ import { Html, Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { Button } from "./ui/button";
 import { GiCardExchange } from "react-icons/gi";
-import { GamePiece } from "@/state/types";
+import { Card } from "@/state/types";
 
 const Deck = ({
   position,
@@ -19,9 +19,9 @@ const Deck = ({
   color: string;
   textColor?: string;
   name: string;
-  onDraw: (card: GamePiece) => void;
+  onDraw: (card: Card) => void;
   onShuffle?: () => void;
-  cards: GamePiece[];
+  cards: Card[];
   options?: { shuffleable: boolean };
 }) => {
   return (
@@ -41,12 +41,11 @@ const Deck = ({
         <Text textAlign="center" color={textColor} fontSize={2}>
           {name}
         </Text>
-        <Html wrapperClass="!-top-[12%] bg-blue-500 left-0" center>
+        <Html wrapperClass="!-left-[5%]" center>
           {(options?.shuffleable ?? false) && (
             <Button
-              variant="ghost"
+              variant="default"
               size="icon"
-              color="white"
               name="Shuffle"
               onClick={onShuffle}
             >

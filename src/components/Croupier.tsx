@@ -14,14 +14,25 @@ import {
   Card,
   DisasterCard,
   ElementCard,
-  GamePiece,
   GameState,
   PlantCard,
 } from "@/state/types";
 import { uniqBy } from "lodash-es";
 import { getCardBGColor } from "@/components/utils";
+import { cardWidth } from "@/constants/card";
 
 type PositionedCard = Card & { x: number; y: number };
+export type CardMoveLocation =
+  | "animalTable"
+  | "animalDeck"
+  | "plantTable"
+  | "plantDeck"
+  | "elementTable"
+  | "elementDeck"
+  | "disasterTable"
+  | "disasterDeck"
+  | "playerDeck"
+  | "playerHand";
 
 const Croupier = ({
   gameState,
@@ -30,9 +41,9 @@ const Croupier = ({
 }: {
   gameState: GameState;
   onCardMove: (
-    card: GamePiece,
-    direction: "out" | "in" | "transfer",
-    deckType: "player" | "market",
+    card: Card,
+    origin: CardMoveLocation,
+    destination: CardMoveLocation,
   ) => void;
   onShuffle: (type: "player") => void;
 }) => {
@@ -104,14 +115,14 @@ const Croupier = ({
   );
 
   const handleCardDrag = (
-    card: GamePiece,
+    card: Card,
     position: [number, number, number],
     comparisonPosition: [number, number, number],
-    direction?: "out" | "in" | "transfer",
-    deckType?: "market" | "player",
+    origin: CardMoveLocation,
+    destination: CardMoveLocation,
   ) => {
     if (calculateDistance(position, comparisonPosition) < 5) {
-      onCardMove(card, direction ?? "in", deckType ?? "market");
+      onCardMove(card, origin, destination);
     }
   };
 
@@ -123,8 +134,20 @@ const Croupier = ({
           card={card}
           key={card.uid}
           onDragEnd={(position: [number, number, number]) => {
-            handleCardDrag(card, position, animalDeckPosition);
-            handleCardDrag(card, position, supplyDeckPosition, "transfer");
+            handleCardDrag(
+              card,
+              position,
+              animalDeckPosition,
+              "animalTable",
+              "animalDeck",
+            );
+            handleCardDrag(
+              card,
+              position,
+              supplyDeckPosition,
+              "animalTable",
+              "playerDeck",
+            );
           }}
         />
       ))}
@@ -133,8 +156,20 @@ const Croupier = ({
           card={card}
           key={card.uid}
           onDragEnd={(position) => {
-            handleCardDrag(card, position, plantDeckPosition);
-            handleCardDrag(card, position, supplyDeckPosition, "transfer");
+            handleCardDrag(
+              card,
+              position,
+              plantDeckPosition,
+              "plantTable",
+              "plantDeck",
+            );
+            handleCardDrag(
+              card,
+              position,
+              supplyDeckPosition,
+              "plantTable",
+              "playerDeck",
+            );
           }}
         />
       ))}
@@ -143,8 +178,20 @@ const Croupier = ({
           card={card}
           key={card.uid}
           onDragEnd={(position) => {
-            handleCardDrag(card, position, disasterDeckPosition);
-            handleCardDrag(card, position, supplyDeckPosition, "transfer");
+            handleCardDrag(
+              card,
+              position,
+              disasterDeckPosition,
+              "disasterTable",
+              "disasterDeck",
+            );
+            handleCardDrag(
+              card,
+              position,
+              supplyDeckPosition,
+              "disasterTable",
+              "playerDeck",
+            );
           }}
         />
       ))}
@@ -163,7 +210,7 @@ const Croupier = ({
             cards={gameState.elementMarket.deck.filter(
               (elementCard) => elementCard.name === card.name,
             )}
-            onDraw={(card) => onCardMove(card, "out", "market")}
+            onDraw={(card) => onCardMove(card, "elementDeck", "elementTable")}
           />
           {drawElementCards
             .filter((elementCard) => card.name === elementCard.name)
@@ -172,12 +219,19 @@ const Croupier = ({
                 card={elementCard}
                 key={elementCard.uid}
                 onDragEnd={(position) => {
-                  handleCardDrag(elementCard, position, [card.x, card.y, 0]);
+                  handleCardDrag(
+                    elementCard,
+                    position,
+                    [card.x, card.y, 0],
+                    "elementTable",
+                    "elementDeck",
+                  );
                   handleCardDrag(
                     elementCard,
                     position,
                     supplyDeckPosition,
-                    "transfer",
+                    "elementTable",
+                    "plantDeck",
                   );
                 }}
               />
@@ -189,14 +243,14 @@ const Croupier = ({
         color={"blue"}
         name={`Animals \n${gameState.animalMarket.deck.length} left`}
         cards={gameState.animalMarket.deck}
-        onDraw={(card) => onCardMove(card, "out", "market")}
+        onDraw={(card) => onCardMove(card, "animalDeck", "animalTable")}
       />
       <Deck
         position={plantDeckPosition}
         color={"green"}
         name={`Plants \n${gameState.plantMarket.deck.length} left`}
         cards={gameState.plantMarket.deck}
-        onDraw={(card) => onCardMove(card, "out", "market")}
+        onDraw={(card) => onCardMove(card, "plantDeck", "plantTable")}
       />
       <Deck
         position={disasterDeckPosition}
@@ -204,25 +258,49 @@ const Croupier = ({
         textColor="black"
         name={`Disasters \n${gameState.disasterMarket.deck.length} left`}
         cards={gameState.disasterMarket.deck}
-        onDraw={(card) => onCardMove(card, "out", "market")}
+        onDraw={(card) => onCardMove(card, "disasterDeck", "disasterTable")}
       />
       {/* Player Cards */}
       {drawPlayerCards.map((card: PositionedCard) => (
         <CardComponent
           card={card}
           key={card.uid}
-          onDragEnd={(position) =>
-            handleCardDrag(card, position, supplyDeckPosition, "in", "player")
-          }
+          onDragEnd={(position) => {
+            handleCardDrag(
+              card,
+              position,
+              supplyDeckPosition,
+              "playerHand",
+              "playerDeck",
+            );
+            if (card.type === "animal") {
+              handleCardDrag(
+                card,
+                position,
+                animalDeckPosition,
+                "playerHand",
+                "animalDeck",
+              );
+            }
+            if (card.type === "plant") {
+              handleCardDrag(
+                card,
+                position,
+                plantDeckPosition,
+                "playerHand",
+                "plantDeck",
+              );
+            }
+          }}
         />
       ))}
-      <AbilityTiles />
+      <AbilityTiles xStart={supplyDeckPosition[0] - 1.5 * cardWidth} />
       <Deck
         position={supplyDeckPosition}
         color="purple"
         name={`Supply \n${gameState.players[0].deck.length} left`}
         cards={gameState.players[0].deck}
-        onDraw={(card) => onCardMove(card, "out", "player")}
+        onDraw={(card) => onCardMove(card, "playerDeck", "playerHand")}
         onShuffle={() => onShuffle("player")}
         options={{ shuffleable: true }}
       />

@@ -2,11 +2,11 @@ import type { Card as CardType } from "@/state/types";
 import { cardHeight, cardWidth } from "../constants/card";
 import GameElement from "./GameElement";
 import { Text, useTexture } from "@react-three/drei";
-import { getAssetPath,  getElementColor } from "@/components/utils";
+import { getAssetPath, getElementColor } from "@/components/utils";
 import React from "react";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
-import {  SRGBColorSpace } from "three";
+import { SRGBColorSpace } from "three";
 
 const Card = ({
   card,

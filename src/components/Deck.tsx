@@ -28,7 +28,11 @@ const Deck = ({
 }) => {
   const texture = useTexture(texturePath);
   const deckDepth = 0.1 * cards.length;
-  const textPosition: [number, number, number] = [-cardWidth / 2 + cardWidth * 0.15, -cardHeight / 2 + cardHeight * 0.15, deckDepth + 0.15] ;
+  const textPosition: [number, number, number] = [
+    -cardWidth / 2 + cardWidth * 0.15,
+    -cardHeight / 2 + cardHeight * 0.15,
+    deckDepth + 0.15,
+  ];
   texture.colorSpace = SRGBColorSpace;
 
   return (
@@ -49,17 +53,11 @@ const Deck = ({
           <meshBasicMaterial attach="material-0" map={texture} />
           <meshBasicMaterial attach="material-1" color="#eee" />
         </mesh>
-        <mesh
-          position={textPosition}
-        >
+        <mesh position={textPosition}>
           <circleGeometry args={[1.5, 16]} />
           <meshBasicMaterial color="white" opacity={0.5} transparent />
         </mesh>
-        <TextWithShadow
-          textAlign="center"
-          fontSize={2}
-          position={textPosition}
-        >
+        <TextWithShadow textAlign="center" fontSize={2} position={textPosition}>
           {cards.length}
         </TextWithShadow>
         <Html transform scale={3.5} center position={[0, cardHeight / 2, 0]}>

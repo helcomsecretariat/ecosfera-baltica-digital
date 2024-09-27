@@ -14,13 +14,7 @@ const positions: [number, number, number][] = [
 
 const BiomeTiles = () => {
   return biomes.map((biome, index) => (
-    <Tile
-      key={biome}
-      position={positions[index]}
-      rotation={[-Math.PI/2, 0, 0]}
-      color="#66cc66"
-      name={biome}
-    />
+    <Tile key={biome} position={positions[index]} rotation={[-Math.PI / 2, 0, 0]} color="#66cc66" name={biome} />
   ));
 };
 

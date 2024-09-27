@@ -1,2 +1,2 @@
-export const cardWidth = 15;
-export const cardHeight = 21;
+export const cardWidth = 13.57;
+export const cardHeight = 19;

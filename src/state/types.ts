@@ -19,6 +19,7 @@ export interface GameState {
 }
 
 export interface PlayerState {
+  uid: string;
   deck: Card[];
   hand: Card[];
   discard: Card[];
@@ -52,6 +53,7 @@ export type GamePiece =
   | ExtinctionTile
   | AbilityTile;
 export type Card = AnimalCard | PlantCard | ElementCard | DisasterCard;
+export type PositionedCard = Card & { x: number; y: number };
 export type ConfigToPiece<T> = T extends PlantConfig
   ? PlantCard
   : T extends AnimalConfig

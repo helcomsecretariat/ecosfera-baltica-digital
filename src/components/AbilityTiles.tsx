@@ -1,23 +1,29 @@
 import { Text } from "@react-three/drei";
 import GameElement from "./GameElement";
-import { abilityOffset, playerCardsYStart } from "../constants/gameBoard";
+import { abilityOffset } from "../constants/gameBoard";
 import { useState } from "react";
 
-const AbilityTiles = ({ xStart }: { xStart: number }) => {
+const AbilityTiles = ({
+  xStart,
+  rotation = [0, 0, 0],
+}: {
+  xStart: number;
+  rotation?: [number, number, number];
+}) => {
   const [abilities, setAbilities] = useState([
     {
       name: "move",
-      y: playerCardsYStart,
+      y: 0,
       available: true,
     },
     {
       name: "refresh",
-      y: playerCardsYStart + abilityOffset,
+      y: 0 + abilityOffset,
       available: true,
     },
     {
       name: "plus",
-      y: playerCardsYStart - abilityOffset,
+      y: 0 - abilityOffset,
       available: true,
     },
   ]);
@@ -26,6 +32,7 @@ const AbilityTiles = ({ xStart }: { xStart: number }) => {
     <GameElement
       key={ability.name + xStart}
       position={[xStart, ability.y, 0]}
+      rotation={rotation}
       height={6}
       width={6}
       onClick={() =>

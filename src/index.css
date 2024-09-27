@@ -114,7 +114,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: url(bg.svg);
+    background: url('/bg.svg');
     background-size: contain;
   }
 

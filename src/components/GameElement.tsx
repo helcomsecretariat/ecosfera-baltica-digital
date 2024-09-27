@@ -3,6 +3,7 @@ import { ReactNode, useRef, useState } from "react";
 import {
   lowerXBoundary,
   lowerYBoundary,
+  rotationOverrideThreshold,
   upperXBoundary,
   upperYBoundary,
 } from "../constants/gameBoard";
@@ -50,15 +51,15 @@ const GameElement = ({
       return;
     const updatedPosition = decomposeMatrix(ref.current.matrixWorld).position;
     onDragEnd([updatedPosition.x, updatedPosition.y, updatedPosition.z]);
-    if (updatedPosition.x > upperXBoundary * 0.7) {
+    if (updatedPosition.x > upperXBoundary * rotationOverrideThreshold) {
       setRotationOverride([0, 0, Math.PI / 2]);
       return;
-    } else if (updatedPosition.x < lowerXBoundary * 0.7) {
+    } else if (updatedPosition.x < lowerXBoundary * rotationOverrideThreshold) {
       setRotationOverride([0, 0, (-1 * Math.PI) / 2]);
-    } else if (updatedPosition.y > upperYBoundary * 0.7) {
+    } else if (updatedPosition.y > upperYBoundary * rotationOverrideThreshold) {
       setRotationOverride([0, 0, (2 * Math.PI) / 2]);
     } else {
-      setRotationOverride(null);
+      setRotationOverride([0, 0, 0]);
     }
   };
 

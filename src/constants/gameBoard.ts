@@ -22,3 +22,6 @@ export const extinctionTileYStart = marketYStart + tileSize;
 export const biomeTileYStart = marketYStart - cardYOffset + tileSize;
 export const hexagonTileXOffset = 10;
 export const hexagonTileYOffset = 11;
+
+// Rotation override
+export const rotationOverrideThreshold = 0.7;

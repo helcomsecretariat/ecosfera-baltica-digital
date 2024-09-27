@@ -3,6 +3,7 @@ import { ReactNode, useRef, useState } from "react";
 import {
   lowerXBoundary,
   lowerYBoundary,
+  rotationOverrideThreshold,
   upperXBoundary,
   upperYBoundary,
 } from "../constants/gameBoard";
@@ -37,14 +38,29 @@ const GameElement = ({
   children,
 }: GameElementProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
+  const [dragging, setDragging] = useState<boolean>(false);
+  const [rotationOverride, setRotationOverride] = useState<
+    [number, number, number] | null
+  >(null);
   const ref = useRef<Mesh>(null);
 
   const handleDragEnd = () => {
+    setDragging(false);
     setHovered(false);
     if (onDragEnd === undefined || ref?.current?.matrixWorld === undefined)
       return;
     const updatedPosition = decomposeMatrix(ref.current.matrixWorld).position;
     onDragEnd([updatedPosition.x, updatedPosition.y, updatedPosition.z]);
+    if (updatedPosition.x > upperXBoundary * rotationOverrideThreshold) {
+      setRotationOverride([0, 0, Math.PI / 2]);
+      return;
+    } else if (updatedPosition.x < lowerXBoundary * rotationOverrideThreshold) {
+      setRotationOverride([0, 0, (-1 * Math.PI) / 2]);
+    } else if (updatedPosition.y > upperYBoundary * rotationOverrideThreshold) {
+      setRotationOverride([0, 0, (2 * Math.PI) / 2]);
+    } else {
+      setRotationOverride([0, 0, 0]);
+    }
   };
 
   return (
@@ -61,14 +77,19 @@ const GameElement = ({
         [0, 0],
       ]}
       dragConfig={{ enabled: options?.draggable ?? true }}
-      onDragStart={() => setHovered(true)}
+      onDragStart={() => setDragging(true)}
       onDragEnd={() => handleDragEnd()}
+      autoTransform
     >
       <mesh
         ref={ref}
-        scale={hovered && (options?.showHoverAnimation ?? true) ? 1.15 : 1}
-        position={position}
-        rotation={rotation}
+        scale={
+          (hovered || dragging) && (options?.showHoverAnimation ?? true)
+            ? 1.15
+            : 1
+        }
+        position={dragging ? [position[0], position[1], 1] : position}
+        rotation={rotationOverride ?? rotation}
         onPointerOver={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
         onClick={onClick}

@@ -11,6 +11,7 @@ import type {
 import { shuffle } from "./utils";
 import { Croupier } from "./croupier";
 import { entries, find, pull, without } from "lodash-es";
+import { v4 as uuid } from "uuid";
 
 function spawnAllPieces<T extends GamePiece>(
   items: Record<string, PieceToConfig<T>>,
@@ -88,6 +89,7 @@ export function spawnDeck(
       ].filter((a) => a !== undefined);
 
       return {
+        uid: uuid(),
         deck,
         hand: [],
         discard: [],

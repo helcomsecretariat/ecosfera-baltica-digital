@@ -7,6 +7,7 @@ import { Card } from "@/state/types";
 
 const Deck = ({
   position,
+  rotation = [0, 0, 0],
   color,
   textColor = "white",
   name,
@@ -16,6 +17,7 @@ const Deck = ({
   options,
 }: {
   position: [number, number, number];
+  rotation?: [number, number, number];
   color: string;
   textColor?: string;
   name: string;
@@ -28,6 +30,7 @@ const Deck = ({
     <>
       <GameElement
         position={position}
+        rotation={rotation}
         height={cardHeight}
         width={cardWidth}
         options={{
@@ -41,7 +44,7 @@ const Deck = ({
         <Text textAlign="center" color={textColor} fontSize={2}>
           {name}
         </Text>
-        <Html wrapperClass="!-left-[5%]" center>
+        <Html transform scale={3.5} center position={[0, cardHeight / 2, 0]}>
           {(options?.shuffleable ?? false) && (
             <Button
               variant="default"

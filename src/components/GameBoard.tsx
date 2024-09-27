@@ -23,19 +23,33 @@ import {
 function GameBoard() {
   const searchParams = new URLSearchParams(window.location.search);
   const seed = searchParams.get("seed");
-  //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
-  const deck = useMemo(() => spawnDeck(deckConfig, 1, seed), [seed]);
+  const { showGrid, gridDivisions, orbitControls, numberOfPlayers } =
+    useControls({
+      showGrid: false,
+      gridDivisions: 16,
+      orbitControls: false,
+      numberOfPlayers: {
+        value: 1,
+        min: 1,
+        max: 4,
+        step: 1,
+      },
+    });
+  const deck = useMemo(
+    //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
+    () => spawnDeck(deckConfig, numberOfPlayers, seed),
+    [seed, numberOfPlayers],
+  );
   const [gameState, setGameState] = useState(deck);
+
+  useEffect(() => {
+    setGameState(deck);
+  }, [deck]);
 
   const aspect = 3 / 2;
   const [size, setSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
-  });
-  const { showGrid, gridDivisions, orbitControls } = useControls({
-    showGrid: false,
-    gridDivisions: 16,
-    orbitControls: false,
   });
 
   useEffect(() => {
@@ -75,6 +89,7 @@ function GameBoard() {
     card: LocationToCardType[Origin][number],
     origin: Origin,
     destination: Destination,
+    playerUid?: string,
   ) => {
     const locations: LocationToCardType = {
       animalDeck: gameState.animalMarket.deck,
@@ -85,8 +100,12 @@ function GameBoard() {
       disasterTable: gameState.disasterMarket.table,
       elementDeck: gameState.elementMarket.deck,
       elementTable: gameState.elementMarket.table,
-      playerDeck: gameState.players[0].deck,
-      playerHand: gameState.players[0].hand,
+      playerDeck:
+        gameState.players.find((player) => player.uid === playerUid)?.deck ??
+        gameState.players[0].deck,
+      playerHand:
+        gameState.players.find((player) => player.uid === playerUid)?.hand ??
+        gameState.players[1].hand,
     };
 
     locations[origin] = locations[origin].filter(
@@ -100,13 +119,15 @@ function GameBoard() {
 
     setGameState({
       ...gameState,
-      players: [
-        {
-          ...gameState.players[0],
-          deck: locations.playerDeck,
-          hand: locations.playerHand,
-        },
-      ],
+      players: gameState.players.map((player) =>
+        player.uid !== playerUid
+          ? player
+          : {
+              ...player,
+              deck: locations.playerDeck,
+              hand: locations.playerHand,
+            },
+      ),
       animalMarket: {
         ...gameState.animalMarket,
         deck: locations.animalDeck,
@@ -130,27 +151,23 @@ function GameBoard() {
     });
   };
 
-  const shuffleDeck = (type: "player") => {
-    switch (type) {
-      case "player":
-        setGameState((prevGameState) => {
-          return {
-            ...prevGameState,
-            players: prevGameState.players.map((player) => {
-              return {
+  const shuffleDeck = (playerUid: string) => {
+    setGameState((prevGameState) => {
+      return {
+        ...prevGameState,
+        players: prevGameState.players.map((player) =>
+          player.uid === playerUid
+            ? {
                 ...player,
                 deck: shuffle(
                   player.deck,
                   new Date().getMilliseconds().toString(),
                 ),
-              };
-            }),
-          };
-        });
-        return;
-      default:
-        return;
-    }
+              }
+            : player,
+        ),
+      };
+    });
   };
 
   useEffect(() => console.log(gameState), [gameState]);
@@ -168,10 +185,10 @@ function GameBoard() {
         {orbitControls && <OrbitControls />}
         <Croupier
           gameState={gameState}
-          onCardMove={(card, origin, destination) =>
-            moveCard(card, origin, destination)
+          onCardMove={(card, origin, destination, playerUid) =>
+            moveCard(card, origin, destination, playerUid)
           }
-          onShuffle={(type) => shuffleDeck(type)}
+          onShuffle={(playerUid) => shuffleDeck(playerUid)}
         />
 
         <ExtinctionTiles />

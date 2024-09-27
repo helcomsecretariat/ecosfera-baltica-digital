@@ -11,9 +11,11 @@ import React from "react";
 
 const Card = ({
   card,
+  rotation = [0, 0, 0],
   onDragEnd,
 }: {
   card: CardType & { x: number; y: number };
+  rotation?: [number, number, number];
   onDragEnd?: (position: [number, number, number]) => void;
 }) => {
   let cardFaceJSX = <></>;
@@ -103,11 +105,7 @@ const Card = ({
           ))}
 
           <Text
-            position={[
-              -cardWidth / 2 + cardWidth * 0.05,
-              -cardHeight / 4,
-              0.01,
-            ]}
+            position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 4, 0.1]}
             color="black"
             fontSize={1.5}
             maxWidth={cardWidth * 0.85}
@@ -123,7 +121,8 @@ const Card = ({
   }
   return (
     <GameElement
-      position={[card.x, card.y, 0]}
+      position={[card.x, card.y, 0.1]}
+      rotation={rotation}
       width={cardWidth}
       height={cardHeight}
       onDragEnd={onDragEnd}

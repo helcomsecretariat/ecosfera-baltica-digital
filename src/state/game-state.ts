@@ -3,7 +3,7 @@ import type { DeckConfig } from "@/decks/schema";
 import type { GamePiece, GamePieceBase, GameState, Market, PieceToConfig, PlayerState } from "./types";
 import { shuffle } from "./utils";
 import { Croupier } from "./croupier";
-import { entries, find, pull, without } from "lodash-es";
+import { entries, filter, pull, without } from "lodash-es";
 import { v4 as uuid } from "uuid";
 
 function spawnAllPieces<T extends GamePiece>(
@@ -38,32 +38,32 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed?: string): G
   const players = Array(playerCount)
     .fill(null)
     .map(() => {
-      const deck = [
+      const uid = uuid();
+      let deck = [
         ...entries(config.per_player.elements).flatMap(([name, { count = 1 }]) =>
-          Array(count)
-            .fill(1)
-            .map(() => find(elements, { name })),
+          // @ts-expect-error TS con't figure out count is a number
+          filter(elements, { name }).slice(0, count).flat(),
         ),
         ...entries(config.per_player.disasters).flatMap(([name, { count = 1 }]) =>
-          Array(count)
-            .fill(1)
-            .map(() => find(disasters, { name })),
+          // @ts-expect-error TS con't figure out count is a number
+          filter(disasters, { name }).slice(0, count).flat(),
         ),
       ].filter((a) => a !== undefined);
 
+      deck = shuffle(deck, seed + uid);
+      const hand = deck.slice(0, 4);
+
+      pull(elements, ...deck);
+      pull(disasters, ...deck);
+
       return {
         uid: uuid(),
-        deck,
-        hand: [],
+        deck: without(deck, ...hand),
+        hand,
         discard: [],
         ability: spawnAllPieces(config.per_player.abilities, croupier.spawnAbilityTiles.bind(croupier)),
       } as PlayerState;
     });
-
-  players.forEach(({ deck }) => {
-    pull(elements, ...deck);
-    pull(disasters, ...deck);
-  });
 
   return {
     players,

@@ -7,4 +7,34 @@ describe("game state", () => {
     //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
     expect(spawnDeck(deckConfig)).toBeTruthy();
   });
+
+  it("all players' cards have unique uids", () => {
+    const seed = "test-seed";
+    const gameState = spawnDeck(deckConfig, 3, seed);
+
+    const allCards = gameState.players.flatMap((player) => [...player.deck, ...player.hand, ...player.discard]);
+
+    const allUIDs = allCards.map((card) => card.uid);
+    const uniqueUIDs = new Set(allUIDs);
+
+    expect(uniqueUIDs.size).toBe(allUIDs.length);
+  });
+
+  it("elements and disasters decks have fewer cards when spawning more players", () => {
+    const seed = "test-seed";
+
+    // Spawn the game state with 1 player
+    const gameStateOnePlayer = spawnDeck(deckConfig, 1, seed);
+    const onePlayerElementsDeckSize = gameStateOnePlayer.elementMarket.deck.length;
+    const onePlayerDisastersDeckSize = gameStateOnePlayer.disasterMarket.deck.length;
+
+    // Spawn the game state with 2 players
+    const gameStateTwoPlayers = spawnDeck(deckConfig, 2, seed);
+    const twoPlayerElementsDeckSize = gameStateTwoPlayers.elementMarket.deck.length;
+    const twoPlayerDisastersDeckSize = gameStateTwoPlayers.disasterMarket.deck.length;
+
+    // Check that the number of cards in the decks has decreased
+    expect(twoPlayerElementsDeckSize).toBeLessThan(onePlayerElementsDeckSize);
+    expect(twoPlayerDisastersDeckSize).toBeLessThan(onePlayerDisastersDeckSize);
+  });
 });

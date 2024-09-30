@@ -42,11 +42,11 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed?: string): G
       let deck = [
         ...entries(config.per_player.elements).flatMap(([name, { count = 1 }]) =>
           // @ts-expect-error TS con't figure out count is a number
-          filter(elements, { name }).slice(0, count).flat(),
+          filter(elements, { name }).slice(0, count),
         ),
         ...entries(config.per_player.disasters).flatMap(([name, { count = 1 }]) =>
           // @ts-expect-error TS con't figure out count is a number
-          filter(disasters, { name }).slice(0, count).flat(),
+          filter(disasters, { name }).slice(0, count),
         ),
       ].filter((a) => a !== undefined);
 

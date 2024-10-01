@@ -1,10 +1,9 @@
 // import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import type { DeckConfig } from "@/decks/schema";
-import type { GamePiece, GamePieceBase, GameState, Market, PieceToConfig, PlayerState } from "./types";
+import type { GamePiece, GameState, Market, PieceToConfig, PlayerState } from "./types";
 import { shuffle } from "./utils";
 import { Croupier } from "./croupier";
 import { entries, filter, pull, without } from "lodash-es";
-import { v4 as uuid } from "uuid";
 
 function spawnAllPieces<T extends GamePiece>(
   items: Record<string, PieceToConfig<T>>,
@@ -13,7 +12,7 @@ function spawnAllPieces<T extends GamePiece>(
   return Object.entries(items).flatMap(([name, config]) => spawner(name, config));
 }
 
-function prepareMarket<T extends GamePieceBase>(items: T[], initialTableSize = 0, seed: string): Market<T> {
+function prepareMarket<T extends GamePiece>(items: T[], initialTableSize = 0, seed: string): Market<T> {
   const deck = shuffle(items, seed + items[0].uid);
   const table = deck.slice(0, initialTableSize);
 
@@ -24,8 +23,7 @@ function prepareMarket<T extends GamePieceBase>(items: T[], initialTableSize = 0
   };
 }
 
-export function spawnDeck(config: DeckConfig, playerCount = 1, seed?: string): GameState {
-  seed = seed ?? Math.random().toString(36);
+export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): GameState {
   const croupier = new Croupier();
 
   const plants = spawnAllPieces(config.plants, croupier.spawnPlantCards.bind(croupier));
@@ -37,8 +35,7 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed?: string): G
 
   const players = Array(playerCount)
     .fill(null)
-    .map(() => {
-      const uid = uuid();
+    .map((_, index) => {
       let deck = [
         ...entries(config.per_player.elements).flatMap(([name, { count = 1 }]) =>
           // @ts-expect-error TS con't figure out count is a number
@@ -50,14 +47,14 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed?: string): G
         ),
       ].filter((a) => a !== undefined);
 
-      deck = shuffle(deck, seed + uid);
+      deck = shuffle(deck, seed + index);
       const hand = deck.slice(0, 4);
 
       pull(elements, ...deck);
       pull(disasters, ...deck);
 
       return {
-        uid: uuid(),
+        uid: "pl" + index,
         deck: without(deck, ...hand),
         hand,
         discard: [],

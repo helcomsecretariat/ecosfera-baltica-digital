@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Grid from "./Grid";
 import { useControls } from "leva";
@@ -6,19 +6,18 @@ import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
 import ExtinctionTiles from "./ExtinctionTiles";
 import BiomeTiles from "./BiomeTiles";
-import { spawnDeck } from "@/state/game-state";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
 import { shuffle } from "@/state/utils";
 import { Card } from "@/state/types";
 import PreloadAssets from "@/components/PreloadAssets";
-import type { DeckConfig } from "@/decks/schema";
 import { AnimalCard, DisasterCard, ElementCard, PlantCard } from "@/state/types";
+import { isEqual } from "lodash-es";
+import { GameStateProvider, useGameState } from "@/context/GameStateProvider";
+import { DeckConfig } from "@/decks/schema";
 
 function GameBoard() {
-  const searchParams = new URLSearchParams(window.location.search);
-  const seed = searchParams.get("seed");
-  const { showGrid, gridDivisions, orbitControls, numberOfPlayers } = useControls({
+  const { showGrid, gridDivisions, orbitControls } = useControls({
     showGrid: false,
     gridDivisions: 16,
     orbitControls: false,
@@ -29,16 +28,19 @@ function GameBoard() {
       step: 1,
     },
   });
-  const deck = useMemo(
-    //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
-    () => spawnDeck(deckConfig, numberOfPlayers, seed),
-    [seed, numberOfPlayers],
-  );
-  const [gameState, setGameState] = useState(deck);
+
+  const { state, send } = useGameState();
+  const [gameState, setGameState] = useState(state);
 
   useEffect(() => {
-    setGameState(deck);
-  }, [deck]);
+    if (!isEqual(gameState, state)) {
+      send({ type: "IDDQD", data: gameState });
+    }
+  }, [gameState]);
+
+  useEffect(() => {
+    setGameState(state);
+  }, [state]);
 
   const aspect = 3 / 2;
   const [size, setSize] = useState({
@@ -193,4 +195,25 @@ function GameBoard() {
   );
 }
 
-export default GameBoard;
+export default () => {
+  const searchParams = new URLSearchParams(window.location.search);
+  const seed = searchParams.get("seed") ?? new Date().toString();
+  const { numberOfPlayers } = useControls({
+    seed: {
+      value: seed,
+    },
+    numberOfPlayers: {
+      value: 1,
+      min: 1,
+      max: 4,
+      step: 1,
+    },
+  });
+  const key = `${numberOfPlayers}-${seed}`;
+
+  return (
+    <GameStateProvider key={key} numberOfPlayers={numberOfPlayers} seed={seed}>
+      <GameBoard />
+    </GameStateProvider>
+  );
+};

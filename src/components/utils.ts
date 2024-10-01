@@ -6,9 +6,8 @@ const pastelColors = {
   elements: {
     sun: "#F8AE58",
     temperature: "#0290BD",
-    nutrients: "#D85365",
-
-    salinity: "#66A468",
+    nutrients: "#66A468",
+    salinity: "#D85365",
     oxygen: "#934786",
   },
 };

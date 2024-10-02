@@ -12,10 +12,12 @@ const Card = ({
   card,
   rotation = [0, 0, 0],
   onDragEnd,
+  onClick,
 }: {
   card: CardType & { x: number; y: number };
   rotation?: [number, number, number];
   onDragEnd?: (position: [number, number, number]) => void;
+  onClick?: () => void;
 }) => {
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
@@ -29,6 +31,7 @@ const Card = ({
       width={cardWidth}
       height={cardHeight}
       onDragEnd={onDragEnd}
+      onClick={onClick}
     >
       <mesh>
         <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.01]} />

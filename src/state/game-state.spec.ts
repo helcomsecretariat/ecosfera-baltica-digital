@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
-import { spawnDeck } from "./game-state";
+import { spawnDeck } from "./deck-spawner";
 import { DeckConfig } from "@/decks/schema";
 
 describe("game state", () => {
   it("smoke", () => {
     //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
-    expect(spawnDeck(deckConfig)).toBeTruthy();
+    expect(spawnDeck(deckConfig, 1, "42")).toBeTruthy();
   });
 
   it("all players' cards have unique uids", () => {
@@ -37,5 +37,19 @@ describe("game state", () => {
     // Check that the number of cards in the decks has decreased
     expect(twoPlayerElementsDeckSize).toBeLessThan(onePlayerElementsDeckSize);
     expect(twoPlayerDisastersDeckSize).toBeLessThan(onePlayerDisastersDeckSize);
+  });
+
+  it("deck remains the same with the same seed", () => {
+    const seed = "consistent-seed";
+
+    // Spawn the game state with 3 players twice with the same seed
+    const firstGameState = spawnDeck(deckConfig as DeckConfig, 3, seed);
+    const secondGameState = spawnDeck(deckConfig as DeckConfig, 3, seed);
+
+    // Compare the JSON string representation of both game states
+    const firstGameStateJSON = JSON.stringify(firstGameState);
+    const secondGameStateJSON = JSON.stringify(secondGameState);
+
+    expect(firstGameStateJSON).toBe(secondGameStateJSON);
   });
 });

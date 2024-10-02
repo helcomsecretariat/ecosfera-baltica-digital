@@ -19,6 +19,7 @@ import {
 import React from "react";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
+import { useGameState } from "@/context/GameStateProvider";
 
 type PositionedCard = Card & { x: number; y: number };
 
@@ -54,6 +55,7 @@ const Croupier = ({
       onCardMove(card, origin, destination);
     }
   };
+  const { send } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
@@ -65,6 +67,9 @@ const Croupier = ({
         <CardComponent
           card={card}
           key={card.uid}
+          onClick={() => {
+            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
+          }}
           onDragEnd={(position: [number, number, number]) => {
             handleCardDrag(card, position, animalDeckPosition, "animalTable", "animalDeck");
             supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
@@ -83,6 +88,9 @@ const Croupier = ({
         <CardComponent
           card={card}
           key={card.uid}
+          onClick={() => {
+            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
+          }}
           onDragEnd={(position) => {
             handleCardDrag(card, position, plantDeckPosition, "plantTable", "plantDeck");
             supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {

@@ -44,8 +44,9 @@ export interface GamePieceBase {
   uid: string;
 }
 
-export type GamePiece = AnimalCard | PlantCard | ElementCard | DisasterCard | BiomeTile | ExtinctionTile | AbilityTile;
 export type Card = AnimalCard | PlantCard | ElementCard | DisasterCard;
+export type GamePiece = Card | BiomeTile | ExtinctionTile | AbilityTile;
+
 export type PositionedCard = Card & { x: number; y: number };
 export type ConfigToPiece<T> = T extends PlantConfig
   ? PlantCard
@@ -78,13 +79,14 @@ export type PieceToConfig<T> = T extends PlantCard
               ? ExtinctionConfig
               : never;
 
-export interface Market<GamePiece> {
-  type: GamePieceType;
-  deck: GamePiece[];
-  table: GamePiece[];
+export interface Market<T extends GamePiece> {
+  type: T["type"];
+  deck: T[];
+  table: T[];
 }
 
 export interface AnimalCard extends GamePieceBase {
+  type: "animal";
   biomes: string[];
   abilities: AbilityName[];
 }

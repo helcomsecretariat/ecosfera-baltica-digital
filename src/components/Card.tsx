@@ -29,6 +29,7 @@ const Card = ({
       position={gamePieceTransform.position}
       initialPosition={gamePieceTransform.initialPosition}
       rotation={gamePieceTransform.rotation}
+      initialRotation={gamePieceTransform.initialRotation}
       width={cardWidth}
       height={cardHeight}
       onDragEnd={onDragEnd}

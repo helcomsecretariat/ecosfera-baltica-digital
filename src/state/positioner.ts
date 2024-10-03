@@ -31,11 +31,11 @@ export const toUiState = (prevUiState: UiState | null, gameState: GameState): Ui
 
 const calculateCardPositions = (prevUiState: UiState | null, gameState: GameState): GamePieceTransforms => {
   return {
-    ...drawAnimalCards(prevUiState, gameState),
-    ...drawPlantCards(gameState),
-    ...drawElementCards(gameState),
-    ...drawDisasterCards(gameState),
-    ...drawPlayerCards(prevUiState, gameState),
+    ...positionAnimalCards(prevUiState, gameState),
+    ...positionPlantCards(gameState),
+    ...positionElementCards(gameState),
+    ...positionDisasterCards(gameState),
+    ...positionPlayerCards(prevUiState, gameState),
   };
 };
 
@@ -56,7 +56,7 @@ const calculateDeckPositions = (gameState: GameState): GamePieceTransforms => {
       initialPosition: disasterDeckPosition,
       rotation: { x: 0, y: 0, z: 0 },
     },
-    ...drawElementDecks(gameState),
+    ...positionElementDecks(gameState),
   };
 };
 
@@ -94,7 +94,7 @@ export const supplyDeckPositions = (gameState: GameState): Coordinate[] => {
   return positions;
 };
 
-export const drawAnimalCards = (prevUiState: UiState | null, gameState: GameState): GamePieceTransforms =>
+export const positionAnimalCards = (prevUiState: UiState | null, gameState: GameState): GamePieceTransforms =>
   gameState.animalMarket.table.reduce((acc, card: AnimalCard, index: number) => {
     acc[card.uid] = {
       position: { x: marketXStart + (index + 1) * cardXOffset, y: marketYStart, z: 0 },
@@ -104,7 +104,7 @@ export const drawAnimalCards = (prevUiState: UiState | null, gameState: GameStat
     return acc;
   }, {} as GamePieceTransforms);
 
-export const drawPlantCards = (gameState: GameState): GamePieceTransforms =>
+export const positionPlantCards = (gameState: GameState): GamePieceTransforms =>
   gameState.plantMarket.table.reduce((acc, card: PlantCard, index: number) => {
     acc[card.uid] = {
       position: {
@@ -122,7 +122,7 @@ export const drawPlantCards = (gameState: GameState): GamePieceTransforms =>
     return acc;
   }, {} as GamePieceTransforms);
 
-export const drawElementCards = (gameState: GameState): GamePieceTransforms =>
+export const positionElementCards = (gameState: GameState): GamePieceTransforms =>
   gameState.elementMarket.table.reduce((acc, card: ElementCard) => {
     acc[card.uid] = {
       position: {
@@ -131,8 +131,8 @@ export const drawElementCards = (gameState: GameState): GamePieceTransforms =>
         z: 0,
       },
       initialPosition: {
-        x: drawElementDecks(gameState)[`${card.name}ElementDeck`]?.position.x ?? 0,
-        y: drawElementDecks(gameState)[`${card.name}ElementDeck`]?.position.y ?? 0,
+        x: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.position.x ?? 0,
+        y: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.position.y ?? 0,
         z: 0,
       },
       rotation: { x: 0, y: 0, z: 0 },
@@ -140,7 +140,7 @@ export const drawElementCards = (gameState: GameState): GamePieceTransforms =>
     return acc;
   }, {} as GamePieceTransforms);
 
-export const drawDisasterCards = (gameState: GameState): GamePieceTransforms =>
+export const positionDisasterCards = (gameState: GameState): GamePieceTransforms =>
   gameState.disasterMarket.table.reduce((acc, card: DisasterCard) => {
     acc[card.uid] = {
       position: {
@@ -154,7 +154,7 @@ export const drawDisasterCards = (gameState: GameState): GamePieceTransforms =>
     return acc;
   }, {} as GamePieceTransforms);
 
-export const drawElementDecks = (gameState: GameState): GamePieceTransforms => {
+export const positionElementDecks = (gameState: GameState): GamePieceTransforms => {
   return uniqBy(gameState.elementMarket.deck, "name")
     .sort((a, b) => a.name.localeCompare(b.name))
     .reduce((acc, card: ElementCard, index: number) => {
@@ -179,7 +179,7 @@ export const drawElementDecks = (gameState: GameState): GamePieceTransforms => {
     }, {} as GamePieceTransforms);
 };
 
-export const drawPlayerCards = (prevUiState: UiState | null, gameState: GameState): GamePieceTransforms => {
+export const positionPlayerCards = (prevUiState: UiState | null, gameState: GameState): GamePieceTransforms => {
   return gameState.players.reduce((acc, player, playerIndex) => {
     player.hand.forEach((card: Card, cardIndex: number) => {
       const basePosition = supplyDeckPositions(gameState)[playerIndex];

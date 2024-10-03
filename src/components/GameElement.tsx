@@ -16,6 +16,7 @@ type GameElementProps = {
   position: Coordinate;
   initialPosition?: Coordinate;
   rotation?: Coordinate;
+  initialRotation?: Coordinate;
   height: number;
   width: number;
   options?: {
@@ -31,6 +32,7 @@ const GameElement = ({
   position,
   initialPosition = { x: 0, y: 0, z: 0 },
   rotation = { x: 0, y: 0, z: 0 },
+  initialRotation = { x: 0, y: 0, z: 0 },
   height,
   width,
   options = {
@@ -83,6 +85,9 @@ const GameElement = ({
           x: [initialPosition.x, initialPosition.x, position.x, position.x],
           y: [initialPosition.y, initialPosition.y, position.y, position.y],
           z: [initialPosition.z, 8, 8, position.z],
+          rotateX: [initialRotation.x, initialRotation.x, rotation.x, rotation.x],
+          rotateY: [initialRotation.y, initialRotation.y, rotation.y, rotation.y],
+          rotateZ: [initialRotation.z, initialRotation.z, rotation.z, rotation.z],
         }}
         transition={{ ease: "anticipate", times: [0, 0.05, 0.8, 1], duration: 0.8 }}
         initial={{ x: initialPosition.x, y: initialPosition.y, z: initialPosition.z }}

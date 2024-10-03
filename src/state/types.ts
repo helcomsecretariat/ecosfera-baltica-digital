@@ -120,6 +120,7 @@ export interface GamePieceTransform {
   position: Coordinate;
   initialPosition?: Coordinate;
   rotation: Coordinate;
+  initialRotation?: Coordinate;
 }
 
 export interface GamePieceTransforms {

@@ -1,13 +1,14 @@
+import { Coordinate } from "@/state/types";
 import { extinctionTileYStart, hexagonTileXStart, tileSize } from "../constants/gameBoard";
 import Tile from "./Tile";
 
-const positions: [number, number, number][] = [
-  [hexagonTileXStart - tileSize, extinctionTileYStart - tileSize * 0.55, 0],
-  [hexagonTileXStart, extinctionTileYStart, 0],
-  [hexagonTileXStart + tileSize, extinctionTileYStart - tileSize * 0.55, 0],
-  [hexagonTileXStart - tileSize, extinctionTileYStart - tileSize * 1.68, 0],
-  [hexagonTileXStart, extinctionTileYStart - tileSize * 2.25, 0],
-  [hexagonTileXStart + tileSize, extinctionTileYStart - tileSize * 1.68, 0],
+const positions: Coordinate[] = [
+  { x: hexagonTileXStart - tileSize, y: extinctionTileYStart - tileSize * 0.55, z: 0 },
+  { x: hexagonTileXStart, y: extinctionTileYStart, z: 0 },
+  { x: hexagonTileXStart + tileSize, y: extinctionTileYStart - tileSize * 0.55, z: 0 },
+  { x: hexagonTileXStart - tileSize, y: extinctionTileYStart - tileSize * 1.68, z: 0 },
+  { x: hexagonTileXStart, y: extinctionTileYStart - tileSize * 2.25, z: 0 },
+  { x: hexagonTileXStart + tileSize, y: extinctionTileYStart - tileSize * 1.68, z: 0 },
 ];
 
 const ExtinctionTiles = () => {
@@ -15,7 +16,7 @@ const ExtinctionTiles = () => {
     <Tile
       key={index}
       position={positions[index]}
-      rotation={[-1.57, ((Math.PI * 2) / length) * index, 0]}
+      rotation={{ x: -1.57, y: ((Math.PI * 2) / length) * index, z: 0 }}
       color="#c3b091"
     />
   ));

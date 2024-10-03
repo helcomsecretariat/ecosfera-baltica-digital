@@ -1,15 +1,16 @@
 import { Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { tileSize } from "@/constants/gameBoard";
+import { Coordinate } from "@/state/types";
 
 const Tile = ({
   position,
-  rotation = [0, 0, 0],
+  rotation = { x: 0, y: 0, z: 0 },
   color,
   name = "",
 }: {
-  position: [number, number, number];
-  rotation?: [number, number, number];
+  position: Coordinate;
+  rotation?: Coordinate;
   color: string;
   name?: string;
 }) => {

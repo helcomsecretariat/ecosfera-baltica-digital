@@ -1,3 +1,4 @@
+import { Coordinate } from "@/state/types";
 import { Matrix4, Quaternion, Vector3 } from "three";
 
 export const decomposeMatrix = (matrix: Matrix4) => {
@@ -14,11 +15,12 @@ export const decomposeMatrix = (matrix: Matrix4) => {
   };
 };
 
-export const calculateDistance = (
-  firstPosition: [number, number, number],
-  secondPosition: [number, number, number],
-) => {
-  const dx = firstPosition[0] - secondPosition[0];
-  const dy = firstPosition[1] - secondPosition[1];
+export const calculateDistance = (firstPosition: Coordinate, secondPosition: Coordinate) => {
+  const dx = firstPosition.x - secondPosition.x;
+  const dy = firstPosition.y - secondPosition.y;
   return Math.sqrt(dx * dx + dy * dy);
+};
+
+export const toVector3 = (coordinate: Coordinate): [number, number, number] => {
+  return [coordinate.x, coordinate.y, coordinate.z];
 };

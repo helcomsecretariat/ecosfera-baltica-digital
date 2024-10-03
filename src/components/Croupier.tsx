@@ -10,6 +10,7 @@ import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/GameStateProvider";
 import { animalDeckPosition, disasterDeckPosition, plantDeckPosition, supplyDeckPositions } from "@/state/positioner";
 import { uniqBy } from "lodash-es";
+import { motion } from "framer-motion-3d";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -183,7 +184,16 @@ const Croupier = ({
       {/* Player Cards */}
       {gameState.players.map((player, index) => (
         <React.Fragment key={index}>
-          <group position={toVector3(supplyDeckPositions(gameState)[index])} rotation={[0, 0, index * (Math.PI / 2)]}>
+          <motion.group
+            animate={{
+              x: toVector3(supplyDeckPositions(gameState)[index])[0],
+              y: toVector3(supplyDeckPositions(gameState)[index])[1],
+              z: toVector3(supplyDeckPositions(gameState)[index])[2],
+              rotateX: 0,
+              rotateY: 0,
+              rotateZ: index * (Math.PI / 2),
+            }}
+          >
             <AbilityTiles xStart={0 - cardWidth} />
 
             <Deck
@@ -194,7 +204,7 @@ const Croupier = ({
               onShuffle={() => onShuffle(player.uid)}
               options={{ shuffleable: true }}
             />
-          </group>
+          </motion.group>
           {player.hand.map((card: Card) => (
             <CardComponent
               key={card.uid}

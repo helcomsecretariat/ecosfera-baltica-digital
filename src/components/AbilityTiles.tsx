@@ -2,8 +2,9 @@ import { Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { abilityOffset } from "../constants/gameBoard";
 import { useState } from "react";
+import { Coordinate } from "@/state/types";
 
-const AbilityTiles = ({ xStart, rotation = [0, 0, 0] }: { xStart: number; rotation?: [number, number, number] }) => {
+const AbilityTiles = ({ xStart, rotation = { x: 0, y: 0, z: 0 } }: { xStart: number; rotation?: Coordinate }) => {
   const [abilities, setAbilities] = useState([
     {
       name: "move",
@@ -25,7 +26,7 @@ const AbilityTiles = ({ xStart, rotation = [0, 0, 0] }: { xStart: number; rotati
   return abilities.map((ability, index) => (
     <GameElement
       key={ability.name + xStart}
-      position={[xStart, ability.y, 0]}
+      position={{ x: xStart, y: ability.y, z: 0 }}
       rotation={rotation}
       height={6}
       width={6}

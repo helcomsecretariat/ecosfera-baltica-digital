@@ -1,4 +1,4 @@
-import type { Card as CardType } from "@/state/types";
+import type { Card as CardType, Coordinate, GamePieceTransform } from "@/state/types";
 import { cardHeight, cardWidth } from "../constants/card";
 import GameElement from "./GameElement";
 import { Text, useTexture } from "@react-three/drei";
@@ -10,13 +10,13 @@ import { SRGBColorSpace } from "three";
 
 const Card = ({
   card,
-  rotation = [0, 0, 0],
+  gamePieceTransform,
   onDragEnd,
   onClick,
 }: {
-  card: CardType & { x: number; y: number };
-  rotation?: [number, number, number];
-  onDragEnd?: (position: [number, number, number]) => void;
+  card: CardType;
+  gamePieceTransform: GamePieceTransform;
+  onDragEnd?: (position: Coordinate) => void;
   onClick?: () => void;
 }) => {
   const { name, type } = card;
@@ -26,8 +26,9 @@ const Card = ({
 
   return (
     <GameElement
-      position={[card.x, card.y, 0.1]}
-      rotation={rotation}
+      position={gamePieceTransform.position}
+      initialPosition={gamePieceTransform.initialPosition}
+      rotation={gamePieceTransform.rotation}
       width={cardWidth}
       height={cardHeight}
       onDragEnd={onDragEnd}

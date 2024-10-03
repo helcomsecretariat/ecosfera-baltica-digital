@@ -1,27 +1,15 @@
-import { cardXOffset } from "@/constants/gameBoard";
 import { default as CardComponent } from "./Card";
-import { calculateDistance } from "@/utils/3d";
+import { calculateDistance, toVector3 } from "@/utils/3d";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { Card, GameState } from "@/state/types";
+import { AnimalCard, Card, Coordinate, DisasterCard, ElementCard, GameState, PlantCard, UiState } from "@/state/types";
 import { cardWidth } from "@/constants/card";
-import {
-  animalDeckPosition,
-  disasterDeckPosition,
-  drawAnimalCards,
-  drawDisasterCards,
-  drawElementCards,
-  drawElementDecks,
-  drawPlantCards,
-  plantDeckPosition,
-  supplyDeckPositions,
-} from "@/lib/positioner";
 import React from "react";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/GameStateProvider";
-
-type PositionedCard = Card & { x: number; y: number };
+import { animalDeckPosition, disasterDeckPosition, plantDeckPosition, supplyDeckPositions } from "@/state/positioner";
+import { uniqBy } from "lodash-es";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -37,17 +25,19 @@ export type CardMoveLocation =
 
 const Croupier = ({
   gameState,
+  uiState,
   onCardMove,
   onShuffle,
 }: {
   gameState: GameState;
+  uiState: UiState;
   onCardMove: (card: Card, origin: CardMoveLocation, destination: CardMoveLocation) => void;
   onShuffle: (playerUid: string) => void;
 }) => {
   const handleCardDrag = (
     card: Card,
-    position: [number, number, number],
-    comparisonPosition: [number, number, number],
+    position: Coordinate,
+    comparisonPosition: Coordinate,
     origin: CardMoveLocation,
     destination: CardMoveLocation,
   ) => {
@@ -63,31 +53,35 @@ const Croupier = ({
   return (
     <>
       {/* Market Cards */}
-      {drawAnimalCards(gameState).map((card: PositionedCard) => (
+      {gameState.animalMarket.table.map((card: AnimalCard) => {
+        return (
+          <CardComponent
+            key={card.uid}
+            card={card}
+            gamePieceTransform={uiState.cardPositions[card.uid]}
+            onClick={() => {
+              send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
+            }}
+            onDragEnd={(position: Coordinate) => {
+              handleCardDrag(card, position, animalDeckPosition, "animalTable", "animalDeck");
+              supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
+                handleCardDrag(
+                  card,
+                  position,
+                  supplyDeckPosition,
+                  "animalTable",
+                  `playerDeck_${gameState.players[index].uid}`,
+                );
+              });
+            }}
+          />
+        );
+      })}
+      {gameState.plantMarket.table.map((card: PlantCard) => (
         <CardComponent
-          card={card}
           key={card.uid}
-          onClick={() => {
-            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
-          }}
-          onDragEnd={(position: [number, number, number]) => {
-            handleCardDrag(card, position, animalDeckPosition, "animalTable", "animalDeck");
-            supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-              handleCardDrag(
-                card,
-                position,
-                supplyDeckPosition,
-                "animalTable",
-                `playerDeck_${gameState.players[index].uid}`,
-              );
-            });
-          }}
-        />
-      ))}
-      {drawPlantCards(gameState).map((card: PositionedCard) => (
-        <CardComponent
           card={card}
-          key={card.uid}
+          gamePieceTransform={uiState.cardPositions[card.uid]}
           onClick={() => {
             send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
           }}
@@ -105,10 +99,14 @@ const Croupier = ({
           }}
         />
       ))}
-      {drawDisasterCards(gameState).map((card: PositionedCard) => (
+      {gameState.disasterMarket.table.map((card: DisasterCard) => (
         <CardComponent
-          card={card}
           key={card.uid}
+          card={card}
+          gamePieceTransform={uiState.cardPositions[card.uid]}
+          onClick={() => {
+            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
+          }}
           onDragEnd={(position) => {
             handleCardDrag(card, position, disasterDeckPosition, "disasterTable", "disasterDeck");
             supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
@@ -123,37 +121,45 @@ const Croupier = ({
           }}
         />
       ))}
-      {drawElementDecks(gameState).map((card: PositionedCard, index: number) => (
-        <group key={index}>
-          <Deck
-            key={index}
-            texturePath={`/ecosfera_baltica/element_${card.name}.avif`}
-            textColor="black"
-            position={[card.x, card.y, 0]}
-            cards={gameState.elementMarket.deck.filter((elementCard) => elementCard.name === card.name)}
-            onDraw={(card) => onCardMove(card, "elementDeck", "elementTable")}
-          />
-          {drawElementCards(gameState)
-            .filter((elementCard) => card.name === elementCard.name)
-            .map((elementCard: PositionedCard) => (
-              <CardComponent
-                card={elementCard}
-                key={elementCard.uid}
-                onDragEnd={(position) => {
-                  handleCardDrag(elementCard, position, [card.x, card.y, 0], "elementTable", "elementDeck");
-                  supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-                    handleCardDrag(
-                      elementCard,
-                      position,
-                      supplyDeckPosition,
-                      "elementTable",
-                      `playerDeck_${gameState.players[index].uid}`,
-                    );
-                  });
-                }}
-              />
-            ))}
-        </group>
+      {uniqBy(gameState.elementMarket.deck, "name").map((card: ElementCard) => (
+        <Deck
+          key={card.name}
+          texturePath={`/ecosfera_baltica/element_${card.name}.avif`}
+          textColor="black"
+          position={uiState.deckPositions[`${card.name}ElementDeck`].position}
+          initialPosition={uiState.deckPositions[`${card.name}ElementDeck`].initialPosition}
+          rotation={uiState.deckPositions[`${card.name}ElementDeck`].rotation}
+          cards={gameState.elementMarket.deck.filter((elementDeckCard) => elementDeckCard.name === card.name)}
+          onDraw={(card) => onCardMove(card, "elementDeck", "elementTable")}
+        />
+      ))}
+      {gameState.elementMarket.table.map((card: ElementCard) => (
+        <CardComponent
+          key={card.uid}
+          card={card}
+          gamePieceTransform={uiState.cardPositions[card.uid]}
+          onClick={() => {
+            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
+          }}
+          onDragEnd={(position) => {
+            handleCardDrag(
+              card,
+              position,
+              uiState.deckPositions[`${card.name}ElementDeck`].position,
+              "elementTable",
+              "elementDeck",
+            );
+            supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
+              handleCardDrag(
+                card,
+                position,
+                supplyDeckPosition,
+                "elementTable",
+                `playerDeck_${gameState.players[index].uid}`,
+              );
+            });
+          }}
+        />
       ))}
       <Deck
         position={animalDeckPosition}
@@ -177,11 +183,11 @@ const Croupier = ({
       {/* Player Cards */}
       {gameState.players.map((player, index) => (
         <React.Fragment key={index}>
-          <group position={supplyDeckPositions(gameState)[index]} rotation={[0, 0, index * (Math.PI / 2)]}>
+          <group position={toVector3(supplyDeckPositions(gameState)[index])} rotation={[0, 0, index * (Math.PI / 2)]}>
             <AbilityTiles xStart={0 - cardWidth} />
 
             <Deck
-              position={[0, 0, 0]}
+              position={{ x: 0, y: 0, z: 0 }}
               texturePath={`/ecosfera_baltica/back.avif`}
               cards={player.deck}
               onDraw={(card) => onCardMove(card, `playerDeck_${player.uid}`, `playerHand_${player.uid}`)}
@@ -189,19 +195,11 @@ const Croupier = ({
               options={{ shuffleable: true }}
             />
           </group>
-          {player.hand.map((card: Card, cardIndex: number) => (
+          {player.hand.map((card: Card) => (
             <CardComponent
               key={card.uid}
-              card={{
-                ...card,
-                x:
-                  supplyDeckPositions(gameState)[index][0] +
-                  (index === 0 ? (cardIndex + 1) * cardXOffset : index === 2 ? (cardIndex + 1) * cardXOffset * -1 : 0),
-                y:
-                  supplyDeckPositions(gameState)[index][1] +
-                  (index === 1 ? (cardIndex + 1) * cardXOffset : index === 3 ? (cardIndex + 1) * cardXOffset * -1 : 0),
-              }}
-              rotation={[0, 0, index * (Math.PI / 2)]}
+              card={card}
+              gamePieceTransform={uiState.cardPositions[card.uid]}
               onDragEnd={(position) => {
                 supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
                   handleCardDrag(

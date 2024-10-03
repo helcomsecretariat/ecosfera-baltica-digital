@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Grid from "./Grid";
 import { useControls } from "leva";
@@ -9,12 +9,13 @@ import BiomeTiles from "./BiomeTiles";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
 import { shuffle } from "@/state/utils";
-import { Card } from "@/state/types";
+import { Card, UiState } from "@/state/types";
 import PreloadAssets from "@/components/PreloadAssets";
 import { AnimalCard, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 import { isEqual } from "lodash-es";
 import { GameStateProvider, useGameState } from "@/context/GameStateProvider";
 import { DeckConfig } from "@/decks/schema";
+import { toUiState } from "@/state/positioner";
 
 function GameBoard() {
   const { showGrid, gridDivisions, orbitControls } = useControls({
@@ -28,9 +29,10 @@ function GameBoard() {
       step: 1,
     },
   });
-
   const { state, send } = useGameState();
   const [gameState, setGameState] = useState(state);
+  const prevUiStateRef = useRef<UiState | null>(null);
+  const uiState = useMemo(() => toUiState(prevUiStateRef.current, state), [state]);
 
   useEffect(() => {
     if (!isEqual(gameState, state)) {
@@ -41,6 +43,11 @@ function GameBoard() {
   useEffect(() => {
     setGameState(state);
   }, [state]);
+
+  useEffect(() => {
+    console.log(uiState);
+    prevUiStateRef.current = uiState;
+  }, [uiState]);
 
   const aspect = 3 / 2;
   const [size, setSize] = useState({
@@ -171,7 +178,9 @@ function GameBoard() {
     });
   };
 
-  useEffect(() => console.log(gameState), [gameState]);
+  useEffect(() => {
+    console.log(gameState);
+  }, [gameState]);
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
@@ -184,6 +193,7 @@ function GameBoard() {
         {orbitControls && <OrbitControls />}
         <Croupier
           gameState={gameState}
+          uiState={uiState}
           onCardMove={(card, origin, destination) => moveCard(card, origin, destination)}
           onShuffle={(playerUid) => shuffleDeck(playerUid)}
         />

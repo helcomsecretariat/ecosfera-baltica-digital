@@ -109,3 +109,29 @@ export interface DisasterCard extends GamePieceBase {
 export type AbilityName = "plus" | "refresh" | "move" | "special";
 export type CardType = "animal" | "plant" | "disaster" | "element";
 export type GamePieceType = CardType | "biome" | "ability" | "extinction";
+
+export interface Coordinate {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface PositionedGamePiece {
+  uid: string;
+  position: Coordinate;
+  initialPosition?: Coordinate;
+  rotation: Coordinate;
+}
+
+export interface PositionedGamePieces {
+  [key: Card["uid"]]: {
+    position: Coordinate;
+    initialPosition: Coordinate;
+    rotation: Coordinate;
+  };
+}
+
+export interface UiState {
+  cardPositions: PositionedGamePieces;
+  deckPositions: PositionedGamePieces;
+}

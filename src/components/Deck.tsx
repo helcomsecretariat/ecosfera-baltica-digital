@@ -3,22 +3,24 @@ import { Html, useTexture } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { Button } from "./ui/button";
 import { GiCardExchange } from "react-icons/gi";
-import { Card } from "@/state/types";
+import { Card, Coordinate } from "@/state/types";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
 import { SRGBColorSpace } from "three";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
 
 const Deck = ({
   position,
-  rotation = [0, 0, 0],
+  initialPosition = { x: 0, y: 0, z: 0 },
+  rotation = { x: 0, y: 0, z: 0 },
   texturePath = "/ecosfera_baltica/element_nutrients.avif",
   onDraw,
   onShuffle,
   cards,
   options,
 }: {
-  position: [number, number, number];
-  rotation?: [number, number, number];
+  position: Coordinate;
+  initialPosition?: Coordinate;
+  rotation?: Coordinate;
   texturePath: string;
   textColor?: string;
   onDraw: (card: Card) => void;
@@ -39,6 +41,7 @@ const Deck = ({
     <>
       <GameElement
         position={position}
+        initialPosition={initialPosition}
         rotation={rotation}
         height={cardHeight}
         width={cardWidth}

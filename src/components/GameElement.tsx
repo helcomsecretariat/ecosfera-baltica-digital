@@ -1,4 +1,3 @@
-import { DragControls } from "@react-three/drei";
 import { ReactNode, useRef, useState } from "react";
 import {
   lowerXBoundary,
@@ -8,11 +7,15 @@ import {
   upperYBoundary,
 } from "../constants/gameBoard";
 import { decomposeMatrix } from "@/utils/3d";
-import { Mesh } from "three";
+import { motion } from "framer-motion-3d";
+import { Coordinate } from "@/state/types";
+import { MeshProps } from "@react-three/fiber";
+import { DragControls } from "./DragControls";
 
 type GameElementProps = {
-  position: [number, number, number];
-  rotation?: [number, number, number];
+  position: Coordinate;
+  initialPosition?: Coordinate;
+  rotation?: Coordinate;
   height: number;
   width: number;
   options?: {
@@ -20,13 +23,14 @@ type GameElementProps = {
     showHoverAnimation?: boolean;
   };
   onClick?: () => void;
-  onDragEnd?: (position: [number, number, number]) => void;
+  onDragEnd?: (position: Coordinate) => void;
   children: ReactNode;
 };
 
 const GameElement = ({
   position,
-  rotation = [0, 0, 0],
+  initialPosition = { x: 0, y: 0, z: 0 },
+  rotation = { x: 0, y: 0, z: 0 },
   height,
   width,
   options = {
@@ -39,50 +43,60 @@ const GameElement = ({
 }: GameElementProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
   const [dragging, setDragging] = useState<boolean>(false);
-  const [rotationOverride, setRotationOverride] = useState<[number, number, number] | null>(null);
-  const ref = useRef<Mesh>(null);
+  const [rotationOverride, setRotationOverride] = useState<Coordinate | null>(null);
+  const ref = useRef<MeshProps>(null);
 
   const handleDragEnd = () => {
     setDragging(false);
     setHovered(false);
     if (onDragEnd === undefined || ref?.current?.matrixWorld === undefined) return;
     const updatedPosition = decomposeMatrix(ref.current.matrixWorld).position;
-    onDragEnd([updatedPosition.x, updatedPosition.y, updatedPosition.z]);
+    onDragEnd({ x: updatedPosition.x, y: updatedPosition.y, z: updatedPosition.z });
     if (updatedPosition.x > upperXBoundary * rotationOverrideThreshold) {
-      setRotationOverride([0, 0, Math.PI / 2]);
+      setRotationOverride({ x: 0, y: 0, z: Math.PI / 2 });
       return;
     } else if (updatedPosition.x < lowerXBoundary * rotationOverrideThreshold) {
-      setRotationOverride([0, 0, (-1 * Math.PI) / 2]);
+      setRotationOverride({ x: 0, y: 0, z: (-1 * Math.PI) / 2 });
     } else if (updatedPosition.y > upperYBoundary * rotationOverrideThreshold) {
-      setRotationOverride([0, 0, (2 * Math.PI) / 2]);
+      setRotationOverride({ x: 0, y: 0, z: (2 * Math.PI) / 2 });
     } else {
-      setRotationOverride([0, 0, 0]);
+      setRotationOverride({ x: 0, y: 0, z: 0 });
     }
   };
 
   return (
     <DragControls
       dragLimits={[
-        [lowerXBoundary + position[0] * -1 + width / 2, upperXBoundary + position[0] * -1 - width / 2],
-        [lowerYBoundary + position[1] * -1 + height / 2, upperYBoundary + position[1] * -1 - height / 2],
+        [lowerXBoundary + position.x * -1 + width / 2, upperXBoundary + position.x * -1 - width / 2],
+        [lowerYBoundary + position.y * -1 + height / 2, upperYBoundary + position.y * -1 - height / 2],
         [0, 0],
       ]}
       dragConfig={{ enabled: options?.draggable ?? true }}
       onDragStart={() => setDragging(true)}
       onDragEnd={() => handleDragEnd()}
       autoTransform
+      onClick={onClick}
     >
-      <mesh
+      <motion.mesh
         ref={ref}
+        animate={{
+          x: [initialPosition.x, initialPosition.x, position.x, position.x],
+          y: [initialPosition.y, initialPosition.y, position.y, position.y],
+          z: [initialPosition.z, 8, 8, position.z],
+        }}
+        transition={{ ease: "anticipate", times: [0, 0.05, 0.8, 1], duration: 0.8 }}
+        initial={{ x: initialPosition.x, y: initialPosition.y, z: initialPosition.z }}
         scale={(hovered || dragging) && (options?.showHoverAnimation ?? true) ? 1.15 : 1}
-        position={dragging ? [position[0], position[1], 3] : position}
-        rotation={rotationOverride ?? rotation}
+        rotation={[
+          rotationOverride?.x ?? rotation.x,
+          rotationOverride?.y ?? rotation.y,
+          rotationOverride?.z ?? rotation.z,
+        ]}
         onPointerOver={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
-        onClick={onClick}
       >
         {children}
-      </mesh>
+      </motion.mesh>
     </DragControls>
   );
 };

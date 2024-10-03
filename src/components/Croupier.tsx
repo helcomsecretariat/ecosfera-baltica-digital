@@ -46,7 +46,7 @@ const Croupier = ({
       onCardMove(card, origin, destination);
     }
   };
-  const { send } = useGameState();
+  const { handlers } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
@@ -60,9 +60,7 @@ const Croupier = ({
             key={card.uid}
             card={card}
             gamePieceTransform={uiState.cardPositions[card.uid]}
-            onClick={() => {
-              send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
-            }}
+            onClick={handlers.buyCard(card)}
             onDragEnd={(position: Coordinate) => {
               handleCardDrag(card, position, animalDeckPosition, "animalTable", "animalDeck");
               supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
@@ -83,9 +81,7 @@ const Croupier = ({
           key={card.uid}
           card={card}
           gamePieceTransform={uiState.cardPositions[card.uid]}
-          onClick={() => {
-            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
-          }}
+          onClick={handlers.buyCard(card)}
           onDragEnd={(position) => {
             handleCardDrag(card, position, plantDeckPosition, "plantTable", "plantDeck");
             supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
@@ -105,9 +101,7 @@ const Croupier = ({
           key={card.uid}
           card={card}
           gamePieceTransform={uiState.cardPositions[card.uid]}
-          onClick={() => {
-            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
-          }}
+          onClick={handlers.buyCard(card)}
           onDragEnd={(position) => {
             handleCardDrag(card, position, disasterDeckPosition, "disasterTable", "disasterDeck");
             supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
@@ -139,9 +133,7 @@ const Croupier = ({
           key={card.uid}
           card={card}
           gamePieceTransform={uiState.cardPositions[card.uid]}
-          onClick={() => {
-            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
-          }}
+          onClick={handlers.buyCard(card)}
           onDragEnd={(position) => {
             handleCardDrag(
               card,

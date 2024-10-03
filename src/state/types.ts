@@ -9,6 +9,7 @@ import {
 } from "@/decks/schema";
 
 export interface GameState {
+  activePlayerUid: string;
   players: PlayerState[];
   plantMarket: Market<PlantCard>;
   animalMarket: Market<AnimalCard>;
@@ -23,11 +24,12 @@ export interface PlayerState {
   deck: Card[];
   hand: Card[];
   discard: Card[];
-  ability: AbilityTile[];
+  abilities: AbilityTile[];
 }
 
 export interface AbilityTile extends GamePieceBase {
   type: "ability";
+  is_used: boolean;
 }
 
 export interface BiomeTile extends GamePieceBase {

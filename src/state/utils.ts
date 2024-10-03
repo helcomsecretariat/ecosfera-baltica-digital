@@ -1,3 +1,5 @@
+import { isMatch } from "lodash-es";
+
 export function shuffle<T>(items: T[], seed: string): T[] {
   const random = rng(seed);
 
@@ -30,4 +32,12 @@ export function rng(seed = "") {
   }
 
   return next;
+}
+
+export function replaceItem<T extends object>(predicate: Partial<T>, newItem: T, items: T[]): T[] {
+  return items.map((item) => (isMatch(item, predicate) ? newItem : item));
+}
+
+export function assignItem<T extends object, U extends Partial<T>>(predicate: Partial<T>, changes: U, items: T[]): T[] {
+  return items.map((item) => (isMatch(item, predicate) ? { ...item, ...changes } : item));
 }

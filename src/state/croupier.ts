@@ -20,6 +20,7 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "ability",
+      is_used: false,
       uid: this.nextUid(),
     }));
   }

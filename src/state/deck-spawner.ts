@@ -58,11 +58,12 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): Ga
         deck: without(deck, ...hand),
         hand,
         discard: [],
-        ability: spawnAllPieces(config.per_player.abilities, croupier.spawnAbilityTiles.bind(croupier)),
+        abilities: spawnAllPieces(config.per_player.abilities, croupier.spawnAbilityTiles.bind(croupier)),
       } as PlayerState;
     });
 
   return {
+    activePlayerUid: players[0].uid,
     players,
     plantMarket: prepareMarket(plants, 4, seed),
     animalMarket: prepareMarket(animals, 4, seed),

@@ -1,7 +1,8 @@
 import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
-import { Card, CardType, GameState, PlayerState } from "@/state/types";
-import { findIndex, reject } from "lodash-es";
+import { AbilityTile, Card, CardType, GameState } from "@/state/types";
+import { assignItem, replaceItem } from "@/state/utils";
+import { find, reject, without } from "lodash-es";
 import { assign, setup } from "xstate";
 
 export default setup({
@@ -17,7 +18,6 @@ export default setup({
           type: "BUY_MARKET_CARD";
           data: {
             card: Card;
-            player: PlayerState;
           };
         }
       | {
@@ -27,8 +27,24 @@ export default setup({
           };
         }
       | {
+          type: "DRAW_PLAYER_CARD"; // move a card from the supply deck to the player's hand (table)
+          data: object;
+        }
+      | {
           type: "IDDQD";
           data: GameState;
+        }
+      | {
+          type: "REFRESH_MARKET_DECK"; // place all table cards back into the deck and draw 4 new ones
+          data: { market_type: CardType };
+        }
+      | {
+          type: "USE_TOKEN";
+          data: { token: AbilityTile };
+        }
+      | {
+          type: "REFRESH_TOKEN";
+          data: { token: AbilityTile };
         },
   },
 }).createMachine({
@@ -40,25 +56,24 @@ export default setup({
           ({
             context,
             event: {
-              data: { card, player },
+              data: { card },
             },
           }) => {
             const marketName = `${card.type}Market` as const;
             const market = context[marketName];
             const drawnCard = market.deck.shift() as Card;
-            //@ts-expect-error TS is confused
-            const cardIndex = findIndex(market.table, { uid: card.uid });
-            const table = [...market.table];
-            table[cardIndex] = drawnCard;
+            const table = replaceItem({ uid: card.uid }, drawnCard, market.table);
+            const player = find(context.players, { uid: context.activePlayerUid })!;
 
             return {
-              players: [
-                ...reject(context.players, player),
+              players: assignItem(
+                player,
                 {
-                  ...player,
                   hand: [...player.hand, card],
                 },
-              ],
+                context.players,
+              ),
+
               [marketName]: {
                 ...context[marketName],
                 table,
@@ -82,6 +97,7 @@ export default setup({
         }) => {
           const market = context[`${market_type}Market`];
           const drawnCard = market.deck.shift();
+          if (!drawnCard) return {};
 
           return {
             [`${market_type}Market`]: {
@@ -93,6 +109,49 @@ export default setup({
         },
       ),
     },
+    DRAW_PLAYER_CARD: {
+      actions: assign(({ context: { players, activePlayerUid } }) => {
+        const player = find(players, { uid: activePlayerUid })!;
+        const drawnCard = player.deck.shift();
+        if (!drawnCard) return {};
+
+        return {
+          players: assignItem(
+            player,
+            {
+              deck: reject(player.deck, drawnCard),
+              hand: [...player.hand, drawnCard],
+            },
+            players,
+          ),
+        };
+      }),
+    },
+    REFRESH_MARKET_DECK: {
+      actions: [
+        assign(
+          ({
+            context,
+            event: {
+              data: { market_type },
+            },
+          }) => {
+            const market = context[`${market_type}Market`];
+            const { table, deck } = market;
+            const newDeck = [...deck, ...table];
+            const newTable = newDeck.slice(0, 4);
+
+            return {
+              [`${market_type}Market`]: {
+                ...market,
+                deck: without(newDeck, ...newTable),
+                table: newTable,
+              },
+            };
+          },
+        ),
+      ],
+    },
     IDDQD: {
       actions: [
         assign(({ context, event }) => ({
@@ -100,6 +159,42 @@ export default setup({
           ...event.data,
         })),
       ],
+    },
+    USE_TOKEN: {
+      actions: assign(
+        ({
+          context: { players, activePlayerUid },
+          event: {
+            data: { token },
+          },
+        }) => ({
+          players: assignItem(
+            { uid: activePlayerUid },
+            {
+              abilities: assignItem(token, { is_used: true }, find(players, { uid: activePlayerUid })!.abilities),
+            },
+            players,
+          ),
+        }),
+      ),
+    },
+    REFRESH_TOKEN: {
+      actions: assign(
+        ({
+          context: { players, activePlayerUid },
+          event: {
+            data: { token },
+          },
+        }) => ({
+          players: assignItem(
+            { uid: activePlayerUid },
+            {
+              abilities: assignItem(token, { is_used: false }, find(players, { uid: activePlayerUid })!.abilities),
+            },
+            players,
+          ),
+        }),
+      ),
     },
   },
 });

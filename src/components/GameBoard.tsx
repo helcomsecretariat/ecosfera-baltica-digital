@@ -45,7 +45,6 @@ function GameBoard() {
   }, [state]);
 
   useEffect(() => {
-    console.log(uiState);
     prevUiStateRef.current = uiState;
   }, [uiState]);
 

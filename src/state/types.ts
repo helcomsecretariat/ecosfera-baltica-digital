@@ -116,22 +116,17 @@ export interface Coordinate {
   z: number;
 }
 
-export interface PositionedGamePiece {
-  uid: string;
+export interface GamePieceTransform {
   position: Coordinate;
   initialPosition?: Coordinate;
   rotation: Coordinate;
 }
 
-export interface PositionedGamePieces {
-  [key: Card["uid"]]: {
-    position: Coordinate;
-    initialPosition: Coordinate;
-    rotation: Coordinate;
-  };
+export interface GamePieceTransforms {
+  [key: Card["uid"]]: GamePieceTransform;
 }
 
 export interface UiState {
-  cardPositions: PositionedGamePieces;
-  deckPositions: PositionedGamePieces;
+  cardPositions: GamePieceTransforms;
+  deckPositions: GamePieceTransforms;
 }

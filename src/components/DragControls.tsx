@@ -62,6 +62,7 @@ export const DragControls: ForwardRefComponent<DragControlsProps, THREE.Group> =
     },
     fRef,
   ) => {
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     const defaultControls = useThree((state) => (state as any).controls) as ControlsProto | undefined;
     const { camera, size, raycaster, invalidate } = useThree();
     const ref = React.useRef<THREE.Group>(null!);
@@ -71,11 +72,13 @@ export const DragControls: ForwardRefComponent<DragControlsProps, THREE.Group> =
       {
         onHover: ({ hovering, event }) => {
           event.stopPropagation();
-          onHover && onHover(hovering ?? false);
+          if (onHover) onHover(hovering ?? false);
         },
         onDragStart: ({ event }) => {
           if (defaultControls) defaultControls.enabled = false;
           event.stopPropagation();
+
+          /* eslint-disable  @typescript-eslint/no-explicit-any */
           const { point } = event as any;
 
           setClickable(false);
@@ -84,7 +87,7 @@ export const DragControls: ForwardRefComponent<DragControlsProps, THREE.Group> =
           mousePosition3D.copy(point);
           dragOffset.copy(mousePosition3D).sub(initialModelPosition);
 
-          onDragStart && onDragStart(initialModelPosition);
+          if (onDragStart) onDragStart(initialModelPosition);
           invalidate();
         },
         onDrag: ({ xy: [dragX, dragY], intentional, event }) => {
@@ -144,7 +147,7 @@ export const DragControls: ForwardRefComponent<DragControlsProps, THREE.Group> =
             const deltaLocalMatrix = ref.current.matrix.clone().multiply(previousLocalMatrix.invert());
             const deltaWorldMatrix = ref.current.matrix.clone().multiply(previousWorldMatrix.invert());
 
-            onDrag && onDrag(ref.current.matrix, deltaLocalMatrix, ref.current.matrixWorld, deltaWorldMatrix);
+            if (onDrag) onDrag(ref.current.matrix, deltaLocalMatrix, ref.current.matrixWorld, deltaWorldMatrix);
           } else {
             const tempMatrix = new THREE.Matrix4().copy(ref.current.matrix);
             tempMatrix.setPosition(intendedNewPosition);
@@ -152,7 +155,7 @@ export const DragControls: ForwardRefComponent<DragControlsProps, THREE.Group> =
             const deltaLocalMatrix = tempMatrix.clone().multiply(previousLocalMatrix.invert());
             const deltaWorldMatrix = tempMatrix.clone().multiply(previousWorldMatrix.invert());
 
-            onDrag && onDrag(tempMatrix, deltaLocalMatrix, ref.current.matrixWorld, deltaWorldMatrix);
+            if (onDrag) onDrag(tempMatrix, deltaLocalMatrix, ref.current.matrixWorld, deltaWorldMatrix);
           }
           invalidate();
         },
@@ -161,7 +164,7 @@ export const DragControls: ForwardRefComponent<DragControlsProps, THREE.Group> =
           event.stopPropagation();
 
           setClickable(true);
-          onDragEnd && onDragEnd();
+          if (onDragEnd) onDragEnd();
           invalidate();
         },
       },

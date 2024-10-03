@@ -162,19 +162,19 @@ const Croupier = ({
         />
       ))}
       <Deck
-        position={animalDeckPosition}
+        position={uiState.deckPositions["animalDeck"].position}
         texturePath={`/ecosfera_baltica/bg_animals.avif`}
         cards={gameState.animalMarket.deck}
         onDraw={(card) => onCardMove(card, "animalDeck", "animalTable")}
       />
       <Deck
-        position={plantDeckPosition}
+        position={uiState.deckPositions["plantDeck"].position}
         texturePath={`/ecosfera_baltica/bg_plants.avif`}
         cards={gameState.plantMarket.deck}
         onDraw={(card) => onCardMove(card, "plantDeck", "plantTable")}
       />
       <Deck
-        position={disasterDeckPosition}
+        position={uiState.deckPositions["disasterDeck"].position}
         texturePath={`/ecosfera_baltica/disaster_flood.avif`}
         cards={gameState.disasterMarket.deck}
         onDraw={(card) => onCardMove(card, "disasterDeck", "disasterTable")}

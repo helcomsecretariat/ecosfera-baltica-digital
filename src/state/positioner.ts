@@ -154,18 +154,6 @@ export const drawDisasterCards = (gameState: GameState): GamePieceTransforms =>
     return acc;
   }, {} as GamePieceTransforms);
 
-export const drawElementDecks2 = (gameState: GameState) => {
-  return uniqBy(gameState.elementMarket.deck, "name")
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((card, index: number) => {
-      return {
-        x: marketXStart + index * cardXOffset,
-        y: marketYStart - 2 * cardYOffset,
-        ...card,
-      };
-    });
-};
-
 export const drawElementDecks = (gameState: GameState): GamePieceTransforms => {
   return uniqBy(gameState.elementMarket.deck, "name")
     .sort((a, b) => a.name.localeCompare(b.name))

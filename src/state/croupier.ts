@@ -16,12 +16,12 @@ export class Croupier {
     return "" + this.uid++;
   }
 
-  spawnAbilityTiles(name: string, config: AbilityConfig): AbilityTile[] {
+  spawnAbilityTiles(name: AbilityConfig["name"], config: AbilityConfig): AbilityTile[] {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
-      type: "ability",
       is_used: false,
-      uid: this.nextUid(),
+      type: "ability",
+      uid: `ability-${this.nextUid()}` as AbilityTile["uid"],
     }));
   }
 
@@ -29,9 +29,9 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "animal",
-      uid: this.nextUid(),
       biomes: config.biomes,
       abilities: config.abilities,
+      uid: `animal-${this.nextUid()}` as AnimalCard["uid"],
     }));
   }
 
@@ -39,10 +39,10 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "plant",
-      uid: this.nextUid(),
       biomes: config.biomes,
       abilities: config.abilities,
       elements: config.elements,
+      uid: `plant-${this.nextUid()}` as PlantCard["uid"],
     }));
   }
 
@@ -50,7 +50,7 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "element",
-      uid: this.nextUid(),
+      uid: `element-${this.nextUid()}` as ElementCard["uid"],
     }));
   }
 
@@ -58,7 +58,7 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "disaster",
-      uid: this.nextUid(),
+      uid: `disaster-${this.nextUid()}` as DisasterCard["uid"],
     }));
   }
 
@@ -66,7 +66,7 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "biome",
-      uid: this.nextUid(),
+      uid: `biome-${this.nextUid()}` as BiomeTile["uid"],
     }));
   }
 
@@ -74,7 +74,7 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "extinction",
-      uid: this.nextUid(),
+      uid: `extinction-${this.nextUid()}` as ExtinctionTile["uid"],
     }));
   }
 }

@@ -1,4 +1,3 @@
-// import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import type { DeckConfig } from "@/decks/schema";
 import type { GamePiece, GameState, Market, PieceToConfig, PlayerState } from "./types";
 import { shuffle } from "./utils";
@@ -6,10 +5,10 @@ import { Croupier } from "./croupier";
 import { entries, filter, pull, without } from "lodash-es";
 
 function spawnAllPieces<T extends GamePiece>(
-  items: Record<string, PieceToConfig<T>>,
-  spawner: (name: string, config: PieceToConfig<T>) => T[],
+  items: Record<T["name"], PieceToConfig<T>>,
+  spawner: (name: T["name"], config: PieceToConfig<T>) => T[],
 ): T[] {
-  return Object.entries(items).flatMap(([name, config]) => spawner(name, config));
+  return Object.entries(items).flatMap(([name, config]) => spawner(name, config as PieceToConfig<T>));
 }
 
 function prepareMarket<T extends GamePiece>(items: T[], initialTableSize = 0, seed: string): Market<T> {
@@ -54,7 +53,7 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): Ga
       pull(disasters, ...deck);
 
       return {
-        uid: "pl" + index,
+        uid: `player-${index}` as PlayerState["uid"],
         deck: without(deck, ...hand),
         hand,
         discard: [],
@@ -63,7 +62,16 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): Ga
     });
 
   return {
-    activePlayerUid: players[0].uid,
+    turn: {
+      player: players[0].uid,
+      currentAbility: undefined,
+      exhaustedCards: [],
+      playedCards: [],
+      borrowedElement: undefined,
+      usedAbilities: [],
+      borrowedCount: 0,
+      borrowedLimit: 100,
+    },
     players,
     plantMarket: prepareMarket(plants, 4, seed),
     animalMarket: prepareMarket(animals, 4, seed),

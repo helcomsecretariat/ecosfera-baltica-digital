@@ -12,7 +12,6 @@ import { shuffle } from "@/state/utils";
 import { Card, UiState } from "@/state/types";
 import PreloadAssets from "@/components/PreloadAssets";
 import { AnimalCard, DisasterCard, ElementCard, PlantCard } from "@/state/types";
-import { isEqual } from "lodash-es";
 import { GameStateProvider, useGameState } from "@/context/GameStateProvider";
 import { DeckConfig } from "@/decks/schema";
 import { toUiState } from "@/state/positioner";
@@ -29,16 +28,10 @@ function GameBoard() {
       step: 1,
     },
   });
-  const { state, send } = useGameState();
+  const { state } = useGameState();
   const [gameState, setGameState] = useState(state);
   const prevUiStateRef = useRef<UiState | null>(null);
   const uiState = useMemo(() => toUiState(prevUiStateRef.current, state), [state]);
-
-  useEffect(() => {
-    if (!isEqual(gameState, state)) {
-      send({ type: "IDDQD", data: gameState });
-    }
-  }, [gameState]);
 
   useEffect(() => {
     setGameState(state);
@@ -176,10 +169,6 @@ function GameBoard() {
       };
     });
   };
-
-  useEffect(() => {
-    console.log(gameState);
-  }, [gameState]);
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">

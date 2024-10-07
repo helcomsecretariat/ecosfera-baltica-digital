@@ -8,8 +8,31 @@ import {
   PlantConfig,
 } from "@/decks/schema";
 
+// google "bradned types in TS" for explanation
+export type AbilityUID = `${"ability-"}${string}` & { readonly __brand: "AbilityUID" };
+export type AnimalUID = `${"animal-"}${string}` & { readonly __brand: "AnimalUID" };
+export type PlantUID = `${"plant-"}${string}` & { readonly __brand: "PlantUID" };
+export type ElementUID = `${"element-"}${string}` & { readonly __brand: "ElementUID" };
+export type DisasterUID = `${"disaster-"}${string}` & { readonly __brand: "DisasterUID" };
+export type BiomeUID = `${"biome-"}${string}` & { readonly __brand: "BiomeUID" };
+export type ExtinctionUID = `${"extinction-"}${string}` & { readonly __brand: "ExtinctionUID" };
+export type PlayerUID = `${"player-"}${string}` & { readonly __brand: "PlayerUID" };
+export type GamePieceUID = AbilityUID | AnimalUID | PlantUID | ElementUID | DisasterUID | BiomeUID | ExtinctionUID;
+
 export interface GameState {
-  activePlayerUid: string;
+  turn: {
+    player: PlayerState["uid"];
+    currentAbility?: {
+      piece: AbilityTile | PlantCard | AnimalCard;
+      name: AbilityName;
+    };
+    exhaustedCards: Card["uid"][];
+    playedCards: Card["uid"][];
+    borrowedElement: ElementCard | undefined;
+    borrowedCount: number;
+    borrowedLimit: number;
+    usedAbilities: { source: (AbilityTile | PlantCard | AnimalCard)["uid"]; name: AbilityName }[];
+  };
   players: PlayerState[];
   plantMarket: Market<PlantCard>;
   animalMarket: Market<AnimalCard>;
@@ -20,7 +43,7 @@ export interface GameState {
 }
 
 export interface PlayerState {
-  uid: string;
+  uid: PlayerUID;
   deck: Card[];
   hand: Card[];
   discard: Card[];
@@ -29,15 +52,20 @@ export interface PlayerState {
 
 export interface AbilityTile extends GamePieceBase {
   type: "ability";
+  uid: AbilityUID;
   is_used: boolean;
+
+  name: "move" | "refresh" | "plus" | "special";
 }
 
 export interface BiomeTile extends GamePieceBase {
   type: "biome";
+  uid: BiomeUID;
 }
 
 export interface ExtinctionTile extends GamePieceBase {
   type: "extinction";
+  uid: ExtinctionUID;
 }
 
 export interface GamePieceBase {
@@ -89,23 +117,29 @@ export interface Market<T extends GamePiece> {
 
 export interface AnimalCard extends GamePieceBase {
   type: "animal";
-  biomes: string[];
+  uid: AnimalUID;
+
+  biomes: BiomeTile["name"][];
   abilities: AbilityName[];
 }
 
 export interface PlantCard extends GamePieceBase {
   type: "plant";
-  biomes: string[];
+  uid: PlantUID;
+
+  biomes: BiomeTile["name"][];
   abilities: AbilityName[];
-  elements: string[];
+  elements: ElementCard["name"][];
 }
 
 export interface ElementCard extends GamePieceBase {
   type: "element";
+  uid: ElementUID;
 }
 
 export interface DisasterCard extends GamePieceBase {
   type: "disaster";
+  uid: DisasterUID;
 }
 
 export type AbilityName = "plus" | "refresh" | "move" | "special";
@@ -126,7 +160,7 @@ export interface GamePieceTransform {
 }
 
 export interface GamePieceTransforms {
-  [key: Card["uid"]]: GamePieceTransform;
+  [key: Card["uid"] | `${string}Deck`]: GamePieceTransform;
 }
 
 export interface UiState {

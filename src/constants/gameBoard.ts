@@ -17,7 +17,7 @@ export const abilityOffset = 7;
 
 // Biome and extinction tiles
 export const tileSize = cardWidth / 3.5;
-export const hexagonTileXStart = marketXStart - cardXOffset;
+export const hexagonTileXStart = marketXStart - cardXOffset * 1.2;
 export const extinctionTileYStart = marketYStart + tileSize;
 export const biomeTileYStart = marketYStart - cardYOffset + tileSize;
 export const hexagonTileXOffset = 10;

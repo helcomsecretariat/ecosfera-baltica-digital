@@ -1,32 +1,33 @@
-import { Card, CardType, GameState, AbilityTile } from "@/state/types";
+import { TurnMachine } from "@/state/machines/turn";
+import { AbilityTile, AnimalCard, PlantCard, ElementCard } from "@/state/types";
 import { EventFromLogic } from "xstate";
-import GameStateMachine from "@/state/state-machine";
 
 export interface StateHandlers {
-  buyCard: (card: Card) => () => void;
-  iddqd: (gameState: GameState) => () => void;
-  drawPlayerCard: () => void;
-  refreshMarket: (marketType: CardType) => () => void;
-  useToken: (token: AbilityTile) => () => void;
-  refreshToken: (token: AbilityTile) => () => void;
+  playerCardClick: (card: PlantCard | AnimalCard | ElementCard) => () => void;
+  playerDeckClick: () => () => void;
+  marketElementClick: (name: ElementCard["name"]) => () => void;
+  marketCardClick: (card: PlantCard | AnimalCard) => () => void;
+  tokenClick: (token: AbilityTile) => () => void;
+  animalDeckClick: () => () => void;
+  plantDeckClick: () => () => void;
+  // useToken: (token: AbilityTile) => () => void;
 }
 
-export const createStateHandlers = (send: (e: EventFromLogic<typeof GameStateMachine>) => void): StateHandlers => {
+export const createStateHandlers = (send: (e: EventFromLogic<typeof TurnMachine>) => void): StateHandlers => {
   const sendEvent =
-    <T extends EventFromLogic<typeof GameStateMachine>["data"]>(
-      type: EventFromLogic<typeof GameStateMachine>["type"],
-      data: T,
-    ) =>
+    <T extends EventFromLogic<typeof TurnMachine>>(event: T) =>
     () => {
-      send({ type, data } as EventFromLogic<typeof GameStateMachine>);
+      send(event);
     };
 
   return {
-    buyCard: (card: Card) => sendEvent("BUY_MARKET_CARD", { card }),
-    iddqd: (gameState: GameState) => sendEvent("IDDQD", gameState),
-    drawPlayerCard: () => sendEvent("DRAW_PLAYER_CARD", {}),
-    refreshMarket: (market_type: CardType) => sendEvent("REFRESH_MARKET_DECK", { market_type }),
-    useToken: (token: AbilityTile) => sendEvent("USE_TOKEN", { token }),
-    refreshToken: (token: AbilityTile) => sendEvent("REFRESH_TOKEN", { token }),
+    playerCardClick: (card: PlantCard | AnimalCard | ElementCard) =>
+      sendEvent({ type: "user.click.player.hand.card", card }),
+    playerDeckClick: () => sendEvent({ type: "user.click.player.deck" }),
+    marketElementClick: (name: ElementCard["name"]) => sendEvent({ type: "user.click.market.deck.element", name }),
+    marketCardClick: (card: PlantCard | AnimalCard) => sendEvent({ type: "user.click.market.table.card", card }),
+    animalDeckClick: () => sendEvent({ type: "user.click.market.deck.animal" }),
+    plantDeckClick: () => sendEvent({ type: "user.click.market.deck.plant" }),
+    tokenClick: (token: AbilityTile) => sendEvent({ type: "user.click.token", token }),
   };
 };

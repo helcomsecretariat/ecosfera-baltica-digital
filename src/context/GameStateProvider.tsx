@@ -1,10 +1,11 @@
-import { createContext, ReactNode, useContext, useEffect, useMemo } from "react";
-import GameStateMachine from "@/state/state-machine";
+import { createContext, ReactNode, useContext, useMemo } from "react";
 import config from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
 import { GameState } from "@/state/types";
 import { type EventFromLogic } from "xstate";
 import { createStateHandlers, StateHandlers } from "@/state/action-handlers";
+import { inspect } from "@/state/machines/utils";
+import { TurnMachine } from "@/state/machines/turn";
 
 interface StateProviderProps {
   children: ReactNode;
@@ -14,14 +15,15 @@ interface StateProviderProps {
 
 interface StateContextType {
   state: GameState;
-  send: (e: EventFromLogic<typeof GameStateMachine>) => void;
+  send: (e: EventFromLogic<typeof TurnMachine>) => void;
   handlers: StateHandlers;
 }
 
 const stateContext = createContext<StateContextType | undefined>(undefined);
 
 export const GameStateProvider = ({ children, numberOfPlayers, seed }: StateProviderProps) => {
-  const [snap, send] = useMachine(GameStateMachine, {
+  const [snap, send] = useMachine(TurnMachine, {
+    inspect,
     input: {
       //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
       config,
@@ -36,10 +38,6 @@ export const GameStateProvider = ({ children, numberOfPlayers, seed }: StateProv
     send,
     handlers,
   };
-
-  useEffect(() => {
-    console.log(handlers);
-  }, [handlers]);
 
   return <stateContext.Provider value={value}>{children}</stateContext.Provider>;
 };

@@ -46,7 +46,7 @@ const Croupier = ({
       onCardMove(card, origin, destination);
     }
   };
-  const { send } = useGameState();
+  const { handlers } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
@@ -60,9 +60,7 @@ const Croupier = ({
             key={card.uid}
             card={card}
             gamePieceTransform={uiState.cardPositions[card.uid]}
-            onClick={() => {
-              send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
-            }}
+            onClick={handlers.marketCardClick(card)}
             onDragEnd={(position: Coordinate) => {
               handleCardDrag(card, position, animalDeckPosition, "animalTable", "animalDeck");
               supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
@@ -83,9 +81,7 @@ const Croupier = ({
           key={card.uid}
           card={card}
           gamePieceTransform={uiState.cardPositions[card.uid]}
-          onClick={() => {
-            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
-          }}
+          onClick={handlers.marketCardClick(card)}
           onDragEnd={(position) => {
             handleCardDrag(card, position, plantDeckPosition, "plantTable", "plantDeck");
             supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
@@ -105,9 +101,7 @@ const Croupier = ({
           key={card.uid}
           card={card}
           gamePieceTransform={uiState.cardPositions[card.uid]}
-          onClick={() => {
-            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
-          }}
+          // onClick={handlers.buyCard(card)}
           onDragEnd={(position) => {
             handleCardDrag(card, position, disasterDeckPosition, "disasterTable", "disasterDeck");
             supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
@@ -131,54 +125,35 @@ const Croupier = ({
           initialPosition={uiState.deckPositions[`${card.name}ElementDeck`].initialPosition}
           rotation={uiState.deckPositions[`${card.name}ElementDeck`].rotation}
           cards={gameState.elementMarket.deck.filter((elementDeckCard) => elementDeckCard.name === card.name)}
-          onDraw={(card) => onCardMove(card, "elementDeck", "elementTable")}
+          // onDraw={(card) => onCardMove(card, "elementDeck", "elementTable")}
+          onClick={handlers.marketElementClick(card.name)}
         />
       ))}
-      {gameState.elementMarket.table.map((card: ElementCard) => (
+      {gameState.turn.borrowedElement && (
         <CardComponent
-          key={card.uid}
-          card={card}
-          gamePieceTransform={uiState.cardPositions[card.uid]}
-          onClick={() => {
-            send({ type: "BUY_MARKET_CARD", data: { card, player: gameState.players[0] } });
-          }}
-          onDragEnd={(position) => {
-            handleCardDrag(
-              card,
-              position,
-              uiState.deckPositions[`${card.name}ElementDeck`].position,
-              "elementTable",
-              "elementDeck",
-            );
-            supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-              handleCardDrag(
-                card,
-                position,
-                supplyDeckPosition,
-                "elementTable",
-                `playerDeck_${gameState.players[index].uid}`,
-              );
-            });
-          }}
+          key={gameState.turn.borrowedElement.uid}
+          card={gameState.turn.borrowedElement}
+          gamePieceTransform={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
+          onClick={() => console.error("borrowed element click NOT IMPLEMENTED")}
         />
-      ))}
+      )}
       <Deck
         position={uiState.deckPositions["animalDeck"].position}
         texturePath={`/ecosfera_baltica/bg_animals.avif`}
         cards={gameState.animalMarket.deck}
-        onDraw={(card) => onCardMove(card, "animalDeck", "animalTable")}
+        onClick={handlers.animalDeckClick()}
       />
       <Deck
         position={uiState.deckPositions["plantDeck"].position}
         texturePath={`/ecosfera_baltica/bg_plants.avif`}
         cards={gameState.plantMarket.deck}
-        onDraw={(card) => onCardMove(card, "plantDeck", "plantTable")}
+        onClick={handlers.plantDeckClick()}
       />
       <Deck
         position={uiState.deckPositions["disasterDeck"].position}
         texturePath={`/ecosfera_baltica/disaster_flood.avif`}
         cards={gameState.disasterMarket.deck}
-        onDraw={(card) => onCardMove(card, "disasterDeck", "disasterTable")}
+        onClick={() => console.error("Disaster deck click NOT IMPLEMENTED")}
       />
 
       {/* Player Cards */}
@@ -194,13 +169,13 @@ const Croupier = ({
               rotateZ: index * (Math.PI / 2),
             }}
           >
-            <AbilityTiles xStart={0 - cardWidth} />
+            <AbilityTiles xStart={0 - cardWidth} abilities={player.abilities} />
 
             <Deck
               position={{ x: 0, y: 0, z: 0 }}
               texturePath={`/ecosfera_baltica/back.avif`}
               cards={player.deck}
-              onDraw={(card) => onCardMove(card, `playerDeck_${player.uid}`, `playerHand_${player.uid}`)}
+              onClick={handlers.playerDeckClick()}
               onShuffle={() => onShuffle(player.uid)}
               options={{ shuffleable: true }}
             />
@@ -210,6 +185,8 @@ const Croupier = ({
               key={card.uid}
               card={card}
               gamePieceTransform={uiState.cardPositions[card.uid]}
+              //@ts-expect-error TODO: fix type check...
+              onClick={handlers.playerCardClick(card)}
               onDragEnd={(position) => {
                 supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
                   handleCardDrag(

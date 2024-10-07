@@ -123,22 +123,25 @@ export const positionPlantCards = (gameState: GameState): GamePieceTransforms =>
   }, {} as GamePieceTransforms);
 
 export const positionElementCards = (gameState: GameState): GamePieceTransforms =>
-  gameState.elementMarket.table.reduce((acc, card: ElementCard) => {
-    acc[card.uid] = {
-      position: {
-        x: marketXStart + 5 * cardXOffset,
-        y: marketYStart - 2 * cardYOffset,
-        z: 0,
-      },
-      initialPosition: {
-        x: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.position.x ?? 0,
-        y: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.position.y ?? 0,
-        z: 0,
-      },
-      rotation: { x: 0, y: 0, z: 0 },
-    };
-    return acc;
-  }, {} as GamePieceTransforms);
+  ([gameState.turn.borrowedElement, ...gameState.elementMarket.table].filter(Boolean) as ElementCard[]).reduce(
+    (acc, card: ElementCard) => {
+      acc[card.uid] = {
+        position: {
+          x: marketXStart + 5 * cardXOffset,
+          y: marketYStart - 2 * cardYOffset,
+          z: 0,
+        },
+        initialPosition: {
+          x: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.position.x ?? 0,
+          y: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.position.y ?? 0,
+          z: 0,
+        },
+        rotation: { x: 0, y: 0, z: 0 },
+      };
+      return acc;
+    },
+    {} as GamePieceTransforms,
+  );
 
 export const positionDisasterCards = (gameState: GameState): GamePieceTransforms =>
   gameState.disasterMarket.table.reduce((acc, card: DisasterCard) => {
@@ -183,6 +186,9 @@ export const positionPlayerCards = (prevUiState: UiState | null, gameState: Game
   return gameState.players.reduce((acc, player, playerIndex) => {
     player.hand.forEach((card: Card, cardIndex: number) => {
       const basePosition = supplyDeckPositions(gameState)[playerIndex];
+      const { playedCards, exhaustedCards } = gameState.turn;
+      const isPlayed = [...playedCards, ...exhaustedCards].includes(card.uid);
+
       acc[card.uid] = {
         position: {
           x:
@@ -202,7 +208,11 @@ export const positionPlayerCards = (prevUiState: UiState | null, gameState: Game
           z: 0,
         },
         initialPosition: prevUiState?.cardPositions[card.uid]?.position ?? basePosition,
-        rotation: { x: 0, y: 0, z: playerIndex * (Math.PI / 2) },
+        rotation: {
+          x: 0,
+          y: 0,
+          z: playerIndex * (Math.PI / 2) + (isPlayed ? Math.PI / 22 : 0),
+        },
       };
     });
     return acc;

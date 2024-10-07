@@ -13,7 +13,7 @@ const Deck = ({
   initialPosition = { x: 0, y: 0, z: 0 },
   rotation = { x: 0, y: 0, z: 0 },
   texturePath = "/ecosfera_baltica/element_nutrients.avif",
-  onDraw,
+  onClick,
   onShuffle,
   cards,
   options,
@@ -23,7 +23,7 @@ const Deck = ({
   rotation?: Coordinate;
   texturePath: string;
   textColor?: string;
-  onDraw: (card: Card) => void;
+  onClick: () => void;
   onShuffle?: () => void;
   cards: Card[];
   options?: { shuffleable: boolean };
@@ -49,7 +49,7 @@ const Deck = ({
           draggable: false,
           showHoverAnimation: false,
         }}
-        onClick={() => (cards.length > 0 ? onDraw(cards[0]) : null)}
+        onClick={() => onClick()}
       >
         <mesh>
           <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, deckDepth]} />

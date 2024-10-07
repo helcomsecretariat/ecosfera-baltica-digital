@@ -86,72 +86,11 @@ export const TurnMachine = setup({
   context: ({ input: { config, numberOfPlayers, seed } }) => spawnDeck(config, numberOfPlayers, seed),
   initial: "buying",
 
-  on: {
-    "ability.draw.playerDeck": {
-      actions: assign(({ context }) =>
-        produce(context, ({ turn, players }) => {
-          const player = players.find(({ uid }) => uid === turn.player)!;
-          const drawnCard = player.deck.shift();
-          if (drawnCard) player.hand.push(drawnCard);
-        }),
-      ),
-    },
-    "ability.move.toAnimalDeck": {
-      actions: assign(({ context, event: { card } }) =>
-        produce(context, ({ players, animalMarket, turn }) => {
-          const player = players.find(({ uid }) => uid === turn.player)!;
-          player.hand = reject(player.hand, card);
-          animalMarket.deck.push(card);
-        }),
-      ),
-    },
-    "ability.move.toPlantDeck": {
-      actions: assign(({ context, event: { card } }) =>
-        produce(context, ({ players, plantMarket, turn }) => {
-          const player = players.find(({ uid }) => uid === turn.player)!;
-          player.hand = reject(player.hand, card);
-          plantMarket.deck.push(card);
-        }),
-      ),
-    },
-    "ability.move.toElementDeck": {
-      actions: assign(({ context, event: { card } }) =>
-        produce(context, ({ players, elementMarket, turn }) => {
-          const player = players.find(({ uid }) => uid === turn.player)!;
-          player.hand = reject(player.hand, card);
-          elementMarket.deck.push(card);
-        }),
-      ),
-    },
-    "ability.refresh.animalDeck": {
-      actions: assign(({ context }) =>
-        produce(context, ({ animalMarket }) => {
-          let { table, deck } = animalMarket;
-          const newDeck = [...deck, ...table];
-          const newTable = newDeck.slice(0, 4);
-          deck = without(newDeck, ...newTable);
-          table = newTable;
-        }),
-      ),
-    },
-    "ability.refresh.plantDeck": {
-      actions: assign(({ context }) =>
-        produce(context, ({ plantMarket }) => {
-          let { table, deck } = plantMarket;
-          const newDeck = [...deck, ...table];
-          const newTable = newDeck.slice(0, 4);
-          deck = without(newDeck, ...newTable);
-          table = newTable;
-        }),
-      ),
-    },
-  },
-
   states: {
     buying: {
       on: {
         "user.click.token": {
-          target: "ability",
+          target: "#turn.ability",
           actions: assign({
             turn: ({ context: { turn }, event: { token } }) => ({
               ...turn,
@@ -186,7 +125,66 @@ export const TurnMachine = setup({
         "user.click.*": {
           actions: sendTo("ability", ({ event }) => event),
         },
+        "ability.draw.playerDeck": {
+          actions: assign(({ context }) =>
+            produce(context, ({ turn, players }) => {
+              const player = players.find(({ uid }) => uid === turn.player)!;
+              const drawnCard = player.deck.shift();
+              if (drawnCard) player.hand.push(drawnCard);
+            }),
+          ),
+        },
+        "ability.move.toAnimalDeck": {
+          actions: assign(({ context, event: { card } }) =>
+            produce(context, ({ players, animalMarket, turn }) => {
+              const player = players.find(({ uid }) => uid === turn.player)!;
+              player.hand = reject(player.hand, card);
+              animalMarket.deck.push(card);
+            }),
+          ),
+        },
+        "ability.move.toPlantDeck": {
+          actions: assign(({ context, event: { card } }) =>
+            produce(context, ({ players, plantMarket, turn }) => {
+              const player = players.find(({ uid }) => uid === turn.player)!;
+              player.hand = reject(player.hand, card);
+              plantMarket.deck.push(card);
+            }),
+          ),
+        },
+        "ability.move.toElementDeck": {
+          actions: assign(({ context, event: { card } }) =>
+            produce(context, ({ players, elementMarket, turn }) => {
+              const player = players.find(({ uid }) => uid === turn.player)!;
+              player.hand = reject(player.hand, card);
+              elementMarket.deck.push(card);
+            }),
+          ),
+        },
+        "ability.refresh.animalDeck": {
+          actions: assign(({ context }) =>
+            produce(context, ({ animalMarket }) => {
+              let { table, deck } = animalMarket;
+              const newDeck = [...deck, ...table];
+              const newTable = newDeck.slice(0, 4);
+              deck = without(newDeck, ...newTable);
+              table = newTable;
+            }),
+          ),
+        },
+        "ability.refresh.plantDeck": {
+          actions: assign(({ context }) =>
+            produce(context, ({ plantMarket }) => {
+              let { table, deck } = plantMarket;
+              const newDeck = [...deck, ...table];
+              const newTable = newDeck.slice(0, 4);
+              deck = without(newDeck, ...newTable);
+              table = newTable;
+            }),
+          ),
+        },
       },
+
       invoke: {
         id: "ability",
         src: "ability",

@@ -1,8 +1,8 @@
-import type { Card as CardType, Coordinate, GamePieceTransform } from "@/state/types";
+import type { Card as CardType, Coordinate, GamePieceAppearance } from "@/state/types";
 import { cardHeight, cardWidth } from "../constants/card";
 import GameElement from "./GameElement";
 import { Text, useTexture } from "@react-three/drei";
-import { getAssetPath, getElementColor } from "@/components/utils";
+import { getAssetPath, getElementColor, getHighlightTextureAssetPath } from "@/components/utils";
 import React from "react";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
@@ -10,37 +10,44 @@ import { SRGBColorSpace } from "three";
 
 const Card = ({
   card,
-  gamePieceTransform,
+  gamePieceAppearance,
   onDragEnd,
   onClick,
 }: {
   card: CardType;
-  gamePieceTransform: GamePieceTransform;
+  gamePieceAppearance: GamePieceAppearance;
   onDragEnd?: (position: Coordinate) => void;
   onClick?: () => void;
 }) => {
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
   const texture = useTexture(cardIMGURL);
+  const highlightTexture = useTexture(getHighlightTextureAssetPath());
   texture.colorSpace = SRGBColorSpace;
 
   return (
     <GameElement
-      position={gamePieceTransform.position}
-      initialPosition={gamePieceTransform.initialPosition}
-      rotation={gamePieceTransform.rotation}
-      initialRotation={gamePieceTransform.initialRotation}
+      position={gamePieceAppearance.transform.position}
+      initialPosition={gamePieceAppearance.transform.initialPosition}
+      rotation={gamePieceAppearance.transform.rotation}
+      initialRotation={gamePieceAppearance.transform.initialRotation}
       width={cardWidth}
       height={cardHeight}
       onDragEnd={onDragEnd}
       onClick={onClick}
     >
       <mesh>
-        <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.01]} />
+        <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.05]} />
         <meshBasicMaterial attach="material-0" map={texture} />
-        <meshBasicMaterial attach="material-1" color="#888" />
+        <meshBasicMaterial attach="material-1" />
       </mesh>
-
+      {gamePieceAppearance.display?.visibility === "highlighted" && (
+        <mesh>
+          <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, 1.5, 0.01]} />
+          <meshBasicMaterial transparent={true} attach="material-0" map={highlightTexture} />
+          <meshBasicMaterial transparent={true} opacity={0} attach="material-1" />
+        </mesh>
+      )}
       {/* @ts-expect-error TS is sad someties */}
       {card.elements?.map((name, index) => (
         <mesh
@@ -49,23 +56,21 @@ const Card = ({
           position={[cardWidth * 0.42, -cardHeight * 0.44 + index * 1.6, 0.15]}
         >
           <cylinderGeometry args={[0.7, 0.7, 0.1, 5, 1]} />
-          <meshBasicMaterial color={getElementColor(name)} />
+          <meshBasicMaterial transparent={true} color={getElementColor(name)} />
         </mesh>
       ))}
-
       {/* @ts-expect-error TS is sad someties */}
       {card.biomes?.map((name, index) => (
         <React.Fragment key={index + name}>
           <mesh rotation={[Math.PI / 2, Math.PI, 0]} position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.15]}>
             <cylinderGeometry args={[1, 1, 0.1, 6, 1]} />
-            <meshBasicMaterial color={"#77dd77"} />
+            <meshBasicMaterial color={"#77dd77"} transparent={true} />
           </mesh>
-          <Text color="black" fontSize={1.2} position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.26]}>
+          <Text color="black" fontSize={1.2} position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.2]}>
             {name[0].toUpperCase()}
           </Text>
         </React.Fragment>
       ))}
-
       {/* @ts-expect-error TS is sad someties */}
       {card.abilities?.map((name, index) => (
         <TextWithShadow
@@ -77,7 +82,6 @@ const Card = ({
           {name === "move" ? "→" : name === "plus" ? "+" : name === "refresh" ? "↻" : name === "special" ? "⚡" : ""}
         </TextWithShadow>
       ))}
-
       {["plant", "animal"].includes(type) && (
         <TextWithShadow
           position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 4, 0.15]}
@@ -90,6 +94,12 @@ const Card = ({
         >
           {name}
         </TextWithShadow>
+      )}
+      {gamePieceAppearance.display?.visibility === "dimmed" && (
+        <mesh>
+          <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, 0.45]} />
+          <meshBasicMaterial color="black" transparent opacity={0.8} />
+        </mesh>
       )}
     </GameElement>
   );

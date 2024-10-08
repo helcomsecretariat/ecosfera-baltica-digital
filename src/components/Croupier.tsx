@@ -1,5 +1,5 @@
 import { default as CardComponent } from "./Card";
-import { calculateDistance, toVector3 } from "@/utils/3d";
+import { calculateDistance } from "@/utils/3d";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
 import { AnimalCard, Card, Coordinate, DisasterCard, ElementCard, GameState, PlantCard, UiState } from "@/state/types";
@@ -10,7 +10,8 @@ import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/GameStateProvider";
 import { animalDeckPosition, disasterDeckPosition, plantDeckPosition, supplyDeckPositions } from "@/state/positioner";
 import { uniqBy } from "lodash-es";
-import { motion } from "framer-motion-3d";
+import { abilityOffset } from "@/constants/gameBoard";
+import GamePieceGroup from "./GamePieceGroup";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -59,7 +60,7 @@ const Croupier = ({
           <CardComponent
             key={card.uid}
             card={card}
-            gamePieceTransform={uiState.cardPositions[card.uid]}
+            gamePieceAppearance={uiState.cardPositions[card.uid]}
             onClick={handlers.marketCardClick(card)}
             onDragEnd={(position: Coordinate) => {
               handleCardDrag(card, position, animalDeckPosition, "animalTable", "animalDeck");
@@ -80,7 +81,7 @@ const Croupier = ({
         <CardComponent
           key={card.uid}
           card={card}
-          gamePieceTransform={uiState.cardPositions[card.uid]}
+          gamePieceAppearance={uiState.cardPositions[card.uid]}
           onClick={handlers.marketCardClick(card)}
           onDragEnd={(position) => {
             handleCardDrag(card, position, plantDeckPosition, "plantTable", "plantDeck");
@@ -100,7 +101,7 @@ const Croupier = ({
         <CardComponent
           key={card.uid}
           card={card}
-          gamePieceTransform={uiState.cardPositions[card.uid]}
+          gamePieceAppearance={uiState.cardPositions[card.uid]}
           // onClick={handlers.buyCard(card)}
           onDragEnd={(position) => {
             handleCardDrag(card, position, disasterDeckPosition, "disasterTable", "disasterDeck");
@@ -121,9 +122,7 @@ const Croupier = ({
           key={card.name}
           texturePath={`/ecosfera_baltica/element_${card.name}.avif`}
           textColor="black"
-          position={uiState.deckPositions[`${card.name}ElementDeck`].position}
-          initialPosition={uiState.deckPositions[`${card.name}ElementDeck`].initialPosition}
-          rotation={uiState.deckPositions[`${card.name}ElementDeck`].rotation}
+          gamePieceAppearance={uiState.deckPositions[`${card.name}ElementDeck`]}
           cards={gameState.elementMarket.deck.filter((elementDeckCard) => elementDeckCard.name === card.name)}
           // onDraw={(card) => onCardMove(card, "elementDeck", "elementTable")}
           onClick={handlers.marketElementClick(card.name)}
@@ -133,24 +132,24 @@ const Croupier = ({
         <CardComponent
           key={gameState.turn.borrowedElement.uid}
           card={gameState.turn.borrowedElement}
-          gamePieceTransform={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
+          gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
           onClick={() => console.error("borrowed element click NOT IMPLEMENTED")}
         />
       )}
       <Deck
-        position={uiState.deckPositions["animalDeck"].position}
+        gamePieceAppearance={uiState.deckPositions["animalDeck"]}
         texturePath={`/ecosfera_baltica/bg_animals.avif`}
         cards={gameState.animalMarket.deck}
         onClick={handlers.animalDeckClick()}
       />
       <Deck
-        position={uiState.deckPositions["plantDeck"].position}
+        gamePieceAppearance={uiState.deckPositions["plantDeck"]}
         texturePath={`/ecosfera_baltica/bg_plants.avif`}
         cards={gameState.plantMarket.deck}
         onClick={handlers.plantDeckClick()}
       />
       <Deck
-        position={uiState.deckPositions["disasterDeck"].position}
+        gamePieceAppearance={uiState.deckPositions["disasterDeck"]}
         texturePath={`/ecosfera_baltica/disaster_flood.avif`}
         cards={gameState.disasterMarket.deck}
         onClick={() => console.error("Disaster deck click NOT IMPLEMENTED")}
@@ -159,32 +158,30 @@ const Croupier = ({
       {/* Player Cards */}
       {gameState.players.map((player, index) => (
         <React.Fragment key={index}>
-          <motion.group
-            animate={{
-              x: toVector3(supplyDeckPositions(gameState)[index])[0],
-              y: toVector3(supplyDeckPositions(gameState)[index])[1],
-              z: toVector3(supplyDeckPositions(gameState)[index])[2],
-              rotateX: 0,
-              rotateY: 0,
-              rotateZ: index * (Math.PI / 2),
-            }}
-          >
-            <AbilityTiles xStart={0 - cardWidth} abilities={player.abilities} />
+          <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
+            <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
 
             <Deck
-              position={{ x: 0, y: 0, z: 0 }}
+              gamePieceAppearance={{
+                transform: {
+                  position: { x: 0, y: 0, z: 0 },
+                  initialPosition: { x: 0, y: 0, z: 0 },
+                  rotation: { x: 0, y: 0, z: 0 },
+                },
+                display: uiState.deckPositions[`${player.uid}PlayerDeck`].display,
+              }}
               texturePath={`/ecosfera_baltica/back.avif`}
               cards={player.deck}
               onClick={handlers.playerDeckClick()}
               onShuffle={() => onShuffle(player.uid)}
               options={{ shuffleable: true }}
             />
-          </motion.group>
+          </GamePieceGroup>
           {player.hand.map((card: Card) => (
             <CardComponent
               key={card.uid}
               card={card}
-              gamePieceTransform={uiState.cardPositions[card.uid]}
+              gamePieceAppearance={uiState.cardPositions[card.uid]}
               //@ts-expect-error TODO: fix type check...
               onClick={handlers.playerCardClick(card)}
               onDragEnd={(position) => {

@@ -81,6 +81,7 @@ const GameElement = ({
     >
       <motion.mesh
         ref={ref}
+        position-z={position.z}
         animate={{
           x: [initialPosition.x, initialPosition.x, position.x, position.x],
           y: [initialPosition.y, initialPosition.y, position.y, position.y],

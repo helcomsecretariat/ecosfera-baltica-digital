@@ -3,24 +3,21 @@ import { Html, useTexture } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { Button } from "./ui/button";
 import { GiCardExchange } from "react-icons/gi";
-import { Card, Coordinate } from "@/state/types";
+import { Card, GamePieceAppearance } from "@/state/types";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
 import { SRGBColorSpace } from "three";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
+import { getHighlightTextureAssetPath } from "./utils";
 
 const Deck = ({
-  position,
-  initialPosition = { x: 0, y: 0, z: 0 },
-  rotation = { x: 0, y: 0, z: 0 },
+  gamePieceAppearance,
   texturePath = "/ecosfera_baltica/element_nutrients.avif",
   onClick,
   onShuffle,
   cards,
   options,
 }: {
-  position: Coordinate;
-  initialPosition?: Coordinate;
-  rotation?: Coordinate;
+  gamePieceAppearance: GamePieceAppearance;
   texturePath: string;
   textColor?: string;
   onClick: () => void;
@@ -29,6 +26,7 @@ const Deck = ({
   options?: { shuffleable: boolean };
 }) => {
   const texture = useTexture(texturePath);
+  const highlightTexture = useTexture(getHighlightTextureAssetPath());
   const deckDepth = 0.1 * cards.length;
   const textPosition: [number, number, number] = [
     -cardWidth / 2 + cardWidth * 0.15,
@@ -40,9 +38,9 @@ const Deck = ({
   return (
     <>
       <GameElement
-        position={position}
-        initialPosition={initialPosition}
-        rotation={rotation}
+        position={gamePieceAppearance.transform.position}
+        initialPosition={gamePieceAppearance.transform.initialPosition}
+        rotation={gamePieceAppearance.transform.rotation}
         height={cardHeight}
         width={cardWidth}
         options={{
@@ -51,16 +49,23 @@ const Deck = ({
         }}
         onClick={() => onClick()}
       >
+        {gamePieceAppearance.display?.visibility === "highlighted" && (
+          <mesh>
+            <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, 1.5, 0.01]} />
+            <meshBasicMaterial transparent={true} attach="material-0" map={highlightTexture} />
+            <meshBasicMaterial transparent={true} opacity={0} attach="material-1" />
+          </mesh>
+        )}
         <mesh>
           <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, deckDepth]} />
           <meshBasicMaterial attach="material-0" map={texture} />
-          <meshBasicMaterial attach="material-1" color="#eee" />
+          <meshBasicMaterial attach="material-1" />
         </mesh>
         <mesh position={textPosition}>
           <circleGeometry args={[1.5, 16]} />
           <meshBasicMaterial color="white" opacity={0.5} transparent />
         </mesh>
-        <TextWithShadow textAlign="center" fontSize={2} position={textPosition}>
+        <TextWithShadow textAlign="center" fontSize={2} position={textPosition} opacity={0.5}>
           {cards.length}
         </TextWithShadow>
         <Html transform scale={3.5} center position={[0, cardHeight / 2, 0]}>
@@ -70,6 +75,12 @@ const Deck = ({
             </Button>
           )}
         </Html>
+        {gamePieceAppearance.display?.visibility === "dimmed" && (
+          <mesh>
+            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, deckDepth + 0.1]} />
+            <meshBasicMaterial color="black" transparent opacity={0.8} />
+          </mesh>
+        )}
       </GameElement>
     </>
   );

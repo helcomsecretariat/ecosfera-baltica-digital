@@ -53,7 +53,7 @@ export interface PlayerState {
 export interface AbilityTile extends GamePieceBase {
   type: "ability";
   uid: AbilityUID;
-  is_used: boolean;
+  isUsed: boolean;
 
   name: "move" | "refresh" | "plus" | "special";
 }
@@ -159,11 +159,20 @@ export interface GamePieceTransform {
   initialRotation?: Coordinate;
 }
 
-export interface GamePieceTransforms {
-  [key: Card["uid"] | `${string}Deck`]: GamePieceTransform;
+export interface GamePieceDisplay {
+  visibility?: "default" | "highlighted" | "dimmed";
+}
+
+export interface GamePieceAppearance {
+  transform: GamePieceTransform;
+  display?: GamePieceDisplay;
+}
+
+export interface GamePieceAppearances {
+  [key: Card["uid"] | `${string}Deck`]: GamePieceAppearance;
 }
 
 export interface UiState {
-  cardPositions: GamePieceTransforms;
-  deckPositions: GamePieceTransforms;
+  cardPositions: GamePieceAppearances;
+  deckPositions: GamePieceAppearances;
 }

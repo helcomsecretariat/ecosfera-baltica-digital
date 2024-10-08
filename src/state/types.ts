@@ -60,6 +60,7 @@ export interface AbilityTile extends GamePieceBase {
 
 export interface BiomeTile extends GamePieceBase {
   type: "biome";
+  isAcquired: boolean;
   uid: BiomeUID;
 }
 

@@ -1,6 +1,6 @@
 import { assign, setup, sendTo } from "xstate";
 import { AbilityMachineInEvents, AbilityMachineOutEvents, AbilityMachine } from "@/state/machines/ability";
-import { AbilityTile, AnimalCard, Card, ElementCard, GameState, PlantCard } from "@/state/types";
+import { AbilityTile, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
 import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
@@ -21,6 +21,7 @@ export const TurnMachine = setup({
       | { type: "user.click.player.hand.card"; card: PlantCard | AnimalCard | ElementCard }
       | { type: "user.click.market.deck.element"; name: ElementCard["name"] }
       | { type: "user.click.market.table.card"; card: PlantCard | AnimalCard }
+      | { type: "user.click.habitat"; tile: BiomeTile }
       | { type: "iddqd"; context: GameState }
       | AbilityMachineInEvents
       | AbilityMachineOutEvents,
@@ -93,6 +94,26 @@ export const TurnMachine = setup({
       }),
     ),
 
+    buyHabitat: assign(({ context }: { context: GameState }, tile: BiomeTile) =>
+      produce(context, (draft) => {
+        const { turn, players, biomeMarket } = draft;
+        const { playedCards, player } = turn;
+
+        const playedAnimals =
+          (find(players, { uid: player })
+            ?.hand.filter(({ uid }) => playedCards.includes(uid))
+            .filter(({ type }) => type === "animal") as AnimalCard[]) ?? [];
+
+        const toBeExhaustedAnimals = playedAnimals.filter(({ biomes }) => biomes.includes(tile.name)).slice(0, 2);
+
+        // animals do not exhaust cuz playr could buy multiple habitats with same animals
+        // exhaustedCards.push(...toBeExhaustedAnimals.map(({ uid }) => uid));
+        turn.playedCards = without(turn.playedCards, ...toBeExhaustedAnimals.map(({ uid }) => uid));
+
+        find(biomeMarket.deck, { name: tile.name })!.isAcquired = true;
+      }),
+    ),
+
     drawPlayerDeck: assign(({ context }) =>
       produce(context, ({ turn, players }) => {
         const player = players.find(({ uid }) => uid === turn.player)!;
@@ -126,8 +147,8 @@ export const TurnMachine = setup({
         let { table, deck } = animalMarket;
         const newDeck = [...deck, ...table];
         const newTable = newDeck.slice(0, 4);
-        deck = without(newDeck, ...newTable);
-        table = newTable;
+        animalMarket.deck = without(newDeck, ...newTable);
+        animalMarket.table = newTable;
       }),
     ),
     refreshPlantDeck: assign(({ context }) =>
@@ -135,18 +156,15 @@ export const TurnMachine = setup({
         let { table, deck } = plantMarket;
         const newDeck = [...deck, ...table];
         const newTable = newDeck.slice(0, 4);
-        deck = without(newDeck, ...newTable);
-        table = newTable;
+        plantMarket.deck = without(newDeck, ...newTable);
+        plantMarket.table = newTable;
       }),
     ),
 
     setContext: assign(({ context }, newContext: GameState) => ({ ...context, ...newContext })),
   },
   guards: {
-    notPlayedCard: BuyMachineGuards.notPlayedCard,
-    notExhausted: BuyMachineGuards.notExhausted,
-    canBorrow: BuyMachineGuards.canBorrow,
-    canBuyCard: BuyMachineGuards.canBuyCard,
+    ...BuyMachineGuards,
   },
   actors: {
     ability: AbilityMachine,
@@ -206,6 +224,13 @@ export const TurnMachine = setup({
             params: ({ event: { card } }) => card,
           },
           guard: { type: "canBuyCard", params: ({ event: { card } }) => card },
+        },
+        "user.click.habitat": {
+          actions: {
+            type: "buyHabitat",
+            params: ({ event: { tile } }) => tile,
+          },
+          guard: { type: "canBuyHabitat", params: ({ event: { tile } }) => tile },
         },
       },
     },

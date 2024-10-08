@@ -1,8 +1,7 @@
 import { Coordinate } from "@/state/types";
 import { hexagonTileXStart, biomeTileYStart, tileSize } from "../constants/gameBoard";
 import Tile from "./Tile";
-
-const biomes = ["Ice", "Coast", "Pelagic", "Rivers", "Soft bottom", "Hard benthic"];
+import { useGameState } from "@/context/GameStateProvider";
 
 const positions: Coordinate[] = [
   { x: hexagonTileXStart - tileSize, y: biomeTileYStart - tileSize * 0.55, z: 0 },
@@ -14,13 +13,16 @@ const positions: Coordinate[] = [
 ];
 
 const BiomeTiles = () => {
-  return biomes.map((biome, index) => (
+  const { handlers, state } = useGameState();
+
+  return state.biomeMarket.deck.map((habitat, index) => (
     <Tile
-      key={biome}
+      key={habitat.uid}
       position={positions[index]}
       rotation={{ x: -Math.PI / 2, y: 0, z: 0 }}
-      color="#66cc66"
-      name={biome}
+      color={habitat.isAcquired ? "#66cc66" : "#2cba16"}
+      onClick={handlers.habitatClick(habitat)}
+      name={habitat.name}
     />
   ));
 };

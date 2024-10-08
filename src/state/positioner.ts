@@ -21,7 +21,7 @@ import {
   upperYBoundary,
 } from "@/constants/gameBoard";
 import { cardHeight } from "@/constants/card";
-import { BuyMachineGuards } from "./machines/buy";
+import { BuyMachineGuards } from "./machines/guards/buy";
 
 const getTurnState = (gameState: GameState) => {
   const isRefreshing = gameState.turn.currentAbility?.name === "refresh";

@@ -144,7 +144,7 @@ export const TurnMachine = setup({
     ),
     refreshAnimalDeck: assign(({ context }) =>
       produce(context, ({ animalMarket }) => {
-        let { table, deck } = animalMarket;
+        const { table, deck } = animalMarket;
         const newDeck = [...deck, ...table];
         const newTable = newDeck.slice(0, 4);
         animalMarket.deck = without(newDeck, ...newTable);
@@ -153,7 +153,7 @@ export const TurnMachine = setup({
     ),
     refreshPlantDeck: assign(({ context }) =>
       produce(context, ({ plantMarket }) => {
-        let { table, deck } = plantMarket;
+        const { table, deck } = plantMarket;
         const newDeck = [...deck, ...table];
         const newTable = newDeck.slice(0, 4);
         plantMarket.deck = without(newDeck, ...newTable);

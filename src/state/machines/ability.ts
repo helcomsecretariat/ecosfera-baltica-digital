@@ -1,7 +1,7 @@
 import { inspect } from "@/state/machines/utils";
 import { AbilityName, AbilityTile, AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 
-import { ActorRefFromLogic, sendTo, setup, assign, ActorRef, Snapshot } from "xstate";
+import { sendTo, setup, assign, ActorRef, Snapshot } from "xstate";
 
 export type AbilityMachineOutEvents =
   | { type: "ability.draw.playerDeck" }

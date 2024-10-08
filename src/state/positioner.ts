@@ -30,6 +30,7 @@ const getTurnState = (gameState: GameState) => {
   const hasBorrowed = gameState.turn.borrowedElement;
 
   return {
+    player: gameState.turn.player,
     isPlaying: gameState.turn.playedCards.length > 0,
     isUsingAbility: isRefreshing || isMoving || isPlussing,
     isMoving,
@@ -299,7 +300,11 @@ export const positionPlayerDecks = (gameState: GameState, prevUiState: UiState |
         },
       },
       display: {
-        visibility: turnState.isUsingAbility ? (turnState.isPlussing ? "highlighted" : "dimmed") : "default",
+        visibility: turnState.isUsingAbility
+          ? turnState.isPlussing && turnState.player === player.uid
+            ? "highlighted"
+            : "dimmed"
+          : "default",
       },
     };
     return acc;
@@ -332,7 +337,11 @@ export const positionPlayerCards = (gameState: GameState, prevUiState: UiState |
             rotation,
           },
           display: {
-            visibility: turnState.isUsingAbility ? (turnState.isMoving ? "highlighted" : "dimmed") : "default",
+            visibility: turnState.isUsingAbility
+              ? turnState.isMoving && turnState.player === player.uid
+                ? "highlighted"
+                : "dimmed"
+              : "default",
           },
         };
       });

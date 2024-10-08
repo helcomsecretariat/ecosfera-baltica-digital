@@ -36,18 +36,19 @@ const Card = ({
       onDragEnd={onDragEnd}
       onClick={onClick}
     >
+      {gamePieceAppearance.display?.visibility === "highlighted" && (
+        <mesh>
+          <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, 1.5, 0]} />
+          <meshBasicMaterial transparent={true} attach="material-0" map={highlightTexture} />
+          <meshBasicMaterial transparent={true} opacity={0} attach="material-1" />
+        </mesh>
+      )}
       <mesh>
         <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.05]} />
         <meshBasicMaterial attach="material-0" map={texture} />
         <meshBasicMaterial attach="material-1" />
       </mesh>
-      {gamePieceAppearance.display?.visibility === "highlighted" && (
-        <mesh>
-          <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, 1.5, 0.01]} />
-          <meshBasicMaterial transparent={true} attach="material-0" map={highlightTexture} />
-          <meshBasicMaterial transparent={true} opacity={0} attach="material-1" />
-        </mesh>
-      )}
+
       {/* @ts-expect-error TS is sad someties */}
       {card.elements?.map((name, index) => (
         <mesh

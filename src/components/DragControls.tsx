@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as THREE from "three";
-import { useThree } from "@react-three/fiber";
+import { ThreeEvent, useThree } from "@react-three/fiber";
 import { useGesture, DragConfig } from "@use-gesture/react";
 import { ForwardRefComponent } from "@react-three/drei/helpers/ts-utils";
 
@@ -189,7 +189,10 @@ export const DragControls: ForwardRefComponent<DragControlsProps, THREE.Group> =
 
     return (
       <group
-        onClick={clickable ? onClick : null}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          if (clickable && onClick != null) onClick();
+        }}
         ref={ref}
         {...(bind() as any)}
         matrix={matrix}

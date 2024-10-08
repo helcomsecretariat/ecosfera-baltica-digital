@@ -19,7 +19,7 @@ export class Croupier {
   spawnAbilityTiles(name: AbilityConfig["name"], config: AbilityConfig): AbilityTile[] {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
-      is_used: false,
+      isUsed: false,
       type: "ability",
       uid: `ability-${this.nextUid()}` as AbilityTile["uid"],
     }));

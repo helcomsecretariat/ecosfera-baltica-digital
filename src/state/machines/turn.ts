@@ -93,6 +93,53 @@ export const TurnMachine = setup({
       }),
     ),
 
+    drawPlayerDeck: assign(({ context }) =>
+      produce(context, ({ turn, players }) => {
+        const player = players.find(({ uid }) => uid === turn.player)!;
+        const drawnCard = player.deck.shift();
+        if (drawnCard) player.hand.push(drawnCard);
+      }),
+    ),
+    cardToAnimalDeck: assign(({ context }, card: AnimalCard) =>
+      produce(context, ({ players, animalMarket, turn }) => {
+        const player = players.find(({ uid }) => uid === turn.player)!;
+        player.hand = reject(player.hand, card);
+        animalMarket.deck.push(card);
+      }),
+    ),
+    cardToPlantDeck: assign(({ context }, card: PlantCard) =>
+      produce(context, ({ players, plantMarket, turn }) => {
+        const player = players.find(({ uid }) => uid === turn.player)!;
+        player.hand = reject(player.hand, card);
+        plantMarket.deck.push(card);
+      }),
+    ),
+    cardToElementDeck: assign(({ context }, card: ElementCard) =>
+      produce(context, ({ players, elementMarket, turn }) => {
+        const player = players.find(({ uid }) => uid === turn.player)!;
+        player.hand = reject(player.hand, card);
+        elementMarket.deck.push(card);
+      }),
+    ),
+    refreshAnimalDeck: assign(({ context }) =>
+      produce(context, ({ animalMarket }) => {
+        let { table, deck } = animalMarket;
+        const newDeck = [...deck, ...table];
+        const newTable = newDeck.slice(0, 4);
+        deck = without(newDeck, ...newTable);
+        table = newTable;
+      }),
+    ),
+    refreshPlantDeck: assign(({ context }) =>
+      produce(context, ({ plantMarket }) => {
+        let { table, deck } = plantMarket;
+        const newDeck = [...deck, ...table];
+        const newTable = newDeck.slice(0, 4);
+        deck = without(newDeck, ...newTable);
+        table = newTable;
+      }),
+    ),
+
     setContext: assign(({ context }, newContext: GameState) => ({ ...context, ...newContext })),
   },
   guards: {
@@ -169,69 +216,37 @@ export const TurnMachine = setup({
           actions: sendTo("ability", ({ event }) => event),
         },
         "ability.draw.playerDeck": {
-          actions: assign(({ context }) =>
-            produce(context, ({ turn, players }) => {
-              const player = players.find(({ uid }) => uid === turn.player)!;
-              const drawnCard = player.deck.shift();
-              if (drawnCard) player.hand.push(drawnCard);
-            }),
-          ),
+          actions: "drawPlayerDeck",
         },
         "ability.move.toAnimalDeck": {
-          actions: assign(({ context, event: { card } }) =>
-            produce(context, ({ players, animalMarket, turn }) => {
-              const player = players.find(({ uid }) => uid === turn.player)!;
-              player.hand = reject(player.hand, card);
-              animalMarket.deck.push(card);
-            }),
-          ),
+          actions: {
+            type: "cardToAnimalDeck",
+            params: ({ event: { card } }) => card,
+          },
         },
         "ability.move.toPlantDeck": {
-          actions: assign(({ context, event: { card } }) =>
-            produce(context, ({ players, plantMarket, turn }) => {
-              const player = players.find(({ uid }) => uid === turn.player)!;
-              player.hand = reject(player.hand, card);
-              plantMarket.deck.push(card);
-            }),
-          ),
+          actions: {
+            type: "cardToPlantDeck",
+            params: ({ event: { card } }) => card,
+          },
         },
         "ability.move.toElementDeck": {
-          actions: assign(({ context, event: { card } }) =>
-            produce(context, ({ players, elementMarket, turn }) => {
-              const player = players.find(({ uid }) => uid === turn.player)!;
-              player.hand = reject(player.hand, card);
-              elementMarket.deck.push(card);
-            }),
-          ),
+          actions: {
+            type: "cardToElementDeck",
+            params: ({ event: { card } }) => card,
+          },
         },
         "ability.refresh.animalDeck": {
-          actions: assign(({ context }) =>
-            produce(context, ({ animalMarket }) => {
-              let { table, deck } = animalMarket;
-              const newDeck = [...deck, ...table];
-              const newTable = newDeck.slice(0, 4);
-              deck = without(newDeck, ...newTable);
-              table = newTable;
-            }),
-          ),
+          actions: "refreshAnimalDeck",
         },
         "ability.refresh.plantDeck": {
-          actions: assign(({ context }) =>
-            produce(context, ({ plantMarket }) => {
-              let { table, deck } = plantMarket;
-              const newDeck = [...deck, ...table];
-              const newTable = newDeck.slice(0, 4);
-              deck = without(newDeck, ...newTable);
-              table = newTable;
-            }),
-          ),
+          actions: "refreshPlantDeck",
         },
       },
 
       invoke: {
         id: "ability",
         src: "ability",
-        // @ts-expect-error really strange TS error =(
         input: ({
           context: {
             turn: { currentAbility },

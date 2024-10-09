@@ -4,9 +4,9 @@ import { AbilityTile, AnimalCard, BiomeTile, Card, ElementCard, GameState, Plant
 import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
-import { compact, countBy, entries, find, intersection, reject, without } from "lodash";
-import { replaceItem } from "@/state/utils";
 import { BuyMachineGuards } from "@/state/machines/guards/buy";
+import { compact, concat, countBy, entries, find, intersection, reject, without } from "lodash";
+import { replaceItem, shuffle } from "@/state/utils";
 
 export const TurnMachine = setup({
   types: {
@@ -17,6 +17,7 @@ export const TurnMachine = setup({
       seed: string;
     },
     events: {} as
+      | { type: "user.click.player.endTurn" }
       | { type: "user.click.token"; token: AbilityTile }
       | { type: "user.click.player.hand.card"; card: PlantCard | AnimalCard | ElementCard }
       | { type: "user.click.market.deck.element"; name: ElementCard["name"] }
@@ -93,7 +94,6 @@ export const TurnMachine = setup({
         player.hand.push(card);
       }),
     ),
-
     buyHabitat: assign(({ context }: { context: GameState }, tile: BiomeTile) =>
       produce(context, (draft) => {
         const { turn, players, biomeMarket } = draft;
@@ -160,6 +160,50 @@ export const TurnMachine = setup({
         plantMarket.table = newTable;
       }),
     ),
+    discardCards: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.players = produce(draft.players, (playersDraft) => {
+          const activePlayer = find(playersDraft, { uid: context.turn.player });
+
+          if (!activePlayer) return playersDraft;
+
+          activePlayer.discard = activePlayer.hand;
+          activePlayer.hand = [];
+        });
+      }),
+    ),
+    endTurn: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.turn = {
+          player: context.turn.player,
+          currentAbility: undefined,
+          exhaustedCards: [],
+          playedCards: [],
+          borrowedElement: undefined,
+          borrowedCount: 0,
+          borrowedLimit: context.turn.borrowedLimit,
+          usedAbilities: context.turn.usedAbilities,
+        };
+        draft.players = produce(draft.players, (playersDraft) => {
+          const activePlayer = find(playersDraft, { uid: context.turn.player });
+
+          if (!activePlayer) return playersDraft;
+
+          const drawCount = Math.min(4, activePlayer.deck.length);
+          activePlayer.hand = activePlayer.deck.slice(0, drawCount);
+          activePlayer.deck = activePlayer.deck.slice(drawCount);
+
+          if (activePlayer.hand.length < 4) {
+            activePlayer.deck = shuffle(activePlayer.discard, context.seed);
+            activePlayer.discard = [];
+
+            const remainingDraw = 4 - activePlayer.hand.length;
+            activePlayer.hand = concat(activePlayer.hand, activePlayer.deck.slice(0, remainingDraw));
+            activePlayer.deck = activePlayer.deck.slice(remainingDraw);
+          }
+        });
+      }),
+    ),
 
     setContext: assign(({ context }, newContext: GameState) => ({ ...context, ...newContext })),
   },
@@ -184,6 +228,16 @@ export const TurnMachine = setup({
   },
 
   states: {
+    endOfTurn: {
+      after: {
+        850: {
+          target: "buying",
+          actions: {
+            type: "endTurn",
+          },
+        },
+      },
+    },
     buying: {
       on: {
         "user.click.token": {
@@ -194,6 +248,12 @@ export const TurnMachine = setup({
               currentAbility: { piece: token, name: token.name },
             }),
           }),
+        },
+        "user.click.player.endTurn": {
+          target: "endOfTurn",
+          actions: {
+            type: "discardCards",
+          },
         },
         "user.click.market.deck.element": {
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },

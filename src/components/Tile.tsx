@@ -17,7 +17,14 @@ const Tile = ({
   onClick?: () => void;
 }) => {
   return (
-    <GameElement position={position} rotation={rotation} height={6} width={10} onClick={onClick}>
+    <GameElement
+      gamePieceAppearance={{
+        transform: { position, rotation },
+      }}
+      height={6}
+      width={10}
+      onClick={onClick}
+    >
       <cylinderGeometry args={[tileSize, tileSize, 0.1, 6, 1]} />
       <meshBasicMaterial color={color} />
       <Text fontSize={1} color="black" rotation={[1.57, 0, 0]} position={[0, -0.1, 0]}>

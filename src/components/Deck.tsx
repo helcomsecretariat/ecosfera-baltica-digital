@@ -38,9 +38,7 @@ const Deck = ({
   return (
     <>
       <GameElement
-        position={gamePieceAppearance.transform.position}
-        initialPosition={gamePieceAppearance.transform.initialPosition}
-        rotation={gamePieceAppearance.transform.rotation}
+        gamePieceAppearance={gamePieceAppearance}
         height={cardHeight}
         width={cardWidth}
         options={{

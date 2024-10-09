@@ -66,6 +66,7 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "biome",
+      isAcquired: false,
       uid: `biome-${this.nextUid()}` as BiomeTile["uid"],
     }));
   }

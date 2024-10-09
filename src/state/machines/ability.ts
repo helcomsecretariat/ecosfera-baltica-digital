@@ -1,7 +1,7 @@
 import { inspect } from "@/state/machines/utils";
 import { AbilityName, AbilityTile, AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 
-import { ActorRefFromLogic, sendTo, setup, assign } from "xstate";
+import { sendTo, setup, assign, ActorRef, Snapshot } from "xstate";
 
 export type AbilityMachineOutEvents =
   | { type: "ability.draw.playerDeck" }
@@ -19,22 +19,21 @@ export type AbilityMachineInEvents =
   | { type: "user.click.player.hand.card"; card: DisasterCard | PlantCard | AnimalCard | ElementCard }
   | { type: "user.click.player.deck" }
   | { type: "user.click.token"; token: AbilityTile };
+
+type TurnMachine = ActorRef<Snapshot<unknown>, AbilityMachineOutEvents>;
+
 export const AbilityMachine = setup({
   types: {
     context: {} as {
       piece: AbilityTile | PlantCard | AnimalCard;
       name: AbilityName;
       cardToMove?: Card;
-      //othervise there will be cyclic dependency
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      parentActor: ActorRefFromLogic<any>;
+      parentActor: TurnMachine;
     },
     input: {} as {
       piece: AbilityTile | PlantCard | AnimalCard;
       name: AbilityName;
-      //othervise there will be cyclic dependency
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      parentActor: ActorRefFromLogic<any>;
+      parentActor: TurnMachine;
     },
 
     events: {} as AbilityMachineInEvents,

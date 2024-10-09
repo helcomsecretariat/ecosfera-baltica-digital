@@ -127,10 +127,7 @@ beforeEach(() => {
   });
 
   actor.start();
-  actor.send({
-    type: "buy.iddqd",
-    context: initialContext as GameState,
-  });
+  actor.send({ type: "iddqd", context: initialContext as GameState });
 });
 
 test.skip("drawing a card when player's deck is empty", async () => {

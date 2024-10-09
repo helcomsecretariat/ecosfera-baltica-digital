@@ -12,6 +12,9 @@ import { animalDeckPosition, disasterDeckPosition, plantDeckPosition, supplyDeck
 import { uniqBy } from "lodash-es";
 import { abilityOffset } from "@/constants/gameBoard";
 import GamePieceGroup from "./GamePieceGroup";
+import { Html } from "@react-three/drei";
+import { Button } from "./ui/button";
+import { AnimatePresence } from "framer-motion";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -177,32 +180,40 @@ const Croupier = ({
               options={{ shuffleable: true }}
             />
           </GamePieceGroup>
-          {player.hand.map((card: Card) => (
-            <CardComponent
-              key={card.uid}
-              card={card}
-              gamePieceAppearance={uiState.cardPositions[card.uid]}
-              //@ts-expect-error TODO: fix type check...
-              onClick={handlers.playerCardClick(card)}
-              onDragEnd={(position) => {
-                supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-                  handleCardDrag(
-                    card,
-                    position,
-                    supplyDeckPosition,
-                    `playerHand_${player.uid}`,
-                    `playerDeck_${gameState.players[index].uid}`,
-                  );
-                });
-                if (card.type === "animal") {
-                  handleCardDrag(card, position, animalDeckPosition, `playerHand_${player.uid}`, "animalDeck");
-                }
-                if (card.type === "plant") {
-                  handleCardDrag(card, position, plantDeckPosition, `playerHand_${player.uid}`, "plantDeck");
-                }
-              }}
-            />
-          ))}
+          <AnimatePresence>
+            {player.hand.map(
+              (card: Card) =>
+                uiState.cardPositions[card.uid] && (
+                  <CardComponent
+                    key={card.uid}
+                    card={card}
+                    gamePieceAppearance={uiState.cardPositions[card.uid]}
+                    //@ts-expect-error TODO: fix type check...
+                    onClick={handlers.playerCardClick(card)}
+                    onDragEnd={(position) => {
+                      supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
+                        handleCardDrag(
+                          card,
+                          position,
+                          supplyDeckPosition,
+                          `playerHand_${player.uid}`,
+                          `playerDeck_${gameState.players[index].uid}`,
+                        );
+                      });
+                      if (card.type === "animal") {
+                        handleCardDrag(card, position, animalDeckPosition, `playerHand_${player.uid}`, "animalDeck");
+                      }
+                      if (card.type === "plant") {
+                        handleCardDrag(card, position, plantDeckPosition, `playerHand_${player.uid}`, "plantDeck");
+                      }
+                    }}
+                  />
+                ),
+            )}
+          </AnimatePresence>
+          <Html center position={[0, -34, 0]}>
+            <Button onClick={handlers.playerEndTurnClick()}>End turn</Button>
+          </Html>
         </React.Fragment>
       ))}
     </>

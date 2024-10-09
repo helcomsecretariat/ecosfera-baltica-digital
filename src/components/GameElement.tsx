@@ -8,15 +8,12 @@ import {
 } from "../constants/gameBoard";
 import { decomposeMatrix } from "@/utils/3d";
 import { motion } from "framer-motion-3d";
-import { Coordinate } from "@/state/types";
+import { Coordinate, GamePieceAppearance } from "@/state/types";
 import { MeshProps } from "@react-three/fiber";
 import { DragControls } from "./DragControls";
 
 type GameElementProps = {
-  position: Coordinate;
-  initialPosition?: Coordinate;
-  rotation?: Coordinate;
-  initialRotation?: Coordinate;
+  gamePieceAppearance: GamePieceAppearance;
   height: number;
   width: number;
   options?: {
@@ -29,10 +26,7 @@ type GameElementProps = {
 };
 
 const GameElement = ({
-  position,
-  initialPosition = { x: 0, y: 0, z: 0 },
-  rotation = { x: 0, y: 0, z: 0 },
-  initialRotation = { x: 0, y: 0, z: 0 },
+  gamePieceAppearance,
   height,
   width,
   options = {
@@ -69,8 +63,14 @@ const GameElement = ({
   return (
     <DragControls
       dragLimits={[
-        [lowerXBoundary + position.x * -1 + width / 2, upperXBoundary + position.x * -1 - width / 2],
-        [lowerYBoundary + position.y * -1 + height / 2, upperYBoundary + position.y * -1 - height / 2],
+        [
+          lowerXBoundary + gamePieceAppearance.transform.position.x * -1 + width / 2,
+          upperXBoundary + gamePieceAppearance.transform.position.x * -1 - width / 2,
+        ],
+        [
+          lowerYBoundary + gamePieceAppearance.transform.position.y * -1 + height / 2,
+          upperYBoundary + gamePieceAppearance.transform.position.y * -1 - height / 2,
+        ],
         [0, 0],
       ]}
       dragConfig={{ enabled: options?.draggable ?? true }}
@@ -81,22 +81,84 @@ const GameElement = ({
     >
       <motion.mesh
         ref={ref}
-        position-z={position.z}
+        position-z={gamePieceAppearance.transform.position.z}
         animate={{
-          x: [initialPosition.x, initialPosition.x, position.x, position.x],
-          y: [initialPosition.y, initialPosition.y, position.y, position.y],
-          z: [initialPosition.z, 8, 8, position.z],
-          rotateX: [initialRotation.x, initialRotation.x, rotation.x, rotation.x],
-          rotateY: [initialRotation.y, initialRotation.y, rotation.y, rotation.y],
-          rotateZ: [initialRotation.z, initialRotation.z, rotation.z, rotation.z],
+          x: [
+            gamePieceAppearance.transform.initialPosition?.x ?? 0,
+            gamePieceAppearance.transform.initialPosition?.x ?? 0,
+            gamePieceAppearance.transform.position.x,
+            gamePieceAppearance.transform.position.x,
+          ],
+          y: [
+            gamePieceAppearance.transform.initialPosition?.y ?? 0,
+            gamePieceAppearance.transform.initialPosition?.y ?? 0,
+            gamePieceAppearance.transform.position.y,
+            gamePieceAppearance.transform.position.y,
+          ],
+          z: [gamePieceAppearance.transform.initialPosition?.z ?? 0, 8, 8, gamePieceAppearance.transform.position.z],
+          rotateX: [
+            gamePieceAppearance.transform.initialRotation?.x ?? 0,
+            gamePieceAppearance.transform.initialRotation?.x ?? 0,
+            gamePieceAppearance.transform.rotation.x,
+            gamePieceAppearance.transform.rotation.x,
+          ],
+          rotateY: [
+            gamePieceAppearance.transform.initialRotation?.y ?? 0,
+            gamePieceAppearance.transform.initialRotation?.y ?? 0,
+            gamePieceAppearance.transform.rotation.y,
+            gamePieceAppearance.transform.rotation.y,
+          ],
+          rotateZ: [
+            gamePieceAppearance.transform.initialRotation?.z ?? 0,
+            gamePieceAppearance.transform.initialRotation?.z ?? 0,
+            gamePieceAppearance.transform.rotation.z,
+            gamePieceAppearance.transform.rotation.z,
+          ],
+        }}
+        exit={{
+          x: [
+            gamePieceAppearance.transform.position.x,
+            gamePieceAppearance.transform.position.x,
+            gamePieceAppearance.transform.exitPosition?.x ?? 0,
+            gamePieceAppearance.transform.exitPosition?.x ?? 0,
+          ],
+          y: [
+            gamePieceAppearance.transform.position.y,
+            gamePieceAppearance.transform.position.y,
+            gamePieceAppearance.transform.exitPosition?.y ?? 0,
+            gamePieceAppearance.transform.exitPosition?.y ?? 0,
+          ],
+          z: [gamePieceAppearance.transform.position.z, 8, 8, gamePieceAppearance.transform.position.z],
+          rotateX: [
+            gamePieceAppearance.transform.rotation.x,
+            gamePieceAppearance.transform.rotation.x,
+            gamePieceAppearance.transform.initialRotation?.x ?? 0,
+            gamePieceAppearance.transform.initialRotation?.x ?? 0,
+          ],
+          rotateY: [
+            gamePieceAppearance.transform.rotation.y,
+            gamePieceAppearance.transform.rotation.y,
+            gamePieceAppearance.transform.initialRotation?.y ?? 0,
+            gamePieceAppearance.transform.initialRotation?.y ?? 0,
+          ],
+          rotateZ: [
+            gamePieceAppearance.transform.rotation.z,
+            gamePieceAppearance.transform.rotation.z,
+            gamePieceAppearance.transform.initialRotation?.z ?? 0,
+            gamePieceAppearance.transform.initialRotation?.z ?? 0,
+          ],
         }}
         transition={{ ease: "anticipate", times: [0, 0.05, 0.8, 1], duration: 0.8 }}
-        initial={{ x: initialPosition.x, y: initialPosition.y, z: initialPosition.z }}
+        initial={{
+          x: gamePieceAppearance.transform.initialPosition?.x,
+          y: gamePieceAppearance.transform.initialPosition?.y,
+          z: gamePieceAppearance.transform.initialPosition?.z,
+        }}
         scale={(hovered || dragging) && (options?.showHoverAnimation ?? true) ? 1.15 : 1}
         rotation={[
-          rotationOverride?.x ?? rotation.x,
-          rotationOverride?.y ?? rotation.y,
-          rotationOverride?.z ?? rotation.z,
+          rotationOverride?.x ?? gamePieceAppearance.transform.rotation?.x,
+          rotationOverride?.y ?? gamePieceAppearance.transform.rotation?.y,
+          rotationOverride?.z ?? gamePieceAppearance.transform.rotation?.z,
         ]}
         onPointerOver={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}

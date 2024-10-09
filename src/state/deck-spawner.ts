@@ -62,6 +62,7 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): Ga
     });
 
   return {
+    seed,
     turn: {
       player: players[0].uid,
       currentAbility: undefined,

@@ -20,8 +20,12 @@ const AbilityTiles = ({
   return abilities.map((ability, index) => (
     <GameElement
       key={ability.name + xStart}
-      position={{ x: xStart, y: yStart + abilityOffset * index, z: 0 }}
-      rotation={rotation}
+      gamePieceAppearance={{
+        transform: {
+          position: { x: xStart, y: yStart + abilityOffset * index, z: 0 },
+          rotation,
+        },
+      }}
       height={6}
       width={6}
       onClick={handlers.tokenClick(ability)}

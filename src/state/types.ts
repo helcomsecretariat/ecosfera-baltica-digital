@@ -20,6 +20,7 @@ export type PlayerUID = `${"player-"}${string}` & { readonly __brand: "PlayerUID
 export type GamePieceUID = AbilityUID | AnimalUID | PlantUID | ElementUID | DisasterUID | BiomeUID | ExtinctionUID;
 
 export interface GameState {
+  seed: string;
   turn: {
     player: PlayerState["uid"];
     currentAbility?: {
@@ -156,12 +157,14 @@ export interface Coordinate {
 export interface GamePieceTransform {
   position: Coordinate;
   initialPosition?: Coordinate;
+  exitPosition?: Coordinate;
   rotation: Coordinate;
   initialRotation?: Coordinate;
+  exitRotation?: Coordinate;
 }
 
 export interface GamePieceDisplay {
-  visibility?: "default" | "highlighted" | "dimmed";
+  visibility?: "default" | "highlighted" | "dimmed" | "hidden";
 }
 
 export interface GamePieceAppearance {

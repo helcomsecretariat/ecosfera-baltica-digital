@@ -334,6 +334,7 @@ export const positionPlayerCards = (gameState: GameState, prevUiState: UiState |
               z: 0,
             },
             initialPosition: prevUiState?.cardPositions[card.uid]?.transform.position ?? basePosition,
+            exitPosition: basePosition,
             rotation,
           },
           display: {
@@ -368,6 +369,7 @@ export const positionPlayerCards = (gameState: GameState, prevUiState: UiState |
             },
             initialPosition: prevUiState?.cardPositions[card.uid]?.transform.position ?? basePosition,
             rotation,
+            exitPosition: basePosition,
           },
           display: {
             visibility: "dimmed",

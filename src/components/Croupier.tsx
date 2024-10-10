@@ -161,10 +161,6 @@ const Croupier = ({
       {gameState.players.map((player) => (
         <React.Fragment key={player.uid + "HUD"}>
           <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
-            {player.uid === gameState.turn.player && (
-              <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
-            )}
-
             <Deck
               gamePieceAppearance={{
                 ...uiState.deckPositions[`${player.uid}PlayerDeck`],
@@ -177,6 +173,15 @@ const Croupier = ({
               cards={player.deck}
               onClick={handlers.playerDeckClick()}
             />
+
+            {player.uid === gameState.turn.player && (
+              <>
+                <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
+                <Html transform center position={[0, 15, 0]} scale={4}>
+                  <Button onClick={handlers.playerEndTurnClick()}>End turn</Button>
+                </Html>
+              </>
+            )}
           </GamePieceGroup>
 
           <Deck
@@ -204,10 +209,6 @@ const Croupier = ({
             ),
         ),
       )}
-
-      <Html center position={[0, -34, 0]} key={"playerEndTurnButton"}>
-        <Button onClick={handlers.playerEndTurnClick()}>End turn</Button>
-      </Html>
     </AnimatePresence>
   );
 };

@@ -8,20 +8,19 @@ import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
 import { SRGBColorSpace } from "three";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { getHighlightTextureAssetPath } from "./utils";
+import { useControls } from "leva";
 
 const Deck = ({
   gamePieceAppearance,
-  texturePath = "/ecosfera_baltica/element_nutrients.avif",
+  texturePath = "/ecosfera_baltica/back.avif",
   onClick,
-  onShuffle,
   cards,
   options,
 }: {
   gamePieceAppearance: GamePieceAppearance;
-  texturePath: string;
+  texturePath?: string;
   textColor?: string;
   onClick: () => void;
-  onShuffle?: () => void;
   cards: Card[];
   options?: { shuffleable: boolean };
 }) => {
@@ -33,6 +32,7 @@ const Deck = ({
     -cardHeight / 2 + cardHeight * 0.15,
     deckDepth + 0.15,
   ];
+  const { useDimmed } = useControls({ useDimmed: { value: true } });
   texture.colorSpace = SRGBColorSpace;
 
   return (
@@ -68,12 +68,12 @@ const Deck = ({
         </TextWithShadow>
         <Html transform scale={3.5} center position={[0, cardHeight / 2, 0]}>
           {(options?.shuffleable ?? false) && (
-            <Button variant="default" size="icon" name="Shuffle" onClick={onShuffle}>
+            <Button variant="default" size="icon" name="Shuffle">
               <GiCardExchange className="h-6 w-6" />
             </Button>
           )}
         </Html>
-        {gamePieceAppearance.display?.visibility === "dimmed" && (
+        {useDimmed && gamePieceAppearance.display?.visibility === "dimmed" && (
           <mesh>
             <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, deckDepth + 0.1]} />
             <meshBasicMaterial color="black" transparent opacity={0.8} />

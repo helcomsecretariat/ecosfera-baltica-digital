@@ -8,7 +8,6 @@ import ExtinctionTiles from "./ExtinctionTiles";
 import BiomeTiles from "./BiomeTiles";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
-import { shuffle } from "@/state/utils";
 import { Card, UiState } from "@/state/types";
 import PreloadAssets from "@/components/PreloadAssets";
 import { AnimalCard, DisasterCard, ElementCard, PlantCard } from "@/state/types";
@@ -154,22 +153,6 @@ function GameBoard() {
     });
   };
 
-  const shuffleDeck = (playerUid: string) => {
-    setGameState((prevGameState) => {
-      return {
-        ...prevGameState,
-        players: prevGameState.players.map((player) =>
-          player.uid === playerUid
-            ? {
-                ...player,
-                deck: shuffle(player.deck, new Date().getMilliseconds().toString()),
-              }
-            : player,
-        ),
-      };
-    });
-  };
-
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
       <PreloadAssets config={deckConfig as DeckConfig} />
@@ -183,7 +166,6 @@ function GameBoard() {
           gameState={gameState}
           uiState={uiState}
           onCardMove={(card, origin, destination) => moveCard(card, origin, destination)}
-          onShuffle={(playerUid) => shuffleDeck(playerUid)}
         />
 
         <ExtinctionTiles />

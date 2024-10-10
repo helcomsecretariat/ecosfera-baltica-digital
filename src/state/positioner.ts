@@ -7,21 +7,25 @@ import {
   ElementCard,
   GameState,
   PlantCard,
-  GamePieceAppearances,
+  GamePieceCoordsDict,
   UiState,
+  GamePieceAppearance,
+  GamePieceAppearances,
 } from "./types";
 import {
   cardXOffset,
   cardYOffset,
   lowerXBoundary,
+  lowerYBoundary,
   marketXStart,
   marketYStart,
   playerCardsYStart,
   upperXBoundary,
   upperYBoundary,
 } from "@/constants/gameBoard";
-import { cardHeight } from "@/constants/card";
+import { cardHeight, cardWidth } from "@/constants/card";
 import { BuyMachineGuards } from "./machines/guards/buy";
+import { baseDuration, defaultAnimationTimings, largeDistance, minDuration } from "@/constants/animation";
 
 const getTurnState = (gameState: GameState) => {
   const isRefreshing = gameState.turn.currentAbility?.name === "refresh";
@@ -42,25 +46,71 @@ const getTurnState = (gameState: GameState) => {
 
 export const toUiState = (prevUiState: UiState | null, gameState: GameState): UiState => {
   return {
-    cardPositions: calculateCardPositions(gameState, prevUiState),
-    deckPositions: calculateDeckPositions(gameState, prevUiState),
+    cardPositions: calcDelays(calculateCardPositions(gameState), prevUiState?.cardPositions),
+    deckPositions: calculateDeckPositions(gameState),
   };
 };
+function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict): GamePieceAppearances {
+  // Helper function to calculate the Euclidean distance between two positions
+  // And delay the animation based on the distance (smaller distance => more delay)
+  // this helps to get this "hand sweep" effect for cards that are moving
 
-const calculateCardPositions = (gameState: GameState, prevUiState: UiState | null): GamePieceAppearances => {
+  const calcDist = (posA: Coordinate, posB: Coordinate): number => {
+    return Math.sqrt(Math.pow(posA.x - posB.x, 2) + Math.pow(posA.y - posB.y, 2));
+  };
+
+  let maxDistance = 0;
+
+  const result = Object.entries(cards).map(([key, currentApp]) => {
+    const prevApp = cardsPrev?.[key as keyof GamePieceCoordsDict] as GamePieceAppearance | undefined;
+
+    let distance = 0;
+
+    if (currentApp.transform.position && currentApp.transform.initialPosition) {
+      // Appearing
+      distance = calcDist(currentApp.transform.initialPosition, currentApp.transform.position);
+    } else if (prevApp?.transform.position && currentApp.transform.exitPosition) {
+      // Disappearing
+      distance = calcDist(prevApp.transform.position, currentApp.transform.exitPosition);
+    } else if (prevApp?.transform.position && currentApp.transform.position) {
+      // Moving
+      distance = calcDist(prevApp.transform.position, currentApp.transform.position);
+    } else {
+      console.error("Card not found in prevApp or currentApp");
+    }
+
+    maxDistance = Math.max(maxDistance, distance);
+
+    return [key, { ...currentApp, distance }];
+  });
+
+  const updatedCards = Object.fromEntries(
+    result.map(([key, value]) => {
+      const delay = (baseDuration * (maxDistance - value.distance)) / maxDistance;
+      const duration = Math.max(minDuration, (value.distance / largeDistance) * baseDuration);
+
+      return [key, { ...value, delay, duration } as GamePieceAppearance];
+    }),
+  ) as GamePieceAppearances;
+
+  return updatedCards;
+}
+
+const calculateCardPositions = (gameState: GameState): GamePieceCoordsDict => {
   return {
-    ...positionAnimalCards(gameState, prevUiState),
+    ...positionAnimalCards(gameState),
     ...positionPlantCards(gameState),
     ...positionElementCards(gameState),
     ...positionDisasterCards(gameState),
-    ...positionPlayerCards(gameState, prevUiState),
+    ...positionPlayerCards(gameState),
   };
 };
 
-const calculateDeckPositions = (gameState: GameState, prevUiState: UiState | null): GamePieceAppearances => {
+const calculateDeckPositions = (gameState: GameState): GamePieceAppearances => {
   const turnState = getTurnState(gameState);
   return {
     animalDeck: {
+      ...defaultAnimationTimings,
       transform: {
         position: animalDeckPosition,
         initialPosition: animalDeckPosition,
@@ -79,6 +129,7 @@ const calculateDeckPositions = (gameState: GameState, prevUiState: UiState | nul
       },
     },
     plantDeck: {
+      ...defaultAnimationTimings,
       transform: {
         position: plantDeckPosition,
         initialPosition: plantDeckPosition,
@@ -97,6 +148,7 @@ const calculateDeckPositions = (gameState: GameState, prevUiState: UiState | nul
       },
     },
     disasterDeck: {
+      ...defaultAnimationTimings,
       transform: {
         position: disasterDeckPosition,
         initialPosition: disasterDeckPosition,
@@ -107,7 +159,7 @@ const calculateDeckPositions = (gameState: GameState, prevUiState: UiState | nul
       },
     },
     ...positionElementDecks(gameState),
-    ...positionPlayerDecks(gameState, prevUiState),
+    ...positionPlayerDecks(gameState),
   };
 };
 
@@ -145,94 +197,146 @@ export const supplyDeckPositions = (gameState: GameState): Coordinate[] => {
   return positions;
 };
 
-export const positionAnimalCards = (gameState: GameState, prevUiState: UiState | null): GamePieceAppearances => {
-  const turnState = getTurnState(gameState);
-  return gameState.animalMarket.table.reduce((acc, card: AnimalCard, index: number) => {
-    acc[card.uid] = {
-      transform: {
-        position: {
-          x: marketXStart + (index + 1) * cardXOffset,
-          y: marketYStart,
-          z: 0 + +BuyMachineGuards.canBuyCard({ context: gameState }, card) * 0.1,
-        },
-        initialPosition: prevUiState?.cardPositions[card.uid]?.transform?.position ?? animalDeckPosition,
-        rotation: { x: 0, y: 0, z: 0 },
-      },
-      display: {
-        visibility: turnState.isPlaying
-          ? BuyMachineGuards.canBuyCard({ context: gameState }, card)
-            ? "highlighted"
-            : "dimmed"
-          : turnState.isUsingAbility
-            ? "dimmed"
-            : "default",
-      },
-    };
-    return acc;
-  }, {} as GamePieceAppearances);
+export const discardPositions = (gameState: GameState): Coordinate[] => {
+  const positions: Coordinate[] = [];
+
+  if (gameState.players.length > 0) {
+    positions.push({ x: upperXBoundary - cardWidth, y: lowerYBoundary + cardHeight / 2, z: 0 });
+  }
+
+  if (gameState.players.length > 1) {
+    positions.push({ x: upperXBoundary - cardWidth, y: upperYBoundary - cardHeight / 2, z: 0 });
+  }
+
+  if (gameState.players.length > 2) {
+    positions.push({ x: lowerXBoundary + cardWidth, y: upperYBoundary - cardHeight / 2, z: 0 });
+  }
+
+  if (gameState.players.length > 3) {
+    positions.push({ x: lowerXBoundary + cardWidth, y: lowerYBoundary + cardHeight / 2, z: 0 });
+  }
+
+  return positions;
 };
 
-export const positionPlantCards = (gameState: GameState): GamePieceAppearances => {
+export const positionAnimalCards = (gameState: GameState): GamePieceCoordsDict => {
   const turnState = getTurnState(gameState);
-  return gameState.plantMarket.table.reduce((acc, card: PlantCard, index: number) => {
-    acc[card.uid] = {
-      transform: {
-        position: {
-          x: marketXStart + (index + 1) * cardXOffset,
-          y: marketYStart - cardYOffset,
-          z: 0 + +BuyMachineGuards.canBuyCard({ context: gameState }, card) * 0.1,
-        },
-        initialPosition: {
-          x: plantDeckPosition.x,
-          y: plantDeckPosition.y,
-          z: plantDeckPosition.z,
-        },
-        rotation: { x: 0, y: 0, z: 0 },
-      },
-      display: {
-        visibility: turnState.isPlaying
-          ? BuyMachineGuards.canBuyCard({ context: gameState }, card)
-            ? "highlighted"
-            : "dimmed"
-          : turnState.isUsingAbility
-            ? "dimmed"
-            : "default",
-      },
-    };
 
-    return acc;
-  }, {} as GamePieceAppearances);
-};
-
-export const positionElementCards = (gameState: GameState): GamePieceAppearances =>
-  ([gameState.turn.borrowedElement, ...gameState.elementMarket.table].filter(Boolean) as ElementCard[]).reduce(
-    (acc, card: ElementCard) => {
+  return {
+    ...gameState.animalMarket.table.reduce((acc, card: AnimalCard, index: number) => {
       acc[card.uid] = {
         transform: {
           position: {
-            x: marketXStart + 5 * cardXOffset,
-            y: marketYStart - 2 * cardYOffset,
-            z: 0,
-          },
-          initialPosition: {
-            x: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position.x ?? 0,
-            y: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position.y ?? 0,
-            z: 0,
-          },
-          exitPosition: {
-            x: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position.x ?? 0,
-            y: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position.y ?? 0,
-            z: 0,
+            x: marketXStart + (index + 1) * cardXOffset,
+            y: marketYStart,
+            z: 0 + +BuyMachineGuards.canBuyCard({ context: gameState }, card) * 0.5,
           },
           rotation: { x: 0, y: 0, z: 0 },
+          initialPosition: animalDeckPosition,
+          initialRotation: { x: 0, y: -Math.PI, z: 0 },
+        },
+        display: {
+          visibility: turnState.isPlaying
+            ? BuyMachineGuards.canBuyCard({ context: gameState }, card)
+              ? "highlighted"
+              : "dimmed"
+            : turnState.isUsingAbility
+              ? "dimmed"
+              : "default",
         },
       };
       return acc;
-    },
-    {} as GamePieceAppearances,
-  );
+    }, {} as GamePieceCoordsDict),
 
-export const positionDisasterCards = (gameState: GameState): GamePieceAppearances =>
+    ...gameState.animalMarket.deck.reduce((acc, card: AnimalCard) => {
+      acc[card.uid] = {
+        transform: {
+          initialPosition: animalDeckPosition,
+          initialRotation: { x: 0, y: -Math.PI, z: 0 },
+          exitPosition: animalDeckPosition,
+          exitRotation: { x: 0, y: -Math.PI, z: 0 },
+        },
+      };
+      return acc;
+    }, {} as GamePieceCoordsDict),
+  };
+};
+
+export const positionPlantCards = (gameState: GameState): GamePieceCoordsDict => {
+  const turnState = getTurnState(gameState);
+  return {
+    ...gameState.plantMarket.table.reduce((acc, card: PlantCard, index: number) => {
+      acc[card.uid] = {
+        transform: {
+          position: {
+            x: marketXStart + (index + 1) * cardXOffset,
+            y: marketYStart - cardYOffset,
+            z: 0 + +BuyMachineGuards.canBuyCard({ context: gameState }, card) * 0.5,
+          },
+          initialPosition: {
+            x: plantDeckPosition.x,
+            y: plantDeckPosition.y,
+            z: plantDeckPosition.z,
+          },
+          rotation: { x: 0, y: 0, z: 0 },
+        },
+        display: {
+          visibility: turnState.isPlaying
+            ? BuyMachineGuards.canBuyCard({ context: gameState }, card)
+              ? "highlighted"
+              : "dimmed"
+            : turnState.isUsingAbility
+              ? "dimmed"
+              : "default",
+        },
+      };
+      return acc;
+    }, {} as GamePieceCoordsDict),
+
+    ...gameState.plantMarket.deck.reduce((acc, card: PlantCard) => {
+      acc[card.uid] = {
+        transform: {
+          initialPosition: plantDeckPosition,
+          initialRotation: { x: 0, y: -Math.PI, z: 0 },
+          exitPosition: plantDeckPosition,
+          exitRotation: { x: 0, y: -Math.PI, z: 0 },
+        },
+      };
+      return acc;
+    }, {} as GamePieceCoordsDict),
+  };
+};
+
+export const positionElementCards = (gameState: GameState): GamePieceCoordsDict =>
+  (
+    [gameState.turn.borrowedElement, ...gameState.elementMarket.table, ...gameState.elementMarket.deck].filter(
+      Boolean,
+    ) as ElementCard[]
+  ).reduce((acc, card: ElementCard) => {
+    acc[card.uid] = {
+      transform: {
+        position: {
+          x: marketXStart + 5 * cardXOffset,
+          y: marketYStart - 2 * cardYOffset,
+          z: 0,
+        },
+        initialPosition: {
+          x: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position?.x ?? 0,
+          y: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position?.y ?? 0,
+          z: 0,
+        },
+        exitPosition: {
+          x: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position?.x ?? 0,
+          y: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position?.y ?? 0,
+          z: 0,
+        },
+        rotation: { x: 0, y: 0, z: 0 },
+      },
+    };
+    return acc;
+  }, {} as GamePieceCoordsDict);
+
+export const positionDisasterCards = (gameState: GameState): GamePieceCoordsDict =>
   gameState.disasterMarket.table.reduce((acc, card: DisasterCard) => {
     acc[card.uid] = {
       transform: {
@@ -241,19 +345,21 @@ export const positionDisasterCards = (gameState: GameState): GamePieceAppearance
           y: marketYStart - 2 * cardYOffset,
           z: 0,
         },
-        initialPosition: { x: disasterDeckPosition.x, y: disasterDeckPosition.y, z: disasterDeckPosition.z },
         rotation: { x: 0, y: 0, z: 0 },
+        initialPosition: { x: disasterDeckPosition.x, y: disasterDeckPosition.y, z: disasterDeckPosition.z },
+        initialRotation: { x: 0, y: -Math.PI, z: 0 },
       },
     };
     return acc;
-  }, {} as GamePieceAppearances);
+  }, {} as GamePieceCoordsDict);
 
-export const positionElementDecks = (gameState: GameState): GamePieceAppearances => {
+export const positionElementDecks = (gameState: GameState): GamePieceCoordsDict => {
   const turnState = getTurnState(gameState);
   return uniqBy(gameState.elementMarket.deck, "name")
     .sort((a, b) => a.name.localeCompare(b.name))
     .reduce((acc, card: ElementCard, index: number) => {
       acc[`${card.name}ElementDeck`] = {
+        ...defaultAnimationTimings,
         transform: {
           position: {
             x: marketXStart + index * cardXOffset,
@@ -282,22 +388,18 @@ export const positionElementDecks = (gameState: GameState): GamePieceAppearances
         },
       };
       return acc;
-    }, {} as GamePieceAppearances);
+    }, {} as GamePieceCoordsDict);
 };
 
-export const positionPlayerDecks = (gameState: GameState, prevUiState: UiState | null): GamePieceAppearances => {
+export const positionPlayerDecks = (gameState: GameState): GamePieceCoordsDict => {
   const turnState = getTurnState(gameState);
   return gameState.players.reduce((acc, player, playerIndex) => {
     acc[`${player.uid}PlayerDeck`] = {
+      ...defaultAnimationTimings,
       transform: {
-        position: {
-          x: supplyDeckPositions(gameState)[playerIndex].x,
-          y: supplyDeckPositions(gameState)[playerIndex].y,
-          z: supplyDeckPositions(gameState)[playerIndex].z,
-        },
-        initialPosition:
-          prevUiState?.deckPositions[`${player.uid}PlayerDeck`]?.transform.position ??
-          supplyDeckPositions(gameState)[playerIndex],
+        position: supplyDeckPositions(gameState)[playerIndex],
+        initialPosition: supplyDeckPositions(gameState)[playerIndex],
+        exitPosition: supplyDeckPositions(gameState)[playerIndex],
         rotation: {
           x: 0,
           y: 0,
@@ -312,17 +414,52 @@ export const positionPlayerDecks = (gameState: GameState, prevUiState: UiState |
           : "default",
       },
     };
+    acc[`${player.uid}PlayerDiscard`] = {
+      transform: {
+        position: discardPositions(gameState)[playerIndex],
+        rotation: {
+          x: 0,
+          y: 0,
+          z: playerIndex * Math.PI,
+        },
+      },
+    };
     return acc;
-  }, {} as GamePieceAppearances);
+  }, {} as GamePieceCoordsDict);
 };
 
-export const positionPlayerCards = (gameState: GameState, prevUiState: UiState | null): GamePieceAppearances => {
-  console.log(gameState.players);
+export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict => {
   const turnState = getTurnState(gameState);
   return gameState.players.reduce((acc, player, playerIndex) => {
-    const basePosition = supplyDeckPositions(gameState)[playerIndex];
+    const deckPosition = supplyDeckPositions(gameState)[playerIndex];
+    const discardPosition = discardPositions(gameState)[playerIndex];
     const rotation = { x: 0, y: 0, z: playerIndex * (Math.PI / 2) };
+    const yFlipRotation = { y: Math.PI };
     const { playedCards, exhaustedCards } = gameState.turn;
+    const deckRotation = { ...rotation, ...yFlipRotation };
+    const discardRotation = { ...rotation, ...yFlipRotation };
+
+    player.deck.forEach((card: Card) => {
+      acc[card.uid] = {
+        transform: {
+          initialRotation: deckRotation,
+          initialPosition: deckPosition,
+          exitRotation: deckRotation,
+          exitPosition: deckPosition,
+        },
+      };
+    });
+
+    player.discard.forEach((card: Card) => {
+      acc[card.uid] = {
+        transform: {
+          initialRotation: discardRotation,
+          initialPosition: discardPosition,
+          exitRotation: discardRotation,
+          exitPosition: discardPosition,
+        },
+      };
+    });
 
     player.hand
       .filter((card) => !exhaustedCards.includes(card.uid))
@@ -335,21 +472,20 @@ export const positionPlayerCards = (gameState: GameState, prevUiState: UiState |
           player.hand.length,
           inPlay,
           exhausted,
-          turnState.player === player.uid,
+          // turnState.player === player.uid,
+          true,
         );
 
         acc[card.uid] = {
           transform: {
             position: {
-              x: basePosition.x + offset.x,
-              y: basePosition.y + offset.y,
+              x: deckPosition.x + offset.x,
+              y: deckPosition.y + offset.y,
               z: 0,
             },
-            initialPosition: prevUiState?.cardPositions[card.uid]?.transform.position ?? basePosition,
-            exitPosition: basePosition,
             rotation,
-            initialRotation: rotation,
-            exitRotation: rotation,
+            initialRotation: deckRotation,
+            initialPosition: deckPosition,
           },
           display: {
             visibility: turnState.isUsingAbility
@@ -378,15 +514,13 @@ export const positionPlayerCards = (gameState: GameState, prevUiState: UiState |
         acc[card.uid] = {
           transform: {
             position: {
-              x: basePosition.x + offset.x,
-              y: basePosition.y + offset.y,
+              x: deckPosition.x + offset.x,
+              y: deckPosition.y + offset.y,
               z: 0,
             },
-            initialPosition: prevUiState?.cardPositions[card.uid]?.transform.position ?? basePosition,
-            exitPosition: basePosition,
             rotation,
-            initialRotation: rotation,
-            exitRotation: rotation,
+            initialRotation: deckRotation,
+            initialPosition: deckPosition,
           },
           display: {
             visibility: "dimmed",
@@ -395,7 +529,7 @@ export const positionPlayerCards = (gameState: GameState, prevUiState: UiState |
       });
 
     return acc;
-  }, {} as GamePieceAppearances);
+  }, {} as GamePieceCoordsDict);
 };
 
 const getPlayerCardOffset = (

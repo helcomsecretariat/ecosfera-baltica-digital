@@ -154,26 +154,50 @@ export interface Coordinate {
   z: number;
 }
 
-export interface GamePieceTransform {
+type AbsentPieceTransform = {
+  initialPosition: Coordinate;
+  initialRotation: Coordinate;
+  exitPosition: Coordinate;
+  exitRotation: Coordinate;
+  position?: Coordinate;
+  rotation?: Coordinate;
+  distance?: number;
+  duration?: number;
+};
+
+type PresentPieceTransform = {
   position: Coordinate;
-  initialPosition?: Coordinate;
-  exitPosition?: Coordinate;
   rotation: Coordinate;
+  initialPosition?: Coordinate;
   initialRotation?: Coordinate;
+  exitPosition?: Coordinate;
   exitRotation?: Coordinate;
-}
+};
+
+export type GamePieceTransform =
+  | AbsentPieceTransform
+  | PresentPieceTransform
+  | (PresentPieceTransform & AbsentPieceTransform);
 
 export interface GamePieceDisplay {
   visibility?: "default" | "highlighted" | "dimmed" | "hidden";
 }
 
-export interface GamePieceAppearance {
+export type GamePieceCoords = {
   transform: GamePieceTransform;
   display?: GamePieceDisplay;
-}
+};
+
+export type GamePieceAppearance = GamePieceCoords & {
+  duration: number;
+  delay: number;
+};
 
 export interface GamePieceAppearances {
-  [key: Card["uid"] | `${string}Deck`]: GamePieceAppearance;
+  [key: Card["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceAppearance;
+}
+export interface GamePieceCoordsDict {
+  [key: Card["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceCoords;
 }
 
 export interface UiState {

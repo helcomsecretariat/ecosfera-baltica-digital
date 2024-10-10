@@ -1,4 +1,4 @@
-import { assign, setup, sendTo } from "xstate";
+import { assign, setup, sendTo, and, or } from "xstate";
 import { AbilityMachineInEvents, AbilityMachineOutEvents, AbilityMachine } from "@/state/machines/ability";
 import { AbilityTile, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
 import { DeckConfig } from "@/decks/schema";
@@ -21,6 +21,7 @@ export const TurnMachine = setup({
       | { type: "user.click.token"; token: AbilityTile }
       | { type: "user.click.player.hand.card"; card: PlantCard | AnimalCard | ElementCard }
       | { type: "user.click.market.deck.element"; name: ElementCard["name"] }
+      | { type: "user.click.market.borrowed.card.element"; card: ElementCard }
       | { type: "user.click.market.table.card"; card: PlantCard | AnimalCard }
       | { type: "user.click.habitat"; tile: BiomeTile }
       | { type: "iddqd"; context: GameState }
@@ -32,7 +33,14 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         const card = find(draft.elementMarket.deck, { name });
         if (!card) return;
+        draft.elementMarket.deck = without(draft.elementMarket.deck, card);
         draft.turn.borrowedElement = card;
+      }),
+    ),
+    unBorrowElement: assign(({ context }: { context: GameState }, card: ElementCard) =>
+      produce(context, (draft) => {
+        draft.elementMarket.deck.push(card);
+        draft.turn.borrowedElement = undefined;
       }),
     ),
     playCard: assign(({ context }: { context: GameState }, uid: Card["uid"]) =>
@@ -113,7 +121,6 @@ export const TurnMachine = setup({
         find(biomeMarket.deck, { name: tile.name })!.isAcquired = true;
       }),
     ),
-
     drawPlayerDeck: assign(({ context }) =>
       produce(context, ({ turn, players }) => {
         const player = players.find(({ uid }) => uid === turn.player)!;
@@ -133,6 +140,21 @@ export const TurnMachine = setup({
         const player = players.find(({ uid }) => uid === turn.player)!;
         player.hand = reject(player.hand, card);
         plantMarket.deck.push(card);
+      }),
+    ),
+    cardToPlayerHand: assign(({ context }, { card, destinationCard }: { card: Card; destinationCard: Card }) =>
+      produce(context, ({ players, turn }) => {
+        const targetPlayer = players.find((player) =>
+          player.hand.some((handCard) => handCard.uid === destinationCard.uid),
+        );
+
+        if (!targetPlayer) return;
+
+        const player = players.find(({ uid }) => uid === turn.player);
+        if (player) {
+          player.hand = reject(player.hand, { uid: card.uid });
+          targetPlayer.hand.push(card);
+        }
       }),
     ),
     cardToElementDeck: assign(({ context }, card: ElementCard) =>
@@ -160,6 +182,24 @@ export const TurnMachine = setup({
         plantMarket.table = newTable;
       }),
     ),
+    markAbilityAsUsed: assign(({ context }) =>
+      produce(context, ({ players, turn }) => {
+        if (!context.turn.currentAbility) return;
+        const activePlayer = find(players, { uid: context.turn.player });
+        if (!activePlayer) return;
+
+        const ability = find(activePlayer.abilities, { uid: context.turn.currentAbility?.piece.uid });
+        console.log(context);
+        if (ability) {
+          ability.isUsed = true;
+        }
+        turn.usedAbilities.push({
+          source: context.turn.currentAbility.piece.uid,
+          name: context.turn.currentAbility.name,
+        });
+        turn.currentAbility = undefined;
+      }),
+    ),
     discardCards: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         draft.players = produce(draft.players, (playersDraft) => {
@@ -174,8 +214,10 @@ export const TurnMachine = setup({
     ),
     endTurn: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
+        const currentPlayerIndex = context.players.findIndex((player) => player.uid === context.turn.player);
+        const nextPlayerIndex = (currentPlayerIndex + 1) % context.players.length;
         draft.turn = {
-          player: context.turn.player,
+          player: context.players[nextPlayerIndex].uid,
           currentAbility: undefined,
           exhaustedCards: [],
           playedCards: [],
@@ -248,6 +290,10 @@ export const TurnMachine = setup({
               currentAbility: { piece: token, name: token.name },
             }),
           }),
+          guard: {
+            type: "abilityAvailable",
+            params: ({ event: { token } }) => token,
+          },
         },
         "user.click.player.endTurn": {
           target: "endOfTurn",
@@ -259,23 +305,36 @@ export const TurnMachine = setup({
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },
           guard: "canBorrow",
         },
+        "user.click.market.borrowed.card.element": {
+          actions: {
+            type: "unBorrowElement",
+            params: ({ event: { card } }) => card,
+          },
+        },
         "user.click.player.hand.card": [
           {
             actions: {
               type: "playCard",
               params: ({ event: { card } }) => card.uid,
             },
-            guard: { type: "notPlayedCard", params: ({ event: { card } }) => card.uid },
+            guard: or([
+              ({ context }: { context: GameState }) => context.turn.currentAbility?.name === "move",
+              and([
+                ({ context, event }) => BuyMachineGuards.notExhausted({ context }, event.card.uid),
+                ({ context, event }) => BuyMachineGuards.notPlayedCard({ context }, event.card.uid),
+                ({ context, event }) => BuyMachineGuards.ownsCard({ context }, event.card.uid),
+              ]),
+            ]),
           },
           {
             actions: {
               type: "unPlayCard",
               params: ({ event: { card } }) => card.uid,
             },
-            guard: {
-              type: "notExhausted",
-              params: ({ event: { card } }) => card.uid,
-            },
+            guard: and([
+              ({ context, event }) => BuyMachineGuards.notExhausted({ context }, event.card.uid),
+              ({ context, event }) => BuyMachineGuards.ownsCard({ context }, event.card.uid),
+            ]),
           },
         ],
         "user.click.market.table.card": {
@@ -315,6 +374,12 @@ export const TurnMachine = setup({
             params: ({ event: { card } }) => card,
           },
         },
+        "ability.move.toPlayer": {
+          actions: {
+            type: "cardToPlayerHand",
+            params: ({ event }) => event,
+          },
+        },
         "ability.move.toElementDeck": {
           actions: {
             type: "cardToElementDeck",
@@ -326,6 +391,9 @@ export const TurnMachine = setup({
         },
         "ability.refresh.plantDeck": {
           actions: "refreshPlantDeck",
+        },
+        "ability.markAsUsed": {
+          actions: "markAbilityAsUsed",
         },
       },
 

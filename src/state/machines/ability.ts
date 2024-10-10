@@ -1,13 +1,13 @@
 import { inspect } from "@/state/machines/utils";
 import { AbilityName, AbilityTile, AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
-
 import { sendTo, setup, assign, ActorRef, Snapshot } from "xstate";
 
 export type AbilityMachineOutEvents =
+  | { type: "ability.markAsUsed" }
   | { type: "ability.draw.playerDeck" }
   | { type: "ability.refresh.animalDeck" }
   | { type: "ability.refresh.plantDeck" }
-  | { type: "ability.move.toPlayer"; card: Card; destination: Card }
+  | { type: "ability.move.toPlayer"; card: Card; destinationCard: Card }
   | { type: "ability.move.toAnimalDeck"; card: AnimalCard }
   | { type: "ability.move.toPlantDeck"; card: PlantCard }
   | { type: "ability.move.toElementDeck"; card: ElementCard; name: ElementCard["name"] };
@@ -75,6 +75,9 @@ export const AbilityMachine = setup({
     },
     done: {
       type: "final",
+      entry: sendTo(({ context: { parentActor } }) => parentActor, {
+        type: "ability.markAsUsed",
+      }),
     },
     deciding: {
       always: [
@@ -150,7 +153,7 @@ export const AbilityMachine = setup({
                   ({
                     type: "ability.move.toPlayer",
                     card: cardToMove,
-                    destination: card,
+                    destinationCard: card,
                   }) as AbilityMachineOutEvents,
               ),
             },

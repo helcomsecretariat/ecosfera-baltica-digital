@@ -4,7 +4,6 @@ import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
 import { AnimalCard, Card, Coordinate, DisasterCard, ElementCard, GameState, PlantCard, UiState } from "@/state/types";
 import { cardWidth } from "@/constants/card";
-import React from "react";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/GameStateProvider";
@@ -131,14 +130,16 @@ const Croupier = ({
           onClick={handlers.marketElementClick(card.name)}
         />
       ))}
-      {gameState.turn.borrowedElement && (
-        <CardComponent
-          key={gameState.turn.borrowedElement.uid}
-          card={gameState.turn.borrowedElement}
-          gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
-          onClick={() => console.error("borrowed element click NOT IMPLEMENTED")}
-        />
-      )}
+      <AnimatePresence>
+        {gameState.turn.borrowedElement && (
+          <CardComponent
+            key={`borrowed +${gameState.turn.borrowedElement.uid}`}
+            card={gameState.turn.borrowedElement}
+            gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
+            onClick={handlers.borrowedElementClick(gameState.turn.borrowedElement)}
+          />
+        )}
+      </AnimatePresence>
       <Deck
         gamePieceAppearance={uiState.deckPositions["animalDeck"]}
         texturePath={`/ecosfera_baltica/bg_animals.avif`}
@@ -160,27 +161,40 @@ const Croupier = ({
 
       {/* Player Cards */}
       {gameState.players.map((player, index) => (
-        <React.Fragment key={index}>
-          <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
-            <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
+        <group key={index}>
+          {gameState.turn.player === player.uid && (
+            <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
+              <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
 
-            <Deck
-              gamePieceAppearance={{
-                transform: {
-                  position: { x: 0, y: 0, z: 0 },
-                  initialPosition: { x: 0, y: 0, z: 0 },
-                  rotation: { x: 0, y: 0, z: 0 },
-                },
-                display: uiState.deckPositions[`${player.uid}PlayerDeck`].display,
-              }}
-              texturePath={`/ecosfera_baltica/back.avif`}
-              cards={player.deck}
-              onClick={handlers.playerDeckClick()}
-              onShuffle={() => onShuffle(player.uid)}
-              options={{ shuffleable: true }}
-            />
-          </GamePieceGroup>
+              <Deck
+                gamePieceAppearance={{
+                  transform: {
+                    position: { x: 0, y: 0, z: 0 },
+                    initialPosition: { x: 0, y: 0, z: 0 },
+                    rotation: { x: 0, y: 0, z: 0 },
+                  },
+                  display: uiState.deckPositions[`${player.uid}PlayerDeck`].display,
+                }}
+                texturePath={`/ecosfera_baltica/back.avif`}
+                cards={player.deck}
+                onClick={handlers.playerDeckClick()}
+                onShuffle={() => onShuffle(player.uid)}
+                options={{ shuffleable: true }}
+              />
+              <Html transform center position={[0, 15, 0]} scale={4}>
+                <Button onClick={handlers.playerEndTurnClick()}>End turn</Button>
+              </Html>
+            </GamePieceGroup>
+          )}
           <AnimatePresence>
+            {gameState.turn.borrowedElement && (
+              <CardComponent
+                key={`borrowed +${gameState.turn.borrowedElement.uid}`}
+                card={gameState.turn.borrowedElement}
+                gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
+                onClick={handlers.borrowedElementClick(gameState.turn.borrowedElement)}
+              />
+            )}
             {player.hand.map(
               (card: Card) =>
                 uiState.cardPositions[card.uid] && (
@@ -211,10 +225,7 @@ const Croupier = ({
                 ),
             )}
           </AnimatePresence>
-          <Html center position={[0, -34, 0]}>
-            <Button onClick={handlers.playerEndTurnClick()}>End turn</Button>
-          </Html>
-        </React.Fragment>
+        </group>
       ))}
     </>
   );

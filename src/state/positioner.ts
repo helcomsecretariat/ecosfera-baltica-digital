@@ -153,7 +153,7 @@ export const positionAnimalCards = (gameState: GameState, prevUiState: UiState |
         position: {
           x: marketXStart + (index + 1) * cardXOffset,
           y: marketYStart,
-          z: 0 + +BuyMachineGuards.canBuyCard({ context: gameState }, card) * 8,
+          z: 0 + +BuyMachineGuards.canBuyCard({ context: gameState }, card) * 0.1,
         },
         initialPosition: prevUiState?.cardPositions[card.uid]?.transform?.position ?? animalDeckPosition,
         rotation: { x: 0, y: 0, z: 0 },
@@ -180,7 +180,7 @@ export const positionPlantCards = (gameState: GameState): GamePieceAppearances =
         position: {
           x: marketXStart + (index + 1) * cardXOffset,
           y: marketYStart - cardYOffset,
-          z: 0 + +BuyMachineGuards.canBuyCard({ context: gameState }, card) * 8,
+          z: 0 + +BuyMachineGuards.canBuyCard({ context: gameState }, card) * 0.1,
         },
         initialPosition: {
           x: plantDeckPosition.x,
@@ -215,6 +215,11 @@ export const positionElementCards = (gameState: GameState): GamePieceAppearances
             z: 0,
           },
           initialPosition: {
+            x: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position.x ?? 0,
+            y: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position.y ?? 0,
+            z: 0,
+          },
+          exitPosition: {
             x: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position.x ?? 0,
             y: positionElementDecks(gameState)[`${card.name}ElementDeck`]?.transform.position.y ?? 0,
             z: 0,
@@ -324,7 +329,14 @@ export const positionPlayerCards = (gameState: GameState, prevUiState: UiState |
       .forEach((card: Card, cardIndex: number) => {
         const inPlay = playedCards.includes(card.uid);
         const exhausted = exhaustedCards.includes(card.uid);
-        const offset = getPlayerCardOffset(playerIndex, cardIndex, player.hand.length, inPlay, exhausted);
+        const offset = getPlayerCardOffset(
+          playerIndex,
+          cardIndex,
+          player.hand.length,
+          inPlay,
+          exhausted,
+          turnState.player === player.uid,
+        );
 
         acc[card.uid] = {
           transform: {
@@ -336,6 +348,8 @@ export const positionPlayerCards = (gameState: GameState, prevUiState: UiState |
             initialPosition: prevUiState?.cardPositions[card.uid]?.transform.position ?? basePosition,
             exitPosition: basePosition,
             rotation,
+            initialRotation: rotation,
+            exitRotation: rotation,
           },
           display: {
             visibility: turnState.isUsingAbility
@@ -358,6 +372,7 @@ export const positionPlayerCards = (gameState: GameState, prevUiState: UiState |
           player.hand.length - exhaustedCards.length,
           inPlay,
           exhausted,
+          turnState.player === player.uid,
         );
 
         acc[card.uid] = {
@@ -368,8 +383,10 @@ export const positionPlayerCards = (gameState: GameState, prevUiState: UiState |
               z: 0,
             },
             initialPosition: prevUiState?.cardPositions[card.uid]?.transform.position ?? basePosition,
-            rotation,
             exitPosition: basePosition,
+            rotation,
+            initialRotation: rotation,
+            exitRotation: rotation,
           },
           display: {
             visibility: "dimmed",
@@ -387,10 +404,12 @@ const getPlayerCardOffset = (
   handLength: number,
   inPlay: boolean,
   exhausted: boolean,
+  activePlayer: boolean,
 ) => {
+  const indexOffset = activePlayer ? 1 : 0.5;
   const cardOffset = exhausted
-    ? (handLength + 1) * cardXOffset + (cardIndex + 1) * cardXOffset
-    : (cardIndex + 1) * cardXOffset;
+    ? (handLength + 1) * cardXOffset + (cardIndex + indexOffset) * cardXOffset
+    : (cardIndex + indexOffset) * cardXOffset;
   const inPlayOffset = inPlay ? (playerIndex === 0 || playerIndex === 3 ? 4 : -4) : 0;
 
   switch (playerIndex) {

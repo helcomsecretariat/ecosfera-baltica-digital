@@ -1,4 +1,4 @@
-import { AnimalCard, BiomeTile, Card, GameState, PlantCard } from "@/state/types";
+import { AbilityTile, AnimalCard, BiomeTile, Card, GameState, PlantCard } from "@/state/types";
 import { countBy, find, compact, every, intersection } from "lodash";
 
 export const BuyMachineGuards = {
@@ -39,6 +39,16 @@ export const BuyMachineGuards = {
     uid: Card["uid"],
   ) => !playedCards.includes(uid),
 
+  ownsCard: (
+    {
+      context: {
+        turn: { player },
+        players,
+      },
+    }: { context: GameState },
+    uid: Card["uid"],
+  ) => find(players, { uid: player })?.hand.some((playerCard) => playerCard.uid === uid) ?? false,
+
   notExhausted: (
     {
       context: {
@@ -57,5 +67,9 @@ export const BuyMachineGuards = {
         .filter(({ type }) => type === "animal") as AnimalCard[]) ?? [];
 
     return playedAnimals.filter(({ biomes }) => biomes.includes(tile.name)).length >= 2;
+  },
+
+  abilityAvailable: (_: { context: GameState }, token: AbilityTile) => {
+    return !token.isUsed;
   },
 };

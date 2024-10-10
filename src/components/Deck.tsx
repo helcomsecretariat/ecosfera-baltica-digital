@@ -14,7 +14,6 @@ const Deck = ({
   gamePieceAppearance,
   texturePath = "/ecosfera_baltica/back.avif",
   onClick,
-  onShuffle,
   cards,
   options,
 }: {
@@ -22,7 +21,6 @@ const Deck = ({
   texturePath?: string;
   textColor?: string;
   onClick: () => void;
-  onShuffle?: () => void;
   cards: Card[];
   options?: { shuffleable: boolean };
 }) => {
@@ -70,7 +68,7 @@ const Deck = ({
         </TextWithShadow>
         <Html transform scale={3.5} center position={[0, cardHeight / 2, 0]}>
           {(options?.shuffleable ?? false) && (
-            <Button variant="default" size="icon" name="Shuffle" onClick={onShuffle}>
+            <Button variant="default" size="icon" name="Shuffle">
               <GiCardExchange className="h-6 w-6" />
             </Button>
           )}

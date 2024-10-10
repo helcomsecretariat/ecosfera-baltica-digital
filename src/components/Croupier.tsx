@@ -14,6 +14,7 @@ import GamePieceGroup from "./GamePieceGroup";
 import { Html } from "@react-three/drei";
 import { Button } from "./ui/button";
 import { AnimatePresence } from "framer-motion";
+import React from "react";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -31,12 +32,10 @@ const Croupier = ({
   gameState,
   uiState,
   onCardMove,
-  onShuffle,
 }: {
   gameState: GameState;
   uiState: UiState;
   onCardMove: (card: Card, origin: CardMoveLocation, destination: CardMoveLocation) => void;
-  onShuffle: (playerUid: string) => void;
 }) => {
   const handleCardDrag = (
     card: Card,
@@ -159,42 +158,37 @@ const Croupier = ({
         onClick={() => console.error("Disaster deck click NOT IMPLEMENTED")}
       />
       {/* Player Cards */}
-      {gameState.players.map(
-        (player, index) =>
-          gameState.turn.player === player.uid && (
-            <>
-              <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]} key={"pl" + index}>
-                <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
+      {gameState.players.map((player) => (
+        <React.Fragment key={player.uid + "HUD"}>
+          <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
+            {player.uid === gameState.turn.player && (
+              <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
+            )}
 
-                <Deck
-                  gamePieceAppearance={{
-                    ...uiState.deckPositions[`${player.uid}PlayerDeck`],
-                    transform: {
-                      position: { x: 0, y: 0, z: 0 },
-                      initialPosition: { x: 0, y: 0, z: 0 },
-                      rotation: { x: 0, y: 0, z: 0 },
-                    },
-                  }}
-                  cards={player.deck}
-                  onClick={handlers.playerDeckClick()}
-                  onShuffle={() => onShuffle(player.uid)}
-                  options={{ shuffleable: true }}
-                />
-              </GamePieceGroup>
+            <Deck
+              gamePieceAppearance={{
+                ...uiState.deckPositions[`${player.uid}PlayerDeck`],
+                transform: {
+                  position: { x: 0, y: 0, z: 0 },
+                  initialPosition: { x: 0, y: 0, z: 0 },
+                  rotation: { x: 0, y: 0, z: 0 },
+                },
+              }}
+              cards={player.deck}
+              onClick={handlers.playerDeckClick()}
+            />
+          </GamePieceGroup>
 
-              {player.discard.length && (
-                <Deck
-                  gamePieceAppearance={{
-                    ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
-                    display: { visibility: "default" },
-                  }}
-                  cards={player.discard}
-                  onClick={() => console.error("discard click NOT IMPLEMENTED")}
-                />
-              )}
-            </>
-          ),
-      )}
+          <Deck
+            gamePieceAppearance={{
+              ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
+              display: { visibility: "default" },
+            }}
+            cards={player.discard}
+            onClick={() => console.error("discard click NOT IMPLEMENTED")}
+          />
+        </React.Fragment>
+      ))}
 
       {gameState.players.flatMap((player) =>
         player.hand.map(

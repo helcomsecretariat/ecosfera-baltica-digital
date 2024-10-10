@@ -223,21 +223,18 @@ export const TurnMachine = setup({
           borrowedLimit: context.turn.borrowedLimit,
           usedAbilities: context.turn.usedAbilities,
         };
-        draft.players = produce(draft.players, (playersDraft) => {
-          const player = find(playersDraft, { uid: context.turn.player })!;
+        const player = find(draft.players, { uid: context.turn.player })!;
+        player.hand = player.deck.slice(0, 4);
+        player.deck = player.deck.slice(player.hand.length);
 
-          player.hand = player.deck.slice(0, 4);
-          player.deck = player.deck.slice(player.hand.length);
+        if (player.hand.length < 4) {
+          player.deck = shuffle(player.discard, context.seed);
+          player.discard = [];
 
-          if (player.hand.length < 4) {
-            player.deck = shuffle(player.discard, context.seed);
-            player.discard = [];
-
-            const remainingDraw = 4 - player.hand.length;
-            player.hand = concat(player.hand, player.deck.slice(0, remainingDraw));
-            player.deck = player.deck.slice(remainingDraw);
-          }
-        });
+          const remainingDraw = 4 - player.hand.length;
+          player.hand = concat(player.hand, player.deck.slice(0, remainingDraw));
+          player.deck = player.deck.slice(remainingDraw);
+        }
       }),
     ),
 
@@ -266,7 +263,7 @@ export const TurnMachine = setup({
   states: {
     endOfTurn: {
       after: {
-        850: {
+        400: {
           target: "buying",
           actions: {
             type: "endTurn",

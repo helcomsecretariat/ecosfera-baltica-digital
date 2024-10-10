@@ -398,6 +398,8 @@ export const positionPlayerDecks = (gameState: GameState): GamePieceCoordsDict =
       ...defaultAnimationTimings,
       transform: {
         position: supplyDeckPositions(gameState)[playerIndex],
+        initialPosition: supplyDeckPositions(gameState)[playerIndex],
+        exitPosition: supplyDeckPositions(gameState)[playerIndex],
         rotation: {
           x: 0,
           y: 0,
@@ -418,7 +420,7 @@ export const positionPlayerDecks = (gameState: GameState): GamePieceCoordsDict =
         rotation: {
           x: 0,
           y: 0,
-          z: playerIndex * (Math.PI / 2),
+          z: playerIndex * Math.PI,
         },
       },
     };
@@ -470,7 +472,8 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
           player.hand.length,
           inPlay,
           exhausted,
-          turnState.player === player.uid,
+          // turnState.player === player.uid,
+          true,
         );
 
         acc[card.uid] = {

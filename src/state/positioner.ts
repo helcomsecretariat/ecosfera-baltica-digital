@@ -254,7 +254,7 @@ export const positionAnimalCards = (gameState: GameState): GamePieceCoordsDict =
           initialPosition: animalDeckPosition,
           initialRotation: { x: 0, y: -Math.PI, z: 0 },
           exitPosition: animalDeckPosition,
-          exitRotation: { x: 0, y: -Math.PI, z: 0 },
+          exitRotation: { x: 0, y: 0, z: 0 },
         },
       };
       return acc;
@@ -299,7 +299,7 @@ export const positionPlantCards = (gameState: GameState): GamePieceCoordsDict =>
           initialPosition: plantDeckPosition,
           initialRotation: { x: 0, y: -Math.PI, z: 0 },
           exitPosition: plantDeckPosition,
-          exitRotation: { x: 0, y: -Math.PI, z: 0 },
+          exitRotation: { x: 0, y: 0, z: 0 },
         },
       };
       return acc;
@@ -437,7 +437,7 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
     const yFlipRotation = { y: Math.PI };
     const { playedCards, exhaustedCards } = gameState.turn;
     const deckRotation = { ...rotation, ...yFlipRotation };
-    const discardRotation = { ...rotation, ...yFlipRotation };
+    const discardRotation = { ...rotation };
 
     player.deck.forEach((card: Card) => {
       acc[card.uid] = {

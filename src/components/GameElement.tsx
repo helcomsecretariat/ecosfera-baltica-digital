@@ -3,7 +3,9 @@ import { motion } from "framer-motion-3d";
 import { Coordinate, GamePieceAppearance } from "@/state/types";
 import { MeshProps } from "@react-three/fiber";
 import { useControls } from "leva";
-import { baseDuration } from "@/constants/animation";
+import { baseDuration, cardFlipDuration } from "@/constants/animation";
+import { cubicBezier, reverseEasing } from "framer-motion";
+import { c } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
 
 type GameElementProps = {
   gamePieceAppearance: GamePieceAppearance;
@@ -54,6 +56,8 @@ const GameElement = ({
     },
   });
   const ref = useRef<MeshProps>(null);
+  const thisDuration = (duration * gamePieceAppearance.duration) / baseDuration;
+  const thisDelay = gamePieceAppearance.delay;
 
   return (
     // <DragControls
@@ -82,8 +86,16 @@ const GameElement = ({
       position-z={gamePieceAppearance.transform.position?.z}
       transition={{
         ease,
-        duration: (duration * gamePieceAppearance.duration) / baseDuration,
-        delay: gamePieceAppearance.delay,
+        duration: thisDuration,
+        delay: thisDelay,
+        rotateY: {
+          duration: cardFlipDuration,
+          delay: thisDuration + thisDelay,
+        },
+        z: {
+          duration: thisDuration + cardFlipDuration * 2,
+          delay: thisDelay,
+        },
       }}
       animate={{
         x: gamePieceAppearance.transform.position?.x,
@@ -92,7 +104,6 @@ const GameElement = ({
         rotateX: gamePieceAppearance.transform.rotation?.x,
         rotateY: gamePieceAppearance.transform.rotation?.y,
         rotateZ: gamePieceAppearance.transform.rotation?.z,
-        originY: 1,
       }}
       initial={{
         x: gamePieceAppearance.transform.initialPosition?.x,
@@ -101,7 +112,6 @@ const GameElement = ({
         rotateX: gamePieceAppearance.transform.initialRotation?.x,
         rotateY: gamePieceAppearance.transform.initialRotation?.y,
         rotateZ: gamePieceAppearance.transform.initialRotation?.z,
-        originY: 1,
       }}
       exit={{
         x: gamePieceAppearance.transform.exitPosition?.x,
@@ -110,7 +120,6 @@ const GameElement = ({
         rotateX: gamePieceAppearance.transform.exitRotation?.x,
         rotateY: gamePieceAppearance.transform.exitRotation?.y,
         rotateZ: gamePieceAppearance.transform.exitRotation?.z,
-        originY: 1,
       }}
       scale={hovered && (options?.showHoverAnimation ?? true) ? 1.15 : 1}
       onPointerOver={() => setHovered(true)}

@@ -45,7 +45,7 @@ export const TurnMachine = setup({
     ),
     playCard: assign(({ context }: { context: GameState }, uid: Card["uid"]) =>
       produce(context, (draft) => {
-        draft.turn.playedCards.push(uid);
+        draft.turn.playedCards = [...draft.turn.playedCards, uid];
       }),
     ),
     unPlayCard: assign(({ context }: { context: GameState }, uid: Card["uid"]) =>
@@ -202,13 +202,10 @@ export const TurnMachine = setup({
     ),
     discardCards: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
-        draft.players = produce(draft.players, (playersDraft) => {
-          const activePlayer = find(playersDraft, { uid: context.turn.player });
-
-          if (!activePlayer) return playersDraft;
-
-          activePlayer.discard = activePlayer.hand;
-          activePlayer.hand = [];
+        draft.players = produce(draft.players, (players) => {
+          const player = find(players, { uid: context.turn.player })!;
+          player.discard = [...player.hand, ...player.discard];
+          player.hand = [];
         });
       }),
     ),
@@ -227,21 +224,18 @@ export const TurnMachine = setup({
           usedAbilities: context.turn.usedAbilities,
         };
         draft.players = produce(draft.players, (playersDraft) => {
-          const activePlayer = find(playersDraft, { uid: context.turn.player });
+          const player = find(playersDraft, { uid: context.turn.player })!;
 
-          if (!activePlayer) return playersDraft;
+          player.hand = player.deck.slice(0, 4);
+          player.deck = player.deck.slice(player.hand.length);
 
-          const drawCount = Math.min(4, activePlayer.deck.length);
-          activePlayer.hand = activePlayer.deck.slice(0, drawCount);
-          activePlayer.deck = activePlayer.deck.slice(drawCount);
+          if (player.hand.length < 4) {
+            player.deck = shuffle(player.discard, context.seed);
+            player.discard = [];
 
-          if (activePlayer.hand.length < 4) {
-            activePlayer.deck = shuffle(activePlayer.discard, context.seed);
-            activePlayer.discard = [];
-
-            const remainingDraw = 4 - activePlayer.hand.length;
-            activePlayer.hand = concat(activePlayer.hand, activePlayer.deck.slice(0, remainingDraw));
-            activePlayer.deck = activePlayer.deck.slice(remainingDraw);
+            const remainingDraw = 4 - player.hand.length;
+            player.hand = concat(player.hand, player.deck.slice(0, remainingDraw));
+            player.deck = player.deck.slice(remainingDraw);
           }
         });
       }),

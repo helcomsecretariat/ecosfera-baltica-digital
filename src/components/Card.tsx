@@ -7,6 +7,7 @@ import React from "react";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
 import { SRGBColorSpace } from "three";
+import { useControls } from "leva";
 
 const Card = ({
   card,
@@ -22,18 +23,28 @@ const Card = ({
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
   const texture = useTexture(cardIMGURL);
+  const backTexture = useTexture("/ecosfera_baltica/back.avif");
   const highlightTexture = useTexture(getHighlightTextureAssetPath());
+  const { isShowUID } = useControls({ isShowUID: { value: false } });
+  const { useDimmed } = useControls({ useDimmed: { value: false } });
+
   texture.colorSpace = SRGBColorSpace;
 
   return (
-    gamePieceAppearance.display?.visibility !== "hidden" && (
+    gamePieceAppearance && (
       <GameElement
         gamePieceAppearance={gamePieceAppearance}
         width={cardWidth}
         height={cardHeight}
         onDragEnd={onDragEnd}
         onClick={onClick}
+        key={card.uid}
       >
+        <mesh position={[0, 0, -0.1]}>
+          <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.02]} />
+          <meshBasicMaterial attach="material-0" map={backTexture} />
+          <meshBasicMaterial attach="material-1" />
+        </mesh>
         <mesh>
           <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.05]} />
           <meshBasicMaterial attach="material-0" map={texture} />
@@ -96,7 +107,22 @@ const Card = ({
             {name}
           </TextWithShadow>
         )}
-        {gamePieceAppearance.display?.visibility === "dimmed" && (
+
+        {isShowUID && (
+          <TextWithShadow
+            position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 3, 0.15]}
+            color="black"
+            fontSize={1.5}
+            maxWidth={cardWidth * 0.85}
+            anchorX="left"
+            anchorY="top"
+            textAlign="left"
+          >
+            {card.uid}
+          </TextWithShadow>
+        )}
+
+        {useDimmed && gamePieceAppearance.display?.visibility === "dimmed" && (
           <mesh>
             <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, 0.45]} />
             <meshBasicMaterial color="black" transparent opacity={0.8} />

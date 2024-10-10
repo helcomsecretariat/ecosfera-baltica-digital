@@ -55,7 +55,7 @@ const Croupier = ({
   gl.outputColorSpace = SRGBColorSpace;
 
   return (
-    <>
+    <AnimatePresence>
       {/* Market Cards */}
       {gameState.animalMarket.table.map((card: AnimalCard) => {
         return (
@@ -141,93 +141,80 @@ const Croupier = ({
         )}
       </AnimatePresence>
       <Deck
+        key={"animalDeck"}
         gamePieceAppearance={uiState.deckPositions["animalDeck"]}
-        texturePath={`/ecosfera_baltica/bg_animals.avif`}
         cards={gameState.animalMarket.deck}
         onClick={handlers.animalDeckClick()}
       />
       <Deck
+        key={"plantDeck"}
         gamePieceAppearance={uiState.deckPositions["plantDeck"]}
-        texturePath={`/ecosfera_baltica/bg_plants.avif`}
         cards={gameState.plantMarket.deck}
         onClick={handlers.plantDeckClick()}
       />
       <Deck
+        key={"disasterDeck"}
         gamePieceAppearance={uiState.deckPositions["disasterDeck"]}
-        texturePath={`/ecosfera_baltica/disaster_flood.avif`}
         cards={gameState.disasterMarket.deck}
         onClick={() => console.error("Disaster deck click NOT IMPLEMENTED")}
       />
-
       {/* Player Cards */}
-      {gameState.players.map((player, index) => (
-        <group key={index}>
-          {gameState.turn.player === player.uid && (
-            <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
-              <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
+      {gameState.players.map(
+        (player, index) =>
+          gameState.turn.player === player.uid && (
+            <>
+              <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]} key={"pl" + index}>
+                <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
 
-              <Deck
-                gamePieceAppearance={{
-                  transform: {
-                    position: { x: 0, y: 0, z: 0 },
-                    initialPosition: { x: 0, y: 0, z: 0 },
-                    rotation: { x: 0, y: 0, z: 0 },
-                  },
-                  display: uiState.deckPositions[`${player.uid}PlayerDeck`].display,
-                }}
-                texturePath={`/ecosfera_baltica/back.avif`}
-                cards={player.deck}
-                onClick={handlers.playerDeckClick()}
-                onShuffle={() => onShuffle(player.uid)}
-                options={{ shuffleable: true }}
-              />
-              <Html transform center position={[0, 15, 0]} scale={4}>
-                <Button onClick={handlers.playerEndTurnClick()}>End turn</Button>
-              </Html>
-            </GamePieceGroup>
-          )}
-          <AnimatePresence>
-            {gameState.turn.borrowedElement && (
+                <Deck
+                  gamePieceAppearance={{
+                    ...uiState.deckPositions[`${player.uid}PlayerDeck`],
+                    transform: {
+                      position: { x: 0, y: 0, z: 0 },
+                      initialPosition: { x: 0, y: 0, z: 0 },
+                      rotation: { x: 0, y: 0, z: 0 },
+                    },
+                  }}
+                  cards={player.deck}
+                  onClick={handlers.playerDeckClick()}
+                  onShuffle={() => onShuffle(player.uid)}
+                  options={{ shuffleable: true }}
+                />
+              </GamePieceGroup>
+
+              {player.discard.length && (
+                <Deck
+                  gamePieceAppearance={{
+                    ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
+                    display: { visibility: "default" },
+                  }}
+                  cards={player.discard}
+                  onClick={() => console.error("discard click NOT IMPLEMENTED")}
+                />
+              )}
+            </>
+          ),
+      )}
+
+      {gameState.players.flatMap((player) =>
+        player.hand.map(
+          (card: Card) =>
+            uiState.cardPositions[card.uid] && (
               <CardComponent
-                key={`borrowed +${gameState.turn.borrowedElement.uid}`}
-                card={gameState.turn.borrowedElement}
-                gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
-                onClick={handlers.borrowedElementClick(gameState.turn.borrowedElement)}
+                key={card.uid}
+                card={card}
+                gamePieceAppearance={uiState.cardPositions[card.uid]}
+                //@ts-expect-error TODO: fix type check...
+                onClick={handlers.playerCardClick(card)}
               />
-            )}
-            {player.hand.map(
-              (card: Card) =>
-                uiState.cardPositions[card.uid] && (
-                  <CardComponent
-                    key={card.uid}
-                    card={card}
-                    gamePieceAppearance={uiState.cardPositions[card.uid]}
-                    //@ts-expect-error TODO: fix type check...
-                    onClick={handlers.playerCardClick(card)}
-                    onDragEnd={(position) => {
-                      supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-                        handleCardDrag(
-                          card,
-                          position,
-                          supplyDeckPosition,
-                          `playerHand_${player.uid}`,
-                          `playerDeck_${gameState.players[index].uid}`,
-                        );
-                      });
-                      if (card.type === "animal") {
-                        handleCardDrag(card, position, animalDeckPosition, `playerHand_${player.uid}`, "animalDeck");
-                      }
-                      if (card.type === "plant") {
-                        handleCardDrag(card, position, plantDeckPosition, `playerHand_${player.uid}`, "plantDeck");
-                      }
-                    }}
-                  />
-                ),
-            )}
-          </AnimatePresence>
-        </group>
-      ))}
-    </>
+            ),
+        ),
+      )}
+
+      <Html center position={[0, -34, 0]} key={"playerEndTurnButton"}>
+        <Button onClick={handlers.playerEndTurnClick()}>End turn</Button>
+      </Html>
+    </AnimatePresence>
   );
 };
 

@@ -25,6 +25,8 @@ const AbilityTiles = ({
           position: { x: xStart, y: yStart + abilityOffset * index, z: 0 },
           rotation,
         },
+        delay: 0,
+        duration: 0,
       }}
       height={6}
       width={6}

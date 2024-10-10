@@ -8,17 +8,18 @@ import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
 import { SRGBColorSpace } from "three";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { getHighlightTextureAssetPath } from "./utils";
+import { useControls } from "leva";
 
 const Deck = ({
   gamePieceAppearance,
-  texturePath = "/ecosfera_baltica/element_nutrients.avif",
+  texturePath = "/ecosfera_baltica/back.avif",
   onClick,
   onShuffle,
   cards,
   options,
 }: {
   gamePieceAppearance: GamePieceAppearance;
-  texturePath: string;
+  texturePath?: string;
   textColor?: string;
   onClick: () => void;
   onShuffle?: () => void;
@@ -33,6 +34,7 @@ const Deck = ({
     -cardHeight / 2 + cardHeight * 0.15,
     deckDepth + 0.15,
   ];
+  const { useDimmed } = useControls({ useDimmed: { value: true } });
   texture.colorSpace = SRGBColorSpace;
 
   return (
@@ -73,7 +75,7 @@ const Deck = ({
             </Button>
           )}
         </Html>
-        {gamePieceAppearance.display?.visibility === "dimmed" && (
+        {useDimmed && gamePieceAppearance.display?.visibility === "dimmed" && (
           <mesh>
             <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, deckDepth + 0.1]} />
             <meshBasicMaterial color="black" transparent opacity={0.8} />

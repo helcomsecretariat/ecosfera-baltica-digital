@@ -33,11 +33,11 @@ export const BuyMachineGuards = {
   notPlayedCard: (
     {
       context: {
-        turn: { playedCards },
+        turn: { playedCards, exhaustedCards },
       },
     }: { context: GameState },
     uid: Card["uid"],
-  ) => !playedCards.includes(uid),
+  ) => ![...playedCards, ...exhaustedCards].includes(uid),
 
   ownsCard: (
     {

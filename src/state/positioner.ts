@@ -48,6 +48,7 @@ const getTurnState = (gameState: GameState) => {
 };
 
 export const toUiState = (prevUiState: UiState | null, gameState: GameState): UiState => {
+  console.log(gameState);
   return {
     cardPositions: calcDelays(calculateCardPositions(gameState), prevUiState?.cardPositions),
     deckPositions: calculateDeckPositions(gameState),
@@ -455,6 +456,7 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
     });
 
     player.discard.forEach((card: Card) => {
+      console.log("card in discard");
       acc[card.uid] = {
         transform: {
           initialRotation: discardRotation,

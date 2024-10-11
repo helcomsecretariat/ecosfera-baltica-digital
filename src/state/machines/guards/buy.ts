@@ -72,4 +72,10 @@ export const BuyMachineGuards = {
   abilityAvailable: (_: { context: GameState }, token: AbilityTile) => {
     return !token.isUsed;
   },
+
+  getsDisaster: ({ context: { turn } }: { context: GameState }) => {
+    const { boughtPlant, boughtAnimal, boughtHabitat } = turn;
+
+    return !boughtPlant && !boughtAnimal && !boughtHabitat;
+  },
 };

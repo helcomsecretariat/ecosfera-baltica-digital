@@ -1,7 +1,7 @@
 import { default as CardComponent } from "./Card";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { AnimalCard, Card, DisasterCard, ElementCard, GameState, PlantCard, UiState } from "@/state/types";
+import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 import { cardWidth } from "@/constants/card";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
@@ -26,7 +26,8 @@ export type CardMoveLocation =
   | `playerDeck_${string}`
   | `playerHand_${string}`;
 
-const Croupier = ({ gameState, uiState }: { gameState: GameState; uiState: UiState }) => {
+const Croupier = () => {
+  const { state: gameState, uiState } = useGameState();
   const { handlers } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
@@ -71,14 +72,6 @@ const Croupier = ({ gameState, uiState }: { gameState: GameState; uiState: UiSta
           onClick={handlers.marketElementClick(card.name)}
         />
       ))}
-      {gameState.turn.borrowedElement && (
-        <CardComponent
-          key={gameState.turn.borrowedElement.uid}
-          card={gameState.turn.borrowedElement}
-          gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
-          onClick={handlers.borrowedElementClick(gameState.turn.borrowedElement)}
-        />
-      )}
       {gameState.turn.borrowedElement && (
         <CardComponent
           key={gameState.turn.borrowedElement.uid}

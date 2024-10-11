@@ -29,6 +29,7 @@ import { BuyMachineGuards } from "./machines/guards/buy";
 import { baseDuration, deckAnimationTimings } from "@/constants/animation";
 
 const zeroRotation = { x: 0, y: 0, z: 0 };
+const yFlipRotation = { y: -Math.PI };
 
 const getTurnState = (gameState: GameState) => {
   const isRefreshing = gameState.turn.currentAbility?.name === "refresh";
@@ -204,21 +205,23 @@ export const supplyDeckPositions = (gameState: GameState): Coordinate[] => {
 
 export const discardPositions = (gameState: GameState): Coordinate[] => {
   const positions: Coordinate[] = [];
+  const tipx = 4;
+  const tipy = 8.7;
 
   if (gameState.players.length > 0) {
-    positions.push({ x: upperXBoundary - cardWidth, y: lowerYBoundary + cardHeight / 2, z: 0 });
+    positions.push({ x: upperXBoundary - cardWidth * 3, y: lowerYBoundary - tipy, z: 0 });
   }
 
   if (gameState.players.length > 1) {
-    positions.push({ x: upperXBoundary - cardWidth, y: upperYBoundary - cardHeight / 2, z: 0 });
+    positions.push({ x: upperXBoundary + tipx, y: upperYBoundary - cardHeight / 2, z: 0 });
   }
 
   if (gameState.players.length > 2) {
-    positions.push({ x: lowerXBoundary + cardWidth, y: upperYBoundary - cardHeight / 2, z: 0 });
+    positions.push({ x: lowerXBoundary + cardWidth, y: upperYBoundary + tipy, z: 0 });
   }
 
   if (gameState.players.length > 3) {
-    positions.push({ x: lowerXBoundary + cardWidth, y: lowerYBoundary + cardHeight / 2, z: 0 });
+    positions.push({ x: lowerXBoundary - tipx, y: lowerYBoundary + cardHeight / 2, z: 0 });
   }
 
   return positions;
@@ -438,7 +441,6 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
     const deckPosition = supplyDeckPositions(gameState)[playerIndex];
     const discardPosition = discardPositions(gameState)[playerIndex];
     const rotation = { x: 0, y: 0, z: playerIndex * (Math.PI / 2) };
-    const yFlipRotation = { y: Math.PI };
     const { playedCards, exhaustedCards } = gameState.turn;
     const deckRotation = { ...rotation, ...yFlipRotation };
     const discardRotation = { ...rotation };

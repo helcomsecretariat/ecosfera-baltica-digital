@@ -1,8 +1,8 @@
-import { Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { abilityOffset } from "../constants/gameBoard";
 import { AbilityTile, Coordinate } from "@/state/types";
 import { useGameState } from "@/context/GameStateProvider";
+import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 
 const AbilityTiles = ({
   xStart,
@@ -16,6 +16,9 @@ const AbilityTiles = ({
   abilities: AbilityTile[];
 }) => {
   const { handlers } = useGameState();
+  const plusTexture = useSRGBTexture("/ecosfera_baltica/ability_plus.avif");
+  const refreshTexture = useSRGBTexture("/ecosfera_baltica/ability_refresh.avif");
+  const moveTexture = useSRGBTexture("/ecosfera_baltica/ability_move.avif");
 
   return abilities.map((ability, index) => (
     <GameElement
@@ -33,21 +36,12 @@ const AbilityTiles = ({
       height={6}
       width={6}
       onClick={handlers.tokenClick(ability)}
-      options={{ draggable: false }}
     >
       <circleGeometry args={[3, 32]} />
-      <meshBasicMaterial color={ability.isUsed ? "gray" : "white"} />
-      <Text color="black" fontSize={2}>
-        {ability.name === "move"
-          ? "→"
-          : ability.name === "plus"
-            ? "+"
-            : ability.name === "refresh"
-              ? "↻"
-              : ability.name === "special"
-                ? "⚡"
-                : ""}
-      </Text>
+      <meshBasicMaterial
+        color={ability.isUsed ? "#555" : "white"}
+        map={ability.name === "move" ? moveTexture : ability.name === "plus" ? plusTexture : refreshTexture}
+      />
     </GameElement>
   ));
 };

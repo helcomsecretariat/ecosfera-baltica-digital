@@ -10,12 +10,14 @@ const Tile = ({
   color,
   name = "",
   onClick,
+  opacity = 1,
 }: {
   position: Coordinate;
   rotation?: Coordinate;
   color: string;
   name?: string;
   onClick?: () => void;
+  opacity?: number;
 }) => {
   return (
     <GameElement
@@ -33,7 +35,7 @@ const Tile = ({
       onClick={onClick}
     >
       <cylinderGeometry args={[tileSize, tileSize, 0.1, 6, 1]} />
-      <meshBasicMaterial color={color} />
+      <meshBasicMaterial color={color} opacity={opacity} transparent />
       <Text fontSize={1} color="black" rotation={[1.57, 0, 0]} position={[0, -0.1, 0]}>
         {name}
       </Text>

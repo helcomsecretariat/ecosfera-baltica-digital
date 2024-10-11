@@ -13,6 +13,7 @@ import { Html } from "@react-three/drei";
 import { Button } from "./ui/button";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
+import { NextButton } from "@/components/NextTurnBtn";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -119,9 +120,6 @@ const Croupier = () => {
             {player.uid === gameState.turn.player && (
               <>
                 <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
-                <Html transform center position={[0, 15, 0]} scale={4}>
-                  <Button onClick={handlers.playerEndTurnClick()}>End turn</Button>
-                </Html>
               </>
             )}
           </GamePieceGroup>
@@ -156,6 +154,8 @@ const Croupier = () => {
             ),
         ),
       )}
+
+      <NextButton />
     </AnimatePresence>
   );
 };

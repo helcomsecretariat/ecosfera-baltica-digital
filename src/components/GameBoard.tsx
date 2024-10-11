@@ -13,18 +13,15 @@ import PreloadAssets from "@/components/PreloadAssets";
 import { GameStateProvider, useGameState } from "@/context/GameStateProvider";
 import { DeckConfig } from "@/decks/schema";
 import { toUiState } from "@/state/positioner";
+import { Stats } from "@react-three/drei";
+import { Leva } from "leva";
 
 function GameBoard() {
-  const { showGrid, gridDivisions, orbitControls } = useControls({
+  const { showGrid, gridDivisions, orbitControls, FPS } = useControls({
     showGrid: false,
     gridDivisions: 16,
     orbitControls: false,
-    numberOfPlayers: {
-      value: 1,
-      min: 1,
-      max: 4,
-      step: 1,
-    },
+    FPS: false,
   });
   const { state } = useGameState();
   const prevUiStateRef = useRef<UiState | null>(null);
@@ -67,10 +64,11 @@ function GameBoard() {
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
         {orbitControls && <OrbitControls />}
         <Croupier />
-
         <ExtinctionTiles />
         <BiomeTiles />
+        {FPS && <Stats />}
       </Canvas>
+      <Leva collapsed flat hideCopyButton />
     </div>
   );
 }

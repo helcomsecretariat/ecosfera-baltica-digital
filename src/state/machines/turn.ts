@@ -213,16 +213,23 @@ export const TurnMachine = setup({
         player.hand = [];
       }),
     ),
+    drawDisasterCard: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const disasterCard = draft.disasterMarket.deck[0];
+        draft.disasterMarket.deck = without(draft.disasterMarket.deck, disasterCard);
+        draft.disasterMarket.table.push(disasterCard);
+      }),
+    ),
     addDisasterCard: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player });
-        const disasterCard = draft.disasterMarket.deck[0];
+        const disasterCard = draft.disasterMarket.table[0];
 
         // TODO: Figure out what to do when disaster deck is empty
         if (!disasterCard || !player) return;
 
         player.hand.push(disasterCard);
-        draft.disasterMarket.deck = draft.disasterMarket.deck.slice(1);
+        draft.disasterMarket.table = draft.disasterMarket.table.slice(1);
       }),
     ),
     endTurn: assign(({ context }: { context: GameState }) =>
@@ -287,7 +294,7 @@ export const TurnMachine = setup({
     endOfTurn: {
       entry: { type: "discardCards" },
       after: {
-        500: {
+        600: {
           target: "buying",
           actions: {
             type: "endTurn",
@@ -296,12 +303,21 @@ export const TurnMachine = setup({
       },
     },
     disaster: {
-      entry: "addDisasterCard",
+      entry: "drawDisasterCard",
+      initial: "idle",
       after: {
-        850: {
-          target: "endOfTurn",
-          actions: {
-            type: "discardCards",
+        10: {
+          target: ".ready",
+        },
+      },
+      states: {
+        idle: {},
+        ready: {
+          entry: "addDisasterCard",
+          after: {
+            1200: {
+              target: "#turn.endOfTurn",
+            },
           },
         },
       },

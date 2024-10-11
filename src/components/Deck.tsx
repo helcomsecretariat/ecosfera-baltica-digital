@@ -1,21 +1,18 @@
 import { cardHeight, cardWidth } from "../constants/card";
-import { Html, useTexture } from "@react-three/drei";
+import { useTexture } from "@react-three/drei";
 import GameElement from "./GameElement";
-import { Button } from "./ui/button";
-import { GiCardExchange } from "react-icons/gi";
 import { Card, GamePieceAppearance } from "@/state/types";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
-import { SRGBColorSpace } from "three";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { getHighlightTextureAssetPath } from "./utils";
 import { useControls } from "leva";
+import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 
 const Deck = ({
   gamePieceAppearance,
   texturePath = "/ecosfera_baltica/back.avif",
   onClick,
   cards,
-  options,
 }: {
   gamePieceAppearance: GamePieceAppearance;
   texturePath?: string;
@@ -24,16 +21,15 @@ const Deck = ({
   cards: Card[];
   options?: { shuffleable: boolean };
 }) => {
-  const texture = useTexture(texturePath);
+  const texture = useSRGBTexture(texturePath);
   const highlightTexture = useTexture(getHighlightTextureAssetPath());
   const deckDepth = 0.1 * cards.length;
   const textPosition: [number, number, number] = [
     -cardWidth / 2 + cardWidth * 0.15,
-    -cardHeight / 2 + cardHeight * 0.15,
+    cardHeight / 2 - cardHeight * 0.11,
     deckDepth + 0.15,
   ];
   const { useDimmed } = useControls({ useDimmed: { value: true } });
-  texture.colorSpace = SRGBColorSpace;
 
   return (
     <>
@@ -41,10 +37,6 @@ const Deck = ({
         gamePieceAppearance={gamePieceAppearance}
         height={cardHeight}
         width={cardWidth}
-        options={{
-          draggable: false,
-          showHoverAnimation: false,
-        }}
         onClick={() => onClick()}
       >
         {gamePieceAppearance.display?.visibility === "highlighted" && (
@@ -66,13 +58,6 @@ const Deck = ({
         <TextWithShadow textAlign="center" fontSize={2} position={textPosition} opacity={0.5}>
           {cards.length}
         </TextWithShadow>
-        <Html transform scale={3.5} center position={[0, cardHeight / 2, 0]}>
-          {(options?.shuffleable ?? false) && (
-            <Button variant="default" size="icon" name="Shuffle">
-              <GiCardExchange className="h-6 w-6" />
-            </Button>
-          )}
-        </Html>
         {useDimmed && gamePieceAppearance.display?.visibility === "dimmed" && (
           <mesh>
             <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, deckDepth + 0.1]} />

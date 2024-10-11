@@ -8,9 +8,8 @@ import ExtinctionTiles from "./ExtinctionTiles";
 import BiomeTiles from "./BiomeTiles";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
-import { Card, UiState } from "@/state/types";
+import { UiState } from "@/state/types";
 import PreloadAssets from "@/components/PreloadAssets";
-import { AnimalCard, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 import { GameStateProvider, useGameState } from "@/context/GameStateProvider";
 import { DeckConfig } from "@/decks/schema";
 import { toUiState } from "@/state/positioner";
@@ -28,13 +27,8 @@ function GameBoard() {
     },
   });
   const { state } = useGameState();
-  const [gameState, setGameState] = useState(state);
   const prevUiStateRef = useRef<UiState | null>(null);
   const uiState = useMemo(() => toUiState(prevUiStateRef.current, state), [state]);
-
-  useEffect(() => {
-    setGameState(state);
-  }, [state]);
 
   useEffect(() => {
     prevUiStateRef.current = uiState;
@@ -63,96 +57,6 @@ function GameBoard() {
     };
   }, [aspect]);
 
-  type LocationToCardType = {
-    animalDeck: AnimalCard[];
-    animalTable: AnimalCard[];
-    plantDeck: PlantCard[];
-    plantTable: PlantCard[];
-    disasterDeck: DisasterCard[];
-    disasterTable: DisasterCard[];
-    elementDeck: ElementCard[];
-    elementTable: ElementCard[];
-    [key: `playerDeck_${string}`]: Card[];
-    [key: `playerHand_${string}`]: Card[];
-  };
-
-  const moveCard = <Origin extends keyof LocationToCardType, Destination extends keyof LocationToCardType>(
-    card: LocationToCardType[Origin][number],
-    origin: Origin,
-    destination: Destination,
-  ) => {
-    const getPlayerUidFromLocation = (location: string) => {
-      const parts = location.split("_");
-      return parts.length > 1 ? parts[1] : null;
-    };
-    const originPlayerUid = getPlayerUidFromLocation(origin);
-    const destinationPlayerUid = getPlayerUidFromLocation(destination);
-
-    const locations: LocationToCardType = {
-      animalDeck: gameState.animalMarket.deck,
-      animalTable: gameState.animalMarket.table,
-      plantDeck: gameState.plantMarket.deck,
-      plantTable: gameState.plantMarket.table,
-      disasterDeck: gameState.disasterMarket.deck,
-      disasterTable: gameState.disasterMarket.table,
-      elementDeck: gameState.elementMarket.deck,
-      elementTable: gameState.elementMarket.table,
-      [`playerDeck_${originPlayerUid}`]: gameState.players.find((player) => player.uid === originPlayerUid)?.deck ?? [],
-      [`playerHand_${originPlayerUid}`]: gameState.players.find((player) => player.uid === originPlayerUid)?.hand ?? [],
-      [`playerDeck_${destinationPlayerUid}`]:
-        gameState.players.find((player) => player.uid === destinationPlayerUid)?.deck ?? [],
-      [`playerHand_${destinationPlayerUid}`]:
-        gameState.players.find((player) => player.uid === destinationPlayerUid)?.hand ?? [],
-    };
-
-    locations[origin] = locations[origin].filter(
-      (existingCard) => existingCard.uid !== card.uid,
-    ) as LocationToCardType[Origin];
-
-    locations[destination] = [...locations[destination], card] as LocationToCardType[Destination];
-
-    setGameState({
-      ...gameState,
-      players: gameState.players.map((player) => {
-        if (player.uid === originPlayerUid) {
-          return {
-            ...player,
-            deck: locations[`playerDeck_${originPlayerUid}`],
-            hand: locations[`playerHand_${originPlayerUid}`],
-          };
-        }
-        if (player.uid === destinationPlayerUid) {
-          return {
-            ...player,
-            deck: locations[`playerDeck_${destinationPlayerUid}`],
-            hand: locations[`playerHand_${destinationPlayerUid}`],
-          };
-        }
-        return player;
-      }),
-      animalMarket: {
-        ...gameState.animalMarket,
-        deck: locations.animalDeck,
-        table: locations.animalTable,
-      },
-      plantMarket: {
-        ...gameState.plantMarket,
-        deck: locations.plantDeck,
-        table: locations.plantTable,
-      },
-      disasterMarket: {
-        ...gameState.disasterMarket,
-        deck: locations.disasterDeck,
-        table: locations.disasterTable,
-      },
-      elementMarket: {
-        ...gameState.elementMarket,
-        deck: locations.elementDeck,
-        table: locations.elementTable,
-      },
-    });
-  };
-
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
       <PreloadAssets config={deckConfig as DeckConfig} />
@@ -162,11 +66,7 @@ function GameBoard() {
         {showGrid && <Grid divisions={gridDivisions} />}
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
         {orbitControls && <OrbitControls />}
-        <Croupier
-          gameState={gameState}
-          uiState={uiState}
-          onCardMove={(card, origin, destination) => moveCard(card, origin, destination)}
-        />
+        <Croupier gameState={state} uiState={uiState} />
 
         <ExtinctionTiles />
         <BiomeTiles />

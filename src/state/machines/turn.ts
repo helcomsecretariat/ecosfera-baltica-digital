@@ -34,12 +34,15 @@ export const TurnMachine = setup({
         const card = find(draft.elementMarket.deck, { name });
         if (!card) return;
         draft.elementMarket.deck = without(draft.elementMarket.deck, card);
+        if (draft.turn.borrowedElement) {
+          draft.elementMarket.deck = [...draft.elementMarket.deck, draft.turn.borrowedElement];
+        }
         draft.turn.borrowedElement = card;
       }),
     ),
     unBorrowElement: assign(({ context }: { context: GameState }, card: ElementCard) =>
       produce(context, (draft) => {
-        draft.elementMarket.deck.push(card);
+        draft.elementMarket.deck = [...draft.elementMarket.deck, card];
         draft.turn.borrowedElement = undefined;
       }),
     ),

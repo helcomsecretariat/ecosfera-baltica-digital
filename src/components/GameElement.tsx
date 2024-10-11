@@ -1,11 +1,9 @@
 import { ReactNode, useRef, useState } from "react";
 import { motion } from "framer-motion-3d";
-import { Coordinate, GamePieceAppearance } from "@/state/types";
+import { GamePieceAppearance } from "@/state/types";
 import { MeshProps } from "@react-three/fiber";
 import { useControls } from "leva";
 import { baseDuration, cardFlipDuration } from "@/constants/animation";
-import { cubicBezier, reverseEasing } from "framer-motion";
-import { c } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
 
 type GameElementProps = {
   gamePieceAppearance: GamePieceAppearance;
@@ -16,9 +14,7 @@ type GameElementProps = {
     showHoverAnimation?: boolean;
   };
   onClick?: () => void;
-  onDragEnd?: (position: Coordinate) => void;
   children: ReactNode;
-  key?: string;
 };
 
 const GameElement = ({
@@ -56,27 +52,10 @@ const GameElement = ({
     },
   });
   const ref = useRef<MeshProps>(null);
-  const thisDuration = (duration * gamePieceAppearance.duration) / baseDuration;
+  const thisDuration = duration * (gamePieceAppearance.duration / baseDuration);
   const thisDelay = gamePieceAppearance.delay;
 
   return (
-    // <DragControls
-    //   dragLimits={[
-    //     [
-    //       lowerXBoundary + gamePieceAppearance.transform.position.x * -1 + width / 2,
-    //       upperXBoundary + gamePieceAppearance.transform.position.x * -1 - width / 2,
-    //     ],
-    //     [
-    //       lowerYBoundary + gamePieceAppearance.transform.position.y * -1 + height / 2,
-    //       upperYBoundary + gamePieceAppearance.transform.position.y * -1 - height / 2,
-    //     ],
-    //     [0, 0],
-    //   ]}
-    //   dragConfig={{ enabled: options?.draggable ?? true }}
-    //   onDragStart={() => setDragging(true)}
-    //   onDragEnd={() => handleDragEnd()}
-    //   autoTransform
-    // >
     <motion.mesh
       ref={ref}
       onClick={(e) => {
@@ -93,8 +72,8 @@ const GameElement = ({
           delay: thisDuration + thisDelay,
         },
         z: {
-          duration: thisDuration + cardFlipDuration * 2,
-          delay: thisDelay,
+          duration: thisDelay + thisDuration + cardFlipDuration * 3,
+          times: [0, 0.1, 0.3, 1],
         },
       }}
       animate={{
@@ -127,7 +106,6 @@ const GameElement = ({
     >
       {children}
     </motion.mesh>
-    // </DragControls>
   );
 };
 

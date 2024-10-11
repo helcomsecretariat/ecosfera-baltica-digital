@@ -1,13 +1,11 @@
 import { default as CardComponent } from "./Card";
-import { calculateDistance } from "@/utils/3d";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { AnimalCard, Card, Coordinate, DisasterCard, ElementCard, GameState, PlantCard, UiState } from "@/state/types";
+import { AnimalCard, Card, DisasterCard, ElementCard, GameState, PlantCard, UiState } from "@/state/types";
 import { cardWidth } from "@/constants/card";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/GameStateProvider";
-import { animalDeckPosition, disasterDeckPosition, plantDeckPosition, supplyDeckPositions } from "@/state/positioner";
 import { uniqBy } from "lodash-es";
 import { abilityOffset } from "@/constants/gameBoard";
 import GamePieceGroup from "./GamePieceGroup";
@@ -28,26 +26,7 @@ export type CardMoveLocation =
   | `playerDeck_${string}`
   | `playerHand_${string}`;
 
-const Croupier = ({
-  gameState,
-  uiState,
-  onCardMove,
-}: {
-  gameState: GameState;
-  uiState: UiState;
-  onCardMove: (card: Card, origin: CardMoveLocation, destination: CardMoveLocation) => void;
-}) => {
-  const handleCardDrag = (
-    card: Card,
-    position: Coordinate,
-    comparisonPosition: Coordinate,
-    origin: CardMoveLocation,
-    destination: CardMoveLocation,
-  ) => {
-    if (calculateDistance(position, comparisonPosition) < cardWidth) {
-      onCardMove(card, origin, destination);
-    }
-  };
+const Croupier = ({ gameState, uiState }: { gameState: GameState; uiState: UiState }) => {
   const { handlers } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
@@ -63,18 +42,6 @@ const Croupier = ({
             card={card}
             gamePieceAppearance={uiState.cardPositions[card.uid]}
             onClick={handlers.marketCardClick(card)}
-            onDragEnd={(position: Coordinate) => {
-              handleCardDrag(card, position, animalDeckPosition, "animalTable", "animalDeck");
-              supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-                handleCardDrag(
-                  card,
-                  position,
-                  supplyDeckPosition,
-                  "animalTable",
-                  `playerDeck_${gameState.players[index].uid}`,
-                );
-              });
-            }}
           />
         );
       })}
@@ -84,18 +51,6 @@ const Croupier = ({
           card={card}
           gamePieceAppearance={uiState.cardPositions[card.uid]}
           onClick={handlers.marketCardClick(card)}
-          onDragEnd={(position) => {
-            handleCardDrag(card, position, plantDeckPosition, "plantTable", "plantDeck");
-            supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-              handleCardDrag(
-                card,
-                position,
-                supplyDeckPosition,
-                "plantTable",
-                `playerDeck_${gameState.players[index].uid}`,
-              );
-            });
-          }}
         />
       ))}
       {gameState.disasterMarket.table.map((card: DisasterCard) => (
@@ -104,18 +59,6 @@ const Croupier = ({
           card={card}
           gamePieceAppearance={uiState.cardPositions[card.uid]}
           // onClick={handlers.buyCard(card)}
-          onDragEnd={(position) => {
-            handleCardDrag(card, position, disasterDeckPosition, "disasterTable", "disasterDeck");
-            supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-              handleCardDrag(
-                card,
-                position,
-                supplyDeckPosition,
-                "disasterTable",
-                `playerDeck_${gameState.players[index].uid}`,
-              );
-            });
-          }}
         />
       ))}
       {uniqBy(gameState.elementMarket.deck, "name").map((card: ElementCard) => (
@@ -125,20 +68,17 @@ const Croupier = ({
           textColor="black"
           gamePieceAppearance={uiState.deckPositions[`${card.name}ElementDeck`]}
           cards={gameState.elementMarket.deck.filter((elementDeckCard) => elementDeckCard.name === card.name)}
-          // onDraw={(card) => onCardMove(card, "elementDeck", "elementTable")}
           onClick={handlers.marketElementClick(card.name)}
         />
       ))}
-      <AnimatePresence>
-        {gameState.turn.borrowedElement && (
-          <CardComponent
-            key={`borrowed +${gameState.turn.borrowedElement.uid}`}
-            card={gameState.turn.borrowedElement}
-            gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
-            onClick={handlers.borrowedElementClick(gameState.turn.borrowedElement)}
-          />
-        )}
-      </AnimatePresence>
+      {gameState.turn.borrowedElement && (
+        <CardComponent
+          key={gameState.turn.borrowedElement.uid}
+          card={gameState.turn.borrowedElement}
+          gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
+          onClick={handlers.borrowedElementClick(gameState.turn.borrowedElement)}
+        />
+      )}
       <Deck
         key={"animalDeck"}
         gamePieceAppearance={uiState.deckPositions["animalDeck"]}

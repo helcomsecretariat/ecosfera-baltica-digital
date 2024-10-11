@@ -1,4 +1,5 @@
 import type { Card as CardType, GamePieceAppearance } from "@/state/types";
+import type { Card as CardType, GamePieceAppearance } from "@/state/types";
 import { cardHeight, cardWidth } from "../constants/card";
 import GameElement from "./GameElement";
 import { Text, useTexture } from "@react-three/drei";
@@ -30,13 +31,7 @@ const Card = ({
 
   return (
     gamePieceAppearance && (
-      <GameElement
-        gamePieceAppearance={gamePieceAppearance}
-        width={cardWidth}
-        height={cardHeight}
-        onClick={onClick}
-        key={card.uid}
-      >
+      <GameElement width={cardWidth} height={cardHeight} onClick={onClick} key={card.uid}>
         <mesh position={[0, 0, -0.1]}>
           <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.02]} />
           <meshBasicMaterial attach="material-0" map={backTexture} />

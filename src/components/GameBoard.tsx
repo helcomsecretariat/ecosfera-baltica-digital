@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Grid from "./Grid";
 import { useControls } from "leva";
@@ -11,8 +11,8 @@ import Croupier from "./Croupier";
 import { UiState } from "@/state/types";
 import PreloadAssets from "@/components/PreloadAssets";
 import { GameStateProvider, useGameState } from "@/context/GameStateProvider";
+import { GameStateProvider } from "@/context/GameStateProvider";
 import { DeckConfig } from "@/decks/schema";
-import { toUiState } from "@/state/positioner";
 
 function GameBoard() {
   const { showGrid, gridDivisions, orbitControls } = useControls({
@@ -33,6 +33,7 @@ function GameBoard() {
   useEffect(() => {
     prevUiStateRef.current = uiState;
   }, [uiState]);
+  });
 
   const aspect = 3 / 2;
   const [size, setSize] = useState({
@@ -66,7 +67,7 @@ function GameBoard() {
         {showGrid && <Grid divisions={gridDivisions} />}
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
         {orbitControls && <OrbitControls />}
-        <Croupier gameState={state} uiState={uiState} />
+        <Croupier />
 
         <ExtinctionTiles />
         <BiomeTiles />
@@ -83,7 +84,7 @@ export default () => {
       value: seed,
     },
     numberOfPlayers: {
-      value: 1,
+      value: 3,
       min: 1,
       max: 4,
       step: 1,

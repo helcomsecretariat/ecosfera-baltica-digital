@@ -22,6 +22,8 @@ const AbilityTiles = ({
       key={ability.name + xStart}
       gamePieceAppearance={{
         transform: {
+          initialPosition: { x: xStart, y: yStart + abilityOffset * index, z: 0 },
+          initialRotation: rotation,
           position: { x: xStart, y: yStart + abilityOffset * index, z: 0 },
           rotation,
         },

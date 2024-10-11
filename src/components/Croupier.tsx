@@ -79,6 +79,14 @@ const Croupier = ({ gameState, uiState }: { gameState: GameState; uiState: UiSta
           onClick={handlers.borrowedElementClick(gameState.turn.borrowedElement)}
         />
       )}
+      {gameState.turn.borrowedElement && (
+        <CardComponent
+          key={gameState.turn.borrowedElement.uid}
+          card={gameState.turn.borrowedElement}
+          gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
+          onClick={handlers.borrowedElementClick(gameState.turn.borrowedElement)}
+        />
+      )}
       <Deck
         key={"animalDeck"}
         gamePieceAppearance={uiState.deckPositions["animalDeck"]}
@@ -97,7 +105,8 @@ const Croupier = ({ gameState, uiState }: { gameState: GameState; uiState: UiSta
         cards={gameState.disasterMarket.deck}
         onClick={() => console.error("Disaster deck click NOT IMPLEMENTED")}
       />
-      {/* Player Cards */}
+
+      {/* Player HUD */}
       {gameState.players.map((player) => (
         <React.Fragment key={player.uid + "HUD"}>
           <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
@@ -123,18 +132,23 @@ const Croupier = ({ gameState, uiState }: { gameState: GameState; uiState: UiSta
               </>
             )}
           </GamePieceGroup>
-
-          <Deck
-            gamePieceAppearance={{
-              ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
-              display: { visibility: "default" },
-            }}
-            cards={player.discard}
-            onClick={() => console.error("discard click NOT IMPLEMENTED")}
-          />
         </React.Fragment>
       ))}
 
+      {/* Player Discard */}
+      {gameState.players.map((player) => (
+        <Deck
+          gamePieceAppearance={{
+            ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
+            display: { visibility: "default" },
+          }}
+          cards={player.discard}
+          key={player.uid + "PlayerDiscard"}
+          onClick={() => console.error("discard click NOT IMPLEMENTED")}
+        />
+      ))}
+
+      {/* Player Cards */}
       {gameState.players.flatMap((player) =>
         player.hand.map(
           (card: Card) =>

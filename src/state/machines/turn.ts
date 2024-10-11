@@ -216,6 +216,9 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         const currentPlayerIndex = context.players.findIndex((player) => player.uid === context.turn.player);
         const nextPlayerIndex = (currentPlayerIndex + 1) % context.players.length;
+        if (draft.turn.borrowedElement) {
+          draft.elementMarket.deck = [...draft.elementMarket.deck, draft.turn.borrowedElement];
+        }
         draft.turn = {
           player: context.players[nextPlayerIndex].uid,
           currentAbility: undefined,
@@ -266,7 +269,7 @@ export const TurnMachine = setup({
   states: {
     endOfTurn: {
       after: {
-        400: {
+        500: {
           target: "buying",
           actions: {
             type: "endTurn",

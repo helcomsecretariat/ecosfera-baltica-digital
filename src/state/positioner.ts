@@ -26,7 +26,7 @@ import {
 } from "@/constants/gameBoard";
 import { cardHeight, cardWidth } from "@/constants/card";
 import { BuyMachineGuards } from "./machines/guards/buy";
-import { baseDuration, defaultAnimationTimings } from "@/constants/animation";
+import { baseDuration, deckAnimationTimings } from "@/constants/animation";
 
 const zeroRotation = { x: 0, y: 0, z: 0 };
 
@@ -92,7 +92,7 @@ function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict)
   const updatedCards = Object.fromEntries(
     result.map(([key, value]) => {
       const delay = (baseDuration * (maxDistance - value.distance)) / maxDistance;
-      const duration = (value.distance / maxDistance) * baseDuration;
+      const duration = (value.distance / cardWidth) * baseDuration;
 
       return [key, { ...value, delay, duration } as GamePieceAppearance];
     }),
@@ -115,7 +115,7 @@ const calculateDeckPositions = (gameState: GameState): GamePieceAppearances => {
   const turnState = getTurnState(gameState);
   return {
     animalDeck: {
-      ...defaultAnimationTimings,
+      ...deckAnimationTimings,
       transform: {
         position: animalDeckPosition,
         initialPosition: animalDeckPosition,
@@ -134,7 +134,7 @@ const calculateDeckPositions = (gameState: GameState): GamePieceAppearances => {
       },
     },
     plantDeck: {
-      ...defaultAnimationTimings,
+      ...deckAnimationTimings,
       transform: {
         position: plantDeckPosition,
         initialPosition: plantDeckPosition,
@@ -153,7 +153,7 @@ const calculateDeckPositions = (gameState: GameState): GamePieceAppearances => {
       },
     },
     disasterDeck: {
-      ...defaultAnimationTimings,
+      ...deckAnimationTimings,
       transform: {
         position: disasterDeckPosition,
         initialPosition: disasterDeckPosition,
@@ -362,7 +362,7 @@ export const positionElementDecks = (gameState: GameState): GamePieceCoordsDict 
     .sort((a, b) => a.name.localeCompare(b.name))
     .reduce((acc, card: ElementCard, index: number) => {
       acc[`${card.name}ElementDeck`] = {
-        ...defaultAnimationTimings,
+        ...deckAnimationTimings,
         transform: {
           position: {
             x: marketXStart + index * cardXOffset,
@@ -398,7 +398,7 @@ export const positionPlayerDecks = (gameState: GameState): GamePieceCoordsDict =
   const turnState = getTurnState(gameState);
   return gameState.players.reduce((acc, player, playerIndex) => {
     acc[`${player.uid}PlayerDeck`] = {
-      ...defaultAnimationTimings,
+      ...deckAnimationTimings,
       transform: {
         position: supplyDeckPositions(gameState)[playerIndex],
         initialPosition: supplyDeckPositions(gameState)[playerIndex],
@@ -419,6 +419,7 @@ export const positionPlayerDecks = (gameState: GameState): GamePieceCoordsDict =
     };
     acc[`${player.uid}PlayerDiscard`] = {
       transform: {
+        initialPosition: discardPositions(gameState)[playerIndex],
         position: discardPositions(gameState)[playerIndex],
         rotation: {
           x: 0,

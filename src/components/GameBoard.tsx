@@ -66,7 +66,7 @@ function GameBoard() {
         {showGrid && <Grid divisions={gridDivisions} />}
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
         {orbitControls && <OrbitControls />}
-        <Croupier gameState={state} uiState={uiState} />
+        <Croupier />
 
         <ExtinctionTiles />
         <BiomeTiles />
@@ -83,7 +83,7 @@ export default () => {
       value: seed,
     },
     numberOfPlayers: {
-      value: 1,
+      value: 3,
       min: 1,
       max: 4,
       step: 1,

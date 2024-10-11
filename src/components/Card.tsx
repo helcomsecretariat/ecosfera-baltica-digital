@@ -30,13 +30,7 @@ const Card = ({
 
   return (
     gamePieceAppearance && (
-      <GameElement
-        gamePieceAppearance={gamePieceAppearance}
-        width={cardWidth}
-        height={cardHeight}
-        onClick={onClick}
-        key={card.uid}
-      >
+      <GameElement width={cardWidth} height={cardHeight} onClick={onClick} key={card.uid} cardUID={card.uid}>
         <mesh position={[0, 0, -0.1]}>
           <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.02]} />
           <meshBasicMaterial attach="material-0" map={backTexture} />

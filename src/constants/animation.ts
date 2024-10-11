@@ -1,8 +1,5 @@
-export const largeDistance = 125;
-export const baseDuration = 0.4;
-export const minDuration = 0.2;
-export const cardFlipDuration = 0.3;
-export const defaultAnimationTimings = {
+export const baseDuration = 0.01; // time it takes to move a single card over distance equals to card width
+export const deckAnimationTimings = {
   delay: 0,
-  duration: minDuration,
+  duration: baseDuration,
 };

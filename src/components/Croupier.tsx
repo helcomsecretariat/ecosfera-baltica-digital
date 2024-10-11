@@ -1,7 +1,7 @@
 import { default as CardComponent } from "./Card";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { AnimalCard, Card, DisasterCard, ElementCard, GameState, PlantCard, UiState } from "@/state/types";
+import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 import { cardWidth } from "@/constants/card";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
@@ -26,7 +26,8 @@ export type CardMoveLocation =
   | `playerDeck_${string}`
   | `playerHand_${string}`;
 
-const Croupier = ({ gameState, uiState }: { gameState: GameState; uiState: UiState }) => {
+const Croupier = () => {
+  const { state: gameState, uiState } = useGameState();
   const { handlers } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
@@ -97,7 +98,8 @@ const Croupier = ({ gameState, uiState }: { gameState: GameState; uiState: UiSta
         cards={gameState.disasterMarket.deck}
         onClick={() => console.error("Disaster deck click NOT IMPLEMENTED")}
       />
-      {/* Player Cards */}
+
+      {/* Player HUD */}
       {gameState.players.map((player) => (
         <React.Fragment key={player.uid + "HUD"}>
           <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
@@ -123,18 +125,23 @@ const Croupier = ({ gameState, uiState }: { gameState: GameState; uiState: UiSta
               </>
             )}
           </GamePieceGroup>
-
-          <Deck
-            gamePieceAppearance={{
-              ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
-              display: { visibility: "default" },
-            }}
-            cards={player.discard}
-            onClick={() => console.error("discard click NOT IMPLEMENTED")}
-          />
         </React.Fragment>
       ))}
 
+      {/* Player Discard */}
+      {gameState.players.map((player) => (
+        <Deck
+          gamePieceAppearance={{
+            ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
+            display: { visibility: "default" },
+          }}
+          cards={player.discard}
+          key={player.uid + "PlayerDiscard"}
+          onClick={() => console.error("discard click NOT IMPLEMENTED")}
+        />
+      ))}
+
+      {/* Player Cards */}
       {gameState.players.flatMap((player) =>
         player.hand.map(
           (card: Card) =>

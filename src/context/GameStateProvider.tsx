@@ -1,11 +1,12 @@
-import { createContext, ReactNode, useContext, useMemo } from "react";
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import config from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
-import { GameState } from "@/state/types";
+import { GameState, UiState } from "@/state/types";
 import { type EventFromLogic } from "xstate";
 import { createStateHandlers, StateHandlers } from "@/state/action-handlers";
 import { inspect } from "@/state/machines/utils";
 import { TurnMachine } from "@/state/machines/turn";
+import { toUiState } from "@/state/positioner";
 
 interface StateProviderProps {
   children: ReactNode;
@@ -17,6 +18,7 @@ interface StateContextType {
   state: GameState;
   send: (e: EventFromLogic<typeof TurnMachine>) => void;
   handlers: StateHandlers;
+  uiState: UiState;
 }
 
 const stateContext = createContext<StateContextType | undefined>(undefined);
@@ -32,9 +34,16 @@ export const GameStateProvider = ({ children, numberOfPlayers, seed }: StateProv
     },
   });
   const handlers = useMemo(() => createStateHandlers(send), [send]);
+  const prevUiStateRef = useRef<UiState | null>(null);
+  const uiState = useMemo(() => toUiState(prevUiStateRef.current, snap.context), [snap.context]);
+
+  useEffect(() => {
+    prevUiStateRef.current = uiState;
+  }, [uiState]);
 
   const value = {
     state: snap.context,
+    uiState,
     send,
     handlers,
   };

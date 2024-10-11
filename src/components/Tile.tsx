@@ -2,7 +2,7 @@ import { Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { tileSize } from "@/constants/gameBoard";
 import { Coordinate } from "@/state/types";
-import { defaultAnimationTimings } from "@/constants/animation";
+import { deckAnimationTimings } from "@/constants/animation";
 
 const Tile = ({
   position,
@@ -20,8 +20,13 @@ const Tile = ({
   return (
     <GameElement
       gamePieceAppearance={{
-        transform: { position, rotation },
-        ...defaultAnimationTimings,
+        transform: {
+          initialPosition: position,
+          initialRotation: rotation,
+          position,
+          rotation,
+        },
+        ...deckAnimationTimings,
       }}
       height={6}
       width={10}

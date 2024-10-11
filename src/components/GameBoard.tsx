@@ -19,12 +19,6 @@ function GameBoard() {
     showGrid: false,
     gridDivisions: 16,
     orbitControls: false,
-    numberOfPlayers: {
-      value: 1,
-      min: 1,
-      max: 4,
-      step: 1,
-    },
   });
   const { state } = useGameState();
   const prevUiStateRef = useRef<UiState | null>(null);

@@ -154,13 +154,13 @@ export interface Coordinate {
   z: number;
 }
 
-type AbsentPieceTransform = {
+export type AbsentPieceTransform = {
   initialPosition: Coordinate;
   initialRotation: Coordinate;
   exitPosition: Coordinate;
   exitRotation: Coordinate;
-  position?: Coordinate;
-  rotation?: Coordinate;
+  position: never;
+  rotation: never;
   distance?: number;
   duration?: number;
 };
@@ -174,10 +174,7 @@ type PresentPieceTransform = {
   exitRotation?: Coordinate;
 };
 
-export type GamePieceTransform =
-  | AbsentPieceTransform
-  | PresentPieceTransform
-  | (PresentPieceTransform & AbsentPieceTransform);
+export type GamePieceTransform = AbsentPieceTransform | PresentPieceTransform;
 
 export interface GamePieceDisplay {
   visibility?: "default" | "highlighted" | "dimmed" | "hidden";

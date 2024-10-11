@@ -34,12 +34,15 @@ export const TurnMachine = setup({
         const card = find(draft.elementMarket.deck, { name });
         if (!card) return;
         draft.elementMarket.deck = without(draft.elementMarket.deck, card);
+        if (draft.turn.borrowedElement) {
+          draft.elementMarket.deck = [...draft.elementMarket.deck, draft.turn.borrowedElement];
+        }
         draft.turn.borrowedElement = card;
       }),
     ),
     unBorrowElement: assign(({ context }: { context: GameState }, card: ElementCard) =>
       produce(context, (draft) => {
-        draft.elementMarket.deck.push(card);
+        draft.elementMarket.deck = [...draft.elementMarket.deck, card];
         draft.turn.borrowedElement = undefined;
       }),
     ),
@@ -213,6 +216,9 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         const currentPlayerIndex = context.players.findIndex((player) => player.uid === context.turn.player);
         const nextPlayerIndex = (currentPlayerIndex + 1) % context.players.length;
+        if (draft.turn.borrowedElement) {
+          draft.elementMarket.deck = [...draft.elementMarket.deck, draft.turn.borrowedElement];
+        }
         draft.turn = {
           player: context.players[nextPlayerIndex].uid,
           currentAbility: undefined,
@@ -263,7 +269,7 @@ export const TurnMachine = setup({
   states: {
     endOfTurn: {
       after: {
-        400: {
+        500: {
           target: "buying",
           actions: {
             type: "endTurn",

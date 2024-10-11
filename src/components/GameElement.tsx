@@ -1,14 +1,13 @@
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion-3d";
-import { Coordinate, GamePieceAppearance } from "@/state/types";
-import { MeshProps } from "@react-three/fiber";
+import { Card, GamePieceAppearance } from "@/state/types";
+import { MeshProps, ThreeEvent } from "@react-three/fiber";
 import { useControls } from "leva";
-import { baseDuration, cardFlipDuration } from "@/constants/animation";
-import { cubicBezier, reverseEasing } from "framer-motion";
-import { c } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
+import { baseDuration } from "@/constants/animation";
+import { useGameState } from "@/context/GameStateProvider";
+import { usePresence } from "framer-motion";
 
 type GameElementProps = {
-  gamePieceAppearance: GamePieceAppearance;
   height: number;
   width: number;
   options?: {
@@ -16,10 +15,17 @@ type GameElementProps = {
     showHoverAnimation?: boolean;
   };
   onClick?: () => void;
-  onDragEnd?: (position: Coordinate) => void;
   children: ReactNode;
-  key?: string;
-};
+} & (
+  | {
+      gamePieceAppearance: GamePieceAppearance;
+      cardUID?: never;
+    }
+  | {
+      cardUID: Card["uid"];
+      gamePieceAppearance?: never;
+    }
+);
 
 const GameElement = ({
   gamePieceAppearance,
@@ -29,14 +35,21 @@ const GameElement = ({
   },
   onClick,
   children,
+  cardUID,
 }: GameElementProps) => {
+  const { uiState } = useGameState();
+  const appearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
+  const [isPresent, safeToRemove] = usePresence();
+  const isDisappearing = !appearance.transform.position;
+
   const [hovered, setHovered] = useState<boolean>(false);
-  const { duration, ease } = useControls({
-    duration: {
-      value: baseDuration,
-      min: 0.1,
-      max: 4,
-      step: 0.05,
+  const { animSpeed, ease } = useControls({
+    animSpeed: {
+      label: "Animation speed",
+      value: 30,
+      min: 1,
+      step: 1,
+      max: 100,
     },
     ease: {
       options: [
@@ -52,74 +65,73 @@ const GameElement = ({
         "backInOut",
         "anticipate",
       ],
-      value: "backOut",
+      value: "easeOut",
     },
   });
   const ref = useRef<MeshProps>(null);
-  const thisDuration = (duration * gamePieceAppearance.duration) / baseDuration;
-  const thisDelay = gamePieceAppearance.delay;
+  const mainDuration = (2 / animSpeed) * (appearance.duration / baseDuration);
+  const mainDelay = appearance.delay;
+  const cardFlipDuration = mainDuration * 0.3;
+  const zDuration = mainDuration + mainDelay + cardFlipDuration * 3;
+  const flipDuration = mainDuration + cardFlipDuration;
+  const flipDelay = mainDuration + mainDelay;
+  const totalDuration = mainDelay + mainDuration + Math.max(mainDelay + zDuration, flipDelay + flipDuration);
+
+  useEffect(() => {
+    if (!isPresent) {
+      setTimeout(safeToRemove, totalDuration);
+    }
+  }, [isPresent]);
+
+  const handleClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+      if (!isDisappearing && onClick) onClick();
+    },
+    [isDisappearing, onClick],
+  );
 
   return (
-    // <DragControls
-    //   dragLimits={[
-    //     [
-    //       lowerXBoundary + gamePieceAppearance.transform.position.x * -1 + width / 2,
-    //       upperXBoundary + gamePieceAppearance.transform.position.x * -1 - width / 2,
-    //     ],
-    //     [
-    //       lowerYBoundary + gamePieceAppearance.transform.position.y * -1 + height / 2,
-    //       upperYBoundary + gamePieceAppearance.transform.position.y * -1 - height / 2,
-    //     ],
-    //     [0, 0],
-    //   ]}
-    //   dragConfig={{ enabled: options?.draggable ?? true }}
-    //   onDragStart={() => setDragging(true)}
-    //   onDragEnd={() => handleDragEnd()}
-    //   autoTransform
-    // >
     <motion.mesh
       ref={ref}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick?.();
-      }}
-      position-z={gamePieceAppearance.transform.position?.z}
+      onClick={handleClick}
+      position-z={appearance.transform.position?.z}
       transition={{
         ease,
-        duration: thisDuration,
-        delay: thisDelay,
+        duration: mainDuration,
+        delay: mainDelay,
         rotateY: {
-          duration: cardFlipDuration,
-          delay: thisDuration + thisDelay,
+          duration: flipDuration,
+          delay: flipDelay,
         },
         z: {
-          duration: thisDuration + cardFlipDuration * 2,
-          delay: thisDelay,
+          duration: zDuration,
+          times: [0, 0.1, 0.3, 1],
         },
       }}
       animate={{
-        x: gamePieceAppearance.transform.position?.x,
-        y: gamePieceAppearance.transform.position?.y,
-        z: [gamePieceAppearance.transform.position?.z, 8, 8, gamePieceAppearance.transform.position?.z],
-        rotateX: gamePieceAppearance.transform.rotation?.x,
-        rotateY: gamePieceAppearance.transform.rotation?.y,
-        rotateZ: gamePieceAppearance.transform.rotation?.z,
+        x: appearance.transform.position?.x,
+        y: appearance.transform.position?.y,
+        z: [appearance.transform.position?.z, 8, 8, appearance.transform.position?.z],
+        rotateX: appearance.transform.rotation?.x,
+        rotateY: appearance.transform.rotation?.y,
+        rotateZ: appearance.transform.rotation?.z,
       }}
       initial={{
-        x: gamePieceAppearance.transform.initialPosition?.x,
-        y: gamePieceAppearance.transform.initialPosition?.y,
-        z: gamePieceAppearance.transform.initialPosition?.z,
-        rotateX: gamePieceAppearance.transform.initialRotation?.x,
-        rotateY: gamePieceAppearance.transform.initialRotation?.y,
-        rotateZ: gamePieceAppearance.transform.initialRotation?.z,
+        x: appearance.transform.initialPosition?.x,
+        y: appearance.transform.initialPosition?.y,
+        z: appearance.transform.initialPosition?.z,
+        rotateX: appearance.transform.initialRotation?.x,
+        rotateY: appearance.transform.initialRotation?.y,
+        rotateZ: appearance.transform.initialRotation?.z,
       }}
       exit={{
-        x: gamePieceAppearance.transform.exitPosition?.x,
-        y: gamePieceAppearance.transform.exitPosition?.y,
-        z: gamePieceAppearance.transform.exitPosition?.z,
-        rotateX: gamePieceAppearance.transform.exitRotation?.x,
-        rotateY: gamePieceAppearance.transform.exitRotation?.y,
-        rotateZ: gamePieceAppearance.transform.exitRotation?.z,
+        x: appearance.transform.exitPosition?.x,
+        y: appearance.transform.exitPosition?.y,
+        z: appearance.transform.exitPosition?.z,
+        rotateX: appearance.transform.exitRotation?.x,
+        rotateY: appearance.transform.exitRotation?.y,
+        rotateZ: appearance.transform.exitRotation?.z,
       }}
       scale={hovered && (options?.showHoverAnimation ?? true) ? 1.15 : 1}
       onPointerOver={() => setHovered(true)}
@@ -127,7 +139,6 @@ const GameElement = ({
     >
       {children}
     </motion.mesh>
-    // </DragControls>
   );
 };
 

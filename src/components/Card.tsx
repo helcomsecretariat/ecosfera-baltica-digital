@@ -1,4 +1,4 @@
-import type { Card as CardType, Coordinate, GamePieceAppearance } from "@/state/types";
+import type { Card as CardType, GamePieceAppearance } from "@/state/types";
 import { cardHeight, cardWidth } from "../constants/card";
 import GameElement from "./GameElement";
 import { Text, useTexture } from "@react-three/drei";
@@ -12,12 +12,10 @@ import { useControls } from "leva";
 const Card = ({
   card,
   gamePieceAppearance,
-  onDragEnd,
   onClick,
 }: {
   card: CardType;
   gamePieceAppearance: GamePieceAppearance;
-  onDragEnd?: (position: Coordinate) => void;
   onClick?: () => void;
 }) => {
   const { name, type } = card;
@@ -32,14 +30,7 @@ const Card = ({
 
   return (
     gamePieceAppearance && (
-      <GameElement
-        gamePieceAppearance={gamePieceAppearance}
-        width={cardWidth}
-        height={cardHeight}
-        onDragEnd={onDragEnd}
-        onClick={onClick}
-        key={card.uid}
-      >
+      <GameElement cardUID={card.uid} width={cardWidth} height={cardHeight} onClick={onClick} key={card.uid}>
         <mesh position={[0, 0, -0.1]}>
           <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.02]} />
           <meshBasicMaterial attach="material-0" map={backTexture} />

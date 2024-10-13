@@ -1,6 +1,7 @@
-import { createBrowserInspector } from "@statelyai/inspect";
-const inspector = createBrowserInspector();
-const inspect = inspector.inspect;
+// import { createBrowserInspector } from "@statelyai/inspect";
+// const inspector = createBrowserInspector();
+// const inspect = inspector.inspect;
+const inspect = undefined;
 
 // let inspect: (inspectionEvent: InspectionEvent) => void = () => {};
 

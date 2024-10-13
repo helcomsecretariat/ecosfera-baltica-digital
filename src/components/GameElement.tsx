@@ -32,7 +32,7 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
   const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);
   const mainDuration = (2 / animSpeed) * (appearance.duration / baseDuration);
-  const mainDelay = appearance.delay;
+  const mainDelay = (2 / animSpeed) * (appearance.delay / baseDuration);
   const cardFlipDuration = mainDuration * 0.3;
   const zDuration = mainDuration + mainDelay + cardFlipDuration * 3;
   const flipDuration = mainDuration + cardFlipDuration;
@@ -95,7 +95,7 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
         rotateY: appearance.transform.exitRotation?.y,
         rotateZ: appearance.transform.exitRotation?.z,
       }}
-      whileHover={{ scale: 1.1 }}
+      whileHover={{ scale: onClick ? 1.05 : 1 }}
     >
       {children}
     </motion.mesh>

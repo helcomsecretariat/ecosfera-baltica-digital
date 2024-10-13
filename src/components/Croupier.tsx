@@ -9,8 +9,6 @@ import { useGameState } from "@/context/GameStateProvider";
 import { uniqBy } from "lodash-es";
 import { abilityOffset } from "@/constants/gameBoard";
 import GamePieceGroup from "./GamePieceGroup";
-import { Html } from "@react-three/drei";
-import { Button } from "./ui/button";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { NextButton } from "@/components/NextTurnBtn";

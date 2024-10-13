@@ -20,8 +20,7 @@ const BiomeTiles = () => {
       key={habitat.uid}
       position={positions[index]}
       rotation={{ x: -Math.PI / 2, y: 0, z: 0 }}
-      color={habitat.isAcquired ? "#66cc66" : "#2cba16"}
-      opacity={0.7}
+      color={habitat.isAcquired ? "#2cba16" : "#66cc66"}
       onClick={handlers.habitatClick(habitat)}
       name={habitat.name}
     />

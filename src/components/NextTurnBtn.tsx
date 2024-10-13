@@ -3,7 +3,6 @@ import { motion } from "framer-motion-3d";
 import { baseDuration } from "@/constants/animation";
 import { useAnimControls } from "@/hooks/useAnimationControls";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
-import { values } from "lodash-es";
 
 const positions = [
   { x: 65, y: -37, z: 0 },
@@ -18,7 +17,7 @@ const rotations = [
   { rotateX: 0, rotateY: 0, rotateZ: 0 },
 ];
 
-export const NextButton = ({}: {}) => {
+export const NextButton = () => {
   const {
     handlers,
     state: { turn, players },

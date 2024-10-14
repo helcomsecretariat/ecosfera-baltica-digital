@@ -1,6 +1,8 @@
 import { Coordinate } from "@/state/types";
 import { extinctionTileYStart, hexagonTileXStart, tileSize } from "../constants/gameBoard";
 import Tile from "./Tile";
+import { concat } from "lodash";
+import { useGameState } from "@/context/GameStateProvider";
 
 const positions: Coordinate[] = [
   { x: hexagonTileXStart - tileSize, y: extinctionTileYStart - tileSize * 0.55, z: 0 },
@@ -12,14 +14,17 @@ const positions: Coordinate[] = [
 ];
 
 const ExtinctionTiles = () => {
-  return [...Array.from(Array(6).keys())].map((_, index, { length }) => (
-    <Tile
-      key={index}
-      position={positions[index]}
-      rotation={{ x: -1.57, y: ((Math.PI * 2) / length) * index, z: 0 }}
-      color="#c3b091"
-    />
-  ));
+  const { state: gameState } = useGameState();
+  return concat(gameState.extinctMarket.deck, gameState.extinctMarket.table).map((extinctTile, index, { length }) => {
+    return (
+      <Tile
+        key={index}
+        position={positions[index]}
+        rotation={{ x: -1.57, y: ((Math.PI * 2) / length) * index, z: 0 }}
+        color={gameState.extinctMarket.deck.includes(extinctTile) ? "#c3b091" : "#d17b79"}
+      />
+    );
+  });
 };
 
 export default ExtinctionTiles;

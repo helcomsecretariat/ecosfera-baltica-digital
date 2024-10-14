@@ -75,6 +75,7 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): Ga
       boughtAnimal: false,
       boughtPlant: false,
       boughtHabitat: false,
+      uidsUsedForAbilityRefresh: [],
     },
     players,
     plantMarket: prepareMarket(plants, 4, seed),

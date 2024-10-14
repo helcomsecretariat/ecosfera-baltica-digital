@@ -64,7 +64,8 @@ function GameBoard() {
         <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
         {orbitControls && <OrbitControls />}
         <Croupier />
-        <ExtinctionTiles />
+
+        <ExtinctionTiles gameState={state} />
         <BiomeTiles />
         {FPS && <Stats />}
       </Canvas>

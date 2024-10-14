@@ -12,6 +12,7 @@ import GamePieceGroup from "./GamePieceGroup";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { NextButton } from "@/components/NextTurnBtn";
+import { BuyMachineGuards } from "@/state/machines/guards/buy";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -116,9 +117,12 @@ const Croupier = () => {
             />
 
             {player.uid === gameState.turn.player && (
-              <>
-                <AbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} abilities={player.abilities} />
-              </>
+              <AbilityTiles
+                canRefresh={BuyMachineGuards.canRefreshAbility({ context: gameState })}
+                xStart={0 - cardWidth}
+                yStart={0 - abilityOffset}
+                abilities={player.abilities}
+              />
             )}
           </GamePieceGroup>
         </React.Fragment>

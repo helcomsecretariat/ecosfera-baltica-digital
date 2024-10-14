@@ -1,5 +1,6 @@
 import { AbilityTile, AnimalCard, BiomeTile, Card, GameState, PlantCard } from "@/state/types";
 import { countBy, find, compact, every, intersection } from "lodash";
+import { getAnimalBiomePairs } from "../helpers/turn";
 
 export const BuyMachineGuards = {
   canBuyCard: ({ context: { players, turn } }: { context: GameState }, card: AnimalCard | PlantCard) => {
@@ -77,5 +78,23 @@ export const BuyMachineGuards = {
     const { boughtPlant, boughtAnimal, boughtHabitat } = turn;
 
     return !boughtPlant && !boughtAnimal && !boughtHabitat;
+  },
+
+  getsExtinction: ({ context: { players, turn } }: { context: GameState }) => {
+    const player = players.find(({ uid }) => uid === turn.player)!;
+
+    return player.hand.filter((card) => card.type === "disaster").length > 2;
+  },
+
+  canRefreshAbility: ({ context }: { context: GameState }) => {
+    const player = find(context.players, { uid: context.turn.player })!;
+    const availableAnimalBiomePairs = getAnimalBiomePairs(player).filter(
+      (animalBiomePair) =>
+        !context.turn.uidsUsedForAbilityRefresh.some((uid) =>
+          animalBiomePair.map((animal) => animal.uid).includes(uid),
+        ),
+    );
+
+    return availableAnimalBiomePairs.length > 0;
   },
 };

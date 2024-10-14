@@ -9,11 +9,13 @@ const AbilityTiles = ({
   yStart,
   rotation = { x: 0, y: 0, z: 0 },
   abilities,
+  canRefresh,
 }: {
   xStart: number;
   yStart: number;
   rotation?: Coordinate;
   abilities: AbilityTile[];
+  canRefresh: boolean;
 }) => {
   const { handlers } = useGameState();
   const plusTexture = useSRGBTexture("/ecosfera_baltica/ability_plus.avif");
@@ -39,7 +41,7 @@ const AbilityTiles = ({
     >
       <circleGeometry args={[3, 32]} />
       <meshBasicMaterial
-        color={ability.isUsed ? "#555" : "white"}
+        color={ability.isUsed ? (canRefresh ? "green" : "#555") : "white"}
         map={ability.name === "move" ? moveTexture : ability.name === "plus" ? plusTexture : refreshTexture}
       />
     </GameElement>

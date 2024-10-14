@@ -36,6 +36,7 @@ export interface GameState {
     boughtAnimal: boolean;
     boughtPlant: boolean;
     boughtHabitat: boolean;
+    uidsUsedForAbilityRefresh: AnimalUID[];
   };
   players: PlayerState[];
   plantMarket: Market<PlantCard>;

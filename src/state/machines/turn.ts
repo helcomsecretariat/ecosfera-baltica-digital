@@ -1,12 +1,13 @@
 import { assign, setup, sendTo, and, or } from "xstate";
 import { AbilityMachineInEvents, AbilityMachineOutEvents, AbilityMachine } from "@/state/machines/ability";
-import { AbilityTile, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
+import { AbilityTile, AbilityUID, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
 import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
 import { BuyMachineGuards } from "@/state/machines/guards/buy";
 import { compact, concat, countBy, entries, find, intersection, reject, without } from "lodash";
 import { replaceItem, shuffle } from "@/state/utils";
+import { checkAndAssignExtinctionTile, getAnimalBiomePairs } from "./helpers/turn";
 
 export const TurnMachine = setup({
   types: {
@@ -229,6 +230,7 @@ export const TurnMachine = setup({
         if (!disasterCard || !player) return;
 
         player.hand.push(disasterCard);
+        checkAndAssignExtinctionTile(draft);
         draft.disasterMarket.table = draft.disasterMarket.table.slice(1);
       }),
     ),
@@ -248,6 +250,8 @@ export const TurnMachine = setup({
           player.deck = player.deck.slice(remainingDraw);
         }
 
+        checkAndAssignExtinctionTile(draft);
+
         const nextPlayerIndex = (currentPlayerIndex + 1) % context.players.length;
         if (draft.turn.borrowedElement) {
           draft.elementMarket.deck = [...draft.elementMarket.deck, draft.turn.borrowedElement];
@@ -264,7 +268,28 @@ export const TurnMachine = setup({
           boughtAnimal: false,
           boughtPlant: false,
           boughtHabitat: false,
+          uidsUsedForAbilityRefresh: [],
         };
+      }),
+    ),
+    refreshAbility: assign(({ context }: { context: GameState }, abilityUid: AbilityUID) =>
+      produce(context, ({ players, turn }) => {
+        const player = find(players, { uid: context.turn.player })!;
+        const ability = find(player.abilities, { uid: abilityUid });
+        if (!ability) return;
+
+        const availableAnimalBiomePairs = getAnimalBiomePairs(player).filter(
+          (animalBiomePair) =>
+            !turn.uidsUsedForAbilityRefresh.some((uid) => animalBiomePair.map((animal) => animal.uid).includes(uid)),
+        );
+
+        if (availableAnimalBiomePairs.length === 0) return;
+
+        turn.uidsUsedForAbilityRefresh = concat(
+          turn.uidsUsedForAbilityRefresh,
+          availableAnimalBiomePairs[0].map((animal) => animal.uid),
+        );
+        ability.isUsed = false;
       }),
     ),
 
@@ -324,19 +349,25 @@ export const TurnMachine = setup({
     },
     buying: {
       on: {
-        "user.click.token": {
-          target: "#turn.ability",
-          actions: assign({
-            turn: ({ context: { turn }, event: { token } }) => ({
-              ...turn,
-              currentAbility: { piece: token, name: token.name },
+        "user.click.token": [
+          {
+            target: "#turn.ability",
+            actions: assign({
+              turn: ({ context: { turn }, event: { token } }) => ({
+                ...turn,
+                currentAbility: { piece: token, name: token.name },
+              }),
             }),
-          }),
-          guard: {
-            type: "abilityAvailable",
-            params: ({ event: { token } }) => token,
+            guard: {
+              type: "abilityAvailable",
+              params: ({ event: { token } }) => token,
+            },
           },
-        },
+          {
+            actions: { type: "refreshAbility", params: ({ event: { token } }) => token.uid },
+            guard: "canRefreshAbility",
+          },
+        ],
         "user.click.player.endTurn": [{ target: "disaster", guard: "getsDisaster" }, { target: "endOfTurn" }],
         "user.click.market.deck.element": {
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },

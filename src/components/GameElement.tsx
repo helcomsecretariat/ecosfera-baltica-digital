@@ -1,19 +1,15 @@
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion-3d";
 import { Card, GamePieceAppearance } from "@/state/types";
 import { MeshProps, ThreeEvent } from "@react-three/fiber";
-import { useControls } from "leva";
 import { baseDuration } from "@/constants/animation";
 import { useGameState } from "@/context/GameStateProvider";
 import { usePresence } from "framer-motion";
+import { useAnimControls } from "@/hooks/useAnimationControls";
 
 type GameElementProps = {
   height: number;
   width: number;
-  options?: {
-    draggable?: boolean;
-    showHoverAnimation?: boolean;
-  };
   onClick?: () => void;
   children: ReactNode;
 } & (
@@ -27,50 +23,16 @@ type GameElementProps = {
     }
 );
 
-const GameElement = ({
-  gamePieceAppearance,
-  options = {
-    draggable: true,
-    showHoverAnimation: true,
-  },
-  onClick,
-  children,
-  cardUID,
-}: GameElementProps) => {
+const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameElementProps) => {
   const { uiState } = useGameState();
   const appearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
   const [isPresent, safeToRemove] = usePresence();
   const isDisappearing = !appearance.transform.position;
 
-  const [hovered, setHovered] = useState<boolean>(false);
-  const { animSpeed, ease } = useControls({
-    animSpeed: {
-      label: "Animation speed",
-      value: 30,
-      min: 1,
-      step: 1,
-      max: 100,
-    },
-    ease: {
-      options: [
-        "linear",
-        "easeIn",
-        "easeOut",
-        "easeInOut",
-        "circIn",
-        "circOut",
-        "circInOut",
-        "backIn",
-        "backOut",
-        "backInOut",
-        "anticipate",
-      ],
-      value: "easeOut",
-    },
-  });
+  const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);
   const mainDuration = (2 / animSpeed) * (appearance.duration / baseDuration);
-  const mainDelay = appearance.delay;
+  const mainDelay = (2 / animSpeed) * (appearance.delay / baseDuration);
   const cardFlipDuration = mainDuration * 0.3;
   const zDuration = mainDuration + mainDelay + cardFlipDuration * 3;
   const flipDuration = mainDuration + cardFlipDuration;
@@ -98,7 +60,7 @@ const GameElement = ({
       position-z={appearance.transform.position?.z}
       transition={{
         ease,
-        duration: mainDuration,
+        duration: Math.max(baseDuration, mainDuration),
         delay: mainDelay,
         rotateY: {
           duration: flipDuration,
@@ -133,9 +95,7 @@ const GameElement = ({
         rotateY: appearance.transform.exitRotation?.y,
         rotateZ: appearance.transform.exitRotation?.z,
       }}
-      scale={hovered && (options?.showHoverAnimation ?? true) ? 1.15 : 1}
-      onPointerOver={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
+      whileHover={{ scale: onClick ? 1.05 : 1 }}
     >
       {children}
     </motion.mesh>

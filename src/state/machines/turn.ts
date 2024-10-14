@@ -82,6 +82,7 @@ export const TurnMachine = setup({
 
           const drawnCard = draft.plantMarket.deck.shift()!;
           draft.plantMarket.table = replaceItem(card, drawnCard, draft.plantMarket.table);
+          draft.turn.boughtPlant = true;
         }
 
         if (card.type === "animal") {
@@ -99,6 +100,7 @@ export const TurnMachine = setup({
           draft.turn.exhaustedCards.push(...toBeExhaustedPlants.map(({ uid }) => uid));
           const drawnCard = draft.animalMarket.deck.shift()!;
           draft.animalMarket.table = replaceItem(card, drawnCard, draft.animalMarket.table);
+          draft.turn.boughtAnimal = true;
         }
 
         draft.turn.playedCards = without(draft.turn.playedCards, ...draft.turn.exhaustedCards);
@@ -120,6 +122,7 @@ export const TurnMachine = setup({
         // animals do not exhaust cuz playr could buy multiple habitats with same animals
         // exhaustedCards.push(...toBeExhaustedAnimals.map(({ uid }) => uid));
         turn.playedCards = without(turn.playedCards, ...toBeExhaustedAnimals.map(({ uid }) => uid));
+        turn.boughtHabitat = true;
 
         find(biomeMarket.deck, { name: tile.name })!.isAcquired = true;
       }),
@@ -204,17 +207,47 @@ export const TurnMachine = setup({
       }),
     ),
     discardCards: assign(({ context }: { context: GameState }) =>
+      produce(context, ({ players }) => {
+        const player = find(players, { uid: context.turn.player })!;
+        player.discard = [...player.hand, ...player.discard];
+        player.hand = [];
+      }),
+    ),
+    drawDisasterCard: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
-        draft.players = produce(draft.players, (players) => {
-          const player = find(players, { uid: context.turn.player })!;
-          player.discard = [...player.hand, ...player.discard];
-          player.hand = [];
-        });
+        const disasterCard = draft.disasterMarket.deck[0];
+        draft.disasterMarket.deck = without(draft.disasterMarket.deck, disasterCard);
+        draft.disasterMarket.table.push(disasterCard);
+      }),
+    ),
+    addDisasterCard: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const player = find(draft.players, { uid: draft.turn.player });
+        const disasterCard = draft.disasterMarket.table[0];
+
+        // TODO: Figure out what to do when disaster deck is empty
+        if (!disasterCard || !player) return;
+
+        player.hand.push(disasterCard);
+        draft.disasterMarket.table = draft.disasterMarket.table.slice(1);
       }),
     ),
     endTurn: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         const currentPlayerIndex = context.players.findIndex((player) => player.uid === context.turn.player);
+        const player = draft.players[currentPlayerIndex];
+        player.hand = player.deck.slice(0, 4);
+        player.deck = player.deck.slice(player.hand.length);
+
+        if (player.hand.length < 4) {
+          player.deck = shuffle(player.discard, context.seed);
+          player.discard = [];
+
+          const remainingDraw = 4 - player.hand.length;
+          player.hand = concat(player.hand, player.deck.slice(0, remainingDraw));
+          player.deck = player.deck.slice(remainingDraw);
+        }
+
         const nextPlayerIndex = (currentPlayerIndex + 1) % context.players.length;
         if (draft.turn.borrowedElement) {
           draft.elementMarket.deck = [...draft.elementMarket.deck, draft.turn.borrowedElement];
@@ -228,19 +261,10 @@ export const TurnMachine = setup({
           borrowedCount: 0,
           borrowedLimit: context.turn.borrowedLimit,
           usedAbilities: context.turn.usedAbilities,
+          boughtAnimal: false,
+          boughtPlant: false,
+          boughtHabitat: false,
         };
-        const player = find(draft.players, { uid: context.turn.player })!;
-        player.hand = player.deck.slice(0, 4);
-        player.deck = player.deck.slice(player.hand.length);
-
-        if (player.hand.length < 4) {
-          player.deck = shuffle(player.discard, context.seed);
-          player.discard = [];
-
-          const remainingDraw = 4 - player.hand.length;
-          player.hand = concat(player.hand, player.deck.slice(0, remainingDraw));
-          player.deck = player.deck.slice(remainingDraw);
-        }
       }),
     ),
 
@@ -268,11 +292,32 @@ export const TurnMachine = setup({
 
   states: {
     endOfTurn: {
+      entry: { type: "discardCards" },
       after: {
-        500: {
+        600: {
           target: "buying",
           actions: {
             type: "endTurn",
+          },
+        },
+      },
+    },
+    disaster: {
+      entry: "drawDisasterCard",
+      initial: "idle",
+      after: {
+        10: {
+          target: ".ready",
+        },
+      },
+      states: {
+        idle: {},
+        ready: {
+          entry: "addDisasterCard",
+          after: {
+            1200: {
+              target: "#turn.endOfTurn",
+            },
           },
         },
       },
@@ -292,12 +337,7 @@ export const TurnMachine = setup({
             params: ({ event: { token } }) => token,
           },
         },
-        "user.click.player.endTurn": {
-          target: "endOfTurn",
-          actions: {
-            type: "discardCards",
-          },
-        },
+        "user.click.player.endTurn": [{ target: "disaster", guard: "getsDisaster" }, { target: "endOfTurn" }],
         "user.click.market.deck.element": {
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },
           guard: "canBorrow",

@@ -6,8 +6,8 @@ import { getAssetPath, getElementColor, getHighlightTextureAssetPath } from "@/c
 import React from "react";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
-import { SRGBColorSpace } from "three";
 import { useControls } from "leva";
+import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 
 const Card = ({
   card,
@@ -20,13 +20,11 @@ const Card = ({
 }) => {
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
-  const texture = useTexture(cardIMGURL);
-  const backTexture = useTexture("/ecosfera_baltica/back.avif");
+  const texture = useSRGBTexture(cardIMGURL);
+  const backTexture = useSRGBTexture("/ecosfera_baltica/back.avif");
   const highlightTexture = useTexture(getHighlightTextureAssetPath());
   const { isShowUID } = useControls({ isShowUID: { value: false } });
   const { useDimmed } = useControls({ useDimmed: { value: false } });
-
-  texture.colorSpace = SRGBColorSpace;
 
   return (
     gamePieceAppearance && (
@@ -69,7 +67,7 @@ const Card = ({
               <cylinderGeometry args={[1, 1, 0.1, 6, 1]} />
               <meshBasicMaterial color={"#77dd77"} transparent={true} />
             </mesh>
-            <Text color="black" fontSize={1.2} position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.2]}>
+            <Text color="black" fontSize={1.2} position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.25]}>
               {name[0].toUpperCase()}
             </Text>
           </React.Fragment>

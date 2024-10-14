@@ -29,6 +29,7 @@ import { BuyMachineGuards } from "./machines/guards/buy";
 import { baseDuration, deckAnimationTimings } from "@/constants/animation";
 
 const zeroRotation = { x: 0, y: 0, z: 0 };
+const yFlipRotation = { y: -Math.PI };
 
 const getTurnState = (gameState: GameState) => {
   const isRefreshing = gameState.turn.currentAbility?.name === "refresh";
@@ -53,18 +54,55 @@ export const toUiState = (prevUiState: UiState | null, gameState: GameState): Ui
     deckPositions: calculateDeckPositions(gameState),
   };
 };
-function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict): GamePieceAppearances {
-  // Helper function to calculate the Euclidean distance between two positions
-  // And delay the animation based on the distance (smaller distance => more delay)
-  // this helps to get this "hand sweep" effect for cards that are moving
 
+function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict): GamePieceAppearances {
   const calcDist = (posA: Coordinate, posB: Coordinate): number => {
     return Math.sqrt(Math.pow(posA.x - posB.x, 2) + Math.pow(posA.y - posB.y, 2));
   };
 
-  let maxDistance = 0;
+  const numBins = 8;
 
-  const result = Object.entries(cards).map(([key, currentApp]) => {
+  type MotionDataEntry = {
+    key: string;
+    deltaX: number;
+    deltaY: number;
+    angle: number;
+    distance: number;
+    cardAppearance: GamePieceAppearance;
+    startPoint: Coordinate;
+    endPoint: Coordinate;
+    isDisappearing?: boolean;
+  };
+
+  const motionData: MotionDataEntry[] = [];
+
+  function detectOverlaps(motionData: MotionDataEntry[]): Map<string, string> {
+    const overlaps = new Map<string, string>();
+
+    for (let i = 0; i < motionData.length; i++) {
+      if (motionData[i].distance === 0) continue;
+      if (motionData[i].isDisappearing) continue;
+      for (let j = 0; j < motionData.length; j++) {
+        if (motionData[j].distance === 0) continue;
+
+        // a bit complex logic to detect "played card" overlaps
+        const sameX = motionData[i].endPoint.x === motionData[j].startPoint.x;
+        const sameY = motionData[i].endPoint.y === motionData[j].startPoint.y;
+        // ideally should take into account side players for card widht vs height
+        const closeX = Math.abs(motionData[i].endPoint.x - motionData[j].startPoint.x) < cardHeight / 4;
+        const closeY = Math.abs(motionData[i].endPoint.y - motionData[j].startPoint.y) < cardHeight / 4;
+
+        if ((sameX && closeY) || (sameY && closeX)) {
+          overlaps.set(motionData[i].key, motionData[j].key);
+          break;
+        }
+      }
+    }
+
+    return overlaps;
+  }
+
+  Object.entries(cards).forEach(([key, currentApp]) => {
     const prevApp = cardsPrev?.[key as keyof GamePieceCoordsDict] as GamePieceAppearance | undefined;
     const curPos = currentApp.transform.position;
     const curInitPos = currentApp.transform.initialPosition;
@@ -72,31 +110,111 @@ function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict)
     const prevPos = prevApp?.transform.position;
 
     let distance = 0;
+    let deltaX = 0;
+    let deltaY = 0;
+    let startPoint: Coordinate = { x: 0, y: 0, z: 0 };
+    let endPoint: Coordinate = { x: 0, y: 0, z: 0 };
+    let isDisappearing = false;
 
     if (curPos && curInitPos && !prevPos) {
-      // Appearing
-      distance = calcDist(curInitPos, curPos);
+      startPoint = curInitPos;
+      endPoint = curPos;
     } else if (!curPos && prevPos && curExitPos) {
-      // Disappearing
-      distance = calcDist(prevPos, curExitPos);
+      startPoint = prevPos;
+      endPoint = curExitPos;
+      isDisappearing = true;
     } else if (prevPos && curPos) {
-      // Moving
-      distance = calcDist(prevPos, curPos);
+      startPoint = prevPos;
+      endPoint = curPos;
     }
+    distance = calcDist(startPoint, endPoint);
+    deltaX = startPoint.x - endPoint.x;
+    deltaY = startPoint.y - endPoint.y;
 
-    maxDistance = Math.max(maxDistance, distance);
+    const angle = Math.atan2(deltaY, deltaX);
 
-    return [key, { ...currentApp, distance }];
+    motionData.push({
+      key,
+      deltaX,
+      deltaY,
+      angle,
+      distance,
+      cardAppearance: currentApp,
+      startPoint,
+      endPoint,
+      isDisappearing,
+    });
   });
 
-  const updatedCards = Object.fromEntries(
-    result.map(([key, value]) => {
-      const delay = (baseDuration * (maxDistance - value.distance)) / maxDistance;
-      const duration = (value.distance / cardWidth) * baseDuration;
+  const overlaps = detectOverlaps(motionData);
+  const groups = new Map<number, typeof motionData>();
 
-      return [key, { ...value, delay, duration } as GamePieceAppearance];
-    }),
-  ) as GamePieceAppearances;
+  motionData.forEach((data) => {
+    const binIndex = Math.floor(((data.angle + Math.PI) / (2 * Math.PI)) * numBins) % numBins;
+    if (!groups.has(binIndex)) {
+      groups.set(binIndex, []);
+    }
+    groups.get(binIndex)!.push(data);
+  });
+
+  const sortedBinIndices = Array.from(groups.keys()).sort((a, b) => {
+    const cardsA = groups.get(a)!;
+    const cardsB = groups.get(b)!;
+    const isAlandsOnB = cardsA.some(({ key }) => cardsB.find((cardB) => cardB.key === overlaps.get(key)));
+    const isBlandsOnA = cardsB.some(({ key }) => cardsA.find((cardA) => cardA.key === overlaps.get(key)));
+
+    if (isAlandsOnB) return 1;
+    if (isBlandsOnA) return -1;
+
+    return 0;
+
+    // return groups.get(b)!.length - groups.get(a)!.length;
+  });
+
+  let cumulativeDelay = 0;
+  const updatedCards: GamePieceAppearances = {};
+
+  console.log("===========================================");
+  console.log(`Total groups detected: ${sortedBinIndices.length}`);
+
+  sortedBinIndices.forEach((binIndex, groupIndex) => {
+    const group = groups.get(binIndex)!;
+
+    const groupMaxDistance = Math.max(...group.map((data) => data.distance));
+
+    let groupMaxEndTime = 0;
+
+    console.log("---------");
+    group.forEach((data) => {
+      if (data.distance) console.log("data.key", data.key);
+
+      // Safeguard against division by zero
+      const intraGroupDelay =
+        groupMaxDistance > 0 ? ((groupMaxDistance - data.distance) / groupMaxDistance) * baseDuration : 0;
+
+      const duration = (data.distance / cardWidth) * baseDuration;
+
+      const totalDelay = cumulativeDelay === 0 ? intraGroupDelay : cumulativeDelay + intraGroupDelay + baseDuration * 2;
+
+      //@ts-expect-error TS is confused
+      updatedCards[data.key] = {
+        ...data.cardAppearance,
+        delay: totalDelay,
+        duration,
+      };
+
+      const endTime = totalDelay + duration;
+      groupMaxEndTime = Math.max(groupMaxEndTime, endTime);
+    });
+
+    console.log(
+      `Group ${groupIndex} (bin: ${binIndex}) - Max end time in group: ${groupMaxEndTime}, Cumulative delay before this group: ${cumulativeDelay}`,
+    );
+
+    cumulativeDelay = groupMaxEndTime;
+
+    console.log(`Cumulative delay after Group ${groupIndex}: ${cumulativeDelay}`);
+  });
 
   return updatedCards;
 }
@@ -204,21 +322,23 @@ export const supplyDeckPositions = (gameState: GameState): Coordinate[] => {
 
 export const discardPositions = (gameState: GameState): Coordinate[] => {
   const positions: Coordinate[] = [];
+  const tipx = 4;
+  const tipy = 8.7;
 
   if (gameState.players.length > 0) {
-    positions.push({ x: upperXBoundary - cardWidth, y: lowerYBoundary + cardHeight / 2, z: 0 });
+    positions.push({ x: upperXBoundary - cardWidth * 3, y: lowerYBoundary - tipy, z: 0 });
   }
 
   if (gameState.players.length > 1) {
-    positions.push({ x: upperXBoundary - cardWidth, y: upperYBoundary - cardHeight / 2, z: 0 });
+    positions.push({ x: upperXBoundary + tipx, y: upperYBoundary - cardHeight / 2, z: 0 });
   }
 
   if (gameState.players.length > 2) {
-    positions.push({ x: lowerXBoundary + cardWidth, y: upperYBoundary - cardHeight / 2, z: 0 });
+    positions.push({ x: lowerXBoundary + cardWidth, y: upperYBoundary + tipy, z: 0 });
   }
 
   if (gameState.players.length > 3) {
-    positions.push({ x: lowerXBoundary + cardWidth, y: lowerYBoundary + cardHeight / 2, z: 0 });
+    positions.push({ x: lowerXBoundary - tipx, y: lowerYBoundary + cardHeight / 2, z: 0 });
   }
 
   return positions;
@@ -344,12 +464,12 @@ export const positionDisasterCards = (gameState: GameState): GamePieceCoordsDict
     acc[card.uid] = {
       transform: {
         position: {
-          x: marketXStart - 2 * cardXOffset,
-          y: marketYStart - 2 * cardYOffset,
-          z: 0,
+          ...disasterDeckPosition,
+          z: 3,
         },
         rotation: zeroRotation,
-        initialPosition: { x: disasterDeckPosition.x, y: disasterDeckPosition.y, z: disasterDeckPosition.z },
+        initialPosition: { ...disasterDeckPosition, z: 3 },
+        exitPosition: { ...disasterDeckPosition, z: 3 },
         initialRotation: { x: 0, y: -Math.PI, z: 0 },
       },
     };
@@ -438,7 +558,6 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
     const deckPosition = supplyDeckPositions(gameState)[playerIndex];
     const discardPosition = discardPositions(gameState)[playerIndex];
     const rotation = { x: 0, y: 0, z: playerIndex * (Math.PI / 2) };
-    const yFlipRotation = { y: Math.PI };
     const { playedCards, exhaustedCards } = gameState.turn;
     const deckRotation = { ...rotation, ...yFlipRotation };
     const discardRotation = { ...rotation };

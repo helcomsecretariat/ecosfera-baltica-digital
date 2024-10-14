@@ -33,6 +33,9 @@ export interface GameState {
     borrowedCount: number;
     borrowedLimit: number;
     usedAbilities: { source: (AbilityTile | PlantCard | AnimalCard)["uid"]; name: AbilityName }[];
+    boughtAnimal: boolean;
+    boughtPlant: boolean;
+    boughtHabitat: boolean;
   };
   players: PlayerState[];
   plantMarket: Market<PlantCard>;

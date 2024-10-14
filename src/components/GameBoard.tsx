@@ -65,7 +65,7 @@ function GameBoard() {
         {orbitControls && <OrbitControls />}
         <Croupier />
 
-        <ExtinctionTiles gameState={state} />
+        <ExtinctionTiles />
         <BiomeTiles />
         {FPS && <Stats />}
       </Canvas>

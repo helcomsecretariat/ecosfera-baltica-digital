@@ -1,7 +1,8 @@
-import { Coordinate, GameState } from "@/state/types";
+import { Coordinate } from "@/state/types";
 import { extinctionTileYStart, hexagonTileXStart, tileSize } from "../constants/gameBoard";
 import Tile from "./Tile";
 import { concat } from "lodash";
+import { useGameState } from "@/context/GameStateProvider";
 
 const positions: Coordinate[] = [
   { x: hexagonTileXStart - tileSize, y: extinctionTileYStart - tileSize * 0.55, z: 0 },
@@ -12,7 +13,8 @@ const positions: Coordinate[] = [
   { x: hexagonTileXStart + tileSize, y: extinctionTileYStart - tileSize * 1.68, z: 0 },
 ];
 
-const ExtinctionTiles = ({ gameState }: { gameState: GameState }) => {
+const ExtinctionTiles = () => {
+  const { state: gameState } = useGameState();
   return concat(gameState.extinctMarket.deck, gameState.extinctMarket.table).map((extinctTile, index, { length }) => {
     return (
       <Tile

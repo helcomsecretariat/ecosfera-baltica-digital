@@ -67,6 +67,7 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
           delay: flipDelay,
         },
         z: {
+          delay: mainDelay,
           duration: zDuration,
           times: [0, 0.1, 0.3, 1],
         },

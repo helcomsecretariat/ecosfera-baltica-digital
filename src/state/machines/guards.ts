@@ -82,6 +82,10 @@ export const BuyMachineGuards = {
     return !token.isUsed;
   },
 
+  abilityCardAvailable: ({ context }: { context: GameState }, card: PlantCard | AnimalCard) => {
+    return !(context.turn.usedAbilityCardUids?.includes(card.uid) ?? false);
+  },
+
   getsDisaster: ({ context: { turn } }: { context: GameState }) => {
     const { boughtPlant, boughtAnimal, boughtHabitat } = turn;
 

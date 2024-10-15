@@ -26,6 +26,7 @@ export const TurnMachine = setup({
       | { type: "user.click.market.table.card"; card: PlantCard | AnimalCard }
       | { type: "user.click.habitat"; tile: BiomeTile }
       | { type: "iddqd"; context: GameState }
+      | { type: "user.click.player.hand.card.ability"; card: PlantCard | AnimalCard }
       | AbilityMachineInEvents
       | AbilityMachineOutEvents,
   },
@@ -191,12 +192,22 @@ export const TurnMachine = setup({
     ),
     markAbilityAsUsed: assign(({ context }) =>
       produce(context, ({ players, turn }) => {
-        if (!context.turn.currentAbility) return;
-        const activePlayer = find(players, { uid: context.turn.player });
-        if (!activePlayer) return;
+        const player = find(players, { uid: context.turn.player })!;
 
-        const ability = find(activePlayer.abilities, { uid: context.turn.currentAbility?.piece.uid });
-        console.log(context);
+        if (context.turn.currentAbilityCard) {
+          if (turn.usedAbilityCardUids === undefined) {
+            turn.usedAbilityCardUids = [];
+          }
+
+          turn.usedAbilityCardUids.push(context.turn.currentAbilityCard.uid);
+          turn.currentAbilityCard = undefined;
+          turn.currentAbility = undefined;
+          return;
+        }
+
+        if (!context.turn.currentAbility) return;
+
+        const ability = find(player.abilities, { uid: context.turn.currentAbility?.piece.uid });
         if (ability) {
           ability.isUsed = true;
         }
@@ -290,6 +301,17 @@ export const TurnMachine = setup({
           availableAnimalBiomePairs[0].map((animal) => animal.uid),
         );
         ability.isUsed = false;
+      }),
+    ),
+    activateCardAbilities: assign(({ context }: { context: GameState }, card: AnimalCard | PlantCard) =>
+      produce(context, (draft) => {
+        draft.turn.currentAbilityCard = card;
+      }),
+    ),
+    cancelAbilitySelection: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.turn.currentAbilityCard = undefined;
+        draft.turn.currentAbility = undefined;
       }),
     ),
 
@@ -422,6 +444,31 @@ export const TurnMachine = setup({
           },
           guard: { type: "canBuyHabitat", params: ({ event: { tile } }) => tile },
         },
+        "user.click.player.hand.card.ability": [
+          {
+            target: "#turn.cardAbility",
+            actions: {
+              type: "activateCardAbilities",
+              params: ({ event: { card } }) => card,
+            },
+            guard: { type: "abilityCardAvailable", params: ({ event: { card } }) => card },
+          },
+        ],
+      },
+    },
+
+    cardAbility: {
+      on: {
+        "user.click.*": { target: "buying", actions: "cancelAbilitySelection" },
+        "user.click.token": {
+          target: "#turn.ability",
+          actions: assign({
+            turn: ({ context: { turn }, event: { token } }) => ({
+              ...turn,
+              currentAbility: { piece: token, name: token.name },
+            }),
+          }),
+        },
       },
     },
 
@@ -466,6 +513,7 @@ export const TurnMachine = setup({
         "ability.markAsUsed": {
           actions: "markAbilityAsUsed",
         },
+        "ability.cancel": { target: "buying", actions: "cancelAbilitySelection" },
       },
 
       invoke: {

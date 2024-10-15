@@ -13,6 +13,7 @@ export interface StateHandlers {
   animalDeckClick: () => () => void;
   plantDeckClick: () => () => void;
   habitatClick: (tile: BiomeTile) => () => void;
+  abilityCardClick: (card: PlantCard | AnimalCard) => () => void;
   // useToken: (token: AbilityTile) => () => void;
 }
 
@@ -35,5 +36,7 @@ export const createStateHandlers = (send: (e: EventFromLogic<typeof TurnMachine>
     plantDeckClick: () => sendEvent({ type: "user.click.market.deck.plant" }),
     tokenClick: (token: AbilityTile) => sendEvent({ type: "user.click.token", token }),
     habitatClick: (tile: BiomeTile) => sendEvent({ type: "user.click.habitat", tile }),
+    abilityCardClick: (card: PlantCard | AnimalCard) =>
+      sendEvent({ type: "user.click.player.hand.card.ability", card }),
   };
 };

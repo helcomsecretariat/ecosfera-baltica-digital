@@ -1,7 +1,7 @@
 import { default as CardComponent } from "./Card";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
+import { AbilityUID, AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 import { cardWidth } from "@/constants/card";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
@@ -116,12 +116,26 @@ const Croupier = () => {
               onClick={handlers.playerDeckClick()}
             />
 
-            {player.uid === gameState.turn.player && (
+            {player.uid === gameState.turn.player && !gameState.turn.currentAbilityCard && (
               <AbilityTiles
                 canRefresh={BuyMachineGuards.canRefreshAbility({ context: gameState })}
                 xStart={0 - cardWidth}
                 yStart={0 - abilityOffset}
                 abilities={player.abilities}
+              />
+            )}
+            {player.uid === gameState.turn.player && gameState.turn.currentAbilityCard && (
+              <AbilityTiles
+                canRefresh={BuyMachineGuards.canRefreshAbility({ context: gameState })}
+                xStart={0 - cardWidth}
+                yStart={0 - abilityOffset}
+                highlight={true}
+                abilities={gameState.turn.currentAbilityCard.abilities.map((ability) => ({
+                  name: ability,
+                  type: "ability",
+                  uid: `ability_${gameState.turn.currentAbilityCard!.uid}_${ability}` as AbilityUID,
+                  isUsed: false,
+                }))}
               />
             )}
           </GamePieceGroup>
@@ -152,6 +166,7 @@ const Croupier = () => {
                 gamePieceAppearance={uiState.cardPositions[card.uid]}
                 //@ts-expect-error TODO: fix type check...
                 onClick={handlers.playerCardClick(card)}
+                options={{ showAbilityButton: gameState.turn.player === player.uid }}
               />
             ),
         ),

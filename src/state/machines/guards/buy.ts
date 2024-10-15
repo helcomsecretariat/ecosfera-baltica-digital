@@ -1,4 +1,4 @@
-import { AbilityTile, AnimalCard, BiomeTile, Card, GameState, PlantCard } from "@/state/types";
+import { AbilityTile, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
 import { countBy, find, compact, every, intersection } from "lodash";
 import { getAnimalBiomePairs } from "../helpers/turn";
 
@@ -29,7 +29,12 @@ export const BuyMachineGuards = {
     return false;
   },
 
-  canBorrow: ({ context: { turn } }: { context: GameState }) => turn.borrowedCount < turn.borrowedLimit,
+  belowBorrowLimit: ({ context: { turn } }: { context: GameState }) => turn.borrowedCount < turn.borrowedLimit,
+  playerHasElement: ({ context }: { context: GameState }, elName: ElementCard["name"]) => {
+    const { turn, players } = context;
+    const player = find(players, { uid: turn.player })!;
+    return player.hand.some(({ name }) => name === elName);
+  },
 
   notPlayedCard: (
     {

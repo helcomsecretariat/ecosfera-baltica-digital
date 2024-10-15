@@ -1,4 +1,4 @@
-import { assign, setup, sendTo, and, or } from "xstate";
+import { assign, setup, sendTo, and, or, not } from "xstate";
 import { AbilityMachineInEvents, AbilityMachineOutEvents, AbilityMachine } from "@/state/machines/ability";
 import { AbilityTile, AbilityUID, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
 import { DeckConfig } from "@/decks/schema";
@@ -371,7 +371,11 @@ export const TurnMachine = setup({
         "user.click.player.endTurn": [{ target: "disaster", guard: "getsDisaster" }, { target: "endOfTurn" }],
         "user.click.market.deck.element": {
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },
-          guard: "canBorrow",
+          guard: and([
+            "belowBorrowLimit",
+            // @ts-expect-error xstate types miss something
+            not({ type: "playerHasElement", params: ({ event: { name } }) => name }),
+          ]),
         },
         "user.click.market.borrowed.card.element": {
           actions: {

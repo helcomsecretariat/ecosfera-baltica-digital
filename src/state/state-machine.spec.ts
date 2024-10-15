@@ -169,3 +169,11 @@ test.skip("drawing from an empty market deck", async () => {
 test.skip("refreshing an empty market", async () => {
   // Implement this test
 });
+
+test.skip("can change element before borrowing", async () => {
+  // Implement this test
+});
+
+test.skip("can't borrow twice", async () => {
+  // Implement this test
+});

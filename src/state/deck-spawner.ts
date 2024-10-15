@@ -71,7 +71,7 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): Ga
       borrowedElement: undefined,
       usedAbilities: [],
       borrowedCount: 0,
-      borrowedLimit: 100,
+      borrowedLimit: 1,
       boughtAnimal: false,
       boughtPlant: false,
       boughtHabitat: false,

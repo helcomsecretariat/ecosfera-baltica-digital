@@ -1,5 +1,5 @@
 import { AbilityTile, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
-import { countBy, find, compact, every, intersection } from "lodash";
+import { countBy, find, compact, every } from "lodash";
 import { getAnimalBiomePairs } from "../helpers/turn";
 
 export const BuyMachineGuards = {
@@ -23,7 +23,7 @@ export const BuyMachineGuards = {
           ?.hand.filter(({ uid }) => turn.playedCards.includes(uid))
           .filter(({ type }) => type === "plant") as PlantCard[]) ?? [];
 
-      return playedPlants.filter(({ biomes }) => intersection(biomes, requiredBiomes).length > 0).length >= 2;
+      return playedPlants.filter(({ biomes }) => requiredBiomes.every((b) => biomes.includes(b))).length >= 2;
     }
 
     return false;

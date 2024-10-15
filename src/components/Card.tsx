@@ -8,21 +8,28 @@ import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
 import { useControls } from "leva";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
+import { useGameState } from "@/context/GameStateProvider";
 
-const Card = ({
-  card,
-  gamePieceAppearance,
-  onClick,
-}: {
+export type CardOptions = {
+  showAbilityButton?: boolean;
+};
+
+export type CardProps = {
   card: CardType;
   gamePieceAppearance: GamePieceAppearance;
   onClick?: () => void;
-}) => {
+  options?: CardOptions;
+};
+
+const Card = ({ card, gamePieceAppearance, onClick, options }: CardProps) => {
+  const { handlers, state } = useGameState();
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
   const texture = useSRGBTexture(cardIMGURL);
   const backTexture = useSRGBTexture("/ecosfera_baltica/back.avif");
   const highlightTexture = useTexture(getHighlightTextureAssetPath());
+  const dropTexture = useTexture("/ecosfera_baltica/ability_drop.avif");
+  const dropActiveTexture = useTexture("/ecosfera_baltica/ability_drop_active.avif");
   const { isShowUID } = useControls({ isShowUID: { value: false } });
   const { useDimmed } = useControls({ useDimmed: { value: false } });
 
@@ -83,6 +90,25 @@ const Card = ({
             {name === "move" ? "→" : name === "plus" ? "+" : name === "refresh" ? "↻" : name === "special" ? "⚡" : ""}
           </TextWithShadow>
         ))}
+
+        {(card.type === "animal" || card.type === "plant") &&
+          options?.showAbilityButton &&
+          card.abilities.length > 0 && (
+            <mesh
+              position={[0, cardHeight / 2 + 3, 0]}
+              onClick={(e) => {
+                e.stopPropagation();
+                handlers.abilityCardClick(card)();
+              }}
+            >
+              <circleGeometry args={[1.5, 32]} />
+              <meshBasicMaterial
+                color={state.turn.usedAbilityCardUids?.includes(card.uid) ? "#555" : undefined}
+                map={state.turn.currentAbilityCard?.uid === card.uid ? dropActiveTexture : dropTexture}
+              />
+            </mesh>
+          )}
+
         {["plant", "animal"].includes(type) && (
           <TextWithShadow
             position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 4, 0.15]}

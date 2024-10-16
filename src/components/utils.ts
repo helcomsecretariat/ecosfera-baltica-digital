@@ -47,6 +47,6 @@ export function getAssetPath(type: string, name: string, prefix = deckConfig.ass
   return `${assetPrefix}${cardPrefix}_${name}.avif`.replace(/\s+/g, "_").toLowerCase();
 }
 
-export function getHighlightTextureAssetPath(): string {
-  return `/${deckConfig.assets_prefix}/blur.webp`;
+export function getHighlightTextureAssetPath(circular: boolean | undefined = undefined): string {
+  return `/${deckConfig.assets_prefix}/${circular ? "circular_blur" : "blur"}.webp`;
 }

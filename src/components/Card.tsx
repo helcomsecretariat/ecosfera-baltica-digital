@@ -103,8 +103,10 @@ const Card = ({ card, gamePieceAppearance, onClick, options }: CardProps) => {
             >
               <circleGeometry args={[1.5, 32]} />
               <meshBasicMaterial
-                color={state.turn.usedAbilityCardUids?.includes(card.uid) ? "#555" : undefined}
-                map={state.turn.currentAbilityCard?.uid === card.uid ? dropActiveTexture : dropTexture}
+                color={
+                  state.turn.usedAbilities?.map((ability) => ability.source).includes(card.uid) ? "#555" : undefined
+                }
+                map={state.turn.selectedAbilityCard?.uid === card.uid ? dropActiveTexture : dropTexture}
               />
             </mesh>
           )}

@@ -1,7 +1,7 @@
 import { default as CardComponent } from "./Card";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { AbilityUID, AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
+import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 import { cardWidth } from "@/constants/card";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
@@ -13,6 +13,7 @@ import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { NextButton } from "@/components/NextTurnBtn";
 import { BuyMachineGuards } from "@/state/machines/guards";
+import CardAbilityTiles from "@/components/CardAbilityTiles";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -116,7 +117,7 @@ const Croupier = () => {
               onClick={handlers.playerDeckClick()}
             />
 
-            {player.uid === gameState.turn.player && !gameState.turn.currentAbilityCard && (
+            {player.uid === gameState.turn.player && gameState.turn.selectedAbilityCard === undefined && (
               <AbilityTiles
                 canRefresh={BuyMachineGuards.canRefreshAbility({ context: gameState })}
                 xStart={0 - cardWidth}
@@ -124,19 +125,8 @@ const Croupier = () => {
                 abilities={player.abilities}
               />
             )}
-            {player.uid === gameState.turn.player && gameState.turn.currentAbilityCard && (
-              <AbilityTiles
-                canRefresh={BuyMachineGuards.canRefreshAbility({ context: gameState })}
-                xStart={0 - cardWidth}
-                yStart={0 - abilityOffset}
-                highlight={true}
-                abilities={gameState.turn.currentAbilityCard.abilities.map((ability) => ({
-                  name: ability,
-                  type: "ability",
-                  uid: `ability_${gameState.turn.currentAbilityCard!.uid}_${ability}` as AbilityUID,
-                  isUsed: false,
-                }))}
-              />
+            {player.uid === gameState.turn.player && (
+              <CardAbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} />
             )}
           </GamePieceGroup>
         </React.Fragment>

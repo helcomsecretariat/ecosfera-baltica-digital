@@ -38,8 +38,7 @@ export interface GameState {
     boughtPlant: boolean;
     boughtHabitat: boolean;
     uidsUsedForAbilityRefresh: AnimalUID[];
-    currentAbilityCard?: PlantCard | AnimalCard;
-    usedAbilityCardUids?: (AnimalUID | PlantUID)[];
+    selectedAbilityCard?: PlantCard | AnimalCard;
   };
   players: PlayerState[];
   plantMarket: Market<PlantCard>;

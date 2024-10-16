@@ -1,5 +1,5 @@
 import { TurnMachine } from "@/state/machines/turn";
-import { AbilityTile, AnimalCard, PlantCard, ElementCard, BiomeTile } from "@/state/types";
+import { AbilityTile, AnimalCard, PlantCard, ElementCard, BiomeTile, AbilityName } from "@/state/types";
 import { EventFromLogic } from "xstate";
 
 export interface StateHandlers {
@@ -10,6 +10,7 @@ export interface StateHandlers {
   borrowedElementClick: (card: ElementCard) => () => void;
   marketCardClick: (card: PlantCard | AnimalCard) => () => void;
   tokenClick: (token: AbilityTile) => () => void;
+  cardTokenClick: (name: AbilityName) => () => void;
   animalDeckClick: () => () => void;
   plantDeckClick: () => () => void;
   habitatClick: (tile: BiomeTile) => () => void;
@@ -35,6 +36,7 @@ export const createStateHandlers = (send: (e: EventFromLogic<typeof TurnMachine>
     animalDeckClick: () => sendEvent({ type: "user.click.market.deck.animal" }),
     plantDeckClick: () => sendEvent({ type: "user.click.market.deck.plant" }),
     tokenClick: (token: AbilityTile) => sendEvent({ type: "user.click.token", token }),
+    cardTokenClick: (name: AbilityName) => sendEvent({ type: "user.click.cardToken", name }),
     habitatClick: (tile: BiomeTile) => sendEvent({ type: "user.click.habitat", tile }),
     abilityCardClick: (card: PlantCard | AnimalCard) =>
       sendEvent({ type: "user.click.player.hand.card.ability", card }),

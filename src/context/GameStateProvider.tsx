@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef } from "react";
+import { createContext, ReactNode, useContext, useLayoutEffect, useMemo, useRef } from "react";
 import config from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
 import { GameState, UiState } from "@/state/types";
@@ -37,7 +37,7 @@ export const GameStateProvider = ({ children, numberOfPlayers, seed }: StateProv
   const prevUiStateRef = useRef<UiState | null>(null);
   const uiState = useMemo(() => toUiState(prevUiStateRef.current, snap.context), [snap.context]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     prevUiStateRef.current = uiState;
   }, [uiState]);
 
@@ -47,9 +47,10 @@ export const GameStateProvider = ({ children, numberOfPlayers, seed }: StateProv
     send,
     handlers,
   };
-
   return <stateContext.Provider value={value}>{children}</stateContext.Provider>;
 };
+
+GameStateProvider.whyDidYouRender = true;
 
 export const useGameState = () => {
   const context = useContext(stateContext);

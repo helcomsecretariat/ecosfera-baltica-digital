@@ -1,10 +1,10 @@
-import { assign, setup, sendTo, and, or } from "xstate";
+import { assign, setup, sendTo, and, or, not } from "xstate";
 import { AbilityMachineInEvents, AbilityMachineOutEvents, AbilityMachine } from "@/state/machines/ability";
 import { AbilityTile, AbilityUID, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
 import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
-import { BuyMachineGuards } from "@/state/machines/guards/buy";
+import { BuyMachineGuards } from "@/state/machines/guards";
 import { compact, concat, countBy, entries, find, intersection, reject, without } from "lodash";
 import { replaceItem, shuffle } from "@/state/utils";
 import { checkAndAssignExtinctionTile, getAnimalBiomePairs } from "./helpers/turn";
@@ -371,7 +371,10 @@ export const TurnMachine = setup({
         "user.click.player.endTurn": [{ target: "disaster", guard: "getsDisaster" }, { target: "endOfTurn" }],
         "user.click.market.deck.element": {
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },
-          guard: "canBorrow",
+          guard: and([
+            "belowBorrowLimit",
+            not(({ context, event }) => BuyMachineGuards.playerHasElement({ context }, event.name)),
+          ]),
         },
         "user.click.market.borrowed.card.element": {
           actions: {

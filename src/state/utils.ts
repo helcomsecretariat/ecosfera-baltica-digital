@@ -1,4 +1,4 @@
-import { Card, GameState, PlayerState } from "@/state/types";
+import { Card, GameState, PlayerState, UID } from "@/state/types";
 import { find, isMatch } from "lodash-es";
 
 export function shuffle<T>(items: T[], seed: string): T[] {
@@ -45,4 +45,8 @@ export function assignItem<T extends object, U extends Partial<T>>(predicate: Pa
 
 export function findOwner(state: GameState, card: Card): PlayerState["uid"] {
   return find(state.players, ({ hand }) => hand.includes(card))!.uid;
+}
+
+export function createUID<T extends string>(prefix: T, id: string): UID<T> {
+  return `${prefix}-${id}` as UID<T>;
 }

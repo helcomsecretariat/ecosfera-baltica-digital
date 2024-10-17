@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Grid from "./Grid";
 import { useControls } from "leva";
@@ -8,11 +8,9 @@ import ExtinctionTiles from "./ExtinctionTiles";
 import BiomeTiles from "./BiomeTiles";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
-import { UiState } from "@/state/types";
 import PreloadAssets from "@/components/PreloadAssets";
-import { GameStateProvider, useGameState } from "@/context/GameStateProvider";
+import { GameStateProvider } from "@/context/GameStateProvider";
 import { DeckConfig } from "@/decks/schema";
-import { toUiState } from "@/state/positioner";
 import { Stats } from "@react-three/drei";
 import { Leva } from "leva";
 
@@ -23,13 +21,6 @@ function GameBoard() {
     orbitControls: false,
     FPS: false,
   });
-  const { state } = useGameState();
-  const prevUiStateRef = useRef<UiState | null>(null);
-  const uiState = useMemo(() => toUiState(prevUiStateRef.current, state), [state]);
-
-  useEffect(() => {
-    prevUiStateRef.current = uiState;
-  }, [uiState]);
 
   const aspect = 3 / 2;
   const [size, setSize] = useState({

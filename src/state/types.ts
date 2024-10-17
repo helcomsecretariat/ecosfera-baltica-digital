@@ -9,14 +9,15 @@ import {
 } from "@/decks/schema";
 
 // google "bradned types in TS" for explanation
-export type AbilityUID = `${"ability-"}${string}` & { readonly __brand: "AbilityUID" };
-export type AnimalUID = `${"animal-"}${string}` & { readonly __brand: "AnimalUID" };
-export type PlantUID = `${"plant-"}${string}` & { readonly __brand: "PlantUID" };
-export type ElementUID = `${"element-"}${string}` & { readonly __brand: "ElementUID" };
-export type DisasterUID = `${"disaster-"}${string}` & { readonly __brand: "DisasterUID" };
-export type BiomeUID = `${"biome-"}${string}` & { readonly __brand: "BiomeUID" };
-export type ExtinctionUID = `${"extinction-"}${string}` & { readonly __brand: "ExtinctionUID" };
-export type PlayerUID = `${"player-"}${string}` & { readonly __brand: "PlayerUID" };
+export type UID<T extends string> = `${T}-${string}` & { readonly __brand: `${T}UID` };
+export type AbilityUID = UID<"ability">;
+export type AnimalUID = UID<"animal">;
+export type PlantUID = UID<"plant">;
+export type ElementUID = UID<"element">;
+export type DisasterUID = UID<"disaster">;
+export type BiomeUID = UID<"biome">;
+export type ExtinctionUID = UID<"extinction">;
+export type PlayerUID = UID<"player">;
 export type GamePieceUID = AbilityUID | AnimalUID | PlantUID | ElementUID | DisasterUID | BiomeUID | ExtinctionUID;
 
 export interface GameState {

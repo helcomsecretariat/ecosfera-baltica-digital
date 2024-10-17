@@ -23,7 +23,10 @@ export const BuyMachineGuards = {
           ?.hand.filter(({ uid }) => turn.playedCards.includes(uid))
           .filter(({ type }) => type === "plant") as PlantCard[]) ?? [];
 
-      return playedPlants.filter(({ biomes }) => requiredBiomes.every((b) => biomes.includes(b))).length >= 2;
+      const matchedPlants = requiredBiomes.map((reqBiome) =>
+        playedPlants.filter(({ biomes }) => biomes.includes(reqBiome)),
+      );
+      return matchedPlants.some(({ length }) => length >= 2);
     }
 
     return false;

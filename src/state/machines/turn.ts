@@ -373,8 +373,7 @@ export const TurnMachine = setup({
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },
           guard: and([
             "belowBorrowLimit",
-            // @ts-expect-error xstate types miss something
-            not({ type: "playerHasElement", params: ({ event: { name } }) => name }),
+            not(({ context, event }) => BuyMachineGuards.playerHasElement({ context }, event.name)),
           ]),
         },
         "user.click.market.borrowed.card.element": {

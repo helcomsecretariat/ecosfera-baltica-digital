@@ -4,7 +4,7 @@ import { AbilityTile, AbilityUID, AnimalCard, BiomeTile, Card, ElementCard, Game
 import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
-import { BuyMachineGuards } from "@/state/machines/buy";
+import { BuyMachineGuards } from "@/state/machines/guards";
 import { compact, concat, countBy, entries, find, intersection, reject, without } from "lodash";
 import { replaceItem, shuffle } from "@/state/utils";
 import { checkAndAssignExtinctionTile, getAnimalBiomePairs } from "./helpers/turn";

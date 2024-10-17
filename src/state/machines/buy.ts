@@ -1,6 +1,6 @@
 import { AbilityTile, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
 import { countBy, find, compact, every } from "lodash";
-import { getAnimalBiomePairs } from "../helpers/turn";
+import { getAnimalBiomePairs } from "./helpers/turn";
 
 export const BuyMachineGuards = {
   canBuyCard: ({ context: { players, turn } }: { context: GameState }, card: AnimalCard | PlantCard) => {

@@ -25,7 +25,7 @@ import {
   upperYBoundary,
 } from "@/constants/gameBoard";
 import { cardHeight, cardWidth } from "@/constants/card";
-import { BuyMachineGuards } from "./machines/guards/buy";
+import { BuyMachineGuards } from "./machines/buy";
 import { baseDuration, deckAnimationTimings } from "@/constants/animation";
 
 const zeroRotation = { x: 0, y: 0, z: 0 };

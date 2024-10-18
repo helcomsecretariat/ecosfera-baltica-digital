@@ -1,6 +1,16 @@
 import { assign, setup, sendTo, and, or, not } from "xstate";
 import { AbilityMachineInEvents, AbilityMachineOutEvents, AbilityMachine } from "@/state/machines/ability";
-import { AbilityTile, AbilityUID, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
+import {
+  AbilityName,
+  AbilityTile,
+  AbilityUID,
+  AnimalCard,
+  BiomeTile,
+  Card,
+  ElementCard,
+  GameState,
+  PlantCard,
+} from "@/state/types";
 import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
@@ -20,12 +30,14 @@ export const TurnMachine = setup({
     events: {} as
       | { type: "user.click.player.endTurn" }
       | { type: "user.click.token"; token: AbilityTile }
+      | { type: "user.click.cardToken"; name: AbilityName }
       | { type: "user.click.player.hand.card"; card: PlantCard | AnimalCard | ElementCard }
       | { type: "user.click.market.deck.element"; name: ElementCard["name"] }
       | { type: "user.click.market.borrowed.card.element"; card: ElementCard }
       | { type: "user.click.market.table.card"; card: PlantCard | AnimalCard }
       | { type: "user.click.habitat"; tile: BiomeTile }
       | { type: "iddqd"; context: GameState }
+      | { type: "user.click.player.hand.card.ability"; card: PlantCard | AnimalCard }
       | AbilityMachineInEvents
       | AbilityMachineOutEvents,
   },
@@ -191,12 +203,11 @@ export const TurnMachine = setup({
     ),
     markAbilityAsUsed: assign(({ context }) =>
       produce(context, ({ players, turn }) => {
-        if (!context.turn.currentAbility) return;
-        const activePlayer = find(players, { uid: context.turn.player });
-        if (!activePlayer) return;
+        const player = find(players, { uid: context.turn.player })!;
 
-        const ability = find(activePlayer.abilities, { uid: context.turn.currentAbility?.piece.uid });
-        console.log(context);
+        if (!context.turn.currentAbility) return;
+
+        const ability = find(player.abilities, { uid: context.turn.currentAbility?.piece.uid });
         if (ability) {
           ability.isUsed = true;
         }
@@ -205,6 +216,18 @@ export const TurnMachine = setup({
           name: context.turn.currentAbility.name,
         });
         turn.currentAbility = undefined;
+        turn.selectedAbilityCard = undefined;
+      }),
+    ),
+    markAbilityCardAsSelected: assign(({ context }, card: PlantCard | AnimalCard) =>
+      produce(context, ({ turn }) => {
+        turn.selectedAbilityCard = card;
+      }),
+    ),
+    cancelAbilitySelection: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.turn.currentAbility = undefined;
+        draft.turn.selectedAbilityCard = undefined;
       }),
     ),
     discardCards: assign(({ context }: { context: GameState }) =>
@@ -269,6 +292,7 @@ export const TurnMachine = setup({
           boughtPlant: false,
           boughtHabitat: false,
           uidsUsedForAbilityRefresh: [],
+          selectedAbilityCard: undefined,
         };
       }),
     ),
@@ -422,6 +446,28 @@ export const TurnMachine = setup({
           },
           guard: { type: "canBuyHabitat", params: ({ event: { tile } }) => tile },
         },
+        "user.click.player.hand.card.ability": [
+          {
+            target: "#turn.cardAbility",
+            actions: { type: "markAbilityCardAsSelected", params: ({ event: { card } }) => card },
+            guard: { type: "abilityCardAvailable", params: ({ event: { card } }) => card },
+          },
+        ],
+      },
+    },
+
+    cardAbility: {
+      on: {
+        "user.click.*": { target: "buying", actions: "cancelAbilitySelection" },
+        "user.click.cardToken": {
+          target: "#turn.ability",
+          actions: assign({
+            turn: ({ context: { turn }, event: { name } }) => ({
+              ...turn,
+              currentAbility: { piece: turn.selectedAbilityCard!, name },
+            }),
+          }),
+        },
       },
     },
 
@@ -466,6 +512,7 @@ export const TurnMachine = setup({
         "ability.markAsUsed": {
           actions: "markAbilityAsUsed",
         },
+        "ability.cancel": { target: "buying", actions: "cancelAbilitySelection" },
       },
 
       invoke: {

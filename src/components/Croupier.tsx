@@ -12,7 +12,7 @@ import GamePieceGroup from "./GamePieceGroup";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { NextButton } from "@/components/NextTurnBtn";
-import { BuyMachineGuards } from "@/state/machines/guards/buy";
+import { BuyMachineGuards } from "@/state/machines/guards";
 
 export type CardMoveLocation =
   | "animalTable"

@@ -8,6 +8,7 @@ import type {
   PlantConfig,
 } from "@/decks/schema";
 import { AbilityTile, AnimalCard, BiomeTile, DisasterCard, ElementCard, ExtinctionTile, PlantCard } from "./types";
+import { createUID } from "@/state/utils";
 
 export class Croupier {
   private uid = 0;
@@ -67,7 +68,8 @@ export class Croupier {
       name,
       type: "biome",
       isAcquired: false,
-      uid: `biome-${this.nextUid()}` as BiomeTile["uid"],
+      // uid: `biome-${this.nextUid()}` as BiomeTile["uid"],
+      uid: createUID("biome", this.nextUid()),
     }));
   }
 

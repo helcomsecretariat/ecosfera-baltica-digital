@@ -1,26 +1,21 @@
-import { cardXOffset } from "@/constants/gameBoard";
 import { default as CardComponent } from "./Card";
-import { calculateDistance } from "@/utils/3d";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { Card, GameState } from "@/state/types";
+import { AnimalCard, Card, DisasterCard, ElementCard, ExtinctionTile, PlantCard } from "@/state/types";
 import { cardWidth } from "@/constants/card";
-import {
-  animalDeckPosition,
-  disasterDeckPosition,
-  drawAnimalCards,
-  drawDisasterCards,
-  drawElementCards,
-  drawElementDecks,
-  drawPlantCards,
-  plantDeckPosition,
-  supplyDeckPositions,
-} from "@/lib/positioner";
-import React from "react";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
-
-type PositionedCard = Card & { x: number; y: number };
+import { useGameState } from "@/context/GameStateProvider";
+import { uniqBy } from "lodash-es";
+import { abilityOffset } from "@/constants/gameBoard";
+import GamePieceGroup from "./GamePieceGroup";
+import { AnimatePresence } from "framer-motion";
+import React from "react";
+import { NextButton } from "@/components/NextTurnBtn";
+import { BuyMachineGuards } from "@/state/machines/guards";
+import CardAbilityTiles from "@/components/CardAbilityTiles";
+import Stage from "@/components/Stage";
+import Tile from "./Tile";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -34,188 +29,169 @@ export type CardMoveLocation =
   | `playerDeck_${string}`
   | `playerHand_${string}`;
 
-const Croupier = ({
-  gameState,
-  onCardMove,
-  onShuffle,
-}: {
-  gameState: GameState;
-  onCardMove: (card: Card, origin: CardMoveLocation, destination: CardMoveLocation) => void;
-  onShuffle: (playerUid: string) => void;
-}) => {
-  const handleCardDrag = (
-    card: Card,
-    position: [number, number, number],
-    comparisonPosition: [number, number, number],
-    origin: CardMoveLocation,
-    destination: CardMoveLocation,
-  ) => {
-    if (calculateDistance(position, comparisonPosition) < cardWidth) {
-      onCardMove(card, origin, destination);
-    }
-  };
+const Croupier = () => {
+  const { state: gameState, uiState } = useGameState();
+  const { emit, test } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
 
   return (
-    <>
+    <AnimatePresence>
       {/* Market Cards */}
-      {drawAnimalCards(gameState).map((card: PositionedCard) => (
-        <CardComponent
-          card={card}
-          key={card.uid}
-          onDragEnd={(position: [number, number, number]) => {
-            handleCardDrag(card, position, animalDeckPosition, "animalTable", "animalDeck");
-            supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-              handleCardDrag(
-                card,
-                position,
-                supplyDeckPosition,
-                "animalTable",
-                `playerDeck_${gameState.players[index].uid}`,
-              );
-            });
-          }}
-        />
-      ))}
-      {drawPlantCards(gameState).map((card: PositionedCard) => (
-        <CardComponent
-          card={card}
-          key={card.uid}
-          onDragEnd={(position) => {
-            handleCardDrag(card, position, plantDeckPosition, "plantTable", "plantDeck");
-            supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-              handleCardDrag(
-                card,
-                position,
-                supplyDeckPosition,
-                "plantTable",
-                `playerDeck_${gameState.players[index].uid}`,
-              );
-            });
-          }}
-        />
-      ))}
-      {drawDisasterCards(gameState).map((card: PositionedCard) => (
-        <CardComponent
-          card={card}
-          key={card.uid}
-          onDragEnd={(position) => {
-            handleCardDrag(card, position, disasterDeckPosition, "disasterTable", "disasterDeck");
-            supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-              handleCardDrag(
-                card,
-                position,
-                supplyDeckPosition,
-                "disasterTable",
-                `playerDeck_${gameState.players[index].uid}`,
-              );
-            });
-          }}
-        />
-      ))}
-      {drawElementDecks(gameState).map((card: PositionedCard, index: number) => (
-        <group key={index}>
-          <Deck
-            key={index}
-            texturePath={`/ecosfera_baltica/element_${card.name}.avif`}
-            textColor="black"
-            position={[card.x, card.y, 0]}
-            cards={gameState.elementMarket.deck.filter((elementCard) => elementCard.name === card.name)}
-            onDraw={(card) => onCardMove(card, "elementDeck", "elementTable")}
+      {gameState.animalMarket.table.map((card: AnimalCard) => {
+        return (
+          <CardComponent
+            key={card.uid}
+            card={card}
+            gamePieceAppearance={uiState.cardPositions[card.uid]}
+            onClick={emit.marketCardClick(card)}
+            isHighlighted={test.marketCardClick(card)}
           />
-          {drawElementCards(gameState)
-            .filter((elementCard) => card.name === elementCard.name)
-            .map((elementCard: PositionedCard) => (
-              <CardComponent
-                card={elementCard}
-                key={elementCard.uid}
-                onDragEnd={(position) => {
-                  handleCardDrag(elementCard, position, [card.x, card.y, 0], "elementTable", "elementDeck");
-                  supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-                    handleCardDrag(
-                      elementCard,
-                      position,
-                      supplyDeckPosition,
-                      "elementTable",
-                      `playerDeck_${gameState.players[index].uid}`,
-                    );
-                  });
-                }}
-              />
-            ))}
-        </group>
+        );
+      })}
+      {gameState.plantMarket.table.map((card: PlantCard) => (
+        <CardComponent
+          key={card.uid}
+          card={card}
+          gamePieceAppearance={uiState.cardPositions[card.uid]}
+          onClick={emit.marketCardClick(card)}
+          isHighlighted={test.marketCardClick(card)}
+        />
       ))}
+      {gameState.disasterMarket.table.map((card: DisasterCard) => (
+        <CardComponent
+          key={card.uid}
+          card={card}
+          gamePieceAppearance={uiState.cardPositions[card.uid]}
+          // onClick={emit.buyCard(card)}
+        />
+      ))}
+      {uniqBy(gameState.elementMarket.deck, "name").map((card: ElementCard) => (
+        <Deck
+          key={card.name}
+          texturePath={`/ecosfera_baltica/element_${card.name}.avif`}
+          textColor="black"
+          gamePieceAppearance={uiState.deckPositions[`${card.name}ElementDeck`]}
+          cards={gameState.elementMarket.deck.filter((elementDeckCard) => elementDeckCard.name === card.name)}
+          isDimmed={!test.marketElementClick(card.name)}
+          onClick={emit.marketElementClick(card.name)}
+        />
+      ))}
+      {gameState.turn.borrowedElement && (
+        <CardComponent
+          key={gameState.turn.borrowedElement.uid}
+          card={gameState.turn.borrowedElement}
+          gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
+          onClick={emit.borrowedElementClick(gameState.turn.borrowedElement)}
+        />
+      )}
       <Deck
-        position={animalDeckPosition}
-        texturePath={`/ecosfera_baltica/bg_animals.avif`}
+        key={"animalDeck"}
+        gamePieceAppearance={uiState.deckPositions["animalDeck"]}
         cards={gameState.animalMarket.deck}
-        onDraw={(card) => onCardMove(card, "animalDeck", "animalTable")}
+        onClick={emit.animalDeckClick()}
       />
       <Deck
-        position={plantDeckPosition}
-        texturePath={`/ecosfera_baltica/bg_plants.avif`}
+        key={"plantDeck"}
+        gamePieceAppearance={uiState.deckPositions["plantDeck"]}
         cards={gameState.plantMarket.deck}
-        onDraw={(card) => onCardMove(card, "plantDeck", "plantTable")}
+        onClick={emit.plantDeckClick()}
       />
       <Deck
-        position={disasterDeckPosition}
-        texturePath={`/ecosfera_baltica/disaster_flood.avif`}
+        key={"disasterDeck"}
+        gamePieceAppearance={uiState.deckPositions["disasterDeck"]}
         cards={gameState.disasterMarket.deck}
-        onDraw={(card) => onCardMove(card, "disasterDeck", "disasterTable")}
+        onClick={() => console.error("Disaster deck click NOT IMPLEMENTED")}
       />
 
-      {/* Player Cards */}
-      {gameState.players.map((player, index) => (
-        <React.Fragment key={index}>
-          <group position={supplyDeckPositions(gameState)[index]} rotation={[0, 0, index * (Math.PI / 2)]}>
-            <AbilityTiles xStart={0 - cardWidth} />
-
+      {/* Player HUD */}
+      {gameState.players.map((player) => (
+        <React.Fragment key={player.uid + "HUD"}>
+          <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
             <Deck
-              position={[0, 0, 0]}
-              texturePath={`/ecosfera_baltica/back.avif`}
+              gamePieceAppearance={{
+                ...uiState.deckPositions[`${player.uid}PlayerDeck`],
+                transform: {
+                  position: { x: 0, y: 0, z: 0 },
+                  initialPosition: { x: 0, y: 0, z: 0 },
+                  rotation: { x: 0, y: 0, z: 0 },
+                },
+              }}
               cards={player.deck}
-              onDraw={(card) => onCardMove(card, `playerDeck_${player.uid}`, `playerHand_${player.uid}`)}
-              onShuffle={() => onShuffle(player.uid)}
-              options={{ shuffleable: true }}
+              onClick={emit.playerDeckClick()}
             />
-          </group>
-          {player.hand.map((card: Card, cardIndex: number) => (
-            <CardComponent
-              key={card.uid}
-              card={{
-                ...card,
-                x:
-                  supplyDeckPositions(gameState)[index][0] +
-                  (index === 0 ? (cardIndex + 1) * cardXOffset : index === 2 ? (cardIndex + 1) * cardXOffset * -1 : 0),
-                y:
-                  supplyDeckPositions(gameState)[index][1] +
-                  (index === 1 ? (cardIndex + 1) * cardXOffset : index === 3 ? (cardIndex + 1) * cardXOffset * -1 : 0),
-              }}
-              rotation={[0, 0, index * (Math.PI / 2)]}
-              onDragEnd={(position) => {
-                supplyDeckPositions(gameState).forEach((supplyDeckPosition, index) => {
-                  handleCardDrag(
-                    card,
-                    position,
-                    supplyDeckPosition,
-                    `playerHand_${player.uid}`,
-                    `playerDeck_${gameState.players[index].uid}`,
-                  );
-                });
-                if (card.type === "animal") {
-                  handleCardDrag(card, position, animalDeckPosition, `playerHand_${player.uid}`, "animalDeck");
-                }
-                if (card.type === "plant") {
-                  handleCardDrag(card, position, plantDeckPosition, `playerHand_${player.uid}`, "plantDeck");
-                }
-              }}
-            />
-          ))}
+
+            {player.uid === gameState.turn.player && gameState.turn.selectedAbilityCard === undefined && (
+              <AbilityTiles
+                canRefresh={BuyMachineGuards.canRefreshAbility({ context: gameState })}
+                xStart={0 - cardWidth}
+                yStart={0 - abilityOffset}
+                abilities={player.abilities}
+              />
+            )}
+            {player.uid === gameState.turn.player && (
+              <CardAbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} />
+            )}
+          </GamePieceGroup>
         </React.Fragment>
       ))}
-    </>
+
+      {/* Stage */}
+      <Stage key="stage" />
+      {[...(gameState.stage?.cause ?? []), ...(gameState.stage?.effect ?? [])].map(
+        (card: DisasterCard | ElementCard | AnimalCard | ExtinctionTile) => {
+          if (!uiState.cardPositions[card.uid]) {
+            return;
+          }
+
+          if (card.type === "extinction") {
+            return (
+              <Tile
+                key={card.uid}
+                color="#c3b091"
+                position={uiState.cardPositions[card.uid].transform.position}
+                rotation={{ x: -Math.PI / 2, y: 0, z: 0 }}
+              />
+            );
+          }
+
+          return <CardComponent key={card.uid} card={card} gamePieceAppearance={uiState.cardPositions[card.uid]} />;
+        },
+      )}
+
+      {/* Player Discard */}
+      {gameState.players.map((player) => (
+        <Deck
+          gamePieceAppearance={{
+            ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
+            display: { visibility: "default" },
+          }}
+          cards={player.discard}
+          key={player.uid + "PlayerDiscard"}
+          onClick={() => console.error("discard click NOT IMPLEMENTED")}
+        />
+      ))}
+
+      {/* Player Cards */}
+      {gameState.players.flatMap((player) =>
+        player.hand.map(
+          (card: Card) =>
+            uiState.cardPositions[card.uid] && (
+              <CardComponent
+                key={card.uid}
+                card={card}
+                gamePieceAppearance={uiState.cardPositions[card.uid]}
+                //@ts-expect-error TODO: fix type check...
+                onClick={emit.playerCardClick(card)}
+                options={{ showAbilityButton: gameState.turn.player === player.uid }}
+              />
+            ),
+        ),
+      )}
+
+      <NextButton />
+    </AnimatePresence>
   );
 };
 

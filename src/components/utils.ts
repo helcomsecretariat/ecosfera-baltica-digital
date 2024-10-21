@@ -6,9 +6,8 @@ const pastelColors = {
   elements: {
     sun: "#F8AE58",
     temperature: "#0290BD",
-    nutrients: "#D85365",
-
-    salinity: "#66A468",
+    nutrients: "#66A468",
+    salinity: "#D85365",
     oxygen: "#934786",
   },
 };
@@ -46,4 +45,8 @@ export function getAssetPath(type: string, name: string, prefix = deckConfig.ass
   const cardPrefix = type === "animal" || type === "plant" ? "entity" : type;
   const assetPrefix = `/${prefix}/`;
   return `${assetPrefix}${cardPrefix}_${name}.avif`.replace(/\s+/g, "_").toLowerCase();
+}
+
+export function getHighlightTextureAssetPath(circular: boolean | undefined = undefined): string {
+  return `/${deckConfig.assets_prefix}/${circular ? "circular_blur" : "blur"}.webp`;
 }

@@ -1,24 +1,30 @@
+import { Coordinate } from "@/state/types";
 import { extinctionTileYStart, hexagonTileXStart, tileSize } from "../constants/gameBoard";
 import Tile from "./Tile";
+import { concat } from "lodash";
+import { useGameState } from "@/context/GameStateProvider";
 
-const positions: [number, number, number][] = [
-  [hexagonTileXStart - tileSize, extinctionTileYStart - tileSize * 0.55, 0],
-  [hexagonTileXStart, extinctionTileYStart, 0],
-  [hexagonTileXStart + tileSize, extinctionTileYStart - tileSize * 0.55, 0],
-  [hexagonTileXStart - tileSize, extinctionTileYStart - tileSize * 1.68, 0],
-  [hexagonTileXStart, extinctionTileYStart - tileSize * 2.25, 0],
-  [hexagonTileXStart + tileSize, extinctionTileYStart - tileSize * 1.68, 0],
+const positions: Coordinate[] = [
+  { x: hexagonTileXStart - tileSize, y: extinctionTileYStart - tileSize * 0.55, z: 0 },
+  { x: hexagonTileXStart, y: extinctionTileYStart, z: 0 },
+  { x: hexagonTileXStart + tileSize, y: extinctionTileYStart - tileSize * 0.55, z: 0 },
+  { x: hexagonTileXStart - tileSize, y: extinctionTileYStart - tileSize * 1.68, z: 0 },
+  { x: hexagonTileXStart, y: extinctionTileYStart - tileSize * 2.25, z: 0 },
+  { x: hexagonTileXStart + tileSize, y: extinctionTileYStart - tileSize * 1.68, z: 0 },
 ];
 
 const ExtinctionTiles = () => {
-  return [...Array.from(Array(6).keys())].map((_, index, { length }) => (
-    <Tile
-      key={index}
-      position={positions[index]}
-      rotation={[-1.57, ((Math.PI * 2) / length) * index, 0]}
-      color="#c3b091"
-    />
-  ));
+  const { state: gameState } = useGameState();
+  return concat(gameState.extinctMarket.deck, gameState.extinctMarket.table).map((extinctTile, index, { length }) => {
+    return (
+      <Tile
+        key={index}
+        position={positions[index]}
+        rotation={{ x: -Math.PI / 2, y: ((Math.PI * 2) / length) * index, z: 0 }}
+        color={gameState.extinctMarket.deck.includes(extinctTile) ? "#c3b091" : "#d17b79"}
+      />
+    );
+  });
 };
 
 export default ExtinctionTiles;

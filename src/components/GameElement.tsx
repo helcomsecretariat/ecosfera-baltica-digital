@@ -1,89 +1,105 @@
-import { DragControls } from "@react-three/drei";
-import { ReactNode, useRef, useState } from "react";
-import {
-  lowerXBoundary,
-  lowerYBoundary,
-  rotationOverrideThreshold,
-  upperXBoundary,
-  upperYBoundary,
-} from "../constants/gameBoard";
-import { decomposeMatrix } from "@/utils/3d";
-import { Mesh } from "three";
+import { ReactNode, useCallback, useEffect, useRef } from "react";
+import { motion } from "framer-motion-3d";
+import { Card, GamePieceAppearance } from "@/state/types";
+import { MeshProps, ThreeEvent } from "@react-three/fiber";
+import { baseDuration } from "@/constants/animation";
+import { useGameState } from "@/context/GameStateProvider";
+import { usePresence } from "framer-motion";
+import { useAnimControls } from "@/hooks/useAnimationControls";
 
 type GameElementProps = {
-  position: [number, number, number];
-  rotation?: [number, number, number];
   height: number;
   width: number;
-  options?: {
-    draggable?: boolean;
-    showHoverAnimation?: boolean;
-  };
   onClick?: () => void;
-  onDragEnd?: (position: [number, number, number]) => void;
   children: ReactNode;
-};
-
-const GameElement = ({
-  position,
-  rotation = [0, 0, 0],
-  height,
-  width,
-  options = {
-    draggable: true,
-    showHoverAnimation: true,
-  },
-  onClick,
-  onDragEnd,
-  children,
-}: GameElementProps) => {
-  const [hovered, setHovered] = useState<boolean>(false);
-  const [dragging, setDragging] = useState<boolean>(false);
-  const [rotationOverride, setRotationOverride] = useState<[number, number, number] | null>(null);
-  const ref = useRef<Mesh>(null);
-
-  const handleDragEnd = () => {
-    setDragging(false);
-    setHovered(false);
-    if (onDragEnd === undefined || ref?.current?.matrixWorld === undefined) return;
-    const updatedPosition = decomposeMatrix(ref.current.matrixWorld).position;
-    onDragEnd([updatedPosition.x, updatedPosition.y, updatedPosition.z]);
-    if (updatedPosition.x > upperXBoundary * rotationOverrideThreshold) {
-      setRotationOverride([0, 0, Math.PI / 2]);
-      return;
-    } else if (updatedPosition.x < lowerXBoundary * rotationOverrideThreshold) {
-      setRotationOverride([0, 0, (-1 * Math.PI) / 2]);
-    } else if (updatedPosition.y > upperYBoundary * rotationOverrideThreshold) {
-      setRotationOverride([0, 0, (2 * Math.PI) / 2]);
-    } else {
-      setRotationOverride([0, 0, 0]);
+} & (
+  | {
+      gamePieceAppearance: GamePieceAppearance;
+      cardUID?: never;
     }
-  };
+  | {
+      cardUID: Card["uid"];
+      gamePieceAppearance?: never;
+    }
+);
+
+const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameElementProps) => {
+  const { uiState } = useGameState();
+  const appearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
+  const [isPresent, safeToRemove] = usePresence();
+  const isDisappearing = !appearance.transform.position;
+
+  const { animSpeed, ease } = useAnimControls();
+  const ref = useRef<MeshProps>(null);
+  const mainDuration = (2 / animSpeed) * (appearance.duration / baseDuration);
+  const mainDelay = (2 / animSpeed) * (appearance.delay / baseDuration);
+  const cardFlipDuration = mainDuration * 0.3;
+  const zDuration = mainDuration + mainDelay + cardFlipDuration * 3;
+  const flipDuration = mainDuration + cardFlipDuration;
+  const flipDelay = mainDuration + mainDelay;
+  const totalDuration = mainDelay + mainDuration + Math.max(mainDelay + zDuration, flipDelay + flipDuration);
+
+  useEffect(() => {
+    if (!isPresent) {
+      setTimeout(safeToRemove, totalDuration);
+    }
+  }, [isPresent]);
+
+  const handleClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+      if (!isDisappearing && onClick) onClick();
+    },
+    [isDisappearing, onClick],
+  );
 
   return (
-    <DragControls
-      dragLimits={[
-        [lowerXBoundary + position[0] * -1 + width / 2, upperXBoundary + position[0] * -1 - width / 2],
-        [lowerYBoundary + position[1] * -1 + height / 2, upperYBoundary + position[1] * -1 - height / 2],
-        [0, 0],
-      ]}
-      dragConfig={{ enabled: options?.draggable ?? true }}
-      onDragStart={() => setDragging(true)}
-      onDragEnd={() => handleDragEnd()}
-      autoTransform
+    <motion.mesh
+      ref={ref}
+      onClick={handleClick}
+      position-z={appearance.transform.position?.z}
+      transition={{
+        ease,
+        duration: Math.max(baseDuration, mainDuration),
+        delay: mainDelay,
+        rotateY: {
+          duration: flipDuration,
+          delay: flipDelay,
+        },
+        z: {
+          delay: mainDelay,
+          duration: zDuration,
+          times: [0, 0.1, 0.3, 1],
+        },
+      }}
+      animate={{
+        x: appearance.transform.position?.x,
+        y: appearance.transform.position?.y,
+        z: [appearance.transform.position?.z, 8, 8, appearance.transform.position?.z],
+        rotateX: appearance.transform.rotation?.x,
+        rotateY: appearance.transform.rotation?.y,
+        rotateZ: appearance.transform.rotation?.z,
+      }}
+      initial={{
+        x: appearance.transform.initialPosition?.x,
+        y: appearance.transform.initialPosition?.y,
+        z: appearance.transform.initialPosition?.z,
+        rotateX: appearance.transform.initialRotation?.x,
+        rotateY: appearance.transform.initialRotation?.y,
+        rotateZ: appearance.transform.initialRotation?.z,
+      }}
+      exit={{
+        x: appearance.transform.exitPosition?.x,
+        y: appearance.transform.exitPosition?.y,
+        z: appearance.transform.exitPosition?.z,
+        rotateX: appearance.transform.exitRotation?.x,
+        rotateY: appearance.transform.exitRotation?.y,
+        rotateZ: appearance.transform.exitRotation?.z,
+      }}
+      whileHover={{ scale: onClick ? 1.05 : 1 }}
     >
-      <mesh
-        ref={ref}
-        scale={(hovered || dragging) && (options?.showHoverAnimation ?? true) ? 1.15 : 1}
-        position={dragging ? [position[0], position[1], 3] : position}
-        rotation={rotationOverride ?? rotation}
-        onPointerOver={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
-        onClick={onClick}
-      >
-        {children}
-      </mesh>
-    </DragControls>
+      {children}
+    </motion.mesh>
   );
 };
 

@@ -1,56 +1,51 @@
-import { Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { abilityOffset } from "../constants/gameBoard";
-import { useState } from "react";
+import { AbilityTile, Coordinate } from "@/state/types";
+import { useGameState } from "@/context/GameStateProvider";
+import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 
-const AbilityTiles = ({ xStart, rotation = [0, 0, 0] }: { xStart: number; rotation?: [number, number, number] }) => {
-  const [abilities, setAbilities] = useState([
-    {
-      name: "move",
-      y: 0,
-      available: true,
-    },
-    {
-      name: "refresh",
-      y: 0 + abilityOffset,
-      available: true,
-    },
-    {
-      name: "plus",
-      y: 0 - abilityOffset,
-      available: true,
-    },
-  ]);
+const AbilityTiles = ({
+  xStart,
+  yStart,
+  zStart = 0,
+  rotation = { x: 0, y: 0, z: 0 },
+  abilities,
+  canRefresh,
+}: {
+  xStart: number;
+  yStart: number;
+  zStart?: number;
+  rotation?: Coordinate;
+  abilities: AbilityTile[];
+  canRefresh: boolean;
+}) => {
+  const { emit } = useGameState();
+  const plusTexture = useSRGBTexture("/ecosfera_baltica/ability_plus.avif");
+  const refreshTexture = useSRGBTexture("/ecosfera_baltica/ability_refresh.avif");
+  const moveTexture = useSRGBTexture("/ecosfera_baltica/ability_move.avif");
 
   return abilities.map((ability, index) => (
     <GameElement
       key={ability.name + xStart}
-      position={[xStart, ability.y, 0]}
-      rotation={rotation}
+      gamePieceAppearance={{
+        transform: {
+          initialPosition: { x: xStart, y: yStart + abilityOffset * index, z: zStart },
+          initialRotation: rotation,
+          position: { x: xStart, y: yStart + abilityOffset * index, z: zStart },
+          rotation,
+        },
+        delay: 0,
+        duration: 0,
+      }}
       height={6}
       width={6}
-      onClick={() =>
-        setAbilities(
-          abilities.map((innerAbility, innerIndex) =>
-            index === innerIndex ? { ...innerAbility, available: !innerAbility.available } : innerAbility,
-          ),
-        )
-      }
-      options={{ draggable: false }}
+      onClick={emit.tokenClick(ability)}
     >
       <circleGeometry args={[3, 32]} />
-      <meshBasicMaterial color={ability.available ? "white" : "gray"} />
-      <Text color="black" fontSize={2}>
-        {ability.name === "move"
-          ? "→"
-          : ability.name === "plus"
-            ? "+"
-            : ability.name === "refresh"
-              ? "↻"
-              : ability.name === "special"
-                ? "⚡"
-                : ""}
-      </Text>
+      <meshBasicMaterial
+        color={ability.isUsed ? (canRefresh ? "green" : "#555") : "white"}
+        map={ability.name === "move" ? moveTexture : ability.name === "plus" ? plusTexture : refreshTexture}
+      />
     </GameElement>
   ));
 };

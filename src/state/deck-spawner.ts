@@ -1,19 +1,17 @@
-// import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import type { DeckConfig } from "@/decks/schema";
-import type { GamePiece, GamePieceBase, GameState, Market, PieceToConfig, PlayerState } from "./types";
+import type { GamePiece, GameState, Market, PieceToConfig, PlayerState } from "./types";
 import { shuffle } from "./utils";
 import { Croupier } from "./croupier";
 import { entries, filter, pull, without } from "lodash-es";
-import { v4 as uuid } from "uuid";
 
 function spawnAllPieces<T extends GamePiece>(
-  items: Record<string, PieceToConfig<T>>,
-  spawner: (name: string, config: PieceToConfig<T>) => T[],
+  items: Record<T["name"], PieceToConfig<T>>,
+  spawner: (name: T["name"], config: PieceToConfig<T>) => T[],
 ): T[] {
-  return Object.entries(items).flatMap(([name, config]) => spawner(name, config));
+  return Object.entries(items).flatMap(([name, config]) => spawner(name, config as PieceToConfig<T>));
 }
 
-function prepareMarket<T extends GamePieceBase>(items: T[], initialTableSize = 0, seed: string): Market<T> {
+function prepareMarket<T extends GamePiece>(items: T[], initialTableSize = 0, seed: string): Market<T> {
   const deck = shuffle(items, seed + items[0].uid);
   const table = deck.slice(0, initialTableSize);
 
@@ -24,8 +22,7 @@ function prepareMarket<T extends GamePieceBase>(items: T[], initialTableSize = 0
   };
 }
 
-export function spawnDeck(config: DeckConfig, playerCount = 1, seed?: string): GameState {
-  seed = seed ?? Math.random().toString(36);
+export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): GameState {
   const croupier = new Croupier();
 
   const plants = spawnAllPieces(config.plants, croupier.spawnPlantCards.bind(croupier));
@@ -37,8 +34,7 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed?: string): G
 
   const players = Array(playerCount)
     .fill(null)
-    .map(() => {
-      const uid = uuid();
+    .map((_, index) => {
       let deck = [
         ...entries(config.per_player.elements).flatMap(([name, { count = 1 }]) =>
           // @ts-expect-error TS con't figure out count is a number
@@ -50,22 +46,38 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed?: string): G
         ),
       ].filter((a) => a !== undefined);
 
-      deck = shuffle(deck, seed + uid);
+      deck = shuffle(deck, seed + index);
       const hand = deck.slice(0, 4);
 
       pull(elements, ...deck);
       pull(disasters, ...deck);
 
       return {
-        uid: uuid(),
+        uid: `player-${index}` as PlayerState["uid"],
         deck: without(deck, ...hand),
         hand,
         discard: [],
-        ability: spawnAllPieces(config.per_player.abilities, croupier.spawnAbilityTiles.bind(croupier)),
+        abilities: spawnAllPieces(config.per_player.abilities, croupier.spawnAbilityTiles.bind(croupier)),
       } as PlayerState;
     });
 
   return {
+    seed,
+    turn: {
+      player: players[0].uid,
+      currentAbility: undefined,
+      exhaustedCards: [],
+      playedCards: [],
+      borrowedElement: undefined,
+      usedAbilities: [],
+      borrowedCount: 0,
+      borrowedLimit: 1,
+      boughtAnimal: false,
+      boughtPlant: false,
+      boughtHabitat: false,
+      uidsUsedForAbilityRefresh: [],
+      phase: "action",
+    },
     players,
     plantMarket: prepareMarket(plants, 4, seed),
     animalMarket: prepareMarket(animals, 4, seed),
@@ -73,5 +85,6 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed?: string): G
     extinctMarket: prepareMarket(extinctions, 0, seed),
     biomeMarket: prepareMarket(biomes, 0, seed),
     disasterMarket: prepareMarket(disasters, 0, seed),
+    stage: undefined,
   };
 }

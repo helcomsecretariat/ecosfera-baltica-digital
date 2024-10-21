@@ -1,22 +1,41 @@
 import { Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { tileSize } from "@/constants/gameBoard";
+import { Coordinate } from "@/state/types";
+import { deckAnimationTimings } from "@/constants/animation";
 
 const Tile = ({
   position,
-  rotation = [0, 0, 0],
+  rotation = { x: 0, y: 0, z: 0 },
   color,
   name = "",
+  onClick,
+  opacity = 1,
 }: {
-  position: [number, number, number];
-  rotation?: [number, number, number];
+  position: Coordinate;
+  rotation?: Coordinate;
   color: string;
   name?: string;
+  onClick?: () => void;
+  opacity?: number;
 }) => {
   return (
-    <GameElement position={position} rotation={rotation} height={6} width={10}>
+    <GameElement
+      gamePieceAppearance={{
+        transform: {
+          initialPosition: position,
+          initialRotation: rotation,
+          position,
+          rotation,
+        },
+        ...deckAnimationTimings,
+      }}
+      height={6}
+      width={10}
+      onClick={onClick}
+    >
       <cylinderGeometry args={[tileSize, tileSize, 0.1, 6, 1]} />
-      <meshBasicMaterial color={color} />
+      <meshBasicMaterial color={color} opacity={opacity} transparent />
       <Text fontSize={1} color="black" rotation={[1.57, 0, 0]} position={[0, -0.1, 0]}>
         {name}
       </Text>

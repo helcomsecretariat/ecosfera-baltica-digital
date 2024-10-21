@@ -7,12 +7,14 @@ import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 const AbilityTiles = ({
   xStart,
   yStart,
+  zStart = 0,
   rotation = { x: 0, y: 0, z: 0 },
   abilities,
   canRefresh,
 }: {
   xStart: number;
   yStart: number;
+  zStart?: number;
   rotation?: Coordinate;
   abilities: AbilityTile[];
   canRefresh: boolean;
@@ -27,9 +29,9 @@ const AbilityTiles = ({
       key={ability.name + xStart}
       gamePieceAppearance={{
         transform: {
-          initialPosition: { x: xStart, y: yStart + abilityOffset * index, z: 0 },
+          initialPosition: { x: xStart, y: yStart + abilityOffset * index, z: zStart },
           initialRotation: rotation,
-          position: { x: xStart, y: yStart + abilityOffset * index, z: 0 },
+          position: { x: xStart, y: yStart + abilityOffset * index, z: zStart },
           rotation,
         },
         delay: 0,

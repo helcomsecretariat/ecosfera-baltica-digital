@@ -76,6 +76,7 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): Ga
       boughtPlant: false,
       boughtHabitat: false,
       uidsUsedForAbilityRefresh: [],
+      phase: "action",
     },
     players,
     plantMarket: prepareMarket(plants, 4, seed),
@@ -84,5 +85,6 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): Ga
     extinctMarket: prepareMarket(extinctions, 0, seed),
     biomeMarket: prepareMarket(biomes, 0, seed),
     disasterMarket: prepareMarket(disasters, 0, seed),
+    stage: undefined,
   };
 }

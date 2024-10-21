@@ -1,6 +1,6 @@
 import { AbilityTile, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
 import { countBy, find, compact, every } from "lodash";
-import { getAnimalBiomePairs } from "./helpers/turn";
+import { getAnimalBiomePairs, getDuplicateElements } from "./helpers/turn";
 
 export const BuyMachineGuards = {
   canBuyCard: ({ context: { players, turn } }: { context: GameState }, card: AnimalCard | PlantCard) => {
@@ -86,10 +86,24 @@ export const BuyMachineGuards = {
     return (context.turn.usedAbilities?.filter((ability) => ability.source === card.uid).length ?? 0) === 0;
   },
 
-  getsDisaster: ({ context: { turn } }: { context: GameState }) => {
+  didNotBuy: ({ context: { turn } }: { context: GameState }) => {
     const { boughtPlant, boughtAnimal, boughtHabitat } = turn;
 
     return !boughtPlant && !boughtAnimal && !boughtHabitat;
+  },
+
+  getsDidNotBuyDisaster: ({ context }: { context: GameState }) => {
+    const player = find(context.players, { uid: context.turn.player })!;
+
+    return BuyMachineGuards.didNotBuy({ context }) && player.hand.filter((card) => card.type === "disaster").length < 3;
+  },
+
+  getsElementalDisaster: ({ context }: { context: GameState }) => {
+    const player = find(context.players, { uid: context.turn.player })!;
+
+    return (
+      getDuplicateElements(context, 3).length > 0 && player.hand.filter((card) => card.type === "disaster").length < 3
+    );
   },
 
   getsExtinction: ({ context: { players, turn } }: { context: GameState }) => {
@@ -98,9 +112,21 @@ export const BuyMachineGuards = {
     return player.hand.filter((card) => card.type === "disaster").length > 2;
   },
 
+  getsMassExtinction: ({ context: { players, turn } }: { context: GameState }) => {
+    const player = players.find(({ uid }) => uid === turn.player)!;
+
+    return player.hand.filter((card) => card.type === "disaster").length > 3;
+  },
+
   canRefreshAbility: ({ context }: { context: GameState }) => {
     const player = find(context.players, { uid: context.turn.player })!;
-    const availableAnimalBiomePairs = getAnimalBiomePairs(player).filter(
+
+    if (!player.abilities.some((ability) => ability.isUsed)) return false;
+
+    const availableAnimalBiomePairs = getAnimalBiomePairs(
+      player,
+      context.stage?.cause?.filter((gamePiece) => gamePiece.type === "animal") ?? [],
+    ).filter(
       (animalBiomePair) =>
         !context.turn.uidsUsedForAbilityRefresh.some((uid) =>
           animalBiomePair.map((animal) => animal.uid).includes(uid),
@@ -108,5 +134,21 @@ export const BuyMachineGuards = {
     );
 
     return availableAnimalBiomePairs.length > 0;
+  },
+
+  checkNotDone: ({ context }: { context: GameState }, checkName: string) => {
+    return !(context.turn.automaticEventChecks?.includes(checkName) ?? false);
+  },
+
+  drawPhase: ({ context }: { context: GameState }) => {
+    return context.turn.phase === "draw";
+  },
+
+  actionPhase: ({ context }: { context: GameState }) => {
+    return context.turn.phase === "action";
+  },
+
+  endPhase: ({ context }: { context: GameState }) => {
+    return context.turn.phase === "end";
   },
 };

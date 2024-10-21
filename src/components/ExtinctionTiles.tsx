@@ -20,7 +20,7 @@ const ExtinctionTiles = () => {
       <Tile
         key={index}
         position={positions[index]}
-        rotation={{ x: -1.57, y: ((Math.PI * 2) / length) * index, z: 0 }}
+        rotation={{ x: -Math.PI / 2, y: ((Math.PI * 2) / length) * index, z: 0 }}
         color={gameState.extinctMarket.deck.includes(extinctTile) ? "#c3b091" : "#d17b79"}
       />
     );

@@ -153,6 +153,7 @@ export const gameState: GameState = {
     boughtPlant: false,
     boughtHabitat: false,
     uidsUsedForAbilityRefresh: [],
+    phase: "action",
   },
   players: [player],
   plantMarket: { type: "plant", deck: [], table: [] },

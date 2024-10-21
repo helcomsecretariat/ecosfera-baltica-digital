@@ -41,8 +41,8 @@ type Context = {
   parentActor: TurnMachine;
 };
 // eslint-disable-next-line
-type GuradFn = ({ context }: { context: Context }, ...args: any[]) => boolean;
-const guards: Record<string, GuradFn> = {
+type GuardFn = ({ context }: { context: Context }, ...args: any[]) => boolean;
+const guards: Record<string, GuardFn> = {
   isRefreshAbility: ({ context: { name } }) => name === "refresh",
   isMoveAbility: ({ context: { name } }) => name === "move",
   isPlusAbility: ({ context: { name } }) => name === "plus",

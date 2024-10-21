@@ -46,6 +46,7 @@ const Croupier = () => {
             card={card}
             gamePieceAppearance={uiState.cardPositions[card.uid]}
             onClick={emit.marketCardClick(card)}
+            isHighlighted={test.marketCardClick(card)}
           />
         );
       })}
@@ -55,6 +56,7 @@ const Croupier = () => {
           card={card}
           gamePieceAppearance={uiState.cardPositions[card.uid]}
           onClick={emit.marketCardClick(card)}
+          isHighlighted={test.marketCardClick(card)}
         />
       ))}
       {gameState.disasterMarket.table.map((card: DisasterCard) => (

@@ -70,6 +70,9 @@ export const AbilityMachine = setup({
     "user.click.token": {
       target: "#ability.cancel",
     },
+    "user.click.player.hand.card.ability": {
+      target: "#ability.cancel",
+    },
   },
 
   states: {

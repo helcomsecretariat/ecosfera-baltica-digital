@@ -397,7 +397,7 @@ export const TurnMachine = setup({
           borrowedElement: undefined,
           borrowedCount: 0,
           borrowedLimit: context.turn.borrowedLimit,
-          usedAbilities: context.turn.usedAbilities,
+          usedAbilities: [],
           boughtAnimal: false,
           boughtPlant: false,
           boughtHabitat: false,

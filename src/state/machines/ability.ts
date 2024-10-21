@@ -1,6 +1,16 @@
 import { inspect } from "@/state/machines/utils";
-import { AbilityName, AbilityTile, AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
-import { sendTo, setup, assign, ActorRef, Snapshot } from "xstate";
+import {
+  AbilityName,
+  AbilityTile,
+  AnimalCard,
+  Card,
+  DisasterCard,
+  ElementCard,
+  PlantCard,
+  PlayerState,
+} from "@/state/types";
+import { find } from "lodash";
+import { sendTo, setup, assign, ActorRef, Snapshot, not, and } from "xstate";
 
 export type AbilityMachineOutEvents =
   | { type: "ability.cancel" }
@@ -23,36 +33,36 @@ export type AbilityMachineInEvents =
   | { type: "user.click.token"; token: AbilityTile };
 
 type TurnMachine = ActorRef<Snapshot<unknown>, AbilityMachineOutEvents>;
+type Context = {
+  playersRow: PlayerState["hand"];
+  piece: AbilityTile | PlantCard | AnimalCard;
+  name: AbilityName;
+  cardToMove?: Card;
+  parentActor: TurnMachine;
+};
+// eslint-disable-next-line
+type GuardFn = ({ context }: { context: Context }, ...args: any[]) => boolean;
+const guards: Record<string, GuardFn> = {
+  isRefreshAbility: ({ context: { name } }) => name === "refresh",
+  isMoveAbility: ({ context: { name } }) => name === "move",
+  isPlusAbility: ({ context: { name } }) => name === "plus",
+  isSpecialAbility: ({ context: { name } }) => name === "special",
+  notSameCard: ({ context: { piece } }, card: Card) => piece.uid !== card.uid,
+  notSameToken: ({ context: { piece } }, token: AbilityTile) => piece.uid !== token.uid,
+  cardFromRow: ({ context: { playersRow } }, card: Card) => !!find(playersRow, { uid: card.uid }),
+} as const;
 
 export const AbilityMachine = setup({
   types: {
-    context: {} as {
-      piece: AbilityTile | PlantCard | AnimalCard;
-      name: AbilityName;
-      cardToMove?: Card;
-      parentActor: TurnMachine;
-    },
-    input: {} as {
-      piece: AbilityTile | PlantCard | AnimalCard;
-      name: AbilityName;
-      parentActor: TurnMachine;
-    },
-
+    context: {} as Context,
+    input: {} as Context,
     events: {} as AbilityMachineInEvents,
   },
-  guards: {
-    isRefreshAbility: ({ context: { name } }) => name === "refresh",
-    isMoveAbility: ({ context: { name } }) => name === "move",
-    isPlusAbility: ({ context: { name } }) => name === "plus",
-    isSpecialAbility: ({ context: { name } }) => name === "special",
-    notSameCard: ({ context: { piece } }, card: Card) => piece.uid !== card.uid,
-    notSameToken: ({ context: { piece } }, token: AbilityTile) => piece.uid !== token.uid,
-  },
-  actions: {},
+  guards,
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QEMBGBLANugLgTwGIAVAeQGkBRAOQH0BhAGQEk6yBtABgF1FQAHAPaxc6AQDteIAB6IALACYANCDyIAHAEYAdAGZ58gJwa1AdlkBWeScsmAvreVosuPFohgAxugjoxUApw8SCCCwjiiEsEyCGo6uvKyphyyAGxq+gYmyqoI8hwpWpoGmjomHOZqKQYp9o4Y2Phunt6+-mwaQfxCIuKS0Romalom1WpqCjqyshx5BtlyCYUa5ho6GuvyakZqtSBODa7uXj5+AfKdId3hvVGIA0MjaePyk9Oz8wjmJgWxqSmTphM8g0sl2+xcTWOrQCOguoR6kVA-TSw1Gz1eMw4cxUiHkVS0sgG1RMk3+eRSdgce3qEL4mAArrACAAFBgAQQAmhQAEo0AAiFFY9GYrECknh10R0juywKAz0LwMHA0ZLUH3MK0KXws6xVVgpYJpjQATmAAGam2AACy0fHQHgA1kRkMaYDgCGyqEwALJshj8wVkYUsdjccVXCJ9RA6GaFPGxQY6CoZLI4hApFKyLRVeTmWQ6CmpJM7Kngk3my02u2O52usDu1meogBoWMENi4ISyO3BAx+RxtKlWLJwypnLWAxaYlWZ4aYEJQ3ORoAWwEADcwLb7U6XW6CHQ2dy+cHRWHOxGbkjEClylpVmoZpUBuZquYPvnJ7JrJsUusv0mv0XA4tFXDct0dPk4HCMRkElfdD2PNtTzhC8pX6WU7xJfQdCVFU9DVNMPwJb8nxBEk80pKkxAEdx4GCMsci6MJuyvBAAFoDDiFZZEyNIOA4EwNGSWQPjY8wpwMSTMkGF4nhWICIQ8ZAxA8MBMHDZjL2lXtzDiDQjEJKZLCVAwrA+ZZJ0sDhxjUcwM2KEYSzqJdDnEMANIRKMEHvApkgMOyVU4ooRLTNJtDMfj-jKPyQQUxojhaPwPMlLyFHVf4tDyNYFE2fMbx0OLXDpRlkpY7SdFsu9cOMNZMnGdUzGGcx+LyJ81mBQqtFgPhmmQdTz00tDo1MqcY2Kf5pm2D48RMXQdHmhJBMkv9OtNC04CtUqtOiNiLC0bjeIfAShKmD4ZKq-yUmwmNLFWisNvAnc6xwLahtyAlbJmWrTK2DUSQ+Iw4ls-SMgEl9rM60D3IGzye1KLM8mMPNTESfyVQ+GNZvSQx9N4wkSUh9dN2rJ63Ve1L9Ey5VbMSMxfvRwjpiptY1iE-4jpqUsjVcKHHsg2BoNgsqu229RGtsh9KgMBQFE498may5Z5UzZZKnsewgA */
   inspect,
-  context: ({ input: { piece, name, parentActor } }) => ({ piece, name, parentActor }),
+  context: ({ input: { piece, name, parentActor, playersRow } }) => ({ piece, name, parentActor, playersRow }),
   id: "ability",
   initial: "deciding",
 
@@ -128,13 +138,13 @@ export const AbilityMachine = setup({
           on: {
             "user.click.player.hand.card": {
               target: "pickDestination",
+              guard: and([
+                ({ context, event }) => guards.cardFromRow({ context }, event.card),
+                ({ context, event }) => guards.notSameCard({ context }, event.card),
+              ]),
               actions: assign({
                 cardToMove: ({ event: { card } }) => card,
               }),
-              guard: {
-                type: "notSameCard",
-                params: ({ event: { card } }) => card,
-              },
             },
           },
         },
@@ -143,6 +153,7 @@ export const AbilityMachine = setup({
           on: {
             "user.click.player.hand.card": {
               target: "#ability.done",
+              guard: not(({ context, event }) => guards.cardFromRow({ context }, event.card)),
               actions: sendTo(
                 ({ context: { parentActor } }) => parentActor,
                 ({ context: { cardToMove }, event: { card } }) =>

@@ -19,7 +19,7 @@ const rotations = [
 
 export const NextButton = () => {
   const {
-    handlers,
+    emit,
     state: { turn, players },
   } = useGameState();
   const texture = useSRGBTexture("/ecosfera_baltica/next_turn.avif");
@@ -30,7 +30,7 @@ export const NextButton = () => {
   return (
     <motion.mesh
       key={"next-turn" + index}
-      onClick={handlers.playerEndTurnClick()}
+      onClick={emit.playerEndTurnClick()}
       initial={{ ...positions[index], ...rotations[index], scale: 0.2 }}
       animate={{ ...positions[index], ...rotations[index], scale: 1 }}
       exit={{ ...positions[index], ...rotations[index], scale: 0.2 }}

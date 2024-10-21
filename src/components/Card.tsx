@@ -19,10 +19,11 @@ export type CardProps = {
   gamePieceAppearance: GamePieceAppearance;
   onClick?: () => void;
   options?: CardOptions;
+  isHighlighted?: boolean;
 };
 
-const Card = ({ card, gamePieceAppearance, onClick, options }: CardProps) => {
-  const { handlers, state } = useGameState();
+const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = false }: CardProps) => {
+  const { emit, state } = useGameState();
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
   const texture = useSRGBTexture(cardIMGURL);
@@ -46,7 +47,7 @@ const Card = ({ card, gamePieceAppearance, onClick, options }: CardProps) => {
           <meshBasicMaterial attach="material-0" map={texture} />
           <meshBasicMaterial attach="material-1" />
         </mesh>
-        {gamePieceAppearance.display?.visibility === "highlighted" && (
+        {isHighlighted && (
           <mesh>
             <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, 1.5, 0.01]} />
             <meshBasicMaterial transparent={true} attach="material-0" map={highlightTexture} />
@@ -98,7 +99,7 @@ const Card = ({ card, gamePieceAppearance, onClick, options }: CardProps) => {
               position={[0, cardHeight / 2 + 3, 0]}
               onClick={(e) => {
                 e.stopPropagation();
-                handlers.abilityCardClick(card)();
+                emit.abilityCardClick(card)();
               }}
             >
               <circleGeometry args={[1.5, 32]} />

@@ -31,7 +31,7 @@ export type CardMoveLocation =
 
 const Croupier = () => {
   const { state: gameState, uiState } = useGameState();
-  const { handlers } = useGameState();
+  const { emit, test } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
@@ -45,7 +45,8 @@ const Croupier = () => {
             key={card.uid}
             card={card}
             gamePieceAppearance={uiState.cardPositions[card.uid]}
-            onClick={handlers.marketCardClick(card)}
+            onClick={emit.marketCardClick(card)}
+            isHighlighted={test.marketCardClick(card)}
           />
         );
       })}
@@ -54,7 +55,8 @@ const Croupier = () => {
           key={card.uid}
           card={card}
           gamePieceAppearance={uiState.cardPositions[card.uid]}
-          onClick={handlers.marketCardClick(card)}
+          onClick={emit.marketCardClick(card)}
+          isHighlighted={test.marketCardClick(card)}
         />
       ))}
       {gameState.disasterMarket.table.map((card: DisasterCard) => (
@@ -62,7 +64,7 @@ const Croupier = () => {
           key={card.uid}
           card={card}
           gamePieceAppearance={uiState.cardPositions[card.uid]}
-          // onClick={handlers.buyCard(card)}
+          // onClick={emit.buyCard(card)}
         />
       ))}
       {uniqBy(gameState.elementMarket.deck, "name").map((card: ElementCard) => (
@@ -72,7 +74,8 @@ const Croupier = () => {
           textColor="black"
           gamePieceAppearance={uiState.deckPositions[`${card.name}ElementDeck`]}
           cards={gameState.elementMarket.deck.filter((elementDeckCard) => elementDeckCard.name === card.name)}
-          onClick={handlers.marketElementClick(card.name)}
+          isDimmed={!test.marketElementClick(card.name)}
+          onClick={emit.marketElementClick(card.name)}
         />
       ))}
       {gameState.turn.borrowedElement && (
@@ -80,20 +83,20 @@ const Croupier = () => {
           key={gameState.turn.borrowedElement.uid}
           card={gameState.turn.borrowedElement}
           gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
-          onClick={handlers.borrowedElementClick(gameState.turn.borrowedElement)}
+          onClick={emit.borrowedElementClick(gameState.turn.borrowedElement)}
         />
       )}
       <Deck
         key={"animalDeck"}
         gamePieceAppearance={uiState.deckPositions["animalDeck"]}
         cards={gameState.animalMarket.deck}
-        onClick={handlers.animalDeckClick()}
+        onClick={emit.animalDeckClick()}
       />
       <Deck
         key={"plantDeck"}
         gamePieceAppearance={uiState.deckPositions["plantDeck"]}
         cards={gameState.plantMarket.deck}
-        onClick={handlers.plantDeckClick()}
+        onClick={emit.plantDeckClick()}
       />
       <Deck
         key={"disasterDeck"}
@@ -116,7 +119,7 @@ const Croupier = () => {
                 },
               }}
               cards={player.deck}
-              onClick={handlers.playerDeckClick()}
+              onClick={emit.playerDeckClick()}
             />
 
             {player.uid === gameState.turn.player && gameState.turn.selectedAbilityCard === undefined && (
@@ -180,7 +183,7 @@ const Croupier = () => {
                 card={card}
                 gamePieceAppearance={uiState.cardPositions[card.uid]}
                 //@ts-expect-error TODO: fix type check...
-                onClick={handlers.playerCardClick(card)}
+                onClick={emit.playerCardClick(card)}
                 options={{ showAbilityButton: gameState.turn.player === player.uid }}
               />
             ),

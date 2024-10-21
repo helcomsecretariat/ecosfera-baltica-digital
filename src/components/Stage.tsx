@@ -8,7 +8,7 @@ import { find } from "lodash";
 import { motion } from "framer-motion-3d";
 
 const Stage = () => {
-  const { handlers, state } = useGameState();
+  const { emit, state } = useGameState();
   const eventName = {
     disaster: "Disaster!",
     extinction: "Extinction!",
@@ -38,7 +38,7 @@ const Stage = () => {
           <Button
             onClick={(e) => {
               e.stopPropagation();
-              handlers.stageConfirm()();
+              emit.stageConfirm()();
             }}
             variant="default"
             className="w-full"

@@ -804,11 +804,13 @@ export const TurnMachine = setup({
         src: "ability",
         input: ({
           context: {
-            turn: { currentAbility },
+            turn: { currentAbility, player },
+            players,
           },
           self,
         }) => ({
           parentActor: self,
+          playersRow: find(players, { uid: player })!.hand,
           ...currentAbility!,
         }),
 

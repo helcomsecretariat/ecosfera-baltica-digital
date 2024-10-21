@@ -19,7 +19,7 @@ const AbilityTiles = ({
   abilities: AbilityTile[];
   canRefresh: boolean;
 }) => {
-  const { handlers } = useGameState();
+  const { emit } = useGameState();
   const plusTexture = useSRGBTexture("/ecosfera_baltica/ability_plus.avif");
   const refreshTexture = useSRGBTexture("/ecosfera_baltica/ability_refresh.avif");
   const moveTexture = useSRGBTexture("/ecosfera_baltica/ability_move.avif");
@@ -39,7 +39,7 @@ const AbilityTiles = ({
       }}
       height={6}
       width={6}
-      onClick={handlers.tokenClick(ability)}
+      onClick={emit.tokenClick(ability)}
     >
       <circleGeometry args={[3, 32]} />
       <meshBasicMaterial

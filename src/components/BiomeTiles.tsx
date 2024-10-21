@@ -13,7 +13,7 @@ const positions: Coordinate[] = [
 ];
 
 const BiomeTiles = () => {
-  const { handlers, state } = useGameState();
+  const { emit, state } = useGameState();
 
   return state.biomeMarket.deck.map((habitat, index) => (
     <Tile
@@ -21,7 +21,7 @@ const BiomeTiles = () => {
       position={positions[index]}
       rotation={{ x: -Math.PI / 2, y: 0, z: 0 }}
       color={habitat.isAcquired ? "#2cba16" : "#66cc66"}
-      onClick={handlers.habitatClick(habitat)}
+      onClick={emit.habitatClick(habitat)}
       name={habitat.name}
     />
   ));

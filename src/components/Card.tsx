@@ -23,7 +23,7 @@ export type CardProps = {
 };
 
 const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = false }: CardProps) => {
-  const { handlers, state } = useGameState();
+  const { emit, state } = useGameState();
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
   const texture = useSRGBTexture(cardIMGURL);
@@ -99,7 +99,7 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
               position={[0, cardHeight / 2 + 3, 0]}
               onClick={(e) => {
                 e.stopPropagation();
-                handlers.abilityCardClick(card)();
+                emit.abilityCardClick(card)();
               }}
             >
               <circleGeometry args={[1.5, 32]} />

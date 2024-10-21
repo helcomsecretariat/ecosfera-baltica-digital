@@ -17,8 +17,8 @@ interface StateProviderProps {
 interface StateContextType {
   state: GameState;
   send: (e: EventFromLogic<typeof TurnMachine>) => void;
-  handlers: ActionEmmiters;
-  testers: ActionTesters;
+  emit: ActionEmmiters;
+  test: ActionTesters;
   uiState: UiState;
 }
 
@@ -34,8 +34,8 @@ export const GameStateProvider = ({ children, numberOfPlayers, seed }: StateProv
       seed,
     },
   });
-  const handlers = useMemo(() => createEmmiters(send), [send]);
-  const testers = useMemo(() => createTesters(snap.can.bind(snap)), [snap]);
+  const emit = useMemo(() => createEmmiters(send), [send]);
+  const test = useMemo(() => createTesters(snap.can.bind(snap)), [snap]);
   const prevUiStateRef = useRef<UiState | null>(null);
   const uiState = useMemo(() => toUiState(prevUiStateRef.current, snap.context), [snap.context]);
 
@@ -47,8 +47,8 @@ export const GameStateProvider = ({ children, numberOfPlayers, seed }: StateProv
     state: snap.context,
     uiState,
     send,
-    handlers,
-    testers,
+    emit,
+    test,
   };
   return <stateContext.Provider value={value}>{children}</stateContext.Provider>;
 };

@@ -13,7 +13,7 @@ type CardAbilityTilesProps = {
 };
 
 const CardAbilityTiles = ({ xStart, yStart, rotation = { x: 0, y: 0, z: 0 } }: CardAbilityTilesProps) => {
-  const { state, handlers } = useGameState();
+  const { state, emit } = useGameState();
   const highlightTexture = useTexture(getHighlightTextureAssetPath(true));
   const plusTexture = useSRGBTexture("/ecosfera_baltica/ability_plus.avif");
   const refreshTexture = useSRGBTexture("/ecosfera_baltica/ability_refresh.avif");
@@ -57,7 +57,7 @@ const CardAbilityTiles = ({ xStart, yStart, rotation = { x: 0, y: 0, z: 0 } }: C
       }}
       height={6}
       width={6}
-      onClick={handlers.cardTokenClick(ability)}
+      onClick={emit.cardTokenClick(ability)}
     >
       <circleGeometry args={[3, 32]} />
       <meshBasicMaterial

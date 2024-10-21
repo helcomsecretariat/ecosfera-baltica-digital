@@ -23,6 +23,7 @@ class RoundedRectGeometry extends THREE.ExtrudeGeometry {
       depth,
       bevelEnabled: true,
       bevelThickness: 0.11,
+      curveSegments: 6,
     };
 
     super(shape, extrudeSettings);

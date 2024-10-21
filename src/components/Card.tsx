@@ -19,9 +19,10 @@ export type CardProps = {
   gamePieceAppearance: GamePieceAppearance;
   onClick?: () => void;
   options?: CardOptions;
+  isHighlighted?: boolean;
 };
 
-const Card = ({ card, gamePieceAppearance, onClick, options }: CardProps) => {
+const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = false }: CardProps) => {
   const { handlers, state } = useGameState();
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
@@ -46,7 +47,7 @@ const Card = ({ card, gamePieceAppearance, onClick, options }: CardProps) => {
           <meshBasicMaterial attach="material-0" map={texture} />
           <meshBasicMaterial attach="material-1" />
         </mesh>
-        {gamePieceAppearance.display?.visibility === "highlighted" && (
+        {isHighlighted && (
           <mesh>
             <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, 1.5, 0.01]} />
             <meshBasicMaterial transparent={true} attach="material-0" map={highlightTexture} />

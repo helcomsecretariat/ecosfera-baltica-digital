@@ -31,7 +31,7 @@ export type CardMoveLocation =
 
 const Croupier = () => {
   const { state: gameState, uiState } = useGameState();
-  const { handlers } = useGameState();
+  const { handlers, testers } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
@@ -72,6 +72,7 @@ const Croupier = () => {
           textColor="black"
           gamePieceAppearance={uiState.deckPositions[`${card.name}ElementDeck`]}
           cards={gameState.elementMarket.deck.filter((elementDeckCard) => elementDeckCard.name === card.name)}
+          isDimmed={!testers.marketElementClick(card.name)}
           onClick={handlers.marketElementClick(card.name)}
         />
       ))}

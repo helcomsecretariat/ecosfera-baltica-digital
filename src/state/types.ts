@@ -39,6 +39,8 @@ export interface GameState {
     boughtHabitat: boolean;
     uidsUsedForAbilityRefresh: AnimalUID[];
     selectedAbilityCard?: PlantCard | AnimalCard;
+    automaticEventChecks?: string[];
+    phase: "draw" | "end" | "action";
   };
   players: PlayerState[];
   plantMarket: Market<PlantCard>;
@@ -47,6 +49,11 @@ export interface GameState {
   disasterMarket: Market<DisasterCard>;
   biomeMarket: Market<BiomeTile>;
   extinctMarket: Market<ExtinctionTile>;
+  stage?: {
+    eventType: "disaster" | "elementalDisaster" | "extinction" | "massExtinction" | "abilityRefresh";
+    cause: DisasterCard[] | ElementCard[] | AnimalCard[] | undefined;
+    effect: DisasterCard[] | ExtinctionTile[] | undefined;
+  };
 }
 
 export interface PlayerState {
@@ -197,10 +204,10 @@ export type GamePieceAppearance = GamePieceCoords & {
 };
 
 export interface GamePieceAppearances {
-  [key: Card["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceAppearance;
+  [key: GamePiece["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceAppearance;
 }
 export interface GamePieceCoordsDict {
-  [key: Card["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceCoords;
+  [key: GamePiece["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceCoords;
 }
 
 export interface UiState {

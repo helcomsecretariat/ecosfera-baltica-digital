@@ -1,7 +1,7 @@
 import { default as CardComponent } from "./Card";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
+import { AnimalCard, Card, DisasterCard, ElementCard, ExtinctionTile, PlantCard } from "@/state/types";
 import { cardWidth } from "@/constants/card";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
@@ -14,6 +14,8 @@ import React from "react";
 import { NextButton } from "@/components/NextTurnBtn";
 import { BuyMachineGuards } from "@/state/machines/guards";
 import CardAbilityTiles from "@/components/CardAbilityTiles";
+import Stage from "@/components/Stage";
+import Tile from "./Tile";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -131,6 +133,29 @@ const Croupier = () => {
           </GamePieceGroup>
         </React.Fragment>
       ))}
+
+      {/* Stage */}
+      <Stage key="stage" />
+      {[...(gameState.stage?.cause ?? []), ...(gameState.stage?.effect ?? [])].map(
+        (card: DisasterCard | ElementCard | AnimalCard | ExtinctionTile) => {
+          if (!uiState.cardPositions[card.uid]) {
+            return;
+          }
+
+          if (card.type === "extinction") {
+            return (
+              <Tile
+                key={card.uid}
+                color="#c3b091"
+                position={uiState.cardPositions[card.uid].transform.position}
+                rotation={{ x: -Math.PI / 2, y: 0, z: 0 }}
+              />
+            );
+          }
+
+          return <CardComponent key={card.uid} card={card} gamePieceAppearance={uiState.cardPositions[card.uid]} />;
+        },
+      )}
 
       {/* Player Discard */}
       {gameState.players.map((player) => (

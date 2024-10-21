@@ -1,8 +1,8 @@
 import { AnimalCard, GameState, PlayerState } from "@/state/types";
-import { concat, intersection } from "lodash";
+import { concat, find, intersection } from "lodash";
 
-export const getAnimalBiomePairs = (player: PlayerState): AnimalCard[][] => {
-  const animalCards = player.hand.filter((card) => card.type === "animal") as AnimalCard[];
+export const getAnimalBiomePairs = (player: PlayerState, stagedAnimalCards: AnimalCard[]): AnimalCard[][] => {
+  const animalCards = [...player.hand, ...stagedAnimalCards].filter((card) => card.type === "animal") as AnimalCard[];
   const animalCardBiomePairs = [];
 
   for (let i = 0; i < animalCards.length; i++) {
@@ -23,4 +23,25 @@ export const checkAndAssignExtinctionTile = (gameState: GameState) => {
     gameState.extinctMarket.table = concat(gameState.extinctMarket.table, gameState.extinctMarket.deck[0]);
     gameState.extinctMarket.deck = gameState.extinctMarket.deck.slice(1);
   }
+};
+
+export const getDuplicateElements = (gameState: GameState, numberOfDuplicates: number) => {
+  const player = find(gameState.players, { uid: gameState.turn.player });
+  const elementCounts: { [key: string]: number } = {};
+
+  player?.hand
+    .filter((card) => card.type === "element")
+    .forEach((card) => {
+      if (elementCounts[card.name]) {
+        elementCounts[card.name] += 1;
+      } else {
+        elementCounts[card.name] = 1;
+      }
+    });
+
+  const duplicateElements = Object.keys(elementCounts).filter(
+    (element) => elementCounts[element] >= numberOfDuplicates,
+  );
+
+  return duplicateElements;
 };

@@ -15,6 +15,7 @@ export interface StateHandlers {
   plantDeckClick: () => () => void;
   habitatClick: (tile: BiomeTile) => () => void;
   abilityCardClick: (card: PlantCard | AnimalCard) => () => void;
+  stageConfirm: () => () => void;
   // useToken: (token: AbilityTile) => () => void;
 }
 
@@ -40,5 +41,6 @@ export const createStateHandlers = (send: (e: EventFromLogic<typeof TurnMachine>
     habitatClick: (tile: BiomeTile) => sendEvent({ type: "user.click.habitat", tile }),
     abilityCardClick: (card: PlantCard | AnimalCard) =>
       sendEvent({ type: "user.click.player.hand.card.ability", card }),
+    stageConfirm: () => sendEvent({ type: "user.click.stage.confirm" }),
   };
 };

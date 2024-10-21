@@ -7,7 +7,9 @@ import {
   AnimalCard,
   BiomeTile,
   Card,
+  DisasterCard,
   ElementCard,
+  ExtinctionTile,
   GameState,
   PlantCard,
 } from "@/state/types";
@@ -17,7 +19,7 @@ import { produce } from "immer";
 import { BuyMachineGuards } from "@/state/machines/guards";
 import { compact, concat, countBy, entries, find, intersection, reject, without } from "lodash";
 import { replaceItem, shuffle } from "@/state/utils";
-import { checkAndAssignExtinctionTile, getAnimalBiomePairs } from "./helpers/turn";
+import { getAnimalBiomePairs, getDuplicateElements } from "./helpers/turn";
 
 export const TurnMachine = setup({
   types: {
@@ -38,6 +40,7 @@ export const TurnMachine = setup({
       | { type: "user.click.habitat"; tile: BiomeTile }
       | { type: "iddqd"; context: GameState }
       | { type: "user.click.player.hand.card.ability"; card: PlantCard | AnimalCard }
+      | { type: "user.click.stage.confirm" }
       | AbilityMachineInEvents
       | AbilityMachineOutEvents,
   },
@@ -237,27 +240,129 @@ export const TurnMachine = setup({
         player.hand = [];
       }),
     ),
-    drawDisasterCard: assign(({ context }: { context: GameState }) =>
-      produce(context, (draft) => {
-        const disasterCard = draft.disasterMarket.deck[0];
-        draft.disasterMarket.deck = without(draft.disasterMarket.deck, disasterCard);
-        draft.disasterMarket.table.push(disasterCard);
-      }),
-    ),
-    addDisasterCard: assign(({ context }: { context: GameState }) =>
+    stageNoActionDisaster: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player });
-        const disasterCard = draft.disasterMarket.table[0];
+        const disasterCard = context.disasterMarket.deck[0];
 
         // TODO: Figure out what to do when disaster deck is empty
         if (!disasterCard || !player) return;
 
-        player.hand.push(disasterCard);
-        checkAndAssignExtinctionTile(draft);
-        draft.disasterMarket.table = draft.disasterMarket.table.slice(1);
+        draft.stage = {
+          eventType: "disaster",
+          cause: undefined,
+          effect: [disasterCard],
+        };
+
+        draft.disasterMarket.deck = draft.disasterMarket.deck.slice(1);
       }),
     ),
-    endTurn: assign(({ context }: { context: GameState }) =>
+    stageDuplicateElementsDisaster: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const player = find(draft.players, { uid: draft.turn.player });
+        const disasterCard = context.disasterMarket.deck[0];
+
+        // TODO: Figure out what to do when disaster deck is empty
+        if (!disasterCard || !player) return;
+
+        const duplicateElements = getDuplicateElements(context, 3);
+        const duplicateElementCards = player.hand
+          .filter((cards) => cards.name === duplicateElements[0])
+          .slice(0, 3) as ElementCard[];
+
+        draft.stage = {
+          eventType: "elementalDisaster",
+          cause: duplicateElementCards,
+          effect: [disasterCard],
+        };
+
+        player.hand = without(player.hand, ...duplicateElementCards);
+
+        draft.disasterMarket.deck = draft.disasterMarket.deck.slice(1);
+      }),
+    ),
+    stageAbilityRefresh: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const player = find(draft.players, { uid: draft.turn.player })!;
+        const availableAnimalBiomePairs = getAnimalBiomePairs(
+          player,
+          context.stage?.cause?.filter((gamePiece) => gamePiece.type === "animal") ?? [],
+        ).filter(
+          (animalBiomePair) =>
+            !context.turn.uidsUsedForAbilityRefresh.some((uid) =>
+              animalBiomePair.map((animal) => animal.uid).includes(uid),
+            ),
+        );
+
+        if (availableAnimalBiomePairs.length === 0) return;
+
+        draft.stage = {
+          eventType: "abilityRefresh",
+          cause: availableAnimalBiomePairs[0],
+          effect: undefined,
+        };
+
+        player.hand = without(player.hand, ...availableAnimalBiomePairs[0]);
+      }),
+    ),
+    stageExtinction: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const player = find(draft.players, { uid: draft.turn.player })!;
+        const disasterCards = player?.hand.filter((card) => card.type === "disaster");
+        const extinctionTile = context.extinctMarket.deck[0];
+
+        // TODO: Figure out what to do when extinction deck is empty
+        if (!extinctionTile) return;
+
+        draft.stage = {
+          eventType: "extinction",
+          cause: disasterCards,
+          effect: [extinctionTile],
+        };
+        draft.extinctMarket.deck = draft.extinctMarket.deck.slice(1);
+        player.hand = without(player.hand, ...disasterCards);
+      }),
+    ),
+    stageMassExtinction: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const player = find(draft.players, { uid: draft.turn.player })!;
+        const disasterCards = player?.hand.filter((card) => card.type === "disaster");
+        const extinctionTiles = context.extinctMarket.deck.slice(0, 3);
+
+        // TODO: Figure out what to do when extinction deck is empty
+        if (extinctionTiles.length === 0) return;
+
+        draft.stage = {
+          eventType: "massExtinction",
+          cause: disasterCards,
+          effect: extinctionTiles,
+        };
+        draft.extinctMarket.deck = draft.extinctMarket.deck.slice(0, 3);
+        player.hand = without(player.hand, ...disasterCards);
+      }),
+    ),
+    unstage: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const player = find(draft.players, { uid: draft.turn.player })!;
+
+        player.hand = concat(player.hand, context.stage?.cause ?? []);
+
+        if (context.stage?.effect !== undefined) {
+          const disasterCards = context.stage.effect.filter((card): card is DisasterCard => card.type === "disaster");
+          player.hand = concat(player.hand, disasterCards);
+
+          const extinctionTiles = context.stage.effect.filter(
+            (card): card is ExtinctionTile => card.type === "extinction",
+          );
+          if (extinctionTiles.length > 0) {
+            draft.extinctMarket.table.push(...extinctionTiles);
+          }
+        }
+
+        draft.stage = undefined;
+      }),
+    ),
+    drawCards: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         const currentPlayerIndex = context.players.findIndex((player) => player.uid === context.turn.player);
         const player = draft.players[currentPlayerIndex];
@@ -272,13 +377,18 @@ export const TurnMachine = setup({
           player.hand = concat(player.hand, player.deck.slice(0, remainingDraw));
           player.deck = player.deck.slice(remainingDraw);
         }
-
-        checkAndAssignExtinctionTile(draft);
-
+        draft.turn.phase = "draw";
+      }),
+    ),
+    endTurn: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const currentPlayerIndex = context.players.findIndex((player) => player.uid === context.turn.player);
         const nextPlayerIndex = (currentPlayerIndex + 1) % context.players.length;
+
         if (draft.turn.borrowedElement) {
           draft.elementMarket.deck = [...draft.elementMarket.deck, draft.turn.borrowedElement];
         }
+
         draft.turn = {
           player: context.players[nextPlayerIndex].uid,
           currentAbility: undefined,
@@ -293,6 +403,8 @@ export const TurnMachine = setup({
           boughtHabitat: false,
           uidsUsedForAbilityRefresh: [],
           selectedAbilityCard: undefined,
+          automaticEventChecks: [],
+          phase: "action",
         };
       }),
     ),
@@ -302,7 +414,10 @@ export const TurnMachine = setup({
         const ability = find(player.abilities, { uid: abilityUid });
         if (!ability) return;
 
-        const availableAnimalBiomePairs = getAnimalBiomePairs(player).filter(
+        const availableAnimalBiomePairs = getAnimalBiomePairs(
+          player,
+          context.stage?.cause?.filter((gamePiece) => gamePiece.type === "animal") ?? [],
+        ).filter(
           (animalBiomePair) =>
             !turn.uidsUsedForAbilityRefresh.some((uid) => animalBiomePair.map((animal) => animal.uid).includes(uid)),
         );
@@ -314,6 +429,17 @@ export const TurnMachine = setup({
           availableAnimalBiomePairs[0].map((animal) => animal.uid),
         );
         ability.isUsed = false;
+      }),
+    ),
+    markCheckAsDone: assign(({ context }: { context: GameState }, checkName: string) =>
+      produce(context, ({ turn }) => {
+        if (turn.automaticEventChecks === undefined) turn.automaticEventChecks = [];
+        turn.automaticEventChecks?.push(checkName);
+      }),
+    ),
+    setEndOfTurnPhase: assign(({ context }: { context: GameState }) =>
+      produce(context, ({ turn }) => {
+        turn.phase = "end";
       }),
     ),
 
@@ -328,7 +454,7 @@ export const TurnMachine = setup({
 }).createMachine({
   id: "turn",
   context: ({ input: { config, numberOfPlayers, seed } }) => spawnDeck(config, numberOfPlayers, seed),
-  initial: "buying",
+  initial: "checkingEventConditions",
 
   on: {
     iddqd: {
@@ -340,32 +466,189 @@ export const TurnMachine = setup({
   },
 
   states: {
-    endOfTurn: {
-      entry: { type: "discardCards" },
-      after: {
-        600: {
-          target: "buying",
-          actions: {
-            type: "endTurn",
+    endingTurn: {
+      entry: "setEndOfTurnPhase",
+      initial: "checkingEndHand",
+      states: {
+        checkingEndHand: {
+          always: "#turn.checkingEventConditions.preDraw",
+        },
+        drawing: {
+          entry: "discardCards",
+          after: {
+            600: { target: "ending", actions: "drawCards" },
+          },
+        },
+        ending: {
+          entry: "endTurn",
+          after: {
+            600: "#turn",
           },
         },
       },
     },
-    disaster: {
-      entry: "drawDisasterCard",
+    checkingEventConditions: {
+      initial: "main",
+      states: {
+        preDraw: {
+          always: [
+            {
+              target: "#turn.stagingEvent.noBuyDisaster",
+              guard: and([
+                "getsDidNotBuyDisaster",
+                ({ context }) => BuyMachineGuards.checkNotDone({ context }, "noBuyCheck"),
+              ]),
+            },
+            {
+              target: "#turn.stagingEvent.elementalDisaster",
+              guard: and([
+                "getsElementalDisaster",
+                ({ context }) => BuyMachineGuards.checkNotDone({ context }, "elementalDisasterCheck"),
+              ]),
+            },
+            {
+              target: "main",
+            },
+          ],
+        },
+        main: {
+          always: [
+            {
+              target: "#turn.stagingEvent.massExtinction",
+              guard: and([
+                "getsMassExtinction",
+                ({ context }) => BuyMachineGuards.checkNotDone({ context }, "extinctionCheck"),
+              ]),
+            },
+            {
+              target: "#turn.stagingEvent.extinction",
+              guard: and([
+                "getsExtinction",
+                ({ context }) => BuyMachineGuards.checkNotDone({ context }, "extinctionCheck"),
+              ]),
+            },
+            {
+              target: "#turn.stagingEvent.abilityRefresh",
+              guard: "canRefreshAbility",
+            },
+            {
+              target: "#turn.endingTurn.ending",
+              guard: "drawPhase",
+            },
+            {
+              target: "#turn.endingTurn.drawing",
+              guard: "endPhase",
+            },
+            {
+              target: "#turn.buying",
+              guard: "actionPhase",
+            },
+          ],
+        },
+      },
+    },
+    stagingEvent: {
       initial: "idle",
-      after: {
-        10: {
-          target: ".ready",
+      on: {
+        "user.click.token": {
+          target: ".abilityRefresh.awaitingConfirmation",
+          actions: { type: "refreshAbility", params: ({ event: { token } }) => token.uid },
         },
       },
       states: {
-        idle: {},
-        ready: {
-          entry: "addDisasterCard",
-          after: {
-            1200: {
-              target: "#turn.endOfTurn",
+        abilityRefresh: {
+          initial: "awaitingConfirmation",
+          entry: "stageAbilityRefresh",
+          states: {
+            awaitingConfirmation: {
+              on: {
+                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+            },
+            transitioning: {
+              after: {
+                1200: { target: "#turn.buying" },
+              },
+            },
+          },
+        },
+        elementalDisaster: {
+          initial: "awaitingConfirmation",
+          entry: "stageDuplicateElementsDisaster",
+          states: {
+            awaitingConfirmation: {
+              on: {
+                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+            },
+            transitioning: {
+              entry: {
+                type: "markCheckAsDone",
+                params: "elementalDisasterCheck",
+              },
+              after: {
+                1200: { target: "#turn.checkingEventConditions.preDraw" },
+              },
+            },
+          },
+        },
+        extinction: {
+          initial: "awaitingConfirmation",
+          entry: "stageExtinction",
+          states: {
+            awaitingConfirmation: {
+              on: {
+                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+            },
+            transitioning: {
+              entry: {
+                type: "markCheckAsDone",
+                params: "extinctionCheck",
+              },
+              after: {
+                1200: { target: "#turn.endingTurn.drawing" },
+              },
+            },
+          },
+        },
+        massExtinction: {
+          initial: "awaitingConfirmation",
+          entry: "stageMassExtinction",
+          states: {
+            awaitingConfirmation: {
+              on: {
+                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+            },
+            transitioning: {
+              entry: {
+                type: "markCheckAsDone",
+                params: "extinctionCheck",
+              },
+              after: {
+                1200: { target: "#turn.endingTurn" },
+              },
+            },
+          },
+        },
+        noBuyDisaster: {
+          initial: "awaitingConfirmation",
+          entry: "stageNoActionDisaster",
+          states: {
+            awaitingConfirmation: {
+              on: {
+                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+            },
+            transitioning: {
+              entry: {
+                type: "markCheckAsDone",
+                params: "noBuyCheck",
+              },
+              after: {
+                1200: { target: "#turn.checkingEventConditions.preDraw" },
+              },
             },
           },
         },
@@ -392,7 +675,7 @@ export const TurnMachine = setup({
             guard: "canRefreshAbility",
           },
         ],
-        "user.click.player.endTurn": [{ target: "disaster", guard: "getsDisaster" }, { target: "endOfTurn" }],
+        "user.click.player.endTurn": [{ target: "endingTurn" }],
         "user.click.market.deck.element": {
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },
           guard: and([
@@ -433,6 +716,7 @@ export const TurnMachine = setup({
           },
         ],
         "user.click.market.table.card": {
+          target: "#turn",
           actions: {
             type: "buyCard",
             params: ({ event: { card } }) => card,
@@ -458,7 +742,7 @@ export const TurnMachine = setup({
 
     cardAbility: {
       on: {
-        "user.click.*": { target: "buying", actions: "cancelAbilitySelection" },
+        "user.click.*": { target: "#turn", actions: "cancelAbilitySelection" },
         "user.click.cardToken": {
           target: "#turn.ability",
           actions: assign({
@@ -512,7 +796,7 @@ export const TurnMachine = setup({
         "ability.markAsUsed": {
           actions: "markAbilityAsUsed",
         },
-        "ability.cancel": { target: "buying", actions: "cancelAbilitySelection" },
+        "ability.cancel": { target: "#turn", actions: "cancelAbilitySelection" },
       },
 
       invoke: {
@@ -530,7 +814,7 @@ export const TurnMachine = setup({
 
         onDone: {
           reenter: true,
-          target: "buying",
+          target: "#turn",
         },
         onError: {
           reenter: true,

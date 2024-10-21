@@ -12,6 +12,7 @@ import {
   GamePieceAppearance,
   GamePieceAppearances,
   AbsentPieceTransform,
+  GamePiece,
 } from "./types";
 import {
   cardXOffset,
@@ -226,6 +227,7 @@ const calculateCardPositions = (gameState: GameState): GamePieceCoordsDict => {
     ...positionElementMarketCards(gameState),
     ...positionDisasterCards(gameState),
     ...positionPlayerCards(gameState),
+    ...positionStagedCards(gameState),
   };
 };
 
@@ -342,6 +344,61 @@ export const discardPositions = (gameState: GameState): Coordinate[] => {
   }
 
   return positions;
+};
+
+export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict => {
+  const cause = gameState.stage?.cause || [];
+  const effect = gameState.stage?.effect;
+
+  const pieceCoordinates = cause.reduce((acc, card: ElementCard | DisasterCard | AnimalCard, index: number) => {
+    let middleIndex = Math.floor((cause.length - 1) / 2);
+    if (cause.length === 2) middleIndex = 0;
+
+    acc[card.uid] = {
+      transform: {
+        position: {
+          x: (index - middleIndex) * 6,
+          y: (effect !== undefined ? 15 : 5) - Math.abs(index - middleIndex) * 3,
+          z: 50 - Math.abs(index - middleIndex),
+        },
+        rotation: {
+          x: 0,
+          y: 0,
+          z:
+            cause.length === 2
+              ? index === 0
+                ? Math.PI / 24
+                : -Math.PI / 24
+              : ((index - middleIndex) / middleIndex) * (Math.PI / 12) * -1,
+        },
+        initialPosition: disasterDeckPosition,
+        initialRotation: { x: 0, y: -Math.PI, z: 0 },
+      },
+    };
+
+    return acc;
+  }, {} as GamePieceCoordsDict);
+
+  effect?.forEach((gamePiece: GamePiece) => {
+    pieceCoordinates[gamePiece.uid] = {
+      transform: {
+        position: {
+          x: 0,
+          y: cause.length === 0 ? 5 : -10,
+          z: 50,
+        },
+        rotation: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+        initialPosition: disasterDeckPosition,
+        initialRotation: { x: 0, y: 0, z: 0 },
+      },
+    };
+  });
+
+  return pieceCoordinates;
 };
 
 export const positionAnimalCards = (gameState: GameState): GamePieceCoordsDict => {

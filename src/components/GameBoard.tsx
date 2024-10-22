@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Grid from "./Grid";
 import { useControls } from "leva";
@@ -13,6 +13,7 @@ import { GameStateProvider } from "@/context/GameStateProvider";
 import { DeckConfig } from "@/decks/schema";
 import { Stats } from "@react-three/drei";
 import { Leva } from "leva";
+import { debounce } from "lodash";
 
 function GameBoard() {
   const { showGrid, gridDivisions, orbitControls, FPS } = useControls({
@@ -67,10 +68,17 @@ function GameBoard() {
 
 export default () => {
   const searchParams = new URLSearchParams(window.location.search);
-  const seed = searchParams.get("seed") ?? new Date().toString();
-  const { numberOfPlayers } = useControls({
+  const urlSeed = searchParams.get("seed") ?? new Date().toString();
+
+  const { numberOfPlayers, difficulty, seed } = useControls({
     seed: {
-      value: seed,
+      value: urlSeed,
+    },
+    difficulty: {
+      value: 1,
+      min: 1,
+      max: 6,
+      step: 1,
     },
     numberOfPlayers: {
       value: 3,
@@ -79,10 +87,24 @@ export default () => {
       step: 1,
     },
   });
-  const key = `${numberOfPlayers}-${seed}`;
+
+  const [debouncedKey, setDebouncedKey] = useState("");
+
+  const debouncedSetKey = useMemo(() => debounce((newKey: string) => setDebouncedKey(newKey), 1500), []);
+
+  // Update the key whenever the controls change
+  useEffect(() => {
+    const newKey = `${numberOfPlayers}-${seed}-${difficulty}`;
+    debouncedSetKey(newKey);
+  }, [numberOfPlayers, seed, difficulty, debouncedSetKey]);
 
   return (
-    <GameStateProvider key={key} numberOfPlayers={numberOfPlayers} seed={seed}>
+    <GameStateProvider
+      key={debouncedKey}
+      numberOfPlayers={numberOfPlayers}
+      seed={seed}
+      difficulty={difficulty as 1 | 2 | 3 | 4 | 5 | 6}
+    >
       <GameBoard />
     </GameStateProvider>
   );

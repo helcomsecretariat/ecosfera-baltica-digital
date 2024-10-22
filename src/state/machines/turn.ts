@@ -10,6 +10,7 @@ import {
   DisasterCard,
   ElementCard,
   ExtinctionTile,
+  GameConfig,
   GameState,
   PlantCard,
 } from "@/state/types";
@@ -25,9 +26,8 @@ export const TurnMachine = setup({
   types: {
     context: {} as GameState,
     input: {} as {
-      config: DeckConfig;
-      numberOfPlayers: number;
-      seed: string;
+      deckConfig: DeckConfig;
+      gameConfig: GameConfig;
     },
     events: {} as
       | { type: "user.click.player.endTurn" }
@@ -370,7 +370,7 @@ export const TurnMachine = setup({
         player.deck = player.deck.slice(player.hand.length);
 
         if (player.hand.length < 4) {
-          player.deck = shuffle(player.discard, context.seed);
+          player.deck = shuffle(player.discard, context.config.seed);
           player.discard = [];
 
           const remainingDraw = 4 - player.hand.length;
@@ -453,7 +453,7 @@ export const TurnMachine = setup({
   },
 }).createMachine({
   id: "turn",
-  context: ({ input: { config, numberOfPlayers, seed } }) => spawnDeck(config, numberOfPlayers, seed),
+  context: ({ input: { deckConfig, gameConfig } }) => spawnDeck(deckConfig, gameConfig),
   initial: "checkingEventConditions",
 
   on: {

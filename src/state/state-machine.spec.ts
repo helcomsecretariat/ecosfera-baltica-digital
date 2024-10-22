@@ -51,7 +51,10 @@ let actor: Actor<typeof TurnMachine>;
 
 beforeEach(() => {
   actor = createActor(TurnMachine, {
-    input: { config: config as DeckConfig, numberOfPlayers: 2, seed: "42" },
+    input: {
+      deckConfig: config as DeckConfig,
+      gameConfig: { playerCount: 2, seed: "42", difficulty: 3, playersPosition: "around", useSpecialCards: false },
+    },
   });
 
   actor.start();

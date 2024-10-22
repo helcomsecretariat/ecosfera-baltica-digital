@@ -7,11 +7,13 @@ import { ActionEmmiters, ActionTesters, createEmmiters, createTesters } from "@/
 import { inspect } from "@/state/machines/utils";
 import { TurnMachine } from "@/state/machines/turn";
 import { toUiState } from "@/state/positioner";
+import type { DeckConfig } from "@/decks/schema";
 
 interface StateProviderProps {
   children: ReactNode;
   numberOfPlayers: number;
   seed: string;
+  difficulty: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 interface StateContextType {
@@ -24,14 +26,12 @@ interface StateContextType {
 
 const stateContext = createContext<StateContextType | undefined>(undefined);
 
-export const GameStateProvider = ({ children, numberOfPlayers, seed }: StateProviderProps) => {
+export const GameStateProvider = ({ children, numberOfPlayers, seed, difficulty }: StateProviderProps) => {
   const [snap, send] = useMachine(TurnMachine, {
     inspect,
     input: {
-      //@ts-expect-error TS can infer enums from JSON files. Deck validation is done in the schema
-      config,
-      numberOfPlayers,
-      seed,
+      deckConfig: config as DeckConfig,
+      gameConfig: { playerCount: numberOfPlayers, seed, difficulty, useSpecialCards: false, playersPosition: "around" },
     },
   });
   const emit = useMemo(() => createEmmiters(send), [send]);
@@ -52,8 +52,6 @@ export const GameStateProvider = ({ children, numberOfPlayers, seed }: StateProv
   };
   return <stateContext.Provider value={value}>{children}</stateContext.Provider>;
 };
-
-GameStateProvider.whyDidYouRender = true;
 
 export const useGameState = () => {
   const context = useContext(stateContext);

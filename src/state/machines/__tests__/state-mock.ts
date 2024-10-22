@@ -139,7 +139,6 @@ const player: PlayerState = {
 };
 
 export const gameState: GameState = {
-  seed: "test-seed",
   turn: {
     player: player.uid,
     currentAbility: undefined,
@@ -162,4 +161,11 @@ export const gameState: GameState = {
   disasterMarket: { type: "disaster", deck: [], table: [] },
   biomeMarket: { type: "biome", deck: [], table: [] },
   extinctMarket: { type: "extinction", deck: [], table: [] },
+  config: {
+    seed: "test-seed",
+    playerCount: 1,
+    difficulty: 3,
+    useSpecialCards: false,
+    playersPosition: "around",
+  },
 };

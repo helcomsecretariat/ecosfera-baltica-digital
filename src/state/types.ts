@@ -21,7 +21,6 @@ export type PlayerUID = UID<"player">;
 export type GamePieceUID = AbilityUID | AnimalUID | PlantUID | ElementUID | DisasterUID | BiomeUID | ExtinctionUID;
 
 export interface GameState {
-  seed: string;
   turn: {
     player: PlayerState["uid"];
     currentAbility?: {
@@ -54,6 +53,15 @@ export interface GameState {
     cause: DisasterCard[] | ElementCard[] | AnimalCard[] | undefined;
     effect: DisasterCard[] | ExtinctionTile[] | undefined;
   };
+  config: GameConfig;
+}
+
+export interface GameConfig {
+  seed: string;
+  playerCount: number;
+  difficulty: 1 | 2 | 3 | 4 | 5 | 6;
+  useSpecialCards: boolean;
+  playersPosition: "around" | "sameSide";
 }
 
 export interface PlayerState {
@@ -201,6 +209,7 @@ export type GamePieceCoords = {
 export type GamePieceAppearance = GamePieceCoords & {
   duration: number;
   delay: number;
+  doesFlip?: boolean;
 };
 
 export interface GamePieceAppearances {

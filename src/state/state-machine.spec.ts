@@ -9,6 +9,7 @@ const initialContext: Partial<GameState> = {
   players: [
     {
       uid: "player-0" as PlayerUID,
+      name: "",
       deck: [],
       hand: [],
       discard: [],
@@ -53,7 +54,14 @@ beforeEach(() => {
   actor = createActor(TurnMachine, {
     input: {
       deckConfig: config as DeckConfig,
-      gameConfig: { playerCount: 2, seed: "42", difficulty: 3, playersPosition: "around", useSpecialCards: false },
+      gameConfig: {
+        playerCount: 2,
+        seed: "42",
+        difficulty: 3,
+        playersPosition: "around",
+        useSpecialCards: false,
+        playerNames: ["", ""],
+      },
     },
   });
 

@@ -1,20 +1,13 @@
 import { createContext, ReactNode, useContext, useLayoutEffect, useMemo, useRef } from "react";
 import config from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
-import { GameState, UiState } from "@/state/types";
+import { GameConfig, GameState, UiState } from "@/state/types";
 import { type EventFromLogic } from "xstate";
 import { ActionEmmiters, ActionTesters, createEmmiters, createTesters } from "@/state/action-handlers";
 import { inspect } from "@/state/machines/utils";
 import { TurnMachine } from "@/state/machines/turn";
 import { toUiState } from "@/state/positioner";
 import type { DeckConfig } from "@/decks/schema";
-
-interface StateProviderProps {
-  children: ReactNode;
-  numberOfPlayers: number;
-  seed: string;
-  difficulty: 1 | 2 | 3 | 4 | 5 | 6;
-}
 
 interface StateContextType {
   state: GameState;
@@ -26,12 +19,25 @@ interface StateContextType {
 
 const stateContext = createContext<StateContextType | undefined>(undefined);
 
-export const GameStateProvider = ({ children, numberOfPlayers, seed, difficulty }: StateProviderProps) => {
+export const GameStateProvider = ({
+  children,
+  playerCount,
+  seed,
+  difficulty,
+  playerNames,
+}: GameConfig & { children: ReactNode }) => {
   const [snap, send] = useMachine(TurnMachine, {
     inspect,
     input: {
       deckConfig: config as DeckConfig,
-      gameConfig: { playerCount: numberOfPlayers, seed, difficulty, useSpecialCards: false, playersPosition: "around" },
+      gameConfig: {
+        playerCount: playerCount,
+        seed,
+        difficulty,
+        useSpecialCards: false,
+        playersPosition: "around",
+        playerNames,
+      },
     },
   });
   const emit = useMemo(() => createEmmiters(send), [send]);

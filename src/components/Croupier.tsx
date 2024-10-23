@@ -16,6 +16,7 @@ import { BuyMachineGuards } from "@/state/machines/guards";
 import CardAbilityTiles from "@/components/CardAbilityTiles";
 import Stage from "@/components/Stage";
 import Tile from "./Tile";
+import TextWithShadow from "@/components/shapes/TextWithShadow";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -107,6 +108,19 @@ const Croupier = () => {
       {gameState.players.map((player) => (
         <React.Fragment key={player.uid + "HUD"}>
           <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
+            <TextWithShadow
+              position={[-6, 10, 0]}
+              fontSize={5}
+              color="white"
+              shadowColor="white"
+              anchorX="left"
+              anchorY="bottom"
+              textAlign="left"
+            >
+              {/* removing wierd space due to emoji */}
+              {player.name.replace(" ", "")}
+            </TextWithShadow>
+
             <Deck
               gamePieceAppearance={{
                 ...uiState.deckPositions[`${player.uid}PlayerDeck`],

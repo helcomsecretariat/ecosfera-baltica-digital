@@ -87,10 +87,12 @@ export interface GameConfig {
   difficulty: 1 | 2 | 3 | 4 | 5 | 6;
   useSpecialCards: boolean;
   playersPosition: "around" | "sameSide";
+  playerNames: string[];
 }
 
 export interface PlayerState {
   uid: PlayerUID;
+  name: string;
   deck: Card[];
   hand: Card[];
   discard: Card[];

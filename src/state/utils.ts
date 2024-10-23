@@ -1,8 +1,12 @@
 import { Card, GameState, PlayerState, UID } from "@/state/types";
 import { find, isMatch } from "lodash-es";
 
+// algorith need a lenghty seed to work somewhat OK
+// so prefix is used to garantee that the seed is long enough
+const SEED_PREFIX = "PHd6HpwslW7Q";
+
 export function shuffle<T>(items: T[], seed: string): T[] {
-  const random = rng(seed);
+  const random = rng(SEED_PREFIX + seed);
 
   for (let i = items.length - 1; i > 0; i--) {
     const j = Math.floor(random() * (i + 1));
@@ -49,4 +53,24 @@ export function findOwner(state: GameState, card: Card): PlayerState["uid"] {
 
 export function createUID<T extends string>(prefix: T, id: string): UID<T> {
   return `${prefix}-${id}` as UID<T>;
+}
+
+export function getAngleSector(rawAngle: number, numSectors: number): number {
+  return Math.floor((rawAngle / (2 * Math.PI)) * numSectors) % numSectors;
+}
+
+export function getDirectionArrow(rawAngle: number): string {
+  const sector = getAngleSector(rawAngle, 8);
+  return (
+    {
+      0: "→",
+      1: "↗",
+      2: "↑",
+      3: "↖",
+      4: "←",
+      5: "↙",
+      6: "↓",
+      7: "↘",
+    }[sector] ?? "?"
+  );
 }

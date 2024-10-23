@@ -28,15 +28,16 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
   const appearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
   const [isPresent, safeToRemove] = usePresence();
   const isDisappearing = !appearance.transform.position;
+  const zCoord = appearance.transform.position?.z;
 
   const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);
   const mainDuration = (2 / animSpeed) * (appearance.duration / baseDuration);
   const mainDelay = (2 / animSpeed) * (appearance.delay / baseDuration);
   const cardFlipDuration = mainDuration * 0.3;
-  const zDuration = mainDuration + mainDelay + cardFlipDuration * 3;
-  const flipDuration = mainDuration + cardFlipDuration;
-  const flipDelay = mainDuration + mainDelay;
+  const zDuration = mainDuration + cardFlipDuration * 3;
+  const flipDuration = appearance.doesFlip ? mainDuration + cardFlipDuration : 0;
+  const flipDelay = appearance.doesFlip ? mainDuration + mainDelay : 0;
   const totalDuration = mainDelay + mainDuration + Math.max(mainDelay + zDuration, flipDelay + flipDuration);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
     <motion.mesh
       ref={ref}
       onClick={handleClick}
-      position-z={appearance.transform.position?.z}
+      position-z={zCoord}
       transition={{
         ease,
         duration: Math.max(baseDuration, mainDuration),
@@ -75,7 +76,7 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
       animate={{
         x: appearance.transform.position?.x,
         y: appearance.transform.position?.y,
-        z: [appearance.transform.position?.z, 8, 8, appearance.transform.position?.z],
+        z: zCoord > 8 ? zCoord : [zCoord, 8, 8, zCoord],
         rotateX: appearance.transform.rotation?.x,
         rotateY: appearance.transform.rotation?.y,
         rotateZ: appearance.transform.rotation?.z,

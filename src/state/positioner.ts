@@ -28,6 +28,7 @@ import {
 import { cardHeight, cardWidth } from "@/constants/card";
 import { BuyMachineGuards } from "./machines/guards";
 import { baseDuration, deckAnimationTimings } from "@/constants/animation";
+import { getAngleSector, getDirectionArrow } from "@/state/utils";
 
 const zeroRotation = { x: 0, y: 0, z: 0 };
 const yFlipRotation = { y: -Math.PI };
@@ -61,7 +62,7 @@ function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict)
     return Math.sqrt(Math.pow(posA.x - posB.x, 2) + Math.pow(posA.y - posB.y, 2));
   };
 
-  const numBins = 8;
+  const numBins = 3;
 
   type MotionDataEntry = {
     key: string;
@@ -73,6 +74,7 @@ function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict)
     startPoint: Coordinate;
     endPoint: Coordinate;
     isDisappearing?: boolean;
+    doesFlip: boolean;
   };
 
   const motionData: MotionDataEntry[] = [];
@@ -109,6 +111,10 @@ function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict)
     const curInitPos = currentApp.transform.initialPosition;
     const curExitPos = currentApp.transform.exitPosition;
     const prevPos = prevApp?.transform.position;
+    const prevRot = prevApp?.transform.rotation;
+    const curRot = currentApp.transform.rotation;
+    const curInitRot = currentApp.transform.initialRotation;
+    const curExitRot = currentApp.transform.exitRotation;
 
     let distance = 0;
     let deltaX = 0;
@@ -116,17 +122,24 @@ function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict)
     let startPoint: Coordinate = { x: 0, y: 0, z: 0 };
     let endPoint: Coordinate = { x: 0, y: 0, z: 0 };
     let isDisappearing = false;
+    let doesFlip = false;
 
     if (curPos && curInitPos && !prevPos) {
       startPoint = curInitPos;
       endPoint = curPos;
+      // Check for flip between initial and current rotation
+      doesFlip = curInitRot && curRot && curInitRot.y !== curRot.y;
     } else if (!curPos && prevPos && curExitPos) {
       startPoint = prevPos;
       endPoint = curExitPos;
       isDisappearing = true;
+      // Check for flip between previous and exit rotation
+      doesFlip = prevRot && curExitRot && prevRot.y !== curExitRot.y;
     } else if (prevPos && curPos) {
       startPoint = prevPos;
       endPoint = curPos;
+      // Check for flip between previous and current rotation
+      doesFlip = prevRot && curRot && prevRot.y !== curRot.y;
     }
     distance = calcDist(startPoint, endPoint);
     deltaX = startPoint.x - endPoint.x;
@@ -144,6 +157,7 @@ function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict)
       startPoint,
       endPoint,
       isDisappearing,
+      doesFlip,
     });
   });
 
@@ -151,7 +165,7 @@ function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict)
   const groups = new Map<number, typeof motionData>();
 
   motionData.forEach((data) => {
-    const binIndex = Math.floor(((data.angle + Math.PI) / (2 * Math.PI)) * numBins) % numBins;
+    const binIndex = getAngleSector(data.angle, numBins);
     if (!groups.has(binIndex)) {
       groups.set(binIndex, []);
     }
@@ -187,7 +201,7 @@ function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict)
 
     console.log("---------");
     group.forEach((data) => {
-      if (data.distance) console.log("data.key", data.key);
+      if (data.distance) console.log(getDirectionArrow(data.angle), data.key);
 
       // Safeguard against division by zero
       const intraGroupDelay =
@@ -202,14 +216,17 @@ function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict)
         ...data.cardAppearance,
         delay: totalDelay,
         duration,
+        doesFlip: data.doesFlip,
       };
 
       const endTime = totalDelay + duration;
       groupMaxEndTime = Math.max(groupMaxEndTime, endTime);
     });
 
+    const direction = getDirectionArrow(group[0].angle);
+
     console.log(
-      `Group ${groupIndex} (bin: ${binIndex}) - Max end time in group: ${groupMaxEndTime}, Cumulative delay before this group: ${cumulativeDelay}`,
+      `Group ${groupIndex} (Direction: ${direction}) - Max end time in group: ${groupMaxEndTime}, Cumulative delay before this group: ${cumulativeDelay}`,
     );
 
     cumulativeDelay = groupMaxEndTime;

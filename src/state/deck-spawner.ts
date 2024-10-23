@@ -1,5 +1,5 @@
 import type { DeckConfig } from "@/decks/schema";
-import type { GamePiece, GameState, Market, PieceToConfig, PlayerState } from "./types";
+import type { GameConfig, GamePiece, GameState, Market, PieceToConfig, PlayerState } from "./types";
 import { shuffle } from "./utils";
 import { Croupier } from "./croupier";
 import { entries, filter, pull, without } from "lodash-es";
@@ -22,25 +22,26 @@ function prepareMarket<T extends GamePiece>(items: T[], initialTableSize = 0, se
   };
 }
 
-export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): GameState {
-  const croupier = new Croupier();
+export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameState {
+  const { seed, playerCount } = gameConfig;
+  const croupier = new Croupier(deckConfig, gameConfig);
 
-  const plants = spawnAllPieces(config.plants, croupier.spawnPlantCards.bind(croupier));
-  const animals = spawnAllPieces(config.animals, croupier.spawnAnimalCards.bind(croupier));
-  const elements = spawnAllPieces(config.elements, croupier.spawnElementCards.bind(croupier));
-  const biomes = spawnAllPieces(config.biomes, croupier.spawnBiomeTiles.bind(croupier));
-  const disasters = spawnAllPieces(config.disasters, croupier.spawnDisasterCards.bind(croupier));
-  const extinctions = spawnAllPieces(config.extinctions, croupier.spawnExtinctionTiles.bind(croupier));
+  const plants = spawnAllPieces(deckConfig.plants, croupier.spawnPlantCards.bind(croupier));
+  const animals = spawnAllPieces(deckConfig.animals, croupier.spawnAnimalCards.bind(croupier));
+  const elements = spawnAllPieces(deckConfig.elements, croupier.spawnElementCards.bind(croupier));
+  const biomes = spawnAllPieces(deckConfig.biomes, croupier.spawnBiomeTiles.bind(croupier));
+  const disasters = spawnAllPieces(deckConfig.disasters, croupier.spawnDisasterCards.bind(croupier));
+  const extinctions = spawnAllPieces(deckConfig.extinctions, croupier.spawnExtinctionTiles.bind(croupier));
 
   const players = Array(playerCount)
     .fill(null)
     .map((_, index) => {
       let deck = [
-        ...entries(config.per_player.elements).flatMap(([name, { count = 1 }]) =>
-          // @ts-expect-error TS con't figure out count is a number
+        ...entries(deckConfig.per_player.elements).flatMap(([name, { count = 1 }]) =>
+          // @ts-expect-error TS can't figure out count is a number
           filter(elements, { name }).slice(0, count),
         ),
-        ...entries(config.per_player.disasters).flatMap(([name, { count = 1 }]) =>
+        ...entries(deckConfig.per_player.disasters).flatMap(([name, { count = 1 }]) =>
           // @ts-expect-error TS con't figure out count is a number
           filter(disasters, { name }).slice(0, count),
         ),
@@ -57,12 +58,11 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): Ga
         deck: without(deck, ...hand),
         hand,
         discard: [],
-        abilities: spawnAllPieces(config.per_player.abilities, croupier.spawnAbilityTiles.bind(croupier)),
+        abilities: spawnAllPieces(deckConfig.per_player.abilities, croupier.spawnAbilityTiles.bind(croupier)),
       } as PlayerState;
     });
 
   return {
-    seed,
     turn: {
       player: players[0].uid,
       currentAbility: undefined,
@@ -86,5 +86,6 @@ export function spawnDeck(config: DeckConfig, playerCount = 1, seed: string): Ga
     biomeMarket: prepareMarket(biomes, 0, seed),
     disasterMarket: prepareMarket(disasters, 0, seed),
     stage: undefined,
+    config: gameConfig,
   };
 }

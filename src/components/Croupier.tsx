@@ -1,7 +1,7 @@
 import { default as CardComponent } from "./Card";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { AnimalCard, Card, DisasterCard, ElementCard, ExtinctionTile, PlantCard } from "@/state/types";
+import { AnimalCard, HabitatTile, Card, DisasterCard, ElementCard, ExtinctionTile, PlantCard } from "@/state/types";
 import { cardWidth } from "@/constants/card";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
@@ -140,18 +140,23 @@ const Croupier = () => {
       {/* Stage */}
       <Stage key="stage" />
       {[...(gameState.stage?.cause ?? []), ...(gameState.stage?.effect ?? [])].map(
-        (card: DisasterCard | ElementCard | AnimalCard | ExtinctionTile) => {
+        (card: DisasterCard | ElementCard | AnimalCard | ExtinctionTile | HabitatTile) => {
           if (!uiState.cardPositions[card.uid]) {
             return;
           }
 
           if (card.type === "extinction") {
             return (
+              <Tile key={card.uid} color="#c3b091" position={uiState.cardPositions[card.uid].transform.position} />
+            );
+          }
+          if (card.type === "habitat") {
+            return (
               <Tile
                 key={card.uid}
-                color="#c3b091"
+                name={card.name}
+                color="#2cba16"
                 position={uiState.cardPositions[card.uid].transform.position}
-                rotation={{ x: -Math.PI / 2, y: 0, z: 0 }}
               />
             );
           }

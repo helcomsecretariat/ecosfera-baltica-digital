@@ -29,24 +29,24 @@ function deckItemConfig<T extends ZodRawShape>(shape = {} as T) {
 
 const ElementConfigSchema = deckItemConfig();
 const AbilityConfigSchema = deckItemConfig();
-const BiomeConfigSchema = deckItemConfig();
+const HabitatConfigSchema = deckItemConfig();
 const ExtinctionConfigSchema = deckItemConfig();
 const DisasterConfigSchema = deckItemConfig();
 
 const PlantConfigSchema = deckItemConfig({
   elements: z.array(z.string()),
-  biomes: z.array(z.string()),
+  habitats: z.array(z.string()),
   abilities: z.array(abilityNameSchema),
   flora_type: floraTypeSchema,
 });
 
 const AnimalConfigSchema = deckItemConfig({
-  biomes: z.array(z.string()),
+  habitats: z.array(z.string()),
   abilities: z.array(abilityNameSchema),
   fauna_type: faunaTypeSchema,
 });
 
-function getRelatedFeildRefiner(
+function getRelatedFieldRefiner(
   items: string[],
   relatedField: string,
 ): [(data: Record<string, unknown>) => boolean, (data: Record<string, unknown>) => { message: string }] {
@@ -83,20 +83,20 @@ const DeckConfigSchema = z
     elements: z.record(ElementConfigSchema),
     plants: z.record(PlantConfigSchema),
     animals: z.record(AnimalConfigSchema),
-    biomes: z.record(BiomeConfigSchema),
+    habitats: z.record(HabitatConfigSchema),
     extinctions: z.record(ExtinctionConfigSchema),
     disasters: z.record(DisasterConfigSchema),
   })
-  .refine(...getRelatedFeildRefiner(["animals", "plants"], "biomes"))
-  .refine(...getRelatedFeildRefiner(["animals", "plants"], "abilities"))
-  .refine(...getRelatedFeildRefiner(["plants"], "elements"));
+  .refine(...getRelatedFieldRefiner(["animals", "plants"], "habitats"))
+  .refine(...getRelatedFieldRefiner(["animals", "plants"], "abilities"))
+  .refine(...getRelatedFieldRefiner(["plants"], "elements"));
 
 export type DeckConfig = z.infer<typeof DeckConfigSchema>;
 export type AbilityConfig = z.infer<typeof AbilityConfigSchema>;
 export type PlantConfig = z.infer<typeof PlantConfigSchema>;
 export type AnimalConfig = z.infer<typeof AnimalConfigSchema>;
 export type ElementConfig = z.infer<typeof ElementConfigSchema>;
-export type BiomeConfig = z.infer<typeof BiomeConfigSchema>;
+export type HabitatConfig = z.infer<typeof HabitatConfigSchema>;
 export type ExtinctionConfig = z.infer<typeof ExtinctionConfigSchema>;
 export type DisasterConfig = z.infer<typeof DisasterConfigSchema>;
 

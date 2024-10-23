@@ -15,6 +15,7 @@ const Stage = () => {
     massExtinction: "Mass extinction!",
     elementalDisaster: "Elemental disaster!",
     abilityRefresh: "Ability refresh!",
+    habitatUnlock: "Habitats unlocked!",
   };
 
   return (

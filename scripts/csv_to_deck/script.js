@@ -52,7 +52,7 @@ function processRow(row) {
   if (speciesName) {
     let speciesData = {
       elements: [],
-      biomes: [],
+      habitats: [],
       abilities: [],
       [catName]: row["Category"].trim().toLowerCase().replace(/\*/g, ""),
     };
@@ -67,7 +67,7 @@ function processRow(row) {
     // Add habitats
     habitatColumns.forEach((col) => {
       if (row[col].trim() !== "") {
-        speciesData.biomes.push(col.toLowerCase());
+        speciesData.habitats.push(col.toLowerCase());
       }
     });
 

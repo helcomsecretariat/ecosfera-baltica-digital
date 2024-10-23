@@ -6,7 +6,7 @@ import { deckAnimationTimings } from "@/constants/animation";
 
 const Tile = ({
   position,
-  rotation = { x: 0, y: 0, z: 0 },
+  rotation = { x: -Math.PI / 2, y: 0, z: 0 },
   color,
   name = "",
   onClick,
@@ -36,7 +36,7 @@ const Tile = ({
     >
       <cylinderGeometry args={[tileSize, tileSize, 0.1, 6, 1]} />
       <meshBasicMaterial color={color} opacity={opacity} transparent />
-      <Text fontSize={1} color="black" rotation={[1.57, 0, 0]} position={[0, -0.1, 0]}>
+      <Text fontSize={1} color="black" rotation={[Math.PI / 2, 0, 0]} position={[0, -0.1, 0]}>
         {name}
       </Text>
     </GameElement>

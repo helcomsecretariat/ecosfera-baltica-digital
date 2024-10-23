@@ -66,7 +66,7 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
           </mesh>
         ))}
         {/* @ts-expect-error TS is sad someties */}
-        {card.biomes?.map((name, index) => (
+        {card.habitats?.map((name, index) => (
           <React.Fragment key={index + name}>
             <mesh
               rotation={[Math.PI / 2, Math.PI, 0]}

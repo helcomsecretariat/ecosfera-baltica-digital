@@ -1,28 +1,36 @@
-import { AnimalCard, GameState, PlayerState } from "@/state/types";
-import { concat, find, intersection } from "lodash";
+import { AnimalCard, GameState } from "@/state/types";
+import { find, intersection } from "lodash";
 
-export const getAnimalBiomePairs = (player: PlayerState, stagedAnimalCards: AnimalCard[]): AnimalCard[][] => {
-  const animalCards = [...player.hand, ...stagedAnimalCards].filter((card) => card.type === "animal") as AnimalCard[];
-  const animalCardBiomePairs = [];
+export const getAnimalHabitatPairs = (animalCards: AnimalCard[]): AnimalCard[][] => {
+  const animalCardHabitatPairs = [];
 
   for (let i = 0; i < animalCards.length; i++) {
     for (let j = i + 1; j < animalCards.length; j++) {
-      if (intersection(animalCards[i].biomes, animalCards[j].biomes).length > 0) {
-        animalCardBiomePairs.push([animalCards[i], animalCards[j]]);
+      if (intersection(animalCards[i].habitats, animalCards[j].habitats).length > 0) {
+        animalCardHabitatPairs.push([animalCards[i], animalCards[j]]);
       }
     }
   }
 
-  return animalCardBiomePairs;
+  return animalCardHabitatPairs;
 };
 
-export const checkAndAssignExtinctionTile = (gameState: GameState) => {
-  const player = gameState.players.find((player) => player.uid === gameState.turn.player)!;
+export const getSharedHabitats = (animalCards: AnimalCard[]): string[] => {
+  const habitatCounts: { [key: string]: number } = {};
 
-  if (player.hand.filter((card) => card.type === "disaster").length > 2 && gameState.extinctMarket.deck.length !== 0) {
-    gameState.extinctMarket.table = concat(gameState.extinctMarket.table, gameState.extinctMarket.deck[0]);
-    gameState.extinctMarket.deck = gameState.extinctMarket.deck.slice(1);
-  }
+  animalCards.forEach((animalCard) => {
+    animalCard.habitats.forEach((habitat) => {
+      if (habitatCounts[habitat]) {
+        habitatCounts[habitat] += 1;
+      } else {
+        habitatCounts[habitat] = 1;
+      }
+    });
+  });
+
+  return Object.entries(habitatCounts)
+    .filter(([_, count]) => count > 1)
+    .map(([key]) => key);
 };
 
 export const getDuplicateElements = (gameState: GameState, numberOfDuplicates: number) => {

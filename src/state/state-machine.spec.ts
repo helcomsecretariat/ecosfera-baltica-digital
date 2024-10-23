@@ -35,9 +35,9 @@ const initialContext: Partial<GameState> = {
     deck: [], // deck should be filled with disaster cards in real context
     table: [],
   },
-  biomeMarket: {
-    type: "biome",
-    deck: [], // deck should be filled with biome tiles in real context
+  habitatMarket: {
+    type: "habitat",
+    deck: [], // deck should be filled with habitat tiles in real context
     table: [],
   },
   extinctMarket: {

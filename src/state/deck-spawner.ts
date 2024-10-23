@@ -29,7 +29,7 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
   const plants = spawnAllPieces(deckConfig.plants, croupier.spawnPlantCards.bind(croupier));
   const animals = spawnAllPieces(deckConfig.animals, croupier.spawnAnimalCards.bind(croupier));
   const elements = spawnAllPieces(deckConfig.elements, croupier.spawnElementCards.bind(croupier));
-  const biomes = spawnAllPieces(deckConfig.biomes, croupier.spawnBiomeTiles.bind(croupier));
+  const habitats = spawnAllPieces(deckConfig.habitats, croupier.spawnHabitatTiles.bind(croupier));
   const disasters = spawnAllPieces(deckConfig.disasters, croupier.spawnDisasterCards.bind(croupier));
   const extinctions = spawnAllPieces(deckConfig.extinctions, croupier.spawnExtinctionTiles.bind(croupier));
 
@@ -74,7 +74,7 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
       borrowedLimit: 1,
       boughtAnimal: false,
       boughtPlant: false,
-      boughtHabitat: false,
+      unlockedHabitat: false,
       uidsUsedForAbilityRefresh: [],
       phase: "action",
     },
@@ -83,7 +83,7 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
     animalMarket: prepareMarket(animals, 4, seed),
     elementMarket: prepareMarket(elements, 0, seed),
     extinctMarket: prepareMarket(extinctions, 0, seed),
-    biomeMarket: prepareMarket(biomes, 0, seed),
+    habitatMarket: prepareMarket(habitats, 0, seed),
     disasterMarket: prepareMarket(disasters, 0, seed),
     stage: undefined,
     config: gameConfig,

@@ -396,11 +396,11 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
     return acc;
   }, {} as GamePieceCoordsDict);
 
-  effect?.forEach((gamePiece: GamePiece) => {
+  effect?.forEach((gamePiece: GamePiece, index) => {
     pieceCoordinates[gamePiece.uid] = {
       transform: {
         position: {
-          x: 0,
+          x: 0 + index * 5,
           y: cause.length === 0 ? 5 : -10,
           z: 50,
         },

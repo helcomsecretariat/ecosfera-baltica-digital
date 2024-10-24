@@ -132,6 +132,7 @@ export const plant_najas: PlantCard = {
 
 const player: PlayerState = {
   uid: createTestUID("player"),
+  name: "",
   deck: [],
   hand: [],
   discard: [],
@@ -167,5 +168,6 @@ export const gameState: GameState = {
     difficulty: 3,
     useSpecialCards: false,
     playersPosition: "around",
+    playerNames: [""],
   },
 };

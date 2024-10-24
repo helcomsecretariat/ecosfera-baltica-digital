@@ -55,6 +55,7 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
 
       return {
         uid: `player-${index}` as PlayerState["uid"],
+        name: gameConfig.playerNames[index],
         deck: without(deck, ...hand),
         hand,
         discard: [],

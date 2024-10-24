@@ -10,6 +10,7 @@ const gameConfig: GameConfig = {
   difficulty: 3,
   useSpecialCards: false,
   playersPosition: "around",
+  playerNames: [""],
 };
 
 describe("game state", () => {

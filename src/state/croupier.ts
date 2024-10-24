@@ -1,8 +1,8 @@
 import type {
   AbilityConfig,
   AnimalConfig,
-  BiomeConfig,
   DeckConfig,
+  HabitatConfig,
   DisasterConfig,
   ExtinctionConfig,
   PlantConfig,
@@ -10,11 +10,11 @@ import type {
 import {
   AbilityTile,
   AnimalCard,
-  BiomeTile,
   DisasterCard,
   ElementCard,
   ExtinctionTile,
   GameConfig,
+  HabitatTile,
   PlantCard,
 } from "./types";
 import { createUID } from "@/state/utils";
@@ -49,7 +49,7 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "animal",
-      biomes: config.biomes,
+      habitats: config.habitats,
       abilities,
       uid: `animal-${this.nextUid()}` as AnimalCard["uid"],
     }));
@@ -62,7 +62,7 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "plant",
-      biomes: config.biomes,
+      habitats: config.habitats,
       abilities,
       elements: config.elements,
       uid: `plant-${this.nextUid()}` as PlantCard["uid"],
@@ -88,13 +88,13 @@ export class Croupier {
     }));
   }
 
-  spawnBiomeTiles(name: string, config: BiomeConfig): BiomeTile[] {
+  spawnHabitatTiles(name: string, config: HabitatConfig): HabitatTile[] {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
-      type: "biome",
+      type: "habitat",
       isAcquired: false,
-      // uid: `biome-${this.nextUid()}` as BiomeTile["uid"],
-      uid: createUID("biome", this.nextUid()),
+      // uid: `habitat-${this.nextUid()}` as HabitatTile["uid"],
+      uid: createUID("habitat", this.nextUid()),
     }));
   }
 

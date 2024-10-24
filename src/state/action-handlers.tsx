@@ -1,5 +1,5 @@
 import { TurnMachine } from "@/state/machines/turn";
-import { AbilityTile, AnimalCard, PlantCard, ElementCard, BiomeTile, AbilityName } from "@/state/types";
+import { AbilityTile, AnimalCard, PlantCard, ElementCard, AbilityName } from "@/state/types";
 import { mapValues } from "lodash-es";
 import { EventFromLogic } from "xstate";
 
@@ -14,7 +14,6 @@ export interface ActionEmmiters {
   cardTokenClick: (name: AbilityName) => () => void;
   animalDeckClick: () => () => void;
   plantDeckClick: () => () => void;
-  habitatClick: (tile: BiomeTile) => () => void;
   abilityCardClick: (card: PlantCard | AnimalCard) => () => void;
   stageConfirm: () => () => void;
 }
@@ -34,7 +33,6 @@ const actionToEventMap = {
   plantDeckClick: () => ({ type: "user.click.market.deck.plant" }),
   tokenClick: (token: AbilityTile) => ({ type: "user.click.token", token }),
   cardTokenClick: (name: AbilityName) => ({ type: "user.click.cardToken", name }),
-  habitatClick: (tile: BiomeTile) => ({ type: "user.click.habitat", tile }),
   abilityCardClick: (card: PlantCard | AnimalCard) => ({ type: "user.click.player.hand.card.ability", card }),
   stageConfirm: () => ({ type: "user.click.stage.confirm" }),
 } as const;

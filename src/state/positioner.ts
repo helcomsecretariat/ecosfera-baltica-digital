@@ -12,16 +12,28 @@ import {
   GamePieceAppearance,
   GamePieceAppearances,
   AbsentPieceTransform,
-  GamePiece,
+  ElementUID,
+  DisasterUID,
+  AnimalUID,
+  HabitatUID,
+  ExtinctionUID,
+  ExtinctionTile,
+  HabitatTile,
+  isHabitatUID,
+  isExtinctionUID,
 } from "./types";
 import {
   cardXOffset,
   cardYOffset,
+  extinctionTileYStart,
+  habitatTileYStart,
+  hexagonTileXStart,
   lowerXBoundary,
   lowerYBoundary,
   marketXStart,
   marketYStart,
   playerCardsYStart,
+  tileSize,
   upperXBoundary,
   upperYBoundary,
 } from "@/constants/gameBoard";
@@ -244,6 +256,8 @@ const calculateCardPositions = (gameState: GameState): GamePieceCoordsDict => {
     ...positionElementMarketCards(gameState),
     ...positionDisasterCards(gameState),
     ...positionPlayerCards(gameState),
+    ...positionExtinctionTiles(gameState),
+    ...positionHabitatTiles(gameState),
     ...positionStagedCards(gameState),
   };
 };
@@ -367,11 +381,11 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
   const cause = gameState.stage?.cause || [];
   const effect = gameState.stage?.effect;
 
-  const pieceCoordinates = cause.reduce((acc, card: ElementCard | DisasterCard | AnimalCard, index: number) => {
+  const pieceCoordinates = cause.reduce((acc, uid: ElementUID | DisasterUID | AnimalUID, index: number) => {
     let middleIndex = Math.floor((cause.length - 1) / 2);
     if (cause.length === 2) middleIndex = 0;
 
-    acc[card.uid] = {
+    acc[uid] = {
       transform: {
         position: {
           x: (index - middleIndex) * 6,
@@ -396,16 +410,18 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
     return acc;
   }, {} as GamePieceCoordsDict);
 
-  effect?.forEach((gamePiece: GamePiece) => {
-    pieceCoordinates[gamePiece.uid] = {
+  effect?.forEach((uid: DisasterUID | HabitatUID | ExtinctionUID, index) => {
+    const isTile = isHabitatUID(uid) || isExtinctionUID(uid);
+
+    pieceCoordinates[uid] = {
       transform: {
         position: {
-          x: 0,
+          x: 0 + index * 5,
           y: cause.length === 0 ? 5 : -10,
           z: 50,
         },
         rotation: {
-          x: 0,
+          x: isTile ? -Math.PI / 2 : 0,
           y: 0,
           z: 0,
         },
@@ -416,6 +432,58 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
   });
 
   return pieceCoordinates;
+};
+
+export const positionExtinctionTiles = (gameState: GameState): GamePieceCoordsDict => {
+  const positions: Coordinate[] = [
+    { x: hexagonTileXStart - tileSize, y: extinctionTileYStart - tileSize * 0.55, z: 0 },
+    { x: hexagonTileXStart, y: extinctionTileYStart, z: 0 },
+    { x: hexagonTileXStart + tileSize, y: extinctionTileYStart - tileSize * 0.55, z: 0 },
+    { x: hexagonTileXStart - tileSize, y: extinctionTileYStart - tileSize * 1.68, z: 0 },
+    { x: hexagonTileXStart, y: extinctionTileYStart - tileSize * 2.25, z: 0 },
+    { x: hexagonTileXStart + tileSize, y: extinctionTileYStart - tileSize * 1.68, z: 0 },
+  ];
+
+  const allExtinctionTiles = [...gameState.extinctMarket.deck, ...gameState.extinctMarket.table];
+
+  return {
+    ...allExtinctionTiles.reduce((acc, extinctionTile: ExtinctionTile, index: number) => {
+      acc[extinctionTile.uid] = {
+        transform: {
+          position: positions[index],
+          initialPosition: positions[index],
+          rotation: { x: -Math.PI / 2, y: 0, z: 0 },
+          initialRotation: { x: -Math.PI / 2, y: 0, z: 0 },
+        },
+      };
+      return acc;
+    }, {} as GamePieceCoordsDict),
+  };
+};
+
+export const positionHabitatTiles = (gameState: GameState): GamePieceCoordsDict => {
+  const positions: Coordinate[] = [
+    { x: hexagonTileXStart - tileSize, y: habitatTileYStart - tileSize * 0.55, z: 0 },
+    { x: hexagonTileXStart, y: habitatTileYStart, z: 0 },
+    { x: hexagonTileXStart + tileSize, y: habitatTileYStart - tileSize * 0.55, z: 0 },
+    { x: hexagonTileXStart - tileSize, y: habitatTileYStart - tileSize * 1.68, z: 0 },
+    { x: hexagonTileXStart, y: habitatTileYStart - tileSize * 2.25, z: 0 },
+    { x: hexagonTileXStart + tileSize, y: habitatTileYStart - tileSize * 1.68, z: 0 },
+  ];
+
+  return {
+    ...gameState.habitatMarket.deck.reduce((acc, habitatTile: HabitatTile, index: number) => {
+      acc[habitatTile.uid] = {
+        transform: {
+          position: positions[index],
+          initialPosition: positions[index],
+          rotation: { x: -Math.PI / 2, y: 0, z: 0 },
+          initialRotation: { x: -Math.PI / 2, y: 0, z: 0 },
+        },
+      };
+      return acc;
+    }, {} as GamePieceCoordsDict),
+  };
 };
 
 export const positionAnimalCards = (gameState: GameState): GamePieceCoordsDict => {

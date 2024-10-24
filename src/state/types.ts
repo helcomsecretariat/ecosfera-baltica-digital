@@ -1,7 +1,7 @@
 import {
   AbilityConfig,
   AnimalConfig,
-  BiomeConfig,
+  HabitatConfig,
   DisasterConfig,
   ElementConfig,
   ExtinctionConfig,
@@ -15,10 +15,35 @@ export type AnimalUID = UID<"animal">;
 export type PlantUID = UID<"plant">;
 export type ElementUID = UID<"element">;
 export type DisasterUID = UID<"disaster">;
-export type BiomeUID = UID<"biome">;
+export type HabitatUID = UID<"habitat">;
 export type ExtinctionUID = UID<"extinction">;
 export type PlayerUID = UID<"player">;
-export type GamePieceUID = AbilityUID | AnimalUID | PlantUID | ElementUID | DisasterUID | BiomeUID | ExtinctionUID;
+export type GamePieceUID = AbilityUID | AnimalUID | PlantUID | ElementUID | DisasterUID | HabitatUID | ExtinctionUID;
+
+export function isAbilityUID(uid: string): uid is AbilityUID {
+  return uid.startsWith("ability-");
+}
+export function isAnimalUID(uid: string): uid is AnimalUID {
+  return uid.startsWith("animal-");
+}
+export function isPlantUID(uid: string): uid is PlantUID {
+  return uid.startsWith("plant-");
+}
+export function isElementUID(uid: string): uid is ElementUID {
+  return uid.startsWith("element-");
+}
+export function isDisasterUID(uid: string): uid is DisasterUID {
+  return uid.startsWith("disaster-");
+}
+export function isHabitatUID(uid: string): uid is HabitatUID {
+  return uid.startsWith("habitat-");
+}
+export function isExtinctionUID(uid: string): uid is ExtinctionUID {
+  return uid.startsWith("extinction-");
+}
+export function isPlayerUID(uid: string): uid is PlayerUID {
+  return uid.startsWith("player-");
+}
 
 export interface GameState {
   turn: {
@@ -35,7 +60,7 @@ export interface GameState {
     usedAbilities: { source: (AbilityTile | PlantCard | AnimalCard)["uid"]; name: AbilityName }[];
     boughtAnimal: boolean;
     boughtPlant: boolean;
-    boughtHabitat: boolean;
+    unlockedHabitat: boolean;
     uidsUsedForAbilityRefresh: AnimalUID[];
     selectedAbilityCard?: PlantCard | AnimalCard;
     automaticEventChecks?: string[];
@@ -46,12 +71,12 @@ export interface GameState {
   animalMarket: Market<AnimalCard>;
   elementMarket: Market<ElementCard>;
   disasterMarket: Market<DisasterCard>;
-  biomeMarket: Market<BiomeTile>;
+  habitatMarket: Market<HabitatTile>;
   extinctMarket: Market<ExtinctionTile>;
   stage?: {
-    eventType: "disaster" | "elementalDisaster" | "extinction" | "massExtinction" | "abilityRefresh";
-    cause: DisasterCard[] | ElementCard[] | AnimalCard[] | undefined;
-    effect: DisasterCard[] | ExtinctionTile[] | undefined;
+    eventType: "disaster" | "elementalDisaster" | "extinction" | "massExtinction" | "abilityRefresh" | "habitatUnlock";
+    cause: (AnimalUID | DisasterUID | ElementUID)[] | undefined;
+    effect: (DisasterUID | ExtinctionUID | HabitatUID)[] | undefined;
   };
   config: GameConfig;
 }
@@ -80,10 +105,10 @@ export interface AbilityTile extends GamePieceBase {
   name: "move" | "refresh" | "plus" | "special";
 }
 
-export interface BiomeTile extends GamePieceBase {
-  type: "biome";
+export interface HabitatTile extends GamePieceBase {
+  type: "habitat";
   isAcquired: boolean;
-  uid: BiomeUID;
+  uid: HabitatUID;
 }
 
 export interface ExtinctionTile extends GamePieceBase {
@@ -98,7 +123,7 @@ export interface GamePieceBase {
 }
 
 export type Card = AnimalCard | PlantCard | ElementCard | DisasterCard;
-export type GamePiece = Card | BiomeTile | ExtinctionTile | AbilityTile;
+export type GamePiece = Card | HabitatTile | ExtinctionTile | AbilityTile;
 
 export type PositionedCard = Card & { x: number; y: number };
 export type ConfigToPiece<T> = T extends PlantConfig
@@ -111,8 +136,8 @@ export type ConfigToPiece<T> = T extends PlantConfig
         ? DisasterCard
         : T extends AbilityConfig
           ? AbilityTile
-          : T extends BiomeConfig
-            ? BiomeTile
+          : T extends HabitatConfig
+            ? HabitatTile
             : T extends ExtinctionConfig
               ? ExtinctionTile
               : never;
@@ -126,8 +151,8 @@ export type PieceToConfig<T> = T extends PlantCard
         ? DisasterConfig
         : T extends AbilityTile
           ? AbilityConfig
-          : T extends BiomeTile
-            ? BiomeConfig
+          : T extends HabitatTile
+            ? HabitatConfig
             : T extends ExtinctionTile
               ? ExtinctionConfig
               : never;
@@ -142,7 +167,7 @@ export interface AnimalCard extends GamePieceBase {
   type: "animal";
   uid: AnimalUID;
 
-  biomes: BiomeTile["name"][];
+  habitats: HabitatTile["name"][];
   abilities: AbilityName[];
 }
 
@@ -150,7 +175,7 @@ export interface PlantCard extends GamePieceBase {
   type: "plant";
   uid: PlantUID;
 
-  biomes: BiomeTile["name"][];
+  habitats: HabitatTile["name"][];
   abilities: AbilityName[];
   elements: ElementCard["name"][];
 }
@@ -167,7 +192,7 @@ export interface DisasterCard extends GamePieceBase {
 
 export type AbilityName = "plus" | "refresh" | "move" | "special";
 export type CardType = "animal" | "plant" | "disaster" | "element";
-export type GamePieceType = CardType | "biome" | "ability" | "extinction";
+export type GamePieceType = CardType | "habitat" | "ability" | "extinction";
 
 export interface Coordinate {
   x: number;

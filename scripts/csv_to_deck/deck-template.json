@@ -30,7 +30,7 @@
     "nutrients": { "count": 12 },
     "temperature": { "count": 12 }
   },
-  "biomes": {
+  "habitats": {
     "ice": {},
     "coast": {},
     "pelagic": {},

@@ -1,6 +1,6 @@
-import { AbilityTile, AnimalCard, BiomeTile, Card, ElementCard, GameState, PlantCard } from "@/state/types";
-import { countBy, find, compact, every } from "lodash";
-import { getAnimalBiomePairs, getDuplicateElements } from "./helpers/turn";
+import { AbilityTile, AnimalCard, Card, ElementCard, GameState, PlantCard } from "@/state/types";
+import { countBy, find, compact, every, intersection } from "lodash";
+import { getAnimalHabitatPairs, getDuplicateElements } from "./helpers/turn";
 
 export const BuyMachineGuards = {
   canBuyCard: ({ context: { players, turn } }: { context: GameState }, card: AnimalCard | PlantCard) => {
@@ -17,14 +17,14 @@ export const BuyMachineGuards = {
     }
 
     if (card.type === "animal") {
-      const requiredBiomes = card.biomes;
+      const requiredHabitats = card.habitats;
       const playedPlants =
         (find(players, { uid: turn.player })
           ?.hand.filter(({ uid }) => turn.playedCards.includes(uid))
           .filter(({ type }) => type === "plant") as PlantCard[]) ?? [];
 
-      const matchedPlants = requiredBiomes.map((reqBiome) =>
-        playedPlants.filter(({ biomes }) => biomes.includes(reqBiome)),
+      const matchedPlants = requiredHabitats.map((reqHabitat) =>
+        playedPlants.filter(({ habitats }) => habitats.includes(reqHabitat)),
       );
       return matchedPlants.some(({ length }) => length >= 2);
     }
@@ -67,7 +67,7 @@ export const BuyMachineGuards = {
     uid: Card["uid"],
   ) => !exhaustedCards.includes(uid),
 
-  canBuyHabitat: ({ context: { turn, players } }: { context: GameState }, tile: BiomeTile) => {
+  canUnlockHabitats: ({ context: { turn, players, habitatMarket } }: { context: GameState }) => {
     const { playedCards, player } = turn;
 
     const playedAnimals =
@@ -75,7 +75,16 @@ export const BuyMachineGuards = {
         ?.hand.filter(({ uid }) => playedCards.includes(uid))
         .filter(({ type }) => type === "animal") as AnimalCard[]) ?? [];
 
-    return playedAnimals.filter(({ biomes }) => biomes.includes(tile.name)).length >= 2;
+    const animalhabitatPairs = getAnimalHabitatPairs(playedAnimals);
+
+    return animalhabitatPairs.some(
+      (animalHabitatPair) =>
+        habitatMarket.deck.filter(
+          (habitat) =>
+            !habitat.isAcquired &&
+            intersection(animalHabitatPair[0].habitats, animalHabitatPair[1].habitats).includes(habitat.name),
+        ).length > 0,
+    );
   },
 
   abilityAvailable: (_: { context: GameState }, token: AbilityTile) => {
@@ -87,9 +96,9 @@ export const BuyMachineGuards = {
   },
 
   didNotBuy: ({ context: { turn } }: { context: GameState }) => {
-    const { boughtPlant, boughtAnimal, boughtHabitat } = turn;
+    const { boughtPlant, boughtAnimal, unlockedHabitat } = turn;
 
-    return !boughtPlant && !boughtAnimal && !boughtHabitat;
+    return !boughtPlant && !boughtAnimal && !unlockedHabitat;
   },
 
   getsDidNotBuyDisaster: ({ context }: { context: GameState }) => {
@@ -123,17 +132,21 @@ export const BuyMachineGuards = {
 
     if (!player.abilities.some((ability) => ability.isUsed)) return false;
 
-    const availableAnimalBiomePairs = getAnimalBiomePairs(
-      player,
-      context.stage?.cause?.filter((gamePiece) => gamePiece.type === "animal") ?? [],
-    ).filter(
-      (animalBiomePair) =>
+    const stagedAnimals = player.hand.filter(
+      (card) => card.type === "animal" && context.stage?.cause?.includes(card.uid),
+    ) as AnimalCard[];
+
+    const availableAnimalHabitatPairs = getAnimalHabitatPairs([
+      ...player.hand.filter((card) => card.type === "animal"),
+      ...stagedAnimals,
+    ]).filter(
+      (animalHabitatPair) =>
         !context.turn.uidsUsedForAbilityRefresh.some((uid) =>
-          animalBiomePair.map((animal) => animal.uid).includes(uid),
+          animalHabitatPair.map((animal) => animal.uid).includes(uid),
         ),
     );
 
-    return availableAnimalBiomePairs.length > 0;
+    return availableAnimalHabitatPairs.length > 0;
   },
 
   checkNotDone: ({ context }: { context: GameState }, checkName: string) => {

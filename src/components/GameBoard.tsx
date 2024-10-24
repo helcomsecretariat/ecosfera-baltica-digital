@@ -4,8 +4,6 @@ import Grid from "./Grid";
 import { useControls } from "leva";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
-import ExtinctionTiles from "./ExtinctionTiles";
-import BiomeTiles from "./BiomeTiles";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
 import PreloadAssets from "@/components/PreloadAssets";
@@ -57,8 +55,6 @@ function GameBoard() {
         {orbitControls && <OrbitControls />}
         <Croupier />
 
-        <ExtinctionTiles />
-        <BiomeTiles />
         {FPS && <Stats />}
       </Canvas>
       <Leva collapsed flat hideCopyButton />

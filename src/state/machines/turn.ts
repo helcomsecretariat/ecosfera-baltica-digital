@@ -5,11 +5,9 @@ import {
   AbilityTile,
   AbilityUID,
   AnimalCard,
-  BiomeTile,
+  HabitatTile,
   Card,
-  DisasterCard,
   ElementCard,
-  ExtinctionTile,
   GameConfig,
   GameState,
   PlantCard,
@@ -18,9 +16,9 @@ import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
 import { BuyMachineGuards } from "@/state/machines/guards";
-import { compact, concat, countBy, entries, find, intersection, reject, without } from "lodash";
+import { compact, concat, countBy, entries, find, flatten, intersection, reject, without } from "lodash";
 import { replaceItem, shuffle } from "@/state/utils";
-import { getAnimalBiomePairs, getDuplicateElements } from "./helpers/turn";
+import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 
 export const TurnMachine = setup({
   types: {
@@ -37,7 +35,6 @@ export const TurnMachine = setup({
       | { type: "user.click.market.deck.element"; name: ElementCard["name"] }
       | { type: "user.click.market.borrowed.card.element"; card: ElementCard }
       | { type: "user.click.market.table.card"; card: PlantCard | AnimalCard }
-      | { type: "user.click.habitat"; tile: BiomeTile }
       | { type: "iddqd"; context: GameState }
       | { type: "user.click.player.hand.card.ability"; card: PlantCard | AnimalCard }
       | { type: "user.click.stage.confirm" }
@@ -102,15 +99,15 @@ export const TurnMachine = setup({
         }
 
         if (card.type === "animal") {
-          const requiredBiomes = card.biomes;
+          const requiredHabitats = card.habitats;
           const playedPlants =
             (
               player.hand
                 .filter(({ uid }) => turn.playedCards.includes(uid))
                 .filter(({ type }) => type === "plant") as PlantCard[]
-            ).sort((a, b) => a.biomes.length - b.biomes.length) ?? [];
+            ).sort((a, b) => a.habitats.length - b.habitats.length) ?? [];
           const toBeExhaustedPlants = playedPlants
-            .filter(({ biomes }) => intersection(biomes, requiredBiomes).length > 0)
+            .filter(({ habitats }) => intersection(habitats, requiredHabitats).length > 0)
             .slice(0, 2);
 
           draft.turn.exhaustedCards.push(...toBeExhaustedPlants.map(({ uid }) => uid));
@@ -123,9 +120,9 @@ export const TurnMachine = setup({
         player.hand.push(card);
       }),
     ),
-    buyHabitat: assign(({ context }: { context: GameState }, tile: BiomeTile) =>
+    buyHabitat: assign(({ context }: { context: GameState }, tile: HabitatTile) =>
       produce(context, (draft) => {
-        const { turn, players, biomeMarket } = draft;
+        const { turn, players, habitatMarket } = draft;
         const { playedCards, player } = turn;
 
         const playedAnimals =
@@ -133,14 +130,12 @@ export const TurnMachine = setup({
             ?.hand.filter(({ uid }) => playedCards.includes(uid))
             .filter(({ type }) => type === "animal") as AnimalCard[]) ?? [];
 
-        const toBeExhaustedAnimals = playedAnimals.filter(({ biomes }) => biomes.includes(tile.name)).slice(0, 2);
+        const toBeExhaustedAnimals = playedAnimals.filter(({ habitats }) => habitats.includes(tile.name)).slice(0, 2);
 
-        // animals do not exhaust cuz playr could buy multiple habitats with same animals
-        // exhaustedCards.push(...toBeExhaustedAnimals.map(({ uid }) => uid));
         turn.playedCards = without(turn.playedCards, ...toBeExhaustedAnimals.map(({ uid }) => uid));
-        turn.boughtHabitat = true;
+        turn.unlockedHabitat = true;
 
-        find(biomeMarket.deck, { name: tile.name })!.isAcquired = true;
+        find(habitatMarket.deck, { name: tile.name })!.isAcquired = true;
       }),
     ),
     drawPlayerDeck: assign(({ context }) =>
@@ -248,13 +243,14 @@ export const TurnMachine = setup({
         // TODO: Figure out what to do when disaster deck is empty
         if (!disasterCard || !player) return;
 
+        draft.disasterMarket.deck = without(context.disasterMarket.deck, disasterCard);
+        player.hand = concat(player.hand, disasterCard);
+
         draft.stage = {
           eventType: "disaster",
           cause: undefined,
-          effect: [disasterCard],
+          effect: [disasterCard.uid],
         };
-
-        draft.disasterMarket.deck = draft.disasterMarket.deck.slice(1);
       }),
     ),
     stageDuplicateElementsDisaster: assign(({ context }: { context: GameState }) =>
@@ -265,6 +261,9 @@ export const TurnMachine = setup({
         // TODO: Figure out what to do when disaster deck is empty
         if (!disasterCard || !player) return;
 
+        draft.disasterMarket.deck = without(context.disasterMarket.deck, disasterCard);
+        player.hand = concat(player.hand, disasterCard);
+
         const duplicateElements = getDuplicateElements(context, 3);
         const duplicateElementCards = player.hand
           .filter((cards) => cards.name === duplicateElements[0])
@@ -272,37 +271,72 @@ export const TurnMachine = setup({
 
         draft.stage = {
           eventType: "elementalDisaster",
-          cause: duplicateElementCards,
-          effect: [disasterCard],
+          cause: duplicateElementCards.map((elementCard) => elementCard.uid),
+          effect: [disasterCard.uid],
         };
+      }),
+    ),
+    stageHabitatUnlock: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const player = find(draft.players, { uid: draft.turn.player })!;
 
-        player.hand = without(player.hand, ...duplicateElementCards);
+        const playedAnimals =
+          (player.hand
+            .filter(({ uid }) => context.turn.playedCards.includes(uid))
+            .filter(({ type }) => type === "animal") as AnimalCard[]) ?? [];
 
-        draft.disasterMarket.deck = draft.disasterMarket.deck.slice(1);
+        const animalHabitatPairs = getAnimalHabitatPairs(playedAnimals);
+        const sharedHabitats = context.habitatMarket.deck.filter(
+          (marketHabitat) => !marketHabitat.isAcquired && getSharedHabitats(playedAnimals).includes(marketHabitat.name),
+        );
+
+        if (animalHabitatPairs.length === 0) return;
+
+        draft.habitatMarket.deck = context.habitatMarket.deck.map((habitatTile) => {
+          return {
+            ...habitatTile,
+            isAcquired:
+              habitatTile.isAcquired || sharedHabitats.some((sharedHabitat) => sharedHabitat.name === habitatTile.name),
+          };
+        });
+        draft.turn.unlockedHabitat = true;
+        draft.turn.playedCards = without(
+          context.turn.playedCards,
+          ...playedAnimals.map((animalCard) => animalCard.uid),
+        );
+
+        draft.stage = {
+          eventType: "habitatUnlock",
+          cause: flatten(animalHabitatPairs).map((animalCard) => animalCard.uid),
+          effect: sharedHabitats.map((habitatTile) => habitatTile.uid),
+        };
       }),
     ),
     stageAbilityRefresh: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player })!;
-        const availableAnimalBiomePairs = getAnimalBiomePairs(
-          player,
-          context.stage?.cause?.filter((gamePiece) => gamePiece.type === "animal") ?? [],
-        ).filter(
-          (animalBiomePair) =>
+
+        const stagedAnimals = player.hand.filter(
+          (card) => card.type === "animal" && context.stage?.cause?.includes(card.uid),
+        ) as AnimalCard[];
+
+        const availableAnimalHabitatPairs = getAnimalHabitatPairs([
+          ...player.hand.filter((card) => card.type === "animal"),
+          ...stagedAnimals,
+        ]).filter(
+          (animalHabitatPair) =>
             !context.turn.uidsUsedForAbilityRefresh.some((uid) =>
-              animalBiomePair.map((animal) => animal.uid).includes(uid),
+              animalHabitatPair.map((animal) => animal.uid).includes(uid),
             ),
         );
 
-        if (availableAnimalBiomePairs.length === 0) return;
+        if (availableAnimalHabitatPairs.length === 0) return;
 
         draft.stage = {
           eventType: "abilityRefresh",
-          cause: availableAnimalBiomePairs[0],
+          cause: availableAnimalHabitatPairs[0].map((animalCard) => animalCard.uid),
           effect: undefined,
         };
-
-        player.hand = without(player.hand, ...availableAnimalBiomePairs[0]);
       }),
     ),
     stageExtinction: assign(({ context }: { context: GameState }) =>
@@ -314,13 +348,14 @@ export const TurnMachine = setup({
         // TODO: Figure out what to do when extinction deck is empty
         if (!extinctionTile) return;
 
+        draft.extinctMarket.deck = without(context.extinctMarket.deck, extinctionTile);
+        draft.extinctMarket.table.push(extinctionTile);
+
         draft.stage = {
           eventType: "extinction",
-          cause: disasterCards,
-          effect: [extinctionTile],
+          cause: disasterCards.map((disasterCard) => disasterCard.uid),
+          effect: [extinctionTile.uid],
         };
-        draft.extinctMarket.deck = draft.extinctMarket.deck.slice(1);
-        player.hand = without(player.hand, ...disasterCards);
       }),
     ),
     stageMassExtinction: assign(({ context }: { context: GameState }) =>
@@ -332,33 +367,18 @@ export const TurnMachine = setup({
         // TODO: Figure out what to do when extinction deck is empty
         if (extinctionTiles.length === 0) return;
 
+        draft.extinctMarket.deck = without(context.extinctMarket.deck, ...extinctionTiles);
+        draft.extinctMarket.table = concat(context.extinctMarket.table, extinctionTiles);
+
         draft.stage = {
           eventType: "massExtinction",
-          cause: disasterCards,
-          effect: extinctionTiles,
+          cause: disasterCards.map((disasterCard) => disasterCard.uid),
+          effect: extinctionTiles.map((extinctionTile) => extinctionTile.uid),
         };
-        draft.extinctMarket.deck = draft.extinctMarket.deck.slice(0, 3);
-        player.hand = without(player.hand, ...disasterCards);
       }),
     ),
     unstage: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
-        const player = find(draft.players, { uid: draft.turn.player })!;
-
-        player.hand = concat(player.hand, context.stage?.cause ?? []);
-
-        if (context.stage?.effect !== undefined) {
-          const disasterCards = context.stage.effect.filter((card): card is DisasterCard => card.type === "disaster");
-          player.hand = concat(player.hand, disasterCards);
-
-          const extinctionTiles = context.stage.effect.filter(
-            (card): card is ExtinctionTile => card.type === "extinction",
-          );
-          if (extinctionTiles.length > 0) {
-            draft.extinctMarket.table.push(...extinctionTiles);
-          }
-        }
-
         draft.stage = undefined;
       }),
     ),
@@ -400,7 +420,7 @@ export const TurnMachine = setup({
           usedAbilities: [],
           boughtAnimal: false,
           boughtPlant: false,
-          boughtHabitat: false,
+          unlockedHabitat: false,
           uidsUsedForAbilityRefresh: [],
           selectedAbilityCard: undefined,
           automaticEventChecks: [],
@@ -414,19 +434,23 @@ export const TurnMachine = setup({
         const ability = find(player.abilities, { uid: abilityUid });
         if (!ability) return;
 
-        const availableAnimalBiomePairs = getAnimalBiomePairs(
-          player,
-          context.stage?.cause?.filter((gamePiece) => gamePiece.type === "animal") ?? [],
-        ).filter(
-          (animalBiomePair) =>
-            !turn.uidsUsedForAbilityRefresh.some((uid) => animalBiomePair.map((animal) => animal.uid).includes(uid)),
+        const stagedAnimals = player.hand.filter(
+          (card) => card.type === "animal" && context.stage?.cause?.includes(card.uid),
+        ) as AnimalCard[];
+
+        const availableAnimalHabitatPairs = getAnimalHabitatPairs([
+          ...player.hand.filter((card) => card.type === "animal"),
+          ...stagedAnimals,
+        ]).filter(
+          (animalHabitatPair) =>
+            !turn.uidsUsedForAbilityRefresh.some((uid) => animalHabitatPair.map((animal) => animal.uid).includes(uid)),
         );
 
-        if (availableAnimalBiomePairs.length === 0) return;
+        if (availableAnimalHabitatPairs.length === 0) return;
 
         turn.uidsUsedForAbilityRefresh = concat(
           turn.uidsUsedForAbilityRefresh,
-          availableAnimalBiomePairs[0].map((animal) => animal.uid),
+          availableAnimalHabitatPairs[0].map((animal) => animal.uid),
         );
         ability.isUsed = false;
       }),
@@ -532,6 +556,10 @@ export const TurnMachine = setup({
               guard: "canRefreshAbility",
             },
             {
+              target: "#turn.stagingEvent.habitatUnlock",
+              guard: "canUnlockHabitats",
+            },
+            {
               target: "#turn.endingTurn.ending",
               guard: "drawPhase",
             },
@@ -556,6 +584,22 @@ export const TurnMachine = setup({
         },
       },
       states: {
+        habitatUnlock: {
+          initial: "awaitingConfirmation",
+          entry: "stageHabitatUnlock",
+          states: {
+            awaitingConfirmation: {
+              on: {
+                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+            },
+            transitioning: {
+              after: {
+                1200: { target: "#turn.buying" },
+              },
+            },
+          },
+        },
         abilityRefresh: {
           initial: "awaitingConfirmation",
           entry: "stageAbilityRefresh",
@@ -691,6 +735,7 @@ export const TurnMachine = setup({
         },
         "user.click.player.hand.card": [
           {
+            target: "#turn",
             actions: {
               type: "playCard",
               params: ({ event: { card } }) => card.uid,
@@ -705,6 +750,7 @@ export const TurnMachine = setup({
             ]),
           },
           {
+            target: "#turn",
             actions: {
               type: "unPlayCard",
               params: ({ event: { card } }) => card.uid,
@@ -722,13 +768,6 @@ export const TurnMachine = setup({
             params: ({ event: { card } }) => card,
           },
           guard: { type: "canBuyCard", params: ({ event: { card } }) => card },
-        },
-        "user.click.habitat": {
-          actions: {
-            type: "buyHabitat",
-            params: ({ event: { tile } }) => tile,
-          },
-          guard: { type: "canBuyHabitat", params: ({ event: { tile } }) => tile },
         },
         "user.click.player.hand.card.ability": [
           {

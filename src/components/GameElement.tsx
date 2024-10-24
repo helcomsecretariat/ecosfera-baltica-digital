@@ -26,7 +26,6 @@ type GameElementProps = {
 const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameElementProps) => {
   const { uiState } = useGameState();
   const appearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
-  console.log(cardUID, appearance);
   const [isPresent, safeToRemove] = usePresence();
   const isDisappearing = !appearance.transform.position;
   const zCoord = appearance.transform.position?.z;

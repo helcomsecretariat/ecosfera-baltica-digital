@@ -16,7 +16,7 @@ import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
 import { BuyMachineGuards } from "@/state/machines/guards";
-import { compact, concat, countBy, entries, find, flatten, intersection, reject, without } from "lodash";
+import { compact, concat, countBy, entries, find, flatten, intersection, map, reject, without } from "lodash";
 import { replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 
@@ -271,7 +271,7 @@ export const TurnMachine = setup({
 
         draft.stage = {
           eventType: "elementalDisaster",
-          cause: duplicateElementCards.map((elementCard) => elementCard.uid),
+          cause: map(duplicateElementCards, "uid"),
           effect: [disasterCard.uid],
         };
       }),
@@ -300,15 +300,12 @@ export const TurnMachine = setup({
           };
         });
         draft.turn.unlockedHabitat = true;
-        draft.turn.playedCards = without(
-          context.turn.playedCards,
-          ...playedAnimals.map((animalCard) => animalCard.uid),
-        );
+        draft.turn.playedCards = without(context.turn.playedCards, ...map(playedAnimals, "uid"));
 
         draft.stage = {
           eventType: "habitatUnlock",
-          cause: flatten(animalHabitatPairs).map((animalCard) => animalCard.uid),
-          effect: sharedHabitats.map((habitatTile) => habitatTile.uid),
+          cause: map(flatten(animalHabitatPairs), "uid"),
+          effect: map(sharedHabitats, "uid"),
         };
       }),
     ),
@@ -334,7 +331,7 @@ export const TurnMachine = setup({
 
         draft.stage = {
           eventType: "abilityRefresh",
-          cause: availableAnimalHabitatPairs[0].map((animalCard) => animalCard.uid),
+          cause: map(availableAnimalHabitatPairs[0], "uid"),
           effect: undefined,
         };
       }),
@@ -353,7 +350,7 @@ export const TurnMachine = setup({
 
         draft.stage = {
           eventType: "extinction",
-          cause: disasterCards.map((disasterCard) => disasterCard.uid),
+          cause: map(disasterCards, "uid"),
           effect: [extinctionTile.uid],
         };
       }),
@@ -372,8 +369,8 @@ export const TurnMachine = setup({
 
         draft.stage = {
           eventType: "massExtinction",
-          cause: disasterCards.map((disasterCard) => disasterCard.uid),
-          effect: extinctionTiles.map((extinctionTile) => extinctionTile.uid),
+          cause: map(disasterCards, "uid"),
+          effect: map(extinctionTiles, "uid"),
         };
       }),
     ),
@@ -450,7 +447,7 @@ export const TurnMachine = setup({
 
         turn.uidsUsedForAbilityRefresh = concat(
           turn.uidsUsedForAbilityRefresh,
-          availableAnimalHabitatPairs[0].map((animal) => animal.uid),
+          map(availableAnimalHabitatPairs[0], "uid"),
         );
         ability.isUsed = false;
       }),

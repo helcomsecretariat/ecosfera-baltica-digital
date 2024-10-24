@@ -4,7 +4,6 @@ import Grid from "./Grid";
 import { useControls } from "leva";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
-import ExtinctionTiles from "./ExtinctionTiles";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
 import PreloadAssets from "@/components/PreloadAssets";
@@ -13,7 +12,6 @@ import { DeckConfig } from "@/decks/schema";
 import { Stats } from "@react-three/drei";
 import { Leva } from "leva";
 import { debounce } from "lodash";
-import HabitatTiles from "./HabitatTiles";
 
 function GameBoard() {
   const { showGrid, gridDivisions, orbitControls, FPS } = useControls({
@@ -57,8 +55,6 @@ function GameBoard() {
         {orbitControls && <OrbitControls />}
         <Croupier />
 
-        <ExtinctionTiles />
-        <HabitatTiles />
         {FPS && <Stats />}
       </Canvas>
       <Leva collapsed flat hideCopyButton />

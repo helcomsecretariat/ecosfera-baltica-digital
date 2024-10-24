@@ -1,7 +1,7 @@
 import { default as CardComponent } from "./Card";
 import Deck from "./Deck";
 import AbilityTiles from "./AbilityTiles";
-import { AnimalCard, HabitatTile, Card, DisasterCard, ElementCard, ExtinctionTile, PlantCard } from "@/state/types";
+import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 import { cardWidth } from "@/constants/card";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
@@ -39,17 +39,15 @@ const Croupier = () => {
   return (
     <AnimatePresence>
       {/* Market Cards */}
-      {gameState.animalMarket.table.map((card: AnimalCard) => {
-        return (
-          <CardComponent
-            key={card.uid}
-            card={card}
-            gamePieceAppearance={uiState.cardPositions[card.uid]}
-            onClick={emit.marketCardClick(card)}
-            isHighlighted={test.marketCardClick(card)}
-          />
-        );
-      })}
+      {gameState.animalMarket.table.map((card: AnimalCard) => (
+        <CardComponent
+          key={card.uid}
+          card={card}
+          gamePieceAppearance={uiState.cardPositions[card.uid]}
+          onClick={emit.marketCardClick(card)}
+          isHighlighted={test.marketCardClick(card)}
+        />
+      ))}
       {gameState.plantMarket.table.map((card: PlantCard) => (
         <CardComponent
           key={card.uid}
@@ -139,31 +137,25 @@ const Croupier = () => {
 
       {/* Stage */}
       <Stage key="stage" />
-      {[...(gameState.stage?.cause ?? []), ...(gameState.stage?.effect ?? [])].map(
-        (card: DisasterCard | ElementCard | AnimalCard | ExtinctionTile | HabitatTile) => {
-          if (!uiState.cardPositions[card.uid]) {
-            return;
-          }
 
-          if (card.type === "extinction") {
-            return (
-              <Tile key={card.uid} color="#c3b091" position={uiState.cardPositions[card.uid].transform.position} />
-            );
-          }
-          if (card.type === "habitat") {
-            return (
-              <Tile
-                key={card.uid}
-                name={card.name}
-                color="#2cba16"
-                position={uiState.cardPositions[card.uid].transform.position}
-              />
-            );
-          }
+      {/* Extinction tiles */}
+      {[...gameState.extinctMarket.deck, ...gameState.extinctMarket.table].map((extinctionTile) => (
+        <Tile
+          key={extinctionTile.uid}
+          tileUid={extinctionTile.uid}
+          color={gameState.extinctMarket.deck.includes(extinctionTile) ? "#c3b091" : "#d17b79"}
+        />
+      ))}
 
-          return <CardComponent key={card.uid} card={card} gamePieceAppearance={uiState.cardPositions[card.uid]} />;
-        },
-      )}
+      {/* Habitat tiles */}
+      {gameState.habitatMarket.deck.map((habitatTile) => (
+        <Tile
+          key={habitatTile.uid}
+          tileUid={habitatTile.uid}
+          name={habitatTile.name}
+          color={habitatTile.isAcquired ? "#2cba16" : "#66cc66"}
+        />
+      ))}
 
       {/* Player Discard */}
       {gameState.players.map((player) => (

@@ -1,6 +1,6 @@
 import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion-3d";
-import { Card, GamePieceAppearance } from "@/state/types";
+import { GamePiece, GamePieceAppearance } from "@/state/types";
 import { MeshProps, ThreeEvent } from "@react-three/fiber";
 import { baseDuration } from "@/constants/animation";
 import { useGameState } from "@/context/GameStateProvider";
@@ -18,7 +18,7 @@ type GameElementProps = {
       cardUID?: never;
     }
   | {
-      cardUID: Card["uid"];
+      cardUID: GamePiece["uid"];
       gamePieceAppearance?: never;
     }
 );
@@ -26,6 +26,7 @@ type GameElementProps = {
 const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameElementProps) => {
   const { uiState } = useGameState();
   const appearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
+  console.log(cardUID, appearance);
   const [isPresent, safeToRemove] = usePresence();
   const isDisappearing = !appearance.transform.position;
   const zCoord = appearance.transform.position?.z;

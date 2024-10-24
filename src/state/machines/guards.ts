@@ -132,9 +132,13 @@ export const BuyMachineGuards = {
 
     if (!player.abilities.some((ability) => ability.isUsed)) return false;
 
+    const stagedAnimals = player.hand.filter(
+      (card) => card.type === "animal" && context.stage?.cause?.includes(card.uid),
+    ) as AnimalCard[];
+
     const availableAnimalHabitatPairs = getAnimalHabitatPairs([
       ...player.hand.filter((card) => card.type === "animal"),
-      ...(context.stage?.cause?.filter((gamePiece) => gamePiece.type === "animal") ?? []),
+      ...stagedAnimals,
     ]).filter(
       (animalHabitatPair) =>
         !context.turn.uidsUsedForAbilityRefresh.some((uid) =>

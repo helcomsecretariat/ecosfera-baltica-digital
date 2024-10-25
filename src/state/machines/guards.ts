@@ -1,8 +1,8 @@
-import { AbilityTile, AnimalCard, Card, ElementCard, GameState, PlantCard } from "@/state/types";
+import { AbilityTile, AnimalCard, Card, CardType, ElementCard, GameState, PlantCard } from "@/state/types";
 import { countBy, find, compact, every, intersection } from "lodash";
 import { getAnimalHabitatPairs, getDuplicateElements } from "./helpers/turn";
 
-export const BuyMachineGuards = {
+export const TurnMachineGuards = {
   canBuyCard: ({ context: { players, turn } }: { context: GameState }, card: AnimalCard | PlantCard) => {
     if (card.type === "plant") {
       const elementsCounted = countBy(card.elements);
@@ -58,6 +58,18 @@ export const BuyMachineGuards = {
     uid: Card["uid"],
   ) => find(players, { uid: player })?.hand.some((playerCard) => playerCard.uid === uid) ?? false,
 
+  notDisasterCard: (_: { context: GameState }, card: Card) => {
+    return card.type !== "disaster";
+  },
+
+  abilityTargetCardTypeIs: ({ context }: { context: GameState }, cardType: CardType) => {
+    return context.turn.currentAbility?.targetCard?.type === cardType;
+  },
+
+  abilityTargetCardNameIs: ({ context }: { context: GameState }, name: string) => {
+    return context.turn.currentAbility?.targetCard?.name === name;
+  },
+
   notExhausted: (
     {
       context: {
@@ -104,7 +116,9 @@ export const BuyMachineGuards = {
   getsDidNotBuyDisaster: ({ context }: { context: GameState }) => {
     const player = find(context.players, { uid: context.turn.player })!;
 
-    return BuyMachineGuards.didNotBuy({ context }) && player.hand.filter((card) => card.type === "disaster").length < 3;
+    return (
+      TurnMachineGuards.didNotBuy({ context }) && player.hand.filter((card) => card.type === "disaster").length < 3
+    );
   },
 
   getsElementalDisaster: ({ context }: { context: GameState }) => {
@@ -163,5 +177,24 @@ export const BuyMachineGuards = {
 
   endPhase: ({ context }: { context: GameState }) => {
     return context.turn.phase === "end";
+  },
+
+  isRefreshAbility: ({ context }: { context: GameState }) => context.turn.currentAbility?.name === "refresh",
+
+  isMoveAbility: ({ context }: { context: GameState }) => context.turn.currentAbility?.name === "move",
+
+  isPlusAbility: ({ context }: { context: GameState }) => context.turn.currentAbility?.name === "plus",
+
+  isSpecialAbility: ({ context }: { context: GameState }) => context.turn.currentAbility?.name === "special",
+
+  notSameCard: ({ context }: { context: GameState }, card: Card) => context.turn.currentAbility?.piece.uid !== card.uid,
+
+  notSameToken: ({ context }: { context: GameState }, token: AbilityTile) =>
+    context.turn.currentAbility?.piece.uid !== token.uid,
+
+  cardFromRow: ({ context }: { context: GameState }, card: Card) => {
+    const player = find(context.players, { uid: context.turn.player })!;
+
+    return !!find(player.hand, { uid: card.uid });
   },
 };

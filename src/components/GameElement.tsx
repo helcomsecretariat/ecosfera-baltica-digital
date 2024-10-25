@@ -27,8 +27,8 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
   const { uiState } = useGameState();
   const appearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
   const [isPresent, safeToRemove] = usePresence();
-  const isDisappearing = !appearance.transform.position;
-  const zCoord = appearance.transform.position?.z;
+  const isDisappearing = !appearance.position;
+  const zCoord = appearance.position?.z;
 
   const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);
@@ -74,28 +74,28 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
         },
       }}
       animate={{
-        x: appearance.transform.position?.x,
-        y: appearance.transform.position?.y,
+        x: appearance.position?.x,
+        y: appearance.position?.y,
         z: zCoord > 8 ? zCoord : [zCoord, 8, 8, zCoord],
-        rotateX: appearance.transform.rotation?.x,
-        rotateY: appearance.transform.rotation?.y,
-        rotateZ: appearance.transform.rotation?.z,
+        rotateX: appearance.rotation?.x,
+        rotateY: appearance.rotation?.y,
+        rotateZ: appearance.rotation?.z,
       }}
       initial={{
-        x: appearance.transform.initialPosition?.x,
-        y: appearance.transform.initialPosition?.y,
-        z: appearance.transform.initialPosition?.z,
-        rotateX: appearance.transform.initialRotation?.x,
-        rotateY: appearance.transform.initialRotation?.y,
-        rotateZ: appearance.transform.initialRotation?.z,
+        x: appearance.initialPosition?.x,
+        y: appearance.initialPosition?.y,
+        z: appearance.initialPosition?.z,
+        rotateX: appearance.initialRotation?.x,
+        rotateY: appearance.initialRotation?.y,
+        rotateZ: appearance.initialRotation?.z,
       }}
       exit={{
-        x: appearance.transform.exitPosition?.x,
-        y: appearance.transform.exitPosition?.y,
-        z: appearance.transform.exitPosition?.z,
-        rotateX: appearance.transform.exitRotation?.x,
-        rotateY: appearance.transform.exitRotation?.y,
-        rotateZ: appearance.transform.exitRotation?.z,
+        x: appearance.exitPosition?.x,
+        y: appearance.exitPosition?.y,
+        z: appearance.exitPosition?.z,
+        rotateX: appearance.exitRotation?.x,
+        rotateY: appearance.exitRotation?.y,
+        rotateZ: appearance.exitRotation?.z,
       }}
       whileHover={{ scale: onClick ? 1.05 : 1 }}
     >

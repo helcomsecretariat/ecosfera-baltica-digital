@@ -1,10 +1,10 @@
 import { TurnMachine } from "@/state/machines/turn";
-import { AbilityTile, AnimalCard, PlantCard, ElementCard, AbilityName } from "@/state/types";
+import { AbilityTile, AnimalCard, PlantCard, ElementCard, AbilityName, Card } from "@/state/types";
 import { mapValues } from "lodash-es";
 import { EventFromLogic } from "xstate";
 
 export interface ActionEmmiters {
-  playerCardClick: (card: PlantCard | AnimalCard | ElementCard) => () => void;
+  playerCardClick: (card: Card) => () => void;
   playerDeckClick: () => () => void;
   playerEndTurnClick: () => () => void;
   marketElementClick: (name: ElementCard["name"]) => () => void;
@@ -23,7 +23,7 @@ export type ActionTesters = {
 };
 
 const actionToEventMap = {
-  playerCardClick: (card: PlantCard | AnimalCard | ElementCard) => ({ type: "user.click.player.hand.card", card }),
+  playerCardClick: (card: Card) => ({ type: "user.click.player.hand.card", card }),
   playerDeckClick: () => ({ type: "user.click.player.deck" }),
   playerEndTurnClick: () => ({ type: "user.click.player.endTurn" }),
   marketElementClick: (name: ElementCard["name"]) => ({ type: "user.click.market.deck.element", name }),

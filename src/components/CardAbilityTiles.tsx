@@ -51,7 +51,7 @@ const CardAbilityTiles = ({ xStart, yStart, rotation = { x: 0, y: 0, z: 0 } }: C
     <GameElement
       key={ability + xStart}
       gamePieceAppearance={{
-        transform: abilityTransforms[ability],
+        ...abilityTransforms[ability],
         delay: 0,
         duration: 0,
       }}

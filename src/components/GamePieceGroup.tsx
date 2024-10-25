@@ -10,16 +10,16 @@ const GamePieceGroup = ({ gamePieceAppearance, children }: GamePieceGroupProps) 
   return (
     <motion.group
       initial={{
-        ...gamePieceAppearance.transform.initialPosition,
-        rotateX: gamePieceAppearance.transform.initialRotation?.x,
-        rotateY: gamePieceAppearance.transform.initialRotation?.y,
-        rotateZ: gamePieceAppearance.transform.initialRotation?.z,
+        ...gamePieceAppearance.initialPosition,
+        rotateX: gamePieceAppearance.initialRotation?.x,
+        rotateY: gamePieceAppearance.initialRotation?.y,
+        rotateZ: gamePieceAppearance.initialRotation?.z,
       }}
       animate={{
-        ...gamePieceAppearance.transform.position,
-        rotateX: gamePieceAppearance.transform.rotation?.x,
-        rotateY: gamePieceAppearance.transform.rotation?.y,
-        rotateZ: gamePieceAppearance.transform.rotation?.z,
+        ...gamePieceAppearance.position,
+        rotateX: gamePieceAppearance.rotation?.x,
+        rotateY: gamePieceAppearance.rotation?.y,
+        rotateZ: gamePieceAppearance.rotation?.z,
       }}
     >
       {children}

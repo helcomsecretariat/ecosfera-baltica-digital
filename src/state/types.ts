@@ -51,6 +51,7 @@ export interface GameState {
     currentAbility?: {
       piece: AbilityTile | PlantCard | AnimalCard;
       name: AbilityName;
+      targetCard?: Card | undefined;
     };
     exhaustedCards: Card["uid"][];
     playedCards: Card["uid"][];
@@ -228,12 +229,7 @@ export interface GamePieceDisplay {
   visibility?: "default" | "highlighted" | "dimmed" | "hidden";
 }
 
-export type GamePieceCoords = {
-  transform: GamePieceTransform;
-  display?: GamePieceDisplay;
-};
-
-export type GamePieceAppearance = GamePieceCoords & {
+export type GamePieceAppearance = GamePieceTransform & {
   duration: number;
   delay: number;
   doesFlip?: boolean;
@@ -243,7 +239,7 @@ export interface GamePieceAppearances {
   [key: GamePiece["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceAppearance;
 }
 export interface GamePieceCoordsDict {
-  [key: GamePiece["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceCoords;
+  [key: GamePiece["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceTransform;
 }
 
 export interface UiState {

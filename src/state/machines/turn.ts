@@ -1,5 +1,4 @@
-import { assign, setup, sendTo, and, or, not } from "xstate";
-import { AbilityMachineInEvents, AbilityMachineOutEvents, AbilityMachine } from "@/state/machines/ability";
+import { assign, setup, and, not } from "xstate";
 import {
   AbilityName,
   AbilityTile,
@@ -15,7 +14,7 @@ import {
 import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
-import { BuyMachineGuards } from "@/state/machines/guards";
+import { TurnMachineGuards } from "@/state/machines/guards";
 import { compact, concat, countBy, entries, find, flatten, intersection, map, reject, without } from "lodash";
 import { replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
@@ -31,15 +30,28 @@ export const TurnMachine = setup({
       | { type: "user.click.player.endTurn" }
       | { type: "user.click.token"; token: AbilityTile }
       | { type: "user.click.cardToken"; name: AbilityName }
-      | { type: "user.click.player.hand.card"; card: PlantCard | AnimalCard | ElementCard }
+      | { type: "user.click.player.hand.card"; card: Card }
       | { type: "user.click.market.deck.element"; name: ElementCard["name"] }
       | { type: "user.click.market.borrowed.card.element"; card: ElementCard }
       | { type: "user.click.market.table.card"; card: PlantCard | AnimalCard }
       | { type: "iddqd"; context: GameState }
       | { type: "user.click.player.hand.card.ability"; card: PlantCard | AnimalCard }
       | { type: "user.click.stage.confirm" }
-      | AbilityMachineInEvents
-      | AbilityMachineOutEvents,
+      | { type: "ability.cancel" }
+      | { type: "ability.markAsUsed" }
+      | { type: "ability.draw.playerDeck" }
+      | { type: "ability.refresh.animalDeck" }
+      | { type: "ability.refresh.plantDeck" }
+      | { type: "ability.move.toPlayer"; card: Card; destinationCard: Card }
+      | { type: "ability.move.toAnimalDeck"; card: AnimalCard }
+      | { type: "ability.move.toPlantDeck"; card: PlantCard }
+      | { type: "ability.move.toElementDeck"; card: ElementCard; name: ElementCard["name"] }
+      | { type: "user.click.market.deck.animal" }
+      | { type: "user.click.market.deck.plant" }
+      | { type: "user.click.player.hand.card.ability"; card: PlantCard | AnimalCard }
+      | { type: "user.click.player.deck" }
+      | { type: "internal.target.selected"; target: Card }
+      | { type: "user.click.token"; token: AbilityTile },
   },
   actions: {
     borrowElement: assign(({ context }: { context: GameState }, name: ElementCard["name"]) =>
@@ -145,40 +157,43 @@ export const TurnMachine = setup({
         if (drawnCard) player.hand.push(drawnCard);
       }),
     ),
-    cardToAnimalDeck: assign(({ context }, card: AnimalCard) =>
+    cardToAnimalDeck: assign(({ context }) =>
       produce(context, ({ players, animalMarket, turn }) => {
         const player = players.find(({ uid }) => uid === turn.player)!;
-        player.hand = reject(player.hand, card);
-        animalMarket.deck.push(card);
-      }),
-    ),
-    cardToPlantDeck: assign(({ context }, card: PlantCard) =>
-      produce(context, ({ players, plantMarket, turn }) => {
-        const player = players.find(({ uid }) => uid === turn.player)!;
-        player.hand = reject(player.hand, card);
-        plantMarket.deck.push(card);
-      }),
-    ),
-    cardToPlayerHand: assign(({ context }, { card, destinationCard }: { card: Card; destinationCard: Card }) =>
-      produce(context, ({ players, turn }) => {
-        const targetPlayer = players.find((player) =>
-          player.hand.some((handCard) => handCard.uid === destinationCard.uid),
-        );
-
-        if (!targetPlayer) return;
-
-        const player = players.find(({ uid }) => uid === turn.player);
-        if (player) {
-          player.hand = reject(player.hand, { uid: card.uid });
-          targetPlayer.hand.push(card);
+        player.hand = reject(player.hand, turn.currentAbility?.targetCard);
+        if (turn.currentAbility?.targetCard !== undefined) {
+          animalMarket.deck.push(turn.currentAbility.targetCard as AnimalCard);
         }
       }),
     ),
-    cardToElementDeck: assign(({ context }, card: ElementCard) =>
+    cardToPlantDeck: assign(({ context }) =>
+      produce(context, ({ players, plantMarket, turn }) => {
+        console.log("dsijfslajdf;lsjdfl");
+        const player = players.find(({ uid }) => uid === turn.player)!;
+        player.hand = reject(player.hand, turn.currentAbility?.targetCard);
+        if (turn.currentAbility?.targetCard !== undefined) {
+          plantMarket.deck.push(turn.currentAbility.targetCard as PlantCard);
+        }
+      }),
+    ),
+    cardToPlayerHand: assign(({ context }, card: Card) =>
+      produce(context, ({ players }) => {
+        const player = find(players, { uid: context.turn.player })!;
+        const targetPlayer = players.find((player) => player.hand.some((handCard) => handCard.uid === card.uid));
+
+        if (!targetPlayer || context.turn.currentAbility?.targetCard === undefined) return;
+
+        player.hand = reject(player.hand, context.turn.currentAbility.targetCard);
+        targetPlayer.hand.push(context.turn.currentAbility.targetCard);
+      }),
+    ),
+    cardToElementDeck: assign(({ context }) =>
       produce(context, ({ players, elementMarket, turn }) => {
         const player = players.find(({ uid }) => uid === turn.player)!;
-        player.hand = reject(player.hand, card);
-        elementMarket.deck.push(card);
+        player.hand = reject(player.hand, turn.currentAbility?.targetCard);
+        if (turn.currentAbility?.targetCard !== undefined) {
+          elementMarket.deck.push(turn.currentAbility.targetCard as ElementCard);
+        }
       }),
     ),
     refreshAnimalDeck: assign(({ context }) =>
@@ -463,14 +478,18 @@ export const TurnMachine = setup({
         turn.phase = "end";
       }),
     ),
+    setAbilityTargetCard: assign(({ context }: { context: GameState }, card: Card) =>
+      produce(context, ({ turn }) => {
+        if (turn.currentAbility === undefined) return;
+
+        turn.currentAbility.targetCard = card;
+      }),
+    ),
 
     setContext: assign(({ context }, newContext: GameState) => ({ ...context, ...newContext })),
   },
   guards: {
-    ...BuyMachineGuards,
-  },
-  actors: {
-    ability: AbilityMachine,
+    ...TurnMachineGuards,
   },
 }).createMachine({
   id: "turn",
@@ -517,14 +536,14 @@ export const TurnMachine = setup({
               target: "#turn.stagingEvent.noBuyDisaster",
               guard: and([
                 "getsDidNotBuyDisaster",
-                ({ context }) => BuyMachineGuards.checkNotDone({ context }, "noBuyCheck"),
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "noBuyCheck"),
               ]),
             },
             {
               target: "#turn.stagingEvent.elementalDisaster",
               guard: and([
                 "getsElementalDisaster",
-                ({ context }) => BuyMachineGuards.checkNotDone({ context }, "elementalDisasterCheck"),
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "elementalDisasterCheck"),
               ]),
             },
             {
@@ -538,14 +557,14 @@ export const TurnMachine = setup({
               target: "#turn.stagingEvent.massExtinction",
               guard: and([
                 "getsMassExtinction",
-                ({ context }) => BuyMachineGuards.checkNotDone({ context }, "extinctionCheck"),
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
               ]),
             },
             {
               target: "#turn.stagingEvent.extinction",
               guard: and([
                 "getsExtinction",
-                ({ context }) => BuyMachineGuards.checkNotDone({ context }, "extinctionCheck"),
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
               ]),
             },
             {
@@ -699,7 +718,7 @@ export const TurnMachine = setup({
       on: {
         "user.click.token": [
           {
-            target: "#turn.ability",
+            target: "#turn.usingAbility",
             actions: assign({
               turn: ({ context: { turn }, event: { token } }) => ({
                 ...turn,
@@ -721,7 +740,7 @@ export const TurnMachine = setup({
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },
           guard: and([
             "belowBorrowLimit",
-            not(({ context, event }) => BuyMachineGuards.playerHasElement({ context }, event.name)),
+            not(({ context, event }) => TurnMachineGuards.playerHasElement({ context }, event.name)),
           ]),
         },
         "user.click.market.borrowed.card.element": {
@@ -737,13 +756,11 @@ export const TurnMachine = setup({
               type: "playCard",
               params: ({ event: { card } }) => card.uid,
             },
-            guard: or([
-              ({ context }: { context: GameState }) => context.turn.currentAbility?.name === "move",
-              and([
-                ({ context, event }) => BuyMachineGuards.notExhausted({ context }, event.card.uid),
-                ({ context, event }) => BuyMachineGuards.notPlayedCard({ context }, event.card.uid),
-                ({ context, event }) => BuyMachineGuards.ownsCard({ context }, event.card.uid),
-              ]),
+            guard: and([
+              ({ context, event }) => TurnMachineGuards.notExhausted({ context }, event.card.uid),
+              ({ context, event }) => TurnMachineGuards.notPlayedCard({ context }, event.card.uid),
+              ({ context, event }) => TurnMachineGuards.ownsCard({ context }, event.card.uid),
+              ({ context, event }) => TurnMachineGuards.notDisasterCard({ context }, event.card),
             ]),
           },
           {
@@ -753,8 +770,8 @@ export const TurnMachine = setup({
               params: ({ event: { card } }) => card.uid,
             },
             guard: and([
-              ({ context, event }) => BuyMachineGuards.notExhausted({ context }, event.card.uid),
-              ({ context, event }) => BuyMachineGuards.ownsCard({ context }, event.card.uid),
+              ({ context, event }) => TurnMachineGuards.notExhausted({ context }, event.card.uid),
+              ({ context, event }) => TurnMachineGuards.ownsCard({ context }, event.card.uid),
             ]),
           },
         ],
@@ -780,7 +797,7 @@ export const TurnMachine = setup({
       on: {
         "user.click.*": { target: "#turn", actions: "cancelAbilitySelection" },
         "user.click.cardToken": {
-          target: "#turn.ability",
+          target: "#turn.usingAbility",
           actions: assign({
             turn: ({ context: { turn }, event: { name } }) => ({
               ...turn,
@@ -791,72 +808,106 @@ export const TurnMachine = setup({
       },
     },
 
-    ability: {
-      on: {
-        "user.click.*": {
-          actions: sendTo("ability", ({ event }) => event),
+    usingAbility: {
+      tags: ["usingAbility"],
+      initial: "idle",
+      states: {
+        idle: {
+          always: [
+            { target: "plussing", guard: "isPlusAbility" },
+            { target: "moving", guard: "isMoveAbility" },
+            { target: "refreshing", guard: "isRefreshAbility" },
+            { target: "usingSpecial", guard: "isSpecialAbility" },
+          ],
         },
-        "ability.draw.playerDeck": {
-          actions: "drawPlayerDeck",
-        },
-        "ability.move.toAnimalDeck": {
-          actions: {
-            type: "cardToAnimalDeck",
-            params: ({ event: { card } }) => card,
+        plussing: {
+          always: {
+            target: "done",
+            actions: "drawPlayerDeck",
           },
         },
-        "ability.move.toPlantDeck": {
-          actions: {
-            type: "cardToPlantDeck",
-            params: ({ event: { card } }) => card,
+        moving: {
+          initial: "pickingTarget",
+          states: {
+            pickingTarget: {
+              on: {
+                "user.click.token": {
+                  target: "#turn.usingAbility.cancel",
+                },
+                "user.click.player.hand.card": {
+                  target: "pickingDestination",
+                  actions: { type: "setAbilityTargetCard", params: ({ event: { card } }) => card },
+                  guard: { type: "ownsCard", params: ({ event: { card } }) => card.uid },
+                },
+              },
+            },
+            pickingDestination: {
+              on: {
+                "user.click.token": {
+                  target: "#turn.usingAbility.cancel",
+                },
+                "user.click.player.hand.card": {
+                  target: "#turn.usingAbility.done",
+                  guard: not(({ context, event }) => TurnMachineGuards.cardFromRow({ context }, event.card)),
+                  actions: { type: "cardToPlayerHand", params: ({ event }) => event.card },
+                },
+                "user.click.market.deck.animal": {
+                  target: "#turn.usingAbility.done",
+                  actions: { type: "cardToAnimalDeck" },
+                  guard: {
+                    type: "abilityTargetCardTypeIs",
+                    params: "animal",
+                  },
+                },
+                "user.click.market.deck.plant": {
+                  target: "#turn.usingAbility.done",
+                  actions: { type: "cardToPlantDeck" },
+                  guard: {
+                    type: "abilityTargetCardTypeIs",
+                    params: "plant",
+                  },
+                },
+                "user.click.market.deck.element": {
+                  target: "#turn.usingAbility.done",
+                  actions: { type: "cardToElementDeck" },
+                  guard: and([
+                    ({ context }) => TurnMachineGuards.abilityTargetCardTypeIs({ context }, "element"),
+                    ({ context, event }) => TurnMachineGuards.abilityTargetCardNameIs({ context }, event.name),
+                  ]),
+                },
+              },
+            },
           },
         },
-        "ability.move.toPlayer": {
-          actions: {
-            type: "cardToPlayerHand",
-            params: ({ event }) => event,
+        refreshing: {
+          on: {
+            "user.click.token": {
+              target: "#turn.usingAbility.cancel",
+            },
+            "user.click.market.deck.animal": {
+              target: "#turn.usingAbility.done",
+              actions: "refreshAnimalDeck",
+            },
+            "user.click.market.deck.plant": {
+              target: "#turn.usingAbility.done",
+              actions: "refreshPlantDeck",
+            },
           },
         },
-        "ability.move.toElementDeck": {
-          actions: {
-            type: "cardToElementDeck",
-            params: ({ event: { card } }) => card,
+        usingSpecial: {
+          always: "done",
+        },
+        done: {
+          always: {
+            target: "#turn",
+            actions: "markAbilityAsUsed",
           },
         },
-        "ability.refresh.animalDeck": {
-          actions: "refreshAnimalDeck",
-        },
-        "ability.refresh.plantDeck": {
-          actions: "refreshPlantDeck",
-        },
-        "ability.markAsUsed": {
-          actions: "markAbilityAsUsed",
-        },
-        "ability.cancel": { target: "#turn", actions: "cancelAbilitySelection" },
-      },
-
-      invoke: {
-        id: "ability",
-        src: "ability",
-        input: ({
-          context: {
-            turn: { currentAbility, player },
-            players,
+        cancel: {
+          always: {
+            target: "#turn.buying",
+            action: "cancelAbility",
           },
-          self,
-        }) => ({
-          parentActor: self,
-          playersRow: find(players, { uid: player })!.hand,
-          ...currentAbility!,
-        }),
-
-        onDone: {
-          reenter: true,
-          target: "#turn",
-        },
-        onError: {
-          reenter: true,
-          target: "buying",
         },
       },
     },

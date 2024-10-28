@@ -1,11 +1,11 @@
 import { cardHeight, cardWidth } from "../constants/card";
-import { useTexture } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { Card, GamePieceAppearance } from "@/state/types";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
-import { getHighlightTextureAssetPath } from "./utils";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
+import { useTexture } from "@react-three/drei";
+import { getHighlightTextureAssetPath } from "./utils";
 
 const Deck = ({
   gamePieceAppearance,
@@ -13,6 +13,7 @@ const Deck = ({
   onClick,
   cards,
   isDimmed = false,
+  isHighlighted = false,
 }: {
   gamePieceAppearance: GamePieceAppearance;
   texturePath?: string;
@@ -20,6 +21,7 @@ const Deck = ({
   onClick: () => void;
   cards: Card[];
   isDimmed?: boolean;
+  isHighlighted?: boolean;
   options?: { shuffleable: boolean };
 }) => {
   const texture = useSRGBTexture(texturePath);
@@ -39,7 +41,7 @@ const Deck = ({
         width={cardWidth}
         onClick={() => (isDimmed ? null : onClick())}
       >
-        {gamePieceAppearance.display?.visibility === "highlighted" && (
+        {isHighlighted && (
           <mesh>
             <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, 1.5, 0.01]} />
             <meshBasicMaterial transparent={true} attach="material-0" map={highlightTexture} />

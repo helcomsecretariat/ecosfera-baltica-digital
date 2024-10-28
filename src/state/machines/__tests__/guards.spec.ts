@@ -8,7 +8,7 @@ import {
   plant_bacteria,
   plant_nodularia,
 } from "@/state/machines/__tests__/state-mock";
-import { BuyMachineGuards } from "@/state/machines/guards";
+import { TurnMachineGuards } from "@/state/machines/guards";
 import { cloneDeep } from "lodash-es";
 import { AnimalCard, Card, GameState } from "@/state/types";
 
@@ -33,7 +33,7 @@ describe("BuyMachineGuards", () => {
       it(`should return ${expected} when hand is [${hand.map((card) => card.uid).join(", ")}], played is [${played.join(", ")}], and animal is ${animal.uid}`, () => {
         gameState.players[0].hand = hand;
         gameState.turn.playedCards = played;
-        const result = BuyMachineGuards.canBuyCard({ context: gameState }, animal);
+        const result = TurnMachineGuards.canBuyCard({ context: gameState }, animal);
         expect(result).toBe(expected);
       });
     }

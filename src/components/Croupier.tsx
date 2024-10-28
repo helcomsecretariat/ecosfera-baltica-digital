@@ -12,7 +12,7 @@ import GamePieceGroup from "./GamePieceGroup";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { NextButton } from "@/components/NextTurnBtn";
-import { BuyMachineGuards } from "@/state/machines/guards";
+import { TurnMachineGuards } from "@/state/machines/guards";
 import CardAbilityTiles from "@/components/CardAbilityTiles";
 import Stage from "@/components/Stage";
 import Tile from "./Tile";
@@ -32,7 +32,7 @@ export type CardMoveLocation =
 
 const Croupier = () => {
   const { state: gameState, uiState } = useGameState();
-  const { emit, test } = useGameState();
+  const { emit, test, hasTag } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
@@ -75,6 +75,7 @@ const Croupier = () => {
           cards={gameState.elementMarket.deck.filter((elementDeckCard) => elementDeckCard.name === card.name)}
           isDimmed={!test.marketElementClick(card.name)}
           onClick={emit.marketElementClick(card.name)}
+          isHighlighted={hasTag("usingAbility") && test.marketElementClick(card.name)}
         />
       ))}
       {gameState.turn.borrowedElement && (
@@ -90,12 +91,14 @@ const Croupier = () => {
         gamePieceAppearance={uiState.deckPositions["animalDeck"]}
         cards={gameState.animalMarket.deck}
         onClick={emit.animalDeckClick()}
+        isHighlighted={test.animalDeckClick()}
       />
       <Deck
         key={"plantDeck"}
         gamePieceAppearance={uiState.deckPositions["plantDeck"]}
         cards={gameState.plantMarket.deck}
         onClick={emit.plantDeckClick()}
+        isHighlighted={test.plantDeckClick()}
       />
       <Deck
         key={"disasterDeck"}
@@ -124,11 +127,9 @@ const Croupier = () => {
             <Deck
               gamePieceAppearance={{
                 ...uiState.deckPositions[`${player.uid}PlayerDeck`],
-                transform: {
-                  position: { x: 0, y: 0, z: 0 },
-                  initialPosition: { x: 0, y: 0, z: 0 },
-                  rotation: { x: 0, y: 0, z: 0 },
-                },
+                position: { x: 0, y: 0, z: 0 },
+                initialPosition: { x: 0, y: 0, z: 0 },
+                rotation: { x: 0, y: 0, z: 0 },
               }}
               cards={player.deck}
               onClick={emit.playerDeckClick()}
@@ -136,7 +137,7 @@ const Croupier = () => {
 
             {player.uid === gameState.turn.player && gameState.turn.selectedAbilityCard === undefined && (
               <AbilityTiles
-                canRefresh={BuyMachineGuards.canRefreshAbility({ context: gameState })}
+                canRefresh={TurnMachineGuards.canRefreshAbility({ context: gameState })}
                 xStart={0 - cardWidth}
                 yStart={0 - abilityOffset}
                 abilities={player.abilities}
@@ -176,7 +177,6 @@ const Croupier = () => {
         <Deck
           gamePieceAppearance={{
             ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
-            display: { visibility: "default" },
           }}
           cards={player.discard}
           key={player.uid + "PlayerDiscard"}
@@ -193,9 +193,9 @@ const Croupier = () => {
                 key={card.uid}
                 card={card}
                 gamePieceAppearance={uiState.cardPositions[card.uid]}
-                //@ts-expect-error TODO: fix type check...
                 onClick={emit.playerCardClick(card)}
                 options={{ showAbilityButton: gameState.turn.player === player.uid }}
+                isHighlighted={hasTag("usingAbility") && test.playerCardClick(card)}
               />
             ),
         ),

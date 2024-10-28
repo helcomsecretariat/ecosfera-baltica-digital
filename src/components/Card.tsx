@@ -20,9 +20,10 @@ export type CardProps = {
   onClick?: () => void;
   options?: CardOptions;
   isHighlighted?: boolean;
+  isDimmed?: boolean;
 };
 
-const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = false }: CardProps) => {
+const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = false, isDimmed = false }: CardProps) => {
   const { emit, state } = useGameState();
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
@@ -31,8 +32,7 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
   const highlightTexture = useTexture(getHighlightTextureAssetPath());
   const dropTexture = useTexture("/ecosfera_baltica/ability_drop.avif");
   const dropActiveTexture = useTexture("/ecosfera_baltica/ability_drop_active.avif");
-  const { isShowUID } = useControls({ isShowUID: { value: false } });
-  const { useDimmed } = useControls({ useDimmed: { value: false } });
+  const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: false } });
 
   return (
     gamePieceAppearance && (
@@ -91,7 +91,6 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
             {name === "move" ? "→" : name === "plus" ? "+" : name === "refresh" ? "↻" : name === "special" ? "⚡" : ""}
           </TextWithShadow>
         ))}
-
         {(card.type === "animal" || card.type === "plant") &&
           options?.showAbilityButton &&
           card.abilities.length > 0 && (
@@ -111,7 +110,6 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
               />
             </mesh>
           )}
-
         {["plant", "animal"].includes(type) && (
           <TextWithShadow
             position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 4, 0.15]}
@@ -125,7 +123,6 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
             {name}
           </TextWithShadow>
         )}
-
         {isShowUID && (
           <TextWithShadow
             position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 3, 0.15]}
@@ -140,7 +137,7 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
           </TextWithShadow>
         )}
 
-        {useDimmed && gamePieceAppearance.display?.visibility === "dimmed" && (
+        {useDimmed && isDimmed && (
           <mesh>
             <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, 0.45]} />
             <meshBasicMaterial color="black" transparent opacity={0.8} />

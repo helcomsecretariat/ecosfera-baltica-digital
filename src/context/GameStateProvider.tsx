@@ -14,6 +14,7 @@ interface StateContextType {
   send: (e: EventFromLogic<typeof TurnMachine>) => void;
   emit: ActionEmmiters;
   test: ActionTesters;
+  hasTag: (tag: string) => boolean;
   uiState: UiState;
 }
 
@@ -42,6 +43,7 @@ export const GameStateProvider = ({
   });
   const emit = useMemo(() => createEmmiters(send), [send]);
   const test = useMemo(() => createTesters(snap.can.bind(snap)), [snap]);
+  const hasTag = useMemo(() => snap.hasTag.bind(snap), [snap]);
   const prevUiStateRef = useRef<UiState | null>(null);
   const uiState = useMemo(() => toUiState(prevUiStateRef.current, snap.context), [snap.context]);
 
@@ -55,6 +57,7 @@ export const GameStateProvider = ({
     send,
     emit,
     test,
+    hasTag,
   };
   return <stateContext.Provider value={value}>{children}</stateContext.Provider>;
 };

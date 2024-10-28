@@ -135,16 +135,30 @@ const Croupier = () => {
               onClick={emit.playerDeckClick()}
             />
 
-            {player.uid === gameState.turn.player && gameState.turn.selectedAbilityCard === undefined && (
+            {player.uid === gameState.turn.player && (
+              <>
+                {gameState.turn.selectedAbilityCard === undefined ? (
+                  <AbilityTiles
+                    canRefresh={TurnMachineGuards.canRefreshAbility({ context: gameState })}
+                    isClickable={true}
+                    xStart={0 - cardWidth}
+                    yStart={0 - abilityOffset}
+                    abilities={player.abilities}
+                  />
+                ) : (
+                  <CardAbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} />
+                )}
+              </>
+            )}
+
+            {player.uid !== gameState.turn.player && (
               <AbilityTiles
-                canRefresh={TurnMachineGuards.canRefreshAbility({ context: gameState })}
+                canRefresh={false}
+                isClickable={false}
                 xStart={0 - cardWidth}
                 yStart={0 - abilityOffset}
                 abilities={player.abilities}
               />
-            )}
-            {player.uid === gameState.turn.player && (
-              <CardAbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} />
             )}
           </GamePieceGroup>
         </React.Fragment>

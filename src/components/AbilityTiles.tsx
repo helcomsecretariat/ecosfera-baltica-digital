@@ -11,6 +11,7 @@ const AbilityTiles = ({
   rotation = { x: 0, y: 0, z: 0 },
   abilities,
   canRefresh,
+  isClickable,
 }: {
   xStart: number;
   yStart: number;
@@ -18,6 +19,7 @@ const AbilityTiles = ({
   rotation?: Coordinate;
   abilities: AbilityTile[];
   canRefresh: boolean;
+  isClickable: boolean;
 }) => {
   const { emit } = useGameState();
   const plusTexture = useSRGBTexture("/ecosfera_baltica/ability_plus.avif");
@@ -37,7 +39,7 @@ const AbilityTiles = ({
       }}
       height={6}
       width={6}
-      onClick={emit.tokenClick(ability)}
+      onClick={isClickable ? emit.tokenClick(ability) : undefined}
     >
       <circleGeometry args={[3, 32]} />
       <meshBasicMaterial

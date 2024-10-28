@@ -13,6 +13,7 @@ import { Stats } from "@react-three/drei";
 import { Leva } from "leva";
 import { useBlocker } from "@/hooks/useBlocker";
 import { GameConfig } from "@/state/types";
+import { TimeMachine } from "@/components/TimeMachine";
 
 function GameBoard() {
   const { showGrid, gridDivisions, orbitControls, FPS } = useControls({
@@ -68,6 +69,7 @@ export default (props: GameConfig) => {
 
   return (
     <GameStateProvider {...props}>
+      <TimeMachine />
       <GameBoard />
     </GameStateProvider>
   );

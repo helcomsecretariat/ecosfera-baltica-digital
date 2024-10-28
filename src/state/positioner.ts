@@ -486,8 +486,8 @@ export const positionElementMarketCards = (gameState: GameState): GamePieceCoord
     {} as GamePieceCoordsDict,
   );
 
-export const positionDisasterCards = (gameState: GameState): GamePieceCoordsDict =>
-  gameState.disasterMarket.table.reduce((acc, card: DisasterCard) => {
+export const positionDisasterCards = (gameState: GameState): GamePieceCoordsDict => ({
+  ...gameState.disasterMarket.table.reduce((acc, card: DisasterCard) => {
     acc[card.uid] = {
       position: {
         ...disasterDeckPosition,
@@ -499,7 +499,18 @@ export const positionDisasterCards = (gameState: GameState): GamePieceCoordsDict
       initialRotation: { x: 0, y: -Math.PI, z: 0 },
     };
     return acc;
-  }, {} as GamePieceCoordsDict);
+  }, {} as GamePieceCoordsDict),
+
+  ...gameState.disasterMarket.deck.reduce((acc, card: DisasterCard) => {
+    acc[card.uid] = {
+      initialPosition: { ...disasterDeckPosition, z: 3 },
+      initialRotation: { x: 0, y: -Math.PI, z: 0 },
+      exitPosition: { ...disasterDeckPosition, z: 3 },
+      exitRotation: { x: 0, y: -Math.PI, z: 0 },
+    };
+    return acc;
+  }, {} as GamePieceCoordsDict),
+});
 
 export const positionElementDecks = (gameState: GameState): GamePieceCoordsDict => {
   return uniqBy(gameState.elementMarket.deck, "name")

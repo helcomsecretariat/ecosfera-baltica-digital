@@ -1,5 +1,5 @@
 import { TurnMachine } from "@/state/machines/turn";
-import { AbilityTile, AnimalCard, PlantCard, ElementCard, AbilityName, Card } from "@/state/types";
+import { AbilityTile, AnimalCard, PlantCard, ElementCard, AbilityName, GameState, Card } from "@/state/types";
 import { mapValues } from "lodash-es";
 import { EventFromLogic } from "xstate";
 
@@ -16,13 +16,16 @@ export interface ActionEmmiters {
   plantDeckClick: () => () => void;
   abilityCardClick: (card: PlantCard | AnimalCard) => () => void;
   stageConfirm: () => () => void;
+  iddqd: (context: GameState) => () => void;
 }
 
 export type ActionTesters = {
   [K in keyof ActionEmmiters]: (...args: Parameters<ActionEmmiters[K]>) => boolean;
 };
 
-const actionToEventMap = {
+const actionToEventMap: {
+  [K in keyof ActionEmmiters]: (...args: Parameters<ActionEmmiters[K]>) => EventFromLogic<typeof TurnMachine>;
+} = {
   playerCardClick: (card: Card) => ({ type: "user.click.player.hand.card", card }),
   playerDeckClick: () => ({ type: "user.click.player.deck" }),
   playerEndTurnClick: () => ({ type: "user.click.player.endTurn" }),
@@ -35,6 +38,7 @@ const actionToEventMap = {
   cardTokenClick: (name: AbilityName) => ({ type: "user.click.cardToken", name }),
   abilityCardClick: (card: PlantCard | AnimalCard) => ({ type: "user.click.player.hand.card.ability", card }),
   stageConfirm: () => ({ type: "user.click.stage.confirm" }),
+  iddqd: (context: GameState) => ({ type: "iddqd", context }),
 } as const;
 
 export const createEmmiters = (send: (e: EventFromLogic<typeof TurnMachine>) => void): ActionEmmiters => {

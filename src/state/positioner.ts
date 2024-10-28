@@ -568,6 +568,7 @@ export const positionPlayerDecks = (gameState: GameState): GamePieceCoordsDict =
     };
     acc[`${player.uid}PlayerDiscard`] = {
       initialPosition: discardPositions(gameState)[playerIndex],
+
       position: discardPositions(gameState)[playerIndex],
       rotation: {
         x: 0,

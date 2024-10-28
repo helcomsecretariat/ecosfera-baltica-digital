@@ -27,6 +27,7 @@ const Stage = () => {
         </mesh>
         {state.stage.eventType === "abilityRefresh" && (
           <AbilityTiles
+            isClickable={true}
             canRefresh={true}
             xStart={0 - cardWidth}
             yStart={0 - abilityOffset}

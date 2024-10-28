@@ -739,10 +739,7 @@ export const TurnMachine = setup({
         "user.click.player.endTurn": [{ target: "endingTurn" }],
         "user.click.market.deck.element": {
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },
-          guard: and([
-            "belowBorrowLimit",
-            not(({ context, event }) => TurnMachineGuards.playerHasElement({ context }, event.name)),
-          ]),
+          guard: "belowBorrowLimit",
         },
         "user.click.market.borrowed.card.element": {
           actions: {

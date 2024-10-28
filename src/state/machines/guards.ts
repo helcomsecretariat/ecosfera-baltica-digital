@@ -1,4 +1,4 @@
-import { AbilityTile, AnimalCard, Card, CardType, ElementCard, GameState, PlantCard } from "@/state/types";
+import { AbilityTile, AnimalCard, Card, CardType, GameState, PlantCard } from "@/state/types";
 import { countBy, find, compact, every, intersection } from "lodash";
 import { getAnimalHabitatPairs, getDuplicateElements } from "./helpers/turn";
 
@@ -12,8 +12,15 @@ export const TurnMachineGuards = {
           .filter(({ uid }) => turn.playedCards.includes(uid) || turn.borrowedElement?.uid === uid)
           .filter(({ type }) => type === "element") ?? [];
       const playedElementsCounted = countBy(playedElements, "name");
+      const hasAllElements = every(elementsCounted, (count, element) => playedElementsCounted[element] >= count);
 
-      return every(elementsCounted, (count, element) => playedElementsCounted[element] >= count);
+      const notPlayedElements = player.hand
+        .filter(({ type }) => type === "element")
+        .filter(({ uid }) => !turn.playedCards.includes(uid))
+        .filter(({ uid }) => !turn.exhaustedCards.includes(uid));
+      const isBorrowedUnnecessarily = !!find(notPlayedElements, { name: turn.borrowedElement?.name });
+
+      return !isBorrowedUnnecessarily && hasAllElements;
     }
 
     if (card.type === "animal") {
@@ -33,11 +40,6 @@ export const TurnMachineGuards = {
   },
 
   belowBorrowLimit: ({ context: { turn } }: { context: GameState }) => turn.borrowedCount < turn.borrowedLimit,
-  playerHasElement: ({ context }: { context: GameState }, elName: ElementCard["name"]) => {
-    const { turn, players } = context;
-    const player = find(players, { uid: turn.player })!;
-    return player.hand.some(({ name }) => name === elName);
-  },
 
   notPlayedCard: (
     {

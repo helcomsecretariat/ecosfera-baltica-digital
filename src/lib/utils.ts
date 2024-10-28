@@ -99,7 +99,6 @@ export function generateRandomName(existingNames: Set<string>): string {
     "🌊Drift",
     "🪸Reef",
     "🌊Cove",
-    "💧Spray",
     "🪺Nest",
     "🍃Leaf",
     "🌸Bloom",

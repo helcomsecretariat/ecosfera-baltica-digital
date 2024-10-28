@@ -592,6 +592,7 @@ export const TurnMachine = setup({
       },
     },
     stagingEvent: {
+      tags: ["stagingEvent"],
       initial: "idle",
       on: {
         "user.click.token": {

@@ -12,15 +12,14 @@ import {
   GamePieceAppearance,
   GamePieceAppearances,
   AbsentPieceTransform,
-  ElementUID,
   DisasterUID,
-  AnimalUID,
   HabitatUID,
   ExtinctionUID,
   ExtinctionTile,
   HabitatTile,
   isHabitatUID,
   isExtinctionUID,
+  GamePieceUID,
 } from "./types";
 import {
   cardXOffset,
@@ -332,41 +331,16 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
   const cause = gameState.stage?.cause || [];
   const effect = gameState.stage?.effect;
 
-  const pieceCoordinates = cause.reduce((acc, uid: ElementUID | DisasterUID | AnimalUID, index: number) => {
-    let middleIndex = Math.floor((cause.length - 1) / 2);
-    if (cause.length === 2) middleIndex = 0;
-
-    acc[uid] = {
-      position: {
-        x: (index - middleIndex) * 6,
-        y: (effect !== undefined ? 15 : 5) - Math.abs(index - middleIndex) * 3,
-        z: 50 - Math.abs(index - middleIndex),
-      },
-      rotation: {
-        x: 0,
-        y: 0,
-        z:
-          cause.length === 2
-            ? index === 0
-              ? Math.PI / 24
-              : -Math.PI / 24
-            : ((index - middleIndex) / middleIndex) * (Math.PI / 12) * -1,
-      },
-      initialPosition: disasterDeckPosition,
-      initialRotation: { x: 0, y: -Math.PI, z: 0 },
-    };
-
-    return acc;
-  }, {} as GamePieceCoordsDict);
+  const pieceCoordinates = fanCards(cause);
 
   effect?.forEach((uid: DisasterUID | HabitatUID | ExtinctionUID, index) => {
     const isTile = isHabitatUID(uid) || isExtinctionUID(uid);
 
     pieceCoordinates[uid] = {
       position: {
-        x: 0 + index * 5,
-        y: cause.length === 0 ? 5 : -10,
-        z: 50,
+        x: effect.length === 1 ? 0 : -(6 * (effect.length - 1)) / 2 + index * 6,
+        y: cause.length === 0 ? 0 : cardHeight - 5,
+        z: 75,
       },
       rotation: {
         x: isTile ? -Math.PI / 2 : 0,
@@ -694,4 +668,84 @@ const getPlayerCardOffset = (
     default:
       return { x: 0, y: 0 };
   }
+};
+
+export const fanCards = (cardUids: GamePieceUID[]): GamePieceCoordsDict => {
+  const gamePieceCoords: GamePieceCoordsDict = {};
+  const count = cardUids.length;
+
+  if (count === 1) {
+    gamePieceCoords[cardUids[0]] = {
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 65,
+      },
+    };
+    return gamePieceCoords;
+  }
+
+  const yOffset = -2;
+
+  for (let i = 0; i < count; i++) {
+    let x,
+      y,
+      z = 65,
+      rotateZ = 0;
+
+    if (count % 2 === 0) {
+      const midLeft = count / 2 - 1;
+      const midRight = count / 2;
+
+      if (i === midLeft) {
+        x = -4;
+        y = 0;
+        rotateZ = Math.PI / 24;
+      } else if (i === midRight) {
+        x = 4;
+        y = 0;
+        rotateZ = Math.PI / -24;
+        z = 67;
+      } else {
+        const distanceFromMiddle = Math.abs(i - midLeft - 0.5);
+        x = (i < midLeft ? -1 : 1) * (4 + distanceFromMiddle * 4);
+        y = yOffset * distanceFromMiddle;
+        rotateZ = (((i < midLeft ? 1 : -1) * Math.PI) / 24) * distanceFromMiddle;
+      }
+    } else {
+      const mid = Math.floor(count / 2);
+
+      if (i === mid) {
+        x = 0;
+        y = 0;
+        z = 66;
+        rotateZ = 0;
+      } else {
+        const distanceFromMiddle = Math.abs(i - mid);
+        x = (i < mid ? -1 : 1) * distanceFromMiddle * 8;
+        y = yOffset * distanceFromMiddle;
+        rotateZ = (((i < mid ? 1 : -1) * Math.PI) / 24) * distanceFromMiddle;
+      }
+    }
+
+    gamePieceCoords[cardUids[i]] = {
+      position: {
+        x,
+        y,
+        z,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: rotateZ,
+      },
+    };
+  }
+
+  return gamePieceCoords;
 };

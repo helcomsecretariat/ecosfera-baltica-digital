@@ -208,7 +208,7 @@ const Croupier = () => {
                 card={card}
                 gamePieceAppearance={uiState.cardPositions[card.uid]}
                 onClick={emit.playerCardClick(card)}
-                options={{ showAbilityButton: gameState.turn.player === player.uid }}
+                options={{ showAbilityButton: gameState.turn.player === player.uid && !hasTag("stagingEvent") }}
                 isHighlighted={hasTag("usingAbility") && test.playerCardClick(card)}
               />
             ),

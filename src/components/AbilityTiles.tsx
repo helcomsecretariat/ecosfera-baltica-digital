@@ -43,7 +43,7 @@ const AbilityTiles = ({
     >
       <circleGeometry args={[3, 32]} />
       <meshBasicMaterial
-        color={ability.isUsed ? (canRefresh ? "green" : "#555") : "white"}
+        color={ability.isUsed ? (canRefresh ? "white" : "#555") : "white"}
         map={ability.name === "move" ? moveTexture : ability.name === "plus" ? plusTexture : refreshTexture}
       />
     </GameElement>

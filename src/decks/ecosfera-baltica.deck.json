@@ -120,7 +120,7 @@
       "flora_type": "vascular plant"
     },
     "Fragmites australis": {
-      "elements": ["sun", "oxygen", "nutrients"],
+      "elements": ["sun", "oxygen", "nutrients", "nutrients"],
       "habitats": ["coast", "soft bottom"],
       "abilities": ["plus"],
       "flora_type": "vascular plant"
@@ -132,67 +132,67 @@
       "flora_type": "brown algae"
     },
     "Cladophora glomerata": {
-      "elements": ["sun", "nutrients", "temperature"],
+      "elements": ["sun", "nutrients", "nutrients", "temperature"],
       "habitats": ["ice", "coast"],
       "abilities": ["plus"],
       "flora_type": "green algae"
     },
     "Planothidium spp.": {
-      "elements": ["sun", "nutrients"],
+      "elements": ["sun", "nutrients", "nutrients"],
       "habitats": ["soft bottom"],
       "abilities": ["refresh"],
       "flora_type": "benthic microalgae"
     },
     "Pilayella littoralis": {
-      "elements": ["sun", "nutrients", "temperature"],
+      "elements": ["sun", "nutrients", "nutrients", "temperature"],
       "habitats": ["ice", "hard benthic"],
       "abilities": ["plus"],
       "flora_type": "brown algae"
     },
     "Zostera marina": {
-      "elements": ["sun", "salinity"],
+      "elements": ["sun", "sun", "salinity"],
       "habitats": ["coast"],
       "abilities": ["move"],
       "flora_type": "vascular plant"
     },
     "Biecheleria baltica": {
-      "elements": ["sun", "salinity"],
+      "elements": ["sun", "sun", "salinity"],
       "habitats": ["pelagic"],
       "abilities": ["special"],
       "flora_type": "dinoflagellate"
     },
     "Pauliella taeniata": {
-      "elements": ["sun", "salinity"],
+      "elements": ["sun", "sun", "salinity"],
       "habitats": ["pelagic"],
       "abilities": ["refresh"],
       "flora_type": "diatom"
     },
     "Ulva lactuta": {
-      "elements": ["sun", "nutrients"],
+      "elements": ["sun", "sun", "nutrients"],
       "habitats": ["coast"],
       "abilities": ["plus"],
       "flora_type": "green algae"
     },
     "Chara ssp.": {
-      "elements": ["sun", "nutrients"],
+      "elements": ["sun", "sun", "nutrients"],
       "habitats": ["coast", "soft bottom"],
       "abilities": ["move"],
       "flora_type": "green algae"
     },
     "Mesodinium rubrum": {
-      "elements": ["sun", "temperature"],
+      "elements": ["sun", "sun", "temperature"],
       "habitats": ["pelagic"],
       "abilities": ["refresh"],
       "flora_type": "ciliate"
     },
     "Nodularia spumigena": {
-      "elements": ["sun", "temperature"],
+      "elements": ["sun", "sun", "temperature"],
       "habitats": ["pelagic"],
       "abilities": ["special"],
       "flora_type": "cyanobacteria"
     },
     "Aphanizomenon flosaquae": {
-      "elements": ["sun", "temperature"],
+      "elements": ["sun", "sun", "temperature"],
       "habitats": ["ice"],
       "abilities": ["special"],
       "flora_type": "cyanobacteria"
@@ -228,31 +228,31 @@
       "flora_type": "red algae"
     },
     "Bacteria": {
-      "elements": ["nutrients", "temperature"],
+      "elements": ["nutrients", "temperature", "temperature"],
       "habitats": ["ice", "pelagic"],
       "abilities": [],
       "flora_type": "bacteria"
     },
     "Nitzschia filifomis": {
-      "elements": ["nutrients", "temperature"],
+      "elements": ["nutrients", "temperature", "temperature"],
       "habitats": ["soft bottom", "hard benthic"],
       "abilities": [],
       "flora_type": "benthic microalgae"
     },
     "Ceramium tenuicorne": {
-      "elements": ["nutrients", "temperature"],
+      "elements": ["nutrients", "nutrients", "temperature"],
       "habitats": ["coast", "hard benthic"],
       "abilities": [],
       "flora_type": "red algae"
     },
     "Fontinalis antipyretica": {
-      "elements": ["sun", "temperature"],
+      "elements": ["sun", "temperature", "temperature"],
       "habitats": ["rivers"],
       "abilities": ["plus"],
       "flora_type": "vascular plant"
     },
     "Viruses": {
-      "elements": ["salinity", "temperature"],
+      "elements": ["salinity", "temperature", "temperature"],
       "habitats": ["ice", "pelagic"],
       "abilities": ["refresh"],
       "flora_type": "viruses"
@@ -260,181 +260,181 @@
   },
   "animals": {
     "Calanoida": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["ice", "coast", "pelagic", "rivers", "soft bottom", "hard benthic"],
       "abilities": [],
       "fauna_type": "zooplankton"
     },
     "Rotifera": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["ice"],
       "abilities": ["refresh", "plus"],
       "fauna_type": "zooplankton"
     },
     "Clangula hyemalis": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["ice", "coast"],
       "abilities": ["special"],
       "fauna_type": "birds"
     },
     "Haliaeetus albicilla": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["ice", "coast"],
       "abilities": ["refresh", "special"],
       "fauna_type": "birds"
     },
     "Anguilla anguilla": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["coast", "rivers"],
       "abilities": ["move"],
       "fauna_type": "fish/elasmobranch"
     },
     "Pusa hispida": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["ice", "pelagic", "hard benthic"],
       "abilities": ["refresh"],
       "fauna_type": "mammals"
     },
     "Lutra lutra": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["ice", "coast", "rivers"],
       "abilities": ["refresh"],
       "fauna_type": "mammals"
     },
     "Larus fuscus": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["coast", "pelagic"],
       "abilities": ["move"],
       "fauna_type": "birds"
     },
     "Somateria mollissima": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["coast", "pelagic", "hard benthic"],
       "abilities": ["move"],
       "fauna_type": "birds"
     },
     "Platichthys flesus": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["coast", "soft bottom"],
       "abilities": ["special"],
       "fauna_type": "fish/elasmobranch"
     },
     "Haematopus ostralegus": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["coast", "soft bottom"],
       "abilities": ["move"],
       "fauna_type": "birds"
     },
     "Halichoerus grypus": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["ice", "coast", "pelagic"],
       "abilities": [],
       "fauna_type": "mammals"
     },
     "Gasterosteus aculeatus": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["coast", "pelagic"],
       "abilities": ["plus"],
       "fauna_type": "fish/elasmobranch"
     },
     "Squalus acanthias": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["pelagic"],
       "abilities": ["refresh", "plus"],
       "fauna_type": "fish/elasmobranch"
     },
     "Phocoena phocoena": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["pelagic"],
       "abilities": ["refresh"],
       "fauna_type": "mammals"
     },
     "Gadus morhua": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["pelagic"],
       "abilities": ["move", "refresh", "plus"],
       "fauna_type": "fish/elasmobranch"
     },
     "Protists": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["pelagic"],
       "abilities": ["plus", "special"],
       "fauna_type": "zooplankton"
     },
     "Clupea harengus": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["pelagic"],
       "abilities": ["special"],
       "fauna_type": "fish/elasmobranch"
     },
     "Alca torda": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["pelagic"],
       "abilities": ["move"],
       "fauna_type": "birds"
     },
     "Mergus merganser": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["pelagic"],
       "abilities": ["move", "plus"],
       "fauna_type": "birds"
     },
     "Mytilus edulis": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["pelagic", "hard benthic"],
       "abilities": ["refresh"],
       "fauna_type": "zoobenthos"
     },
     "Salmo salar": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["pelagic", "rivers", "hard benthic"],
       "abilities": ["move"],
       "fauna_type": "fish/elasmobranch"
     },
     "Idotea baltica": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["hard benthic"],
       "abilities": ["plus"],
       "fauna_type": "zoobenthos"
     },
     "Acipenser oxyrinchus": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["rivers", "soft bottom"],
       "abilities": ["move"],
       "fauna_type": "fish/elasmobranch"
     },
     "Myoxocephalus quadricornis": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["rivers", "soft bottom", "hard benthic"],
       "abilities": [],
       "fauna_type": "fish/elasmobranch"
     },
     "Perca fluviatilis": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["rivers", "soft bottom", "hard benthic"],
       "abilities": ["plus"],
       "fauna_type": "fish/elasmobranch"
     },
     "Esox lucius": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["rivers", "soft bottom", "hard benthic"],
       "abilities": ["refresh"],
       "fauna_type": "fish/elasmobranch"
     },
     "Saduria entomon": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["soft bottom", "hard benthic"],
       "abilities": ["plus"],
       "fauna_type": "zoobenthos"
     },
     "Cygnus olor": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["soft bottom"],
       "abilities": ["move"],
       "fauna_type": "birds"
     },
     "Macoma balthica": {
-      "elements": ["sun", "oxygen", "salinity", "nutrients", "temperature"],
+      "elements": [],
       "habitats": ["soft bottom"],
       "abilities": ["refresh"],
       "fauna_type": "zoobenthos"

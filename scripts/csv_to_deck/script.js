@@ -60,7 +60,11 @@ function processRow(row) {
     // Add elements/resources
     resourceColumns.forEach((col) => {
       if (row[col].trim() !== "") {
-        speciesData.elements.push(col.toLowerCase());
+        const num = parseInt(row[col].trim()) ?? 0;
+
+        for (let i = 0; i < num; i++) {
+          speciesData.elements.push(col.toLowerCase());
+        }
       }
     });
 

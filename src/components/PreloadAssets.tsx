@@ -27,6 +27,7 @@ const PreloadAssets: React.FC<PreloadAssetsProps> = ({ config }) => {
     assetPaths.forEach((path) => {
       useTexture.preload(path);
     });
+    useTexture.preload(`/${assets_prefix}/circular_blur.webp`);
   }, [config]);
 
   return null;

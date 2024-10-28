@@ -1,5 +1,7 @@
-import { AnimalCard, GameState, PlantCard, PlayerState } from "@/state/types";
+import { AnimalCard, ElementCard, GameState, PlantCard, PlayerState } from "@/state/types";
 import { createUID } from "@/state/utils";
+import deck from "@/decks/ecosfera-baltica.deck.json";
+import { DeckConfig } from "@/decks/schema";
 
 let ID_COUNTER = 0;
 
@@ -7,128 +9,62 @@ export function createTestUID<T extends string>(prefix: T, postfix = "") {
   return createUID(prefix, (++ID_COUNTER).toString() + "-" + postfix);
 }
 
-export const plant_ascophyllym: PlantCard = {
-  name: "Ascophyllym nodosum",
-  type: "plant",
-  habitats: ["coast", "hard benthic"],
-  abilities: ["move"],
-  elements: ["sun", "oxygen", "salinity"],
-  uid: createTestUID("plant", "ascophyllym"),
-};
+function plantFromDeck(name: string): PlantCard {
+  const plantData = (deck as DeckConfig).plants[name];
+  if (!plantData) throw new Error(`No plant named ${name} found in deck`);
 
-export const animal_idotea: AnimalCard = {
-  name: "Idotea baltica",
-  type: "animal",
-  habitats: ["hard benthic"],
-  abilities: ["plus"],
-  uid: createTestUID("animal", "idotea"),
-};
+  const uid = createTestUID("plant", name.toLowerCase().replace(/\s/g, "_"));
+  return {
+    name,
+    type: "plant",
+    habitats: plantData.habitats,
+    abilities: plantData.abilities,
+    elements: plantData.elements,
+    uid,
+  };
+}
 
-export const plant_bacteria: PlantCard = {
-  name: "Bacteria",
-  type: "plant",
-  habitats: ["ice", "pelagic"],
-  abilities: [],
-  elements: ["nutrients", "temperature"],
-  uid: createTestUID("plant", "bacteria"),
-};
+function animalFromDeck(name: string): AnimalCard {
+  const animalData = (deck as DeckConfig).animals[name];
+  if (!animalData) throw new Error(`No animal named ${name} found in deck`);
 
-export const plant_nodularia: PlantCard = {
-  name: "Nodularia spumigena",
-  type: "plant",
-  habitats: ["pelagic"],
-  abilities: ["special"],
-  elements: ["sun", "temperature"],
-  uid: createTestUID("plant", "nodularia"),
-};
+  const uid = createTestUID("animal", name.toLowerCase().replace(/\s/g, "_"));
+  return {
+    name,
+    type: "animal",
+    habitats: animalData.habitats,
+    abilities: animalData.abilities,
+    uid,
+  };
+}
 
-export const animal_pusa: AnimalCard = {
-  name: "Pusa hispida",
-  type: "animal",
-  habitats: ["ice", "pelagic", "hard benthic"],
-  abilities: ["refresh"],
-  uid: createTestUID("animal", "pusa"),
-};
+function elementFromDeck(elementType: string): ElementCard {
+  const uid = createTestUID("element", elementType);
+  return {
+    uid,
+    type: "element",
+    name: elementType,
+  };
+}
 
-export const animal_mergus: AnimalCard = {
-  name: "Mergus merganser",
-  type: "animal",
-  habitats: ["pelagic"],
-  abilities: ["move", "plus"],
-  uid: createTestUID("animal", "mergus"),
-};
+export const plant_ascophyllym = plantFromDeck("Ascophyllym nodosum");
+export const plant_nodularia = plantFromDeck("Nodularia spumigena");
+export const plant_bacteria = plantFromDeck("Bacteria");
 
-export const plant_aphanizomenon: PlantCard = {
-  name: "Aphanizomenon flosaquae",
-  type: "plant",
-  uid: createTestUID("plant"),
-  habitats: ["ice"],
-  abilities: ["special"],
-  elements: ["sun", "temperature"],
-};
+export const animal_idotea = animalFromDeck("Idotea baltica");
+export const animal_mergus = animalFromDeck("Mergus merganser");
+export const animal_pusa = animalFromDeck("Pusa hispida");
 
-export const plant_mesodinium: PlantCard = {
-  name: "Mesodinium rubrum",
-  type: "plant",
-  uid: createTestUID("plant"),
-  habitats: ["pelagic"],
-  abilities: ["refresh"],
-  elements: ["sun", "temperature"],
-};
-
-export const plant_pilayella: PlantCard = {
-  name: "Pilayella littoralis",
-  type: "plant",
-  uid: createTestUID("plant"),
-  habitats: ["ice", "hard benthic"],
-  abilities: ["plus"],
-  elements: ["sun", "nutrients", "temperature"],
-};
-
-export const plant_viruses: PlantCard = {
-  name: "Viruses",
-  type: "plant",
-  uid: createTestUID("plant"),
-  habitats: ["ice", "pelagic"],
-  abilities: ["refresh"],
-  elements: ["salinity", "temperature"],
-};
-
-export const plant_chrysochomulina: PlantCard = {
-  name: "Chrysochomulina",
-  type: "plant",
-  uid: createTestUID("plant"),
-  habitats: ["pelagic"],
-  abilities: ["move"],
-  elements: ["oxygen", "salinity", "nutrients"],
-};
-
-export const plant_pauliella: PlantCard = {
-  name: "Pauliella taeniata",
-  type: "plant",
-  uid: createTestUID("plant"),
-  habitats: ["pelagic"],
-  abilities: ["refresh"],
-  elements: ["sun", "salinity"],
-};
-
-export const plant_potamogeton: PlantCard = {
-  name: "Potamogeton perfoliatus",
-  type: "plant",
-  uid: createTestUID("plant"),
-  habitats: ["rivers", "soft bottom"],
-  abilities: ["move"],
-  elements: ["sun", "oxygen", "nutrients"],
-};
-
-export const plant_najas: PlantCard = {
-  name: "Najas marina",
-  type: "plant",
-  uid: createTestUID("plant"),
-  habitats: ["rivers", "soft bottom"],
-  abilities: [],
-  elements: ["sun", "oxygen", "nutrients"],
-};
+export const sun_1 = elementFromDeck("sun");
+export const sun_2 = elementFromDeck("sun");
+export const oxygen_1 = elementFromDeck("oxygen");
+export const oxygen_2 = elementFromDeck("oxygen");
+export const temperature_1 = elementFromDeck("temperature");
+export const temperature_2 = elementFromDeck("temperature");
+export const temperature_3 = elementFromDeck("temperature");
+export const nutrients_1 = elementFromDeck("nutrients");
+export const salinity_1 = elementFromDeck("salinity");
+export const salinity_2 = elementFromDeck("salinity");
 
 const player: PlayerState = {
   uid: createTestUID("player"),

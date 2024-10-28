@@ -47,7 +47,7 @@ const Stage = () => {
       <motion.group>
         <mesh position={[0, 0, 40]}>
           <planeGeometry args={[upperXBoundary - lowerXBoundary, upperYBoundary - lowerYBoundary, 1]} />
-          <meshPhysicalMaterial transparent opacity={0.5} map={isPositive ? positiveTexture : negativeTexture} />
+          <meshPhysicalMaterial transparent opacity={0.7} map={isPositive ? positiveTexture : negativeTexture} />
         </mesh>
         {state.stage.eventType === "abilityRefresh" && (
           <AbilityTiles

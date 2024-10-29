@@ -109,6 +109,10 @@ export const TurnMachineGuards = {
     return (context.turn.usedAbilities?.filter((ability) => ability.source === card.uid).length ?? 0) === 0;
   },
 
+  selectedAbilityCardHasSingleAbility: ({ context }: { context: GameState }) => {
+    return context.turn.selectedAbilityCard?.abilities.length === 1;
+  },
+
   didNotBuy: ({ context: { turn } }: { context: GameState }) => {
     const { boughtPlant, boughtAnimal, unlockedHabitat } = turn;
 
@@ -198,5 +202,11 @@ export const TurnMachineGuards = {
     const player = find(context.players, { uid: context.turn.player })!;
 
     return !!find(player.hand, { uid: card.uid });
+  },
+
+  singleAbilityUsed: ({ context }: { context: GameState }) => {
+    const player = find(context.players, { uid: context.turn.player })!;
+
+    return player.abilities.filter((ability) => ability.isUsed).length === 1;
   },
 };

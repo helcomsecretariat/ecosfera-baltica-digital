@@ -12,6 +12,7 @@ const AbilityTiles = ({
   abilities,
   canRefresh,
   isClickable,
+  orientation = "vertical",
 }: {
   xStart: number;
   yStart: number;
@@ -20,6 +21,7 @@ const AbilityTiles = ({
   abilities: AbilityTile[];
   canRefresh: boolean;
   isClickable: boolean;
+  orientation?: "horizontal" | "vertical";
 }) => {
   const { emit } = useGameState();
   const plusTexture = useSRGBTexture("/ecosfera_baltica/ability_plus.avif");
@@ -30,9 +32,15 @@ const AbilityTiles = ({
     <GameElement
       key={ability.name + xStart}
       gamePieceAppearance={{
-        initialPosition: { x: xStart, y: yStart + abilityOffset * index, z: zStart },
+        initialPosition:
+          orientation === "vertical"
+            ? { x: xStart, y: yStart + abilityOffset * index, z: zStart }
+            : { x: xStart + abilityOffset * index, y: yStart, z: zStart },
         initialRotation: rotation,
-        position: { x: xStart, y: yStart + abilityOffset * index, z: zStart },
+        position:
+          orientation === "vertical"
+            ? { x: xStart, y: yStart + abilityOffset * index, z: zStart }
+            : { x: xStart + abilityOffset * index, y: yStart, z: zStart },
         rotation,
         delay: 0,
         duration: 0,

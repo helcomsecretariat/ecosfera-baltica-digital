@@ -1,14 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { upperXBoundary, lowerXBoundary, upperYBoundary, lowerYBoundary } from "@/constants/gameBoard";
+import { upperXBoundary, lowerXBoundary, upperYBoundary, lowerYBoundary, abilityOffset } from "@/constants/gameBoard";
 import { useGameState } from "@/context/GameStateProvider";
 import { Html } from "@react-three/drei";
 import AbilityTiles from "./AbilityTiles";
 import { cardHeight } from "@/constants/card";
-import { difference, find } from "lodash";
+import { difference, filter, find, last } from "lodash";
 import { motion } from "framer-motion-3d";
 import { getAssetPath } from "./utils";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import { DisasterUID, ExtinctionUID, GameState, HabitatUID, isHabitatUID } from "@/state/types";
+import { TurnMachineGuards } from "@/state/machines/guards";
 
 const getHabitatUnlockText = (state: GameState, uids: (HabitatUID | DisasterUID | ExtinctionUID)[]) => {
   const unlockedHabitats = uids
@@ -27,20 +28,28 @@ const getHabitatUnlockText = (state: GameState, uids: (HabitatUID | DisasterUID 
 };
 
 const Stage = () => {
-  const { emit, state } = useGameState();
+  const { emit, state, snap } = useGameState();
+  const player = find(state.players, { uid: state.turn.player })!;
+  const canRefresh = TurnMachineGuards.canRefreshAbility({ context: state });
+  const isPositive =
+    snap.matches({ stagingEvent: "abilityRefresh" }) || snap.matches({ stagingEvent: "habitatUnlock" });
+  const lastRefreshedAbility = find(player.abilities, { uid: last(state.turn.refreshedAbilityUids) });
+  const abilityTiles = canRefresh ? filter(player.abilities, { isUsed: true }) : [lastRefreshedAbility!];
   const positiveTextureImageUrl = getAssetPath("stage", "positive");
   const negativeTextureImageUrl = getAssetPath("stage", "negative");
   const positiveTexture = useSRGBTexture(positiveTextureImageUrl);
   const negativeTexture = useSRGBTexture(negativeTextureImageUrl);
+
   const eventName = {
     disaster: "You did not buy anything.\nYou get a disaster card.",
     extinction: "Too many disasters causes an extinction.\nYou get an extinction tile.",
     massExtinction: "Too many disasters causes a mass extinction.\nYou get 3 extinction tiles.",
     elementalDisaster: "Too many elements causes a disaster.\nYou get a disaster card.",
-    abilityRefresh: "You can now refresh one of your used abilities.",
+    abilityRefresh: !canRefresh
+      ? `Your ${lastRefreshedAbility?.name ?? ""} ability has been refreshed!`
+      : "You can now refresh one of your used abilities.",
     habitatUnlock: getHabitatUnlockText(state, state.stage?.effect ?? []),
   };
-  const isPositive = state.stage?.eventType === "abilityRefresh" || state.stage?.eventType === "habitatUnlock";
 
   return (
     state.stage !== undefined && (
@@ -51,12 +60,13 @@ const Stage = () => {
         </mesh>
         {state.stage.eventType === "abilityRefresh" && (
           <AbilityTiles
-            isClickable={true}
-            canRefresh={true}
-            xStart={0}
+            isClickable={canRefresh}
+            canRefresh={canRefresh}
+            xStart={abilityTiles.length === 1 ? 0 : 0 - Math.ceil(abilityTiles.length / 2) * (abilityOffset / 2)}
             yStart={-cardHeight}
             zStart={50}
-            abilities={find(state.players, { uid: state.turn.player })!.abilities.filter((ability) => ability.isUsed)}
+            abilities={abilityTiles}
+            orientation="horizontal"
           />
         )}
         <Html wrapperClass="top-10" position={[0, -2.5 * cardHeight, 0]} transform scale={8}>

@@ -153,6 +153,12 @@ export const TurnMachine = setup({
     drawPlayerDeck: assign(({ context }) =>
       produce(context, ({ turn, players }) => {
         const player = players.find(({ uid }) => uid === turn.player)!;
+
+        if (player.deck.length === 0) {
+          player.deck = shuffle(player.discard, context.config.seed);
+          player.discard = [];
+        }
+
         const drawnCard = player.deck.shift();
         if (drawnCard) player.hand.push(drawnCard);
       }),
@@ -168,7 +174,6 @@ export const TurnMachine = setup({
     ),
     cardToPlantDeck: assign(({ context }) =>
       produce(context, ({ players, plantMarket, turn }) => {
-        console.log("dsijfslajdf;lsjdfl");
         const player = players.find(({ uid }) => uid === turn.player)!;
         player.hand = reject(player.hand, turn.currentAbility?.targetCard);
         if (turn.currentAbility?.targetCard !== undefined) {

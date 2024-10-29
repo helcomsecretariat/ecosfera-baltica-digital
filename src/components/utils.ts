@@ -48,5 +48,5 @@ export function getAssetPath(type: string, name: string, prefix = deckConfig.ass
 }
 
 export function getHighlightTextureAssetPath(circular: boolean | undefined = undefined): string {
-  return `/${deckConfig.assets_prefix}/${circular ? "circular_blur" : "blur"}.webp`;
+  return `/${deckConfig.assets_prefix}/${circular ? "circular_blur" : "blur"}.avif`;
 }

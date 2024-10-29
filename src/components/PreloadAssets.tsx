@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { useTexture } from "@react-three/drei";
-import { getAssetPath } from "./utils";
 import type { DeckConfig } from "@/decks/schema";
-import { keys } from "lodash-es";
 
 interface PreloadAssetsProps {
   config: DeckConfig;
@@ -10,24 +8,24 @@ interface PreloadAssetsProps {
 
 const PreloadAssets: React.FC<PreloadAssetsProps> = ({ config }) => {
   const { assets_prefix } = config;
-  const generateAssetPaths = (category: keyof DeckConfig) =>
-    keys(config[category]).map((name) =>
-      getAssetPath(category.replace(/ies$/, "y").replace(/s$/, ""), name, assets_prefix),
-    );
 
   useEffect(() => {
-    const assetPaths = [
-      ...generateAssetPaths("plants"),
-      ...generateAssetPaths("animals"),
-      ...generateAssetPaths("disasters"),
-      ...generateAssetPaths("elements"),
-      ...generateAssetPaths("abilities"),
-    ];
+    const loadManifestAndPreload = async () => {
+      try {
+        const manifestResponse = await fetch(`/${assets_prefix}/manifest.json`);
+        const manifest = (await manifestResponse.json()) as string[];
 
-    assetPaths.forEach((path) => {
-      useTexture.preload(path);
-    });
-    useTexture.preload(`/${assets_prefix}/circular_blur.webp`);
+        manifest.forEach((filename) => {
+          const fullPath = `/${assets_prefix}/${filename}`;
+          useTexture.preload(fullPath);
+        });
+      } catch (error) {
+        console.error("Failed to load asset manifest:", error);
+        throw error;
+      }
+    };
+
+    loadManifestAndPreload();
   }, [config]);
 
   return null;

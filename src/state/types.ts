@@ -209,10 +209,6 @@ export type AbsentPieceTransform = {
   initialRotation: Coordinate;
   exitPosition: Coordinate;
   exitRotation: Coordinate;
-  position: never;
-  rotation: never;
-  distance?: number;
-  duration?: number;
 };
 
 type PresentPieceTransform = {
@@ -224,7 +220,12 @@ type PresentPieceTransform = {
   exitRotation?: Coordinate;
 };
 
-export type GamePieceTransform = AbsentPieceTransform | PresentPieceTransform;
+type PositionIndependent = {
+  position?: undefined;
+  rotation?: undefined;
+};
+
+export type GamePieceTransform = (AbsentPieceTransform & PositionIndependent) | PresentPieceTransform;
 
 export interface GamePieceDisplay {
   visibility?: "default" | "highlighted" | "dimmed" | "hidden";

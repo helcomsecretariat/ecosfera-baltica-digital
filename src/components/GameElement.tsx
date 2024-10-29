@@ -28,7 +28,7 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
   const appearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
   const [isPresent, safeToRemove] = usePresence();
   const isDisappearing = !appearance.position;
-  const zCoord = appearance.position?.z;
+  const zCoord = appearance.position?.z ?? 0;
 
   const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);

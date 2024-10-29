@@ -15,7 +15,7 @@ import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
 import { TurnMachineGuards } from "@/state/machines/guards";
-import { compact, concat, countBy, entries, find, flatten, intersection, map, reject, without } from "lodash";
+import { compact, concat, countBy, entries, find, first, flatten, intersection, map, reject, without } from "lodash";
 import { replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 
@@ -434,6 +434,7 @@ export const TurnMachine = setup({
           boughtPlant: false,
           unlockedHabitat: false,
           uidsUsedForAbilityRefresh: [],
+          refreshedAbilityUids: [],
           selectedAbilityCard: undefined,
           automaticEventChecks: [],
           phase: "action",
@@ -465,6 +466,7 @@ export const TurnMachine = setup({
           map(availableAnimalHabitatPairs[0], "uid"),
         );
         ability.isUsed = false;
+        turn.refreshedAbilityUids.push(abilityUid);
       }),
     ),
     markCheckAsDone: assign(({ context }: { context: GameState }, checkName: string) =>
@@ -618,9 +620,25 @@ export const TurnMachine = setup({
           },
         },
         abilityRefresh: {
-          initial: "awaitingConfirmation",
+          initial: "checkingAutomaticRefresh",
           entry: "stageAbilityRefresh",
           states: {
+            checkingAutomaticRefresh: {
+              always: [
+                {
+                  target: "awaitingConfirmation",
+                  actions: {
+                    type: "refreshAbility",
+                    params: ({ context }) =>
+                      find(context.players, { uid: context.turn.player })!.abilities.filter(
+                        (ability) => ability.isUsed,
+                      )[0]!.uid,
+                  },
+                  guard: "singleAbilityUsed",
+                },
+                "awaitingConfirmation",
+              ],
+            },
             awaitingConfirmation: {
               on: {
                 "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
@@ -792,6 +810,19 @@ export const TurnMachine = setup({
     },
 
     cardAbility: {
+      always: {
+        target: "#turn.usingAbility",
+        actions: assign({
+          turn: ({ context: { turn } }) => ({
+            ...turn,
+            currentAbility: {
+              piece: turn.selectedAbilityCard!,
+              name: first(turn.selectedAbilityCard!.abilities)!,
+            },
+          }),
+        }),
+        guard: "selectedAbilityCardHasSingleAbility",
+      },
       on: {
         "user.click.*": { target: "#turn", actions: "cancelAbilitySelection" },
         "user.click.cardToken": {

@@ -89,6 +89,7 @@ export const gameState: GameState = {
     boughtPlant: false,
     unlockedHabitat: false,
     uidsUsedForAbilityRefresh: [],
+    refreshedAbilityUids: [],
     phase: "action",
   },
   players: [player],

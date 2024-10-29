@@ -28,13 +28,13 @@ const getHabitatUnlockText = (state: GameState, uids: (HabitatUID | DisasterUID 
 };
 
 const Stage = () => {
-  const { emit, state } = useGameState();
+  const { emit, state, snap } = useGameState();
   const player = find(state.players, { uid: state.turn.player })!;
   const canRefresh = TurnMachineGuards.canRefreshAbility({ context: state });
-  const isPositive = state.stage?.eventType === "abilityRefresh" || state.stage?.eventType === "habitatUnlock";
-  const abilityTiles = canRefresh
-    ? filter(player.abilities, { isUsed: true })
-    : filter(player.abilities, { uid: last(state.turn.refreshedAbilityUids) });
+  const isPositive =
+    snap.matches({ stagingEvent: "abilityRefresh" }) || snap.matches({ stagingEvent: "habitatUnlock" });
+  const lastRefreshedAbility = find(player.abilities, { uid: last(state.turn.refreshedAbilityUids) });
+  const abilityTiles = canRefresh ? filter(player.abilities, { isUsed: true }) : [lastRefreshedAbility!];
   const positiveTextureImageUrl = getAssetPath("stage", "positive");
   const negativeTextureImageUrl = getAssetPath("stage", "negative");
   const positiveTexture = useSRGBTexture(positiveTextureImageUrl);
@@ -46,7 +46,7 @@ const Stage = () => {
     massExtinction: "Too many disasters causes a mass extinction.\nYou get 3 extinction tiles.",
     elementalDisaster: "Too many elements causes a disaster.\nYou get a disaster card.",
     abilityRefresh: !canRefresh
-      ? `Your ${find(player.abilities, { uid: last(state.turn.refreshedAbilityUids) })?.name ?? ""} ability has been refreshed!`
+      ? `Your ${lastRefreshedAbility?.name ?? ""} ability has been refreshed!`
       : "You can now refresh one of your used abilities.",
     habitatUnlock: getHabitatUnlockText(state, state.stage?.effect ?? []),
   };
@@ -65,11 +65,7 @@ const Stage = () => {
             xStart={abilityTiles.length === 1 ? 0 : 0 - Math.ceil(abilityTiles.length / 2) * (abilityOffset / 2)}
             yStart={-cardHeight}
             zStart={50}
-            abilities={
-              canRefresh
-                ? filter(player.abilities, { isUsed: true })
-                : filter(player.abilities, { uid: last(state.turn.refreshedAbilityUids) })
-            }
+            abilities={abilityTiles}
             orientation="horizontal"
           />
         )}

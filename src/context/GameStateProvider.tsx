@@ -2,7 +2,7 @@ import { createContext, ReactNode, useContext, useLayoutEffect, useMemo, useRef 
 import config from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
 import { GameConfig, GameState, UiState } from "@/state/types";
-import { type EventFromLogic } from "xstate";
+import { SnapshotFrom, type EventFromLogic } from "xstate";
 import { ActionEmmiters, ActionTesters, createEmmiters, createTesters } from "@/state/action-handlers";
 import { inspect } from "@/state/machines/utils";
 import { TurnMachine } from "@/state/machines/turn";
@@ -10,6 +10,7 @@ import { toUiState } from "@/state/positioner";
 import type { DeckConfig } from "@/decks/schema";
 
 interface StateContextType {
+  snap: SnapshotFrom<typeof TurnMachine>;
   state: GameState;
   send: (e: EventFromLogic<typeof TurnMachine>) => void;
   emit: ActionEmmiters;
@@ -52,6 +53,7 @@ export const GameStateProvider = ({
   }, [uiState]);
 
   const value = {
+    snap,
     state: snap.context,
     uiState,
     send,

@@ -68,11 +68,10 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: url("/bg.svg");
-    background-size: contain;
-  }
-
-  canvas {
-    backdrop-filter: brightness(30%) blur(2px);
+    background: url("ecosfera_baltica/bg.avif");
+    backdrop-filter: brightness(70%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
   }
 }

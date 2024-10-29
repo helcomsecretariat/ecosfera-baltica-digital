@@ -1,35 +1,51 @@
 import { promises as fs } from "fs";
 import path from "path";
 import sharp from "sharp";
-import { ensureDir } from "fs-extra";
+import { ensureDir, copy } from "fs-extra";
 
 const imgRegexp = /\.(webp|png|jpg|jpeg|svg)$/i;
 
-async function getAllImageFiles(dir, fileList = []) {
+async function getDirs(inputDir) {
+  const entries = await fs.readdir(inputDir, { withFileTypes: true });
+  return entries.filter((entry) => entry.isDirectory()).map((dir) => dir.name);
+}
+
+async function getImageFiles(dir) {
+  const imageFiles = [];
   const files = await fs.readdir(dir, { withFileTypes: true });
 
   for (const file of files) {
     const fullPath = path.join(dir, file.name);
-    if (file.isDirectory()) {
-      await getAllImageFiles(fullPath, fileList);
-    } else if (imgRegexp.test(file.name)) {
-      fileList.push(fullPath);
+    if (file.isFile() && imgRegexp.test(file.name)) {
+      imageFiles.push(fullPath);
     }
   }
 
-  return fileList;
+  return imageFiles;
 }
 
-async function convertImagesToAvif(inputDir, outputDir) {
-  const imageFiles = await getAllImageFiles(inputDir);
+async function processDir(inputDir, outputDir, subDir) {
+  const inputSubDir = path.join(inputDir, subDir);
+  const outputSubDir = path.join(outputDir, subDir);
+
+  await ensureDir(outputSubDir);
+
+  const imageFiles = await getImageFiles(inputSubDir);
+  const manifest = [];
 
   for (const filePath of imageFiles) {
-    const relativePath = path.relative(inputDir, filePath);
-    const outputFilePath = path.join(outputDir, relativePath).replace(imgRegexp, ".avif");
-    await ensureDir(path.dirname(outputFilePath));
+    const relativePath = path.relative(inputSubDir, filePath);
+    const outputFilePath = path.join(outputSubDir, relativePath).replace(imgRegexp, ".avif");
     await sharp(filePath).toFormat("avif").toFile(outputFilePath);
+
+    manifest.push(path.basename(outputFilePath));
+
     console.log(`Converted: ${filePath} → ${outputFilePath}`);
   }
+
+  const manifestPath = path.join(outputSubDir, "manifest.json");
+  await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
+  console.log(`Manifest written to: ${manifestPath}`);
 }
 
 const inputDirectory = process.argv[2];
@@ -40,6 +56,12 @@ if (!inputDirectory || !outputDirectory) {
   process.exit(1);
 }
 
-convertImagesToAvif(inputDirectory, outputDirectory)
-  .then(() => console.log("All images processed!"))
-  .catch(console.error);
+async function processAllDirs(inputDir, outputDir) {
+  const dirs = await getDirs(inputDir);
+  for (const dir of dirs) {
+    await processDir(inputDir, outputDir, dir);
+  }
+  console.log("All directories processed!");
+}
+
+processAllDirs(inputDirectory, outputDirectory).catch(console.error);

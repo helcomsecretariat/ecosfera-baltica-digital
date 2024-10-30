@@ -182,7 +182,7 @@ export const TurnMachine = setup({
       }),
     ),
     cardToPlayerHand: assign(({ context }, card: Card) =>
-      produce(context, ({ players }) => {
+      produce(context, ({ players, turn }) => {
         const player = find(players, { uid: context.turn.player })!;
         const targetPlayer = players.find((player) => player.hand.some((handCard) => handCard.uid === card.uid));
 
@@ -190,6 +190,7 @@ export const TurnMachine = setup({
 
         player.hand = reject(player.hand, context.turn.currentAbility.targetCard);
         targetPlayer.hand.push(context.turn.currentAbility.targetCard);
+        turn.playedCards = without(context.turn.playedCards, context.turn.currentAbility.targetCard.uid);
       }),
     ),
     cardToElementDeck: assign(({ context }) =>

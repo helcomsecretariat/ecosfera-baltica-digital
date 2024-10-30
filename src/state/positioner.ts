@@ -596,16 +596,7 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
       .filter((card) => !exhaustedCards.includes(card.uid))
       .forEach((card: Card, cardIndex: number) => {
         const inPlay = playedCards.includes(card.uid);
-        const exhausted = exhaustedCards.includes(card.uid);
-        const offset = getPlayerCardOffset(
-          playerIndex,
-          cardIndex,
-          player.hand.length,
-          inPlay,
-          exhausted,
-          // turnState.player === player.uid,
-          true,
-        );
+        const offset = getPlayerCardOffset(playerIndex, cardIndex, player.hand.length, inPlay, false, true);
 
         acc[card.uid] = {
           position: {
@@ -625,13 +616,12 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
       .filter((card) => exhaustedCards.includes(card.uid))
       .forEach((card: Card, cardIndex: number) => {
         const inPlay = playedCards.includes(card.uid);
-        const exhausted = exhaustedCards.includes(card.uid);
         const offset = getPlayerCardOffset(
           playerIndex,
           cardIndex,
           player.hand.length - exhaustedCards.length,
           inPlay,
-          exhausted,
+          true,
           true,
         );
 

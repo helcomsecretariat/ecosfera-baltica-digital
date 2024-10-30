@@ -182,7 +182,7 @@ export const TurnMachine = setup({
       }),
     ),
     cardToPlayerHand: assign(({ context }, card: Card) =>
-      produce(context, ({ players }) => {
+      produce(context, ({ players, turn }) => {
         const player = find(players, { uid: context.turn.player })!;
         const targetPlayer = players.find((player) => player.hand.some((handCard) => handCard.uid === card.uid));
 
@@ -190,6 +190,7 @@ export const TurnMachine = setup({
 
         player.hand = reject(player.hand, context.turn.currentAbility.targetCard);
         targetPlayer.hand.push(context.turn.currentAbility.targetCard);
+        turn.playedCards = without(context.turn.playedCards, context.turn.currentAbility.targetCard.uid);
       }),
     ),
     cardToElementDeck: assign(({ context }) =>
@@ -321,6 +322,7 @@ export const TurnMachine = setup({
         });
         draft.turn.unlockedHabitat = true;
         draft.turn.playedCards = without(context.turn.playedCards, ...map(playedAnimals, "uid"));
+        draft.turn.exhaustedCards = concat(draft.turn.exhaustedCards, ...map(playedAnimals, "uid"));
 
         draft.stage = {
           eventType: "habitatUnlock",
@@ -871,7 +873,10 @@ export const TurnMachine = setup({
                 "user.click.player.hand.card": {
                   target: "pickingDestination",
                   actions: { type: "setAbilityTargetCard", params: ({ event: { card } }) => card },
-                  guard: { type: "ownsCard", params: ({ event: { card } }) => card.uid },
+                  guard: and([
+                    ({ context, event: { card } }) => TurnMachineGuards.notExhausted({ context }, card.uid),
+                    ({ context, event: { card } }) => TurnMachineGuards.ownsCard({ context }, card.uid),
+                  ]),
                 },
               },
             },

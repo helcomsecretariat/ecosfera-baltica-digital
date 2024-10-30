@@ -321,6 +321,7 @@ export const TurnMachine = setup({
         });
         draft.turn.unlockedHabitat = true;
         draft.turn.playedCards = without(context.turn.playedCards, ...map(playedAnimals, "uid"));
+        draft.turn.exhaustedCards = concat(draft.turn.exhaustedCards, ...map(playedAnimals, "uid"));
 
         draft.stage = {
           eventType: "habitatUnlock",
@@ -871,7 +872,10 @@ export const TurnMachine = setup({
                 "user.click.player.hand.card": {
                   target: "pickingDestination",
                   actions: { type: "setAbilityTargetCard", params: ({ event: { card } }) => card },
-                  guard: { type: "ownsCard", params: ({ event: { card } }) => card.uid },
+                  guard: and([
+                    ({ context, event: { card } }) => TurnMachineGuards.notExhausted({ context }, card.uid),
+                    ({ context, event: { card } }) => TurnMachineGuards.ownsCard({ context }, card.uid),
+                  ]),
                 },
               },
             },

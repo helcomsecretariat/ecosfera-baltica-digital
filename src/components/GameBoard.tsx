@@ -7,15 +7,14 @@ import { cameraZoom } from "../constants/gameBoard";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
 import PreloadAssets from "@/components/PreloadAssets";
-import { GameStateProvider } from "@/context/GameStateProvider";
 import { DeckConfig } from "@/decks/schema";
 import { Stats } from "@react-three/drei";
 import { Leva } from "leva";
 import { useBlocker } from "@/hooks/useBlocker";
-import { GameConfig } from "@/state/types";
-import { TimeMachine } from "@/components/TimeMachine";
 
-function GameBoard() {
+export default function GameBoard() {
+  useBlocker();
+
   const { showGrid, gridDivisions, orbitControls, FPS } = useControls({
     showGrid: false,
     gridDivisions: 16,
@@ -63,14 +62,3 @@ function GameBoard() {
     </div>
   );
 }
-
-export default (props: GameConfig) => {
-  useBlocker();
-
-  return (
-    <GameStateProvider {...props}>
-      <TimeMachine />
-      <GameBoard />
-    </GameStateProvider>
-  );
-};

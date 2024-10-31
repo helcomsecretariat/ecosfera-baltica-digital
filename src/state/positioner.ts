@@ -653,7 +653,7 @@ const getPlayerCardOffset = (
 ) => {
   const indexOffset = activePlayer ? 1 : 0.5;
   const cardOffset = exhausted
-    ? (handLength + 1) * cardXOffset + ((cardIndex + indexOffset) * cardXOffset) / 4
+    ? (handLength + 1) * cardXOffset + (cardIndex + indexOffset) * cardXOffset
     : (cardIndex + indexOffset) * cardXOffset;
   const inPlayOffset = inPlay ? (playerIndex === 0 || playerIndex === 3 ? 4 : -4) : 0;
 

@@ -8,7 +8,7 @@ import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
 import { useControls } from "leva";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
-import { useGameState } from "@/context/game-state/provider";
+import { useGameState } from "@/context/game-state/hook";
 
 export type CardOptions = {
   showAbilityButton?: boolean;

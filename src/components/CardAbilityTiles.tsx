@@ -1,7 +1,7 @@
 import GameElement from "@/components/GameElement";
 import { getHighlightTextureAssetPath } from "@/components/utils";
 import { abilityOffset } from "@/constants/gameBoard";
-import { useGameState } from "@/context/game-state/provider";
+import { useGameState } from "@/context/game-state/hook";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import { Coordinate } from "@/state/types";
 import { useTexture } from "@react-three/drei";

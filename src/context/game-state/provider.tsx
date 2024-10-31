@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useLayoutEffect, useMemo, useRef } from "react";
+import { createContext, ReactNode, useLayoutEffect, useMemo, useRef } from "react";
 import config from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
 import { GameConfig, GameState, UiState } from "@/state/types";
@@ -19,7 +19,7 @@ interface StateContextType {
   uiState: UiState;
 }
 
-const stateContext = createContext<StateContextType | undefined>(undefined);
+export const stateContext = createContext<StateContextType | undefined>(undefined);
 
 export const GameStateProvider = ({
   children,
@@ -62,12 +62,4 @@ export const GameStateProvider = ({
     hasTag,
   };
   return <stateContext.Provider value={value}>{children}</stateContext.Provider>;
-};
-
-export const useGameState = () => {
-  const context = useContext(stateContext);
-  if (!context) {
-    throw new Error("useGameState must be used within a GameStateProvider");
-  }
-  return context;
 };

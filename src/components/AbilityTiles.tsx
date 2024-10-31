@@ -1,7 +1,7 @@
 import GameElement from "./GameElement";
 import { abilityOffset } from "../constants/gameBoard";
 import { AbilityTile, Coordinate } from "@/state/types";
-import { useGameState } from "@/context/game-state/provider";
+import { useGameState } from "@/context/game-state/hook";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 
 const AbilityTiles = ({

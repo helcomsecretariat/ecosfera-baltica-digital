@@ -5,7 +5,7 @@ import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/
 import { cardWidth } from "@/constants/card";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
-import { useGameState } from "@/context/game-state/provider";
+import { useGameState } from "@/context/game-state/hook";
 import { uniqBy } from "lodash-es";
 import { abilityOffset } from "@/constants/gameBoard";
 import GamePieceGroup from "./GamePieceGroup";

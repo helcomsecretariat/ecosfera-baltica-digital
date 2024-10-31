@@ -3,7 +3,7 @@ import { motion } from "framer-motion-3d";
 import { GamePiece, GamePieceAppearance } from "@/state/types";
 import { MeshProps, ThreeEvent } from "@react-three/fiber";
 import { baseDuration } from "@/constants/animation";
-import { useGameState } from "@/context/GameStateProvider";
+import { useGameState } from "@/context/game-state/provider";
 import { usePresence } from "framer-motion";
 import { useAnimControls } from "@/hooks/useAnimationControls";
 

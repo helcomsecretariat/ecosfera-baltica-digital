@@ -1,4 +1,4 @@
-import { useGameState } from "@/context/GameStateProvider";
+import { useGameState } from "@/context/game-state/provider";
 import { motion } from "framer-motion-3d";
 import { baseDuration } from "@/constants/animation";
 import { useAnimControls } from "@/hooks/useAnimationControls";

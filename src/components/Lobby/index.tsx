@@ -64,17 +64,17 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
       className="flex min-h-screen flex-col items-center justify-center bg-cover bg-center p-4"
       style={{ backgroundImage: "url(/ecosfera_baltica/lobby_bg.avif)" }}
     >
-      <section className="mt-auto flex w-full flex-col items-center justify-center space-y-6 rounded-lg p-2 pb-12 text-2xl text-white sm:w-8/12 md:w-6/12 xl:w-4/12">
+      <section className="mt-auto flex w-full flex-col items-center justify-center rounded-lg p-2 pb-12 text-base text-white sm:w-8/12 md:w-5/12 lg:text-xl xl:text-2xl md:portrait:w-8/12 md:portrait:text-xl lg:portrait:text-3xl">
         {/* Number of Players */}
         <div className="flex w-full flex-col gap-1">
           {[...Array(playerCount).keys()].map((key) => (
-            <div key={key} className="flex justify-between">
+            <div key={key} className="flex items-center justify-between">
               <label htmlFor={`playerName_${key}`}>Player {key + 1}</label>
               <div className="flex gap-2">
                 <Input
                   type="text"
                   id={`playerName_${key}`}
-                  className="w-auto rounded-none border-0 border-transparent border-white bg-transparent text-end text-2xl focus-visible:border-b-[1px] focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="w-auto rounded-none border-0 border-transparent border-white bg-transparent text-end text-inherit focus-visible:border-b-[1px] focus-visible:ring-0 focus-visible:ring-offset-0"
                   ref={(ref) => (nameInputRefs.current[key] = ref!)}
                   value={playerNames[key]}
                   onChange={(e) => handlePlayerNameChange(key, e.target.value)}
@@ -94,13 +94,13 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
         {playerCount < 4 && (
           <Button
             variant="wrapper"
-            className="mx-auto flex w-full gap-3"
+            className="group mx-auto flex w-full gap-3 p-0 text-xl"
             onClick={() => setplayerCount(playerCount + 1)}
           >
             <Button size="icon" variant="secondary">
               <FaPlus />
             </Button>
-            <span className="text-2xl">Add player</span>
+            <span className="transition-all group-hover:opacity-85">Add player</span>
           </Button>
         )}
         {/* Game Difficulty */}
@@ -129,20 +129,20 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
           </div>
         </div>
         {/* Advanced Options */}
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="single" collapsible className="!mt-0 w-full">
           <AccordionItem value="advanced">
             <AccordionTrigger>Advanced Options </AccordionTrigger>
             <AccordionContent>
               {/* Game Seed */}
               <div className="mt-4 flex justify-between">
-                <label htmlFor="seed" className="mb-2 flex items-center text-2xl">
+                <label htmlFor="seed" className="mb-2 flex items-center">
                   Seed
                 </label>
                 <div className="flex items-center">
                   <Input
                     id="seed"
                     type="text"
-                    className="w-auto rounded-none border-0 border-transparent border-white bg-transparent text-end text-2xl focus-visible:border-b-[1px] focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="w-auto rounded-none border-0 border-transparent border-white bg-transparent text-end focus-visible:border-b-[1px] focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={seed}
                     onChange={(e) => setSeed(e.target.value)}
                   />

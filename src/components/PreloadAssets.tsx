@@ -26,7 +26,7 @@ const PreloadAssets: React.FC<PreloadAssetsProps> = ({ config }) => {
     };
 
     loadManifestAndPreload();
-  }, [config]);
+  }, [config, assets_prefix]);
 
   return null;
 };

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { useGameState } from "@/context/game-state/provider";
 import { useControls, button } from "leva";
 import { SnapshotFrom } from "xstate";
@@ -16,8 +16,7 @@ export const TimeMachine = () => {
   });
   const [persistedOptions, setPersistedOptions] = useState<{ [key: string]: string }>({});
 
-  // Function to update the options for the persisted states select
-  const updatePersistedOptions = () => {
+  const updatePersistedOptions = useCallback(() => {
     const options: { [key: string]: string } = {};
 
     for (let i = 0; i < localStorage.length; i++) {
@@ -29,34 +28,7 @@ export const TimeMachine = () => {
     }
 
     setPersistedOptions(options);
-  };
-
-  useEffect(() => {
-    updatePersistedOptions();
   }, []);
-
-  useEffect(() => {
-    if (snap !== gameStateHistory.current[currentIndex.current]) {
-      gameStateHistory.current = [snap, ...gameStateHistory.current.slice(0, MAX_HISTORY_LENGTH)];
-      currentIndex.current = 0;
-
-      updateOptions();
-    }
-  }, [snap]);
-
-  const updateOptions = () => {
-    const updatedOptions = gameStateHistory.current.reduce(
-      (acc, snap, index) => {
-        const path = flatten(snap.value) + ` (${-index})`;
-        acc[path] = index;
-        return acc;
-      },
-      {} as { [key: string]: number },
-    );
-
-    setOptions(updatedOptions);
-    set({ selectedState: 0 });
-  };
 
   const [{ selectedState, loadState }, set] = useControls(
     "Time travel",
@@ -79,19 +51,48 @@ export const TimeMachine = () => {
       saveState: button(() => {
         const stateName = prompt("Enter name for current state");
         if (stateName) {
-          const key = LOCAL_STORAGE_KEY_PREFIX + stateName;
+          const key = LOCAL_STORAGE_KEY_PREFIX + stateName + ` (${snap.context.players.length} players)`;
           try {
             localStorage.setItem(key, JSON.stringify(snap));
             updatePersistedOptions();
           } catch (error) {
             console.error(error);
-            alert("Couldnt save state. Are you using private mode?");
+            alert("Couldn't save state. Are you using private mode?");
           }
         }
       }),
     }),
     [options, persistedOptions],
   );
+
+  const updateOptions = useCallback(() => {
+    const updatedOptions = gameStateHistory.current.reduce(
+      (acc, snap, index) => {
+        const path = flatten(snap.value) + ` (${-index})`;
+        acc[path] = index;
+        return acc;
+      },
+      {} as { [key: string]: number },
+    );
+
+    if (JSON.stringify(options) !== JSON.stringify(updatedOptions)) {
+      setOptions(updatedOptions);
+      set({ selectedState: 0 });
+    }
+  }, [options, set]);
+
+  useEffect(() => {
+    updatePersistedOptions();
+  }, [updatePersistedOptions, set]);
+
+  useEffect(() => {
+    if (snap !== gameStateHistory.current[currentIndex.current]) {
+      gameStateHistory.current = [snap, ...gameStateHistory.current.slice(0, MAX_HISTORY_LENGTH)];
+      currentIndex.current = 0;
+
+      updateOptions();
+    }
+  }, [snap, updateOptions]);
 
   useEffect(() => {
     if (Number.isNaN(selectedState)) return;
@@ -100,11 +101,14 @@ export const TimeMachine = () => {
       gameStateHistory.current = gameStateHistory.current.slice(selectedState + 1);
       currentIndex.current = 0;
       updateOptions();
+
+      // Reset selectedState to prevent repeated runs
+      set({ selectedState: 0 });
     }
-  }, [selectedState]);
+  }, [selectedState, emit, updateOptions, set]);
 
   useEffect(() => {
-    if (loadState) {
+    if (loadState && loadState !== "---") {
       const snapStr = localStorage.getItem(loadState);
       if (snapStr) {
         const loadedSnap = JSON.parse(snapStr);
@@ -115,8 +119,10 @@ export const TimeMachine = () => {
         currentIndex.current = 0;
         updateOptions();
       }
+      // Reset loadState to prevent repeated runs
+      set({ loadState: "---" });
     }
-  }, [loadState]);
+  }, [loadState, emit, updateOptions, set]);
 
   return null;
 };

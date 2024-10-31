@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { useGameState } from "@/context/GameStateProvider";
+import { useGameState } from "@/context/game-state/provider";
 import { useControls, button } from "leva";
 import { SnapshotFrom } from "xstate";
 import { TurnMachine } from "@/state/machines/turn";

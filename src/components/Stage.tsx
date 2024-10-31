@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { upperXBoundary, lowerXBoundary, upperYBoundary, lowerYBoundary, abilityOffset } from "@/constants/gameBoard";
-import { useGameState } from "@/context/GameStateProvider";
+import { useGameState } from "@/context/game-state/provider";
 import { Html } from "@react-three/drei";
 import AbilityTiles from "./AbilityTiles";
 import { cardHeight } from "@/constants/card";

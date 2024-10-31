@@ -3,6 +3,8 @@ import "./App.css";
 import GameBoard from "./components/GameBoard";
 import { useState } from "react";
 import { GameConfig } from "@/state/types";
+import { GameStateProvider } from "@/context/GameStateProvider";
+import { TimeMachine } from "@/components/TimeMachine";
 
 const App = () => {
   const [gameSettings, setGameSettings] = useState<GameConfig | null>(null);
@@ -11,7 +13,12 @@ const App = () => {
     return <Lobby onStartGame={setGameSettings} />;
   }
 
-  return <GameBoard {...gameSettings} />;
+  return (
+    <GameStateProvider {...gameSettings}>
+      <TimeMachine />
+      <GameBoard />
+    </GameStateProvider>
+  );
 };
 
 export default App;

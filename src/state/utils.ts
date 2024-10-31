@@ -1,4 +1,4 @@
-import { Card, GameState, PlayerState, UID } from "@/state/types";
+import { Card, Coordinate, GameState, PlayerState, UID } from "@/state/types";
 import { find, isMatch } from "lodash-es";
 
 // algorith need a lenghty seed to work somewhat OK
@@ -57,6 +57,10 @@ export function createUID<T extends string>(prefix: T, id: string): UID<T> {
 
 export function getAngleSector(rawAngle: number, numSectors: number): number {
   return Math.floor((rawAngle / (2 * Math.PI)) * numSectors) % numSectors;
+}
+
+export function getSector(coord: Coordinate, precision = 5) {
+  return `${~~(coord.x / precision)}_${~~(coord.y / precision)}`;
 }
 
 export function getDirectionArrow(rawAngle: number): string {

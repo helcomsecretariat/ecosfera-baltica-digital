@@ -9,7 +9,6 @@ import {
   PlantCard,
   GamePieceCoordsDict,
   UiState,
-  GamePieceAppearance,
   GamePieceAppearances,
   AbsentPieceTransform,
   DisasterUID,
@@ -20,7 +19,7 @@ import {
   isHabitatUID,
   isExtinctionUID,
   GamePieceUID,
-} from "./types";
+} from "../types";
 import {
   cardXOffset,
   cardYOffset,
@@ -38,9 +37,9 @@ import {
   tileSize,
 } from "@/constants/gameBoard";
 import { cardHeight, cardWidth } from "@/constants/card";
-import { TurnMachineGuards } from "./machines/guards";
-import { baseDuration, deckAnimationTimings } from "@/constants/animation";
-import { getAngleSector, getDirectionArrow } from "@/state/utils";
+import { TurnMachineGuards } from "../machines/guards";
+import { deckAnimationTimings } from "@/constants/animation";
+import { calcDelays } from "@/state/ui/animation-scheduler";
 
 const zeroRotation = { x: 0, y: 0, z: 0 };
 const yFlipRotation = { y: -Math.PI };
@@ -51,186 +50,6 @@ export const toUiState = (prevUiState: UiState | null, gameState: GameState): Ui
     deckPositions: calculateDeckPositions(gameState),
   };
 };
-
-function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict): GamePieceAppearances {
-  const calcDist = (posA: Coordinate, posB: Coordinate): number => {
-    return Math.sqrt(Math.pow(posA.x - posB.x, 2) + Math.pow(posA.y - posB.y, 2));
-  };
-
-  const numBins = 3;
-
-  type MotionDataEntry = {
-    key: string;
-    deltaX: number;
-    deltaY: number;
-    angle: number;
-    distance: number;
-    cardAppearance: GamePieceAppearance;
-    startPoint: Coordinate;
-    endPoint: Coordinate;
-    isDisappearing?: boolean;
-    doesFlip: boolean;
-  };
-
-  const motionData: MotionDataEntry[] = [];
-
-  function detectOverlaps(motionData: MotionDataEntry[]): Map<string, string> {
-    const overlaps = new Map<string, string>();
-
-    for (let i = 0; i < motionData.length; i++) {
-      if (motionData[i].distance === 0) continue;
-      if (motionData[i].isDisappearing) continue;
-      for (let j = 0; j < motionData.length; j++) {
-        if (motionData[j].distance === 0) continue;
-
-        // a bit complex logic to detect "played card" overlaps
-        const sameX = motionData[i].endPoint.x === motionData[j].startPoint.x;
-        const sameY = motionData[i].endPoint.y === motionData[j].startPoint.y;
-        // ideally should take into account side players for card widht vs height
-        const closeX = Math.abs(motionData[i].endPoint.x - motionData[j].startPoint.x) < cardHeight / 4;
-        const closeY = Math.abs(motionData[i].endPoint.y - motionData[j].startPoint.y) < cardHeight / 4;
-
-        if ((sameX && closeY) || (sameY && closeX)) {
-          overlaps.set(motionData[i].key, motionData[j].key);
-          break;
-        }
-      }
-    }
-
-    return overlaps;
-  }
-
-  Object.entries(cards).forEach(([key, currentApp]) => {
-    const prevApp = cardsPrev?.[key as keyof GamePieceCoordsDict] as GamePieceAppearance | undefined;
-    const curPos = currentApp.position;
-    const curInitPos = currentApp.initialPosition;
-    const curExitPos = currentApp.exitPosition;
-    const prevPos = prevApp?.position;
-    const prevRot = prevApp?.rotation;
-    const curRot = currentApp.rotation;
-    const curInitRot = currentApp.initialRotation;
-    const curExitRot = currentApp.exitRotation;
-
-    let distance = 0;
-    let deltaX = 0;
-    let deltaY = 0;
-    let startPoint: Coordinate = { x: 0, y: 0, z: 0 };
-    let endPoint: Coordinate = { x: 0, y: 0, z: 0 };
-    let isDisappearing = false;
-    let doesFlip = false;
-
-    if (curPos && curInitPos && !prevPos) {
-      startPoint = curInitPos;
-      endPoint = curPos;
-      // Check for flip between initial and current rotation
-      doesFlip = curInitRot && curRot && curInitRot.y !== curRot.y;
-    } else if (!curPos && prevPos && curExitPos) {
-      startPoint = prevPos;
-      endPoint = curExitPos;
-      isDisappearing = true;
-      // Check for flip between previous and exit rotation
-      doesFlip = prevRot && curExitRot && prevRot.y !== curExitRot.y;
-    } else if (prevPos && curPos) {
-      startPoint = prevPos;
-      endPoint = curPos;
-      // Check for flip between previous and current rotation
-      doesFlip = prevRot && curRot && prevRot.y !== curRot.y;
-    }
-    distance = calcDist(startPoint, endPoint);
-    deltaX = startPoint.x - endPoint.x;
-    deltaY = startPoint.y - endPoint.y;
-
-    const angle = Math.atan2(deltaY, deltaX);
-
-    motionData.push({
-      key,
-      deltaX,
-      deltaY,
-      angle,
-      distance,
-      cardAppearance: currentApp,
-      startPoint,
-      endPoint,
-      isDisappearing,
-      doesFlip,
-    });
-  });
-
-  const overlaps = detectOverlaps(motionData);
-  const groups = new Map<number, typeof motionData>();
-
-  motionData.forEach((data) => {
-    const binIndex = getAngleSector(data.angle, numBins);
-    if (!groups.has(binIndex)) {
-      groups.set(binIndex, []);
-    }
-    groups.get(binIndex)!.push(data);
-  });
-
-  const sortedBinIndices = Array.from(groups.keys()).sort((a, b) => {
-    const cardsA = groups.get(a)!;
-    const cardsB = groups.get(b)!;
-    const isAlandsOnB = cardsA.some(({ key }) => cardsB.find((cardB) => cardB.key === overlaps.get(key)));
-    const isBlandsOnA = cardsB.some(({ key }) => cardsA.find((cardA) => cardA.key === overlaps.get(key)));
-
-    if (isAlandsOnB) return 1;
-    if (isBlandsOnA) return -1;
-
-    return 0;
-
-    // return groups.get(b)!.length - groups.get(a)!.length;
-  });
-
-  let cumulativeDelay = 0;
-  const updatedCards: GamePieceAppearances = {};
-
-  console.log("===========================================");
-  console.log(`Total groups detected: ${sortedBinIndices.length}`);
-
-  sortedBinIndices.forEach((binIndex, groupIndex) => {
-    const group = groups.get(binIndex)!;
-
-    const groupMaxDistance = Math.max(...group.map((data) => data.distance));
-
-    let groupMaxEndTime = 0;
-
-    console.log("---------");
-    group.forEach((data) => {
-      if (data.distance) console.log(getDirectionArrow(data.angle), data.key);
-
-      // Safeguard against division by zero
-      const intraGroupDelay =
-        groupMaxDistance > 0 ? ((groupMaxDistance - data.distance) / groupMaxDistance) * baseDuration : 0;
-
-      const duration = (data.distance / cardWidth) * baseDuration;
-
-      const totalDelay = cumulativeDelay === 0 ? intraGroupDelay : cumulativeDelay + intraGroupDelay + baseDuration * 2;
-
-      //@ts-expect-error TS is confused
-      updatedCards[data.key] = {
-        ...data.cardAppearance,
-        delay: totalDelay,
-        duration,
-        doesFlip: data.doesFlip,
-      };
-
-      const endTime = totalDelay + duration;
-      groupMaxEndTime = Math.max(groupMaxEndTime, endTime);
-    });
-
-    const direction = getDirectionArrow(group[0].angle);
-
-    console.log(
-      `Group ${groupIndex} (Direction: ${direction}) - Max end time in group: ${groupMaxEndTime}, Cumulative delay before this group: ${cumulativeDelay}`,
-    );
-
-    cumulativeDelay = groupMaxEndTime;
-
-    console.log(`Cumulative delay after Group ${groupIndex}: ${cumulativeDelay}`);
-  });
-
-  return updatedCards;
-}
 
 const calculateCardPositions = (gameState: GameState): GamePieceCoordsDict => {
   return {

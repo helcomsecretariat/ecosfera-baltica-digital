@@ -246,11 +246,12 @@ export type GamePieceAppearance = GamePieceTransform & {
   doesFlip?: boolean;
 };
 
+export type EntitityRenderKey = GamePiece["uid"] | `${string}Deck` | `${string}Discard`;
 export interface GamePieceAppearances {
-  [key: GamePiece["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceAppearance;
+  [key: EntitityRenderKey]: GamePieceAppearance;
 }
 export interface GamePieceCoordsDict {
-  [key: GamePiece["uid"] | `${string}Deck` | `${string}Discard`]: GamePieceTransform;
+  [key: EntitityRenderKey]: GamePieceTransform;
 }
 
 export interface UiState {

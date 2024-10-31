@@ -6,7 +6,7 @@ import { SnapshotFrom, type EventFromLogic } from "xstate";
 import { ActionEmmiters, ActionTesters, createEmmiters, createTesters } from "@/state/action-handlers";
 import { inspect } from "@/state/machines/utils";
 import { TurnMachine } from "@/state/machines/turn";
-import { toUiState } from "@/state/positioner";
+import { toUiState } from "@/state/ui/positioner";
 import type { DeckConfig } from "@/decks/schema";
 
 interface StateContextType {

@@ -44,7 +44,7 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
     if (!isPresent) {
       setTimeout(safeToRemove, totalDuration);
     }
-  }, [isPresent]);
+  }, [isPresent, safeToRemove, totalDuration]);
 
   const handleClick = useCallback(
     (e: ThreeEvent<MouseEvent>) => {

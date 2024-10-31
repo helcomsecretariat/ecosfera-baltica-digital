@@ -10,6 +10,7 @@ import { FaPen, FaPlus, FaTimes } from "react-icons/fa";
 import DifficultySelector from "./DifficultySelector";
 import ImageButton from "../ui/imageButton";
 import { without } from "lodash";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface LobbyScreenProps {
   onStartGame: (settings: GameConfig) => void;
@@ -64,37 +65,45 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
       className="flex min-h-screen flex-col items-center justify-center bg-cover bg-center p-4"
       style={{ backgroundImage: "url(/ecosfera_baltica/lobby_bg.avif)" }}
     >
-      <section className="mt-auto flex w-full flex-col items-center justify-center rounded-lg p-2 pb-12 text-base text-white sm:w-8/12 md:w-5/12 lg:text-xl xl:text-2xl md:portrait:w-8/12 md:portrait:text-xl lg:portrait:text-3xl">
+      <section className="mt-auto flex w-full flex-col items-center justify-center space-y-5 rounded-lg p-2 pb-12 text-base text-white sm:w-8/12 md:w-5/12 lg:text-xl xl:text-2xl md:portrait:w-8/12 md:portrait:text-xl lg:portrait:text-3xl">
         {/* Number of Players */}
-        <div className="flex w-full flex-col gap-1">
-          {[...Array(playerCount).keys()].map((key) => (
-            <div key={key} className="flex items-center justify-between">
-              <label htmlFor={`playerName_${key}`}>Player {key + 1}</label>
-              <div className="flex gap-2">
-                <Input
-                  type="text"
-                  id={`playerName_${key}`}
-                  className="w-auto rounded-none border-0 border-transparent border-white bg-transparent text-end text-inherit focus-visible:border-b-[1px] focus-visible:ring-0 focus-visible:ring-offset-0"
-                  ref={(ref) => (nameInputRefs.current[key] = ref!)}
-                  value={playerNames[key]}
-                  onChange={(e) => handlePlayerNameChange(key, e.target.value)}
-                />
-                <Button size="icon" variant="tertiary" onClick={() => nameInputRefs.current[key].focus()}>
-                  <FaPen />
-                </Button>
-                {playerCount > 1 && (
-                  <Button size="icon" variant="secondary" onClick={() => handleRemovePlayer(key)}>
-                    <FaTimes />
+        <div className="relative flex w-full flex-col gap-1">
+          <AnimatePresence mode="popLayout">
+            {[...Array(playerCount).keys()].map((key) => (
+              <motion.div
+                key={key}
+                className="flex items-center justify-between"
+                initial={{ y: -300, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -300, opacity: 0 }}
+              >
+                <label htmlFor={`playerName_${key}`}>Player {key + 1}</label>
+                <div className="flex gap-2">
+                  <Input
+                    type="text"
+                    id={`playerName_${key}`}
+                    className="w-auto rounded-none border-0 border-transparent border-white bg-transparent text-end text-inherit focus-visible:border-b-[1px] focus-visible:ring-0 focus-visible:ring-offset-0"
+                    ref={(ref) => (nameInputRefs.current[key] = ref!)}
+                    value={playerNames[key]}
+                    onChange={(e) => handlePlayerNameChange(key, e.target.value)}
+                  />
+                  <Button size="icon" variant="tertiary" onClick={() => nameInputRefs.current[key].focus()}>
+                    <FaPen />
                   </Button>
-                )}
-              </div>
-            </div>
-          ))}
+                  {playerCount > 1 && (
+                    <Button size="icon" variant="secondary" onClick={() => handleRemovePlayer(key)}>
+                      <FaTimes />
+                    </Button>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
         {playerCount < 4 && (
           <Button
             variant="wrapper"
-            className="group mx-auto flex w-full gap-3 p-0 text-xl"
+            className="group mx-auto !mt-0 flex w-full gap-3 p-0 text-xl"
             onClick={() => setplayerCount(playerCount + 1)}
           >
             <Button size="icon" variant="secondary">

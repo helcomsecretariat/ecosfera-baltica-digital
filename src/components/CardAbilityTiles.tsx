@@ -72,10 +72,12 @@ const CardAbilityTiles = ({ xStart, yStart, rotation = { x: 0, y: 0, z: 0 } }: C
                 : refreshTexture
         }
       />
-      <mesh position={[0, 0, -0.1]}>
-        <circleGeometry args={[5, 32]} />
-        <meshBasicMaterial color="#1D86BC" transparent map={highlightTexture} />
-      </mesh>
+      {state.turn.currentAbility?.name === ability && (
+        <mesh position={[0, 0, -0.1]}>
+          <circleGeometry args={[5, 32]} />
+          <meshBasicMaterial color="#1D86BC" transparent map={highlightTexture} />
+        </mesh>
+      )}
     </GameElement>
   ));
 };

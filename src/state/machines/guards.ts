@@ -209,4 +209,8 @@ export const TurnMachineGuards = {
 
     return player.abilities.filter((ability) => ability.isUsed).length === 1;
   },
+
+  isMultiplayer: ({ context }: { context: GameState }) => {
+    return context.players.length > 1;
+  },
 };

@@ -243,7 +243,12 @@ export const TurnMachine = setup({
         turn.selectedAbilityCard = card;
       }),
     ),
-    cancelAbilitySelection: assign(({ context }: { context: GameState }) =>
+    cancelAbility: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.turn.currentAbility = undefined;
+      }),
+    ),
+    cancelAbilityCard: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         draft.turn.currentAbility = undefined;
         draft.turn.selectedAbilityCard = undefined;
@@ -549,13 +554,6 @@ export const TurnMachine = setup({
               ]),
             },
             {
-              target: "#turn.stagingEvent.elementalDisaster",
-              guard: and([
-                "getsElementalDisaster",
-                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "elementalDisasterCheck"),
-              ]),
-            },
-            {
               target: "main",
             },
           ],
@@ -574,6 +572,13 @@ export const TurnMachine = setup({
               guard: and([
                 "getsExtinction",
                 ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
+              ]),
+            },
+            {
+              target: "#turn.stagingEvent.elementalDisaster",
+              guard: and([
+                "getsElementalDisaster",
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "elementalDisasterCheck"),
               ]),
             },
             {
@@ -673,7 +678,7 @@ export const TurnMachine = setup({
                 params: "elementalDisasterCheck",
               },
               after: {
-                1200: { target: "#turn.checkingEventConditions.preDraw" },
+                1200: { target: "#turn.endingTurn.drawing" },
               },
             },
           },
@@ -831,7 +836,9 @@ export const TurnMachine = setup({
         guard: "selectedAbilityCardHasSingleAbility",
       },
       on: {
-        "user.click.*": { target: "#turn", actions: "cancelAbilitySelection" },
+        "user.click.player.hand.card.ability": {
+          target: "#turn.usingAbility.cancelAbilityCard",
+        },
         "user.click.cardToken": {
           target: "#turn.usingAbility",
           actions: assign({
@@ -867,6 +874,9 @@ export const TurnMachine = setup({
           states: {
             pickingTarget: {
               on: {
+                "user.click.cardToken": {
+                  target: "#turn.usingAbility.cancelAbilityCardSelection",
+                },
                 "user.click.token": {
                   target: "#turn.usingAbility.cancel",
                 },
@@ -876,12 +886,24 @@ export const TurnMachine = setup({
                   guard: and([
                     ({ context, event: { card } }) => TurnMachineGuards.notExhausted({ context }, card.uid),
                     ({ context, event: { card } }) => TurnMachineGuards.ownsCard({ context }, card.uid),
+                    ({ context, event: { card } }) =>
+                      TurnMachineGuards.notDisasterCard({ context }, card) ||
+                      TurnMachineGuards.isMultiplayer({ context }),
                   ]),
+                },
+                "user.click.player.hand.card.ability": {
+                  target: "#turn.usingAbility.cancelAbilityCard",
                 },
               },
             },
             pickingDestination: {
               on: {
+                "user.click.player.hand.card.ability": {
+                  target: "#turn.usingAbility.cancelAbilityCard",
+                },
+                "user.click.cardToken": {
+                  target: "#turn.usingAbility.cancelAbilityCardSelection",
+                },
                 "user.click.token": {
                   target: "#turn.usingAbility.cancel",
                 },
@@ -920,7 +942,13 @@ export const TurnMachine = setup({
         },
         refreshing: {
           on: {
-            "user.click.token": {
+            "user.click.player.hand.card.ability": {
+              target: "#turn.usingAbility.cancelAbilityCard",
+            },
+            "user.click.cardToken": {
+              target: "#turn.usingAbility.cancelAbilityCardSelection",
+            },
+            "user.click.token.*": {
               target: "#turn.usingAbility.cancel",
             },
             "user.click.market.deck.animal": {
@@ -945,7 +973,19 @@ export const TurnMachine = setup({
         cancel: {
           always: {
             target: "#turn.buying",
-            action: "cancelAbility",
+            actions: "cancelAbility",
+          },
+        },
+        cancelAbilityCardSelection: {
+          always: {
+            target: "#turn.cardAbility",
+            actions: "cancelAbility",
+          },
+        },
+        cancelAbilityCard: {
+          always: {
+            target: "#turn.buying",
+            actions: "cancelAbilityCard",
           },
         },
       },

@@ -3,6 +3,8 @@ import { abilityOffset } from "../constants/gameBoard";
 import { AbilityTile, Coordinate } from "@/state/types";
 import { useGameState } from "@/context/game-state/hook";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
+import { useTexture } from "@react-three/drei";
+import { getHighlightTextureAssetPath } from "./utils";
 
 const AbilityTiles = ({
   xStart,
@@ -23,10 +25,11 @@ const AbilityTiles = ({
   isClickable: boolean;
   orientation?: "horizontal" | "vertical";
 }) => {
-  const { emit } = useGameState();
+  const { emit, state } = useGameState();
   const plusTexture = useSRGBTexture("/ecosfera_baltica/ability_plus.avif");
   const refreshTexture = useSRGBTexture("/ecosfera_baltica/ability_refresh.avif");
   const moveTexture = useSRGBTexture("/ecosfera_baltica/ability_move.avif");
+  const highlightTexture = useTexture(getHighlightTextureAssetPath(true));
 
   return abilities.map((ability, index) => (
     <GameElement
@@ -54,6 +57,12 @@ const AbilityTiles = ({
         color={ability.isUsed ? (canRefresh ? "white" : "#555") : "white"}
         map={ability.name === "move" ? moveTexture : ability.name === "plus" ? plusTexture : refreshTexture}
       />
+      {state.turn.currentAbility?.piece === ability && (
+        <mesh position={[0, 0, -0.1]}>
+          <circleGeometry args={[5, 32]} />
+          <meshBasicMaterial color="#1D86BC" transparent map={highlightTexture} />
+        </mesh>
+      )}
     </GameElement>
   ));
 };

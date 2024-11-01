@@ -1,5 +1,6 @@
 import { Text } from "@react-three/drei";
 import { ReactNode } from "react";
+import { MeshBasicMaterial } from "three";
 
 interface TextWithShadowProps {
   children: ReactNode;
@@ -15,15 +16,19 @@ const TextWithShadow = ({
   shadowColor = "lightgrey",
   position,
   ...props
-}: TextWithShadowProps) => (
-  <>
-    <Text {...props} color={shadowColor} position={[position[0] + 0.08, position[1] - 0.08, position[2]]}>
-      {children}
-    </Text>
-    <Text {...props} color={color} position={[position[0], position[1], position[2] + 0.05]}>
-      {children}
-    </Text>
-  </>
-);
+}: TextWithShadowProps) => {
+  const material = new MeshBasicMaterial({ toneMapped: false, color });
+
+  return (
+    <>
+      <Text {...props} color={shadowColor} position={[position[0] + 0.08, position[1] - 0.08, position[2]]}>
+        {children}
+      </Text>
+      <Text material={material} {...props} position={[position[0], position[1], position[2] + 0.05]}>
+        {children}
+      </Text>
+    </>
+  );
+};
 
 export default TextWithShadow;

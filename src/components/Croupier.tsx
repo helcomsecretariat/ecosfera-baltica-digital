@@ -112,11 +112,11 @@ const Croupier = () => {
         <React.Fragment key={player.uid + "HUD"}>
           <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
             <TextWithShadow
-              position={[-6, 10, 0]}
-              fontSize={5}
-              color="white"
+              position={[0, 12, 0]}
+              fontSize={2}
+              color="#FBF6E3"
               shadowColor="white"
-              anchorX="left"
+              anchorX="center"
               anchorY="bottom"
               textAlign="left"
             >

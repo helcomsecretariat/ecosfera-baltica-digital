@@ -23,7 +23,6 @@ type MotionDataEntry = {
   clusterIndex?: number;
 };
 
-// Helper function to calculate Euclidean distance
 function calcDist(posA: Coordinate, posB: Coordinate): number {
   return Math.sqrt(Math.pow(posA.x - posB.x, 2) + Math.pow(posA.y - posB.y, 2));
 }
@@ -120,7 +119,7 @@ function detectOverlaps(motionData: MotionDataEntry[], cardHeight: number): Map<
   return overlaps;
 }
 
-// Step 3: Cluster motions based on their endpoints
+// Step 3: Cluster motions based on their endpoints and other traits
 function clusterByEndpoints(motionData: MotionDataEntry[], tolerance: number): Map<number, MotionDataEntry[]> {
   const clusters = new Map<number, MotionDataEntry[]>();
   let clusterIndex = 0;
@@ -131,10 +130,11 @@ function clusterByEndpoints(motionData: MotionDataEntry[], tolerance: number): M
       const clusterRep = cluster[0];
       const isStationary =
         clusterRep.animationType === data.animationType && clusterRep.distance === 0 && data.distance === 0;
-      const isSimilarMovement =
-        Math.abs(data.endPoint.y - clusterRep.endPoint.y) < tolerance &&
+      const isSimilarEndpoint =
+        (Math.abs(data.endPoint.x - clusterRep.endPoint.x) === 0 ||
+          Math.abs(data.endPoint.y - clusterRep.endPoint.y) < tolerance) &&
         data.animationType === clusterRep.animationType;
-      if (isStationary || isSimilarMovement) {
+      if (isStationary || isSimilarEndpoint) {
         cluster.push(data);
         data.clusterIndex = index;
         assigned = true;
@@ -180,7 +180,7 @@ function buildDependencyGraph(overlaps: Map<string, string>, motionData: MotionD
 }
 
 // Step 5: Perform topological sort on the dependency graph
-function topologicalSort(graph: Map<number, Set<number>>, allNodes: Set<number>): number[] {
+function topologicalSort(graph: Map<number, Set<number>>, nodesArray: number[]): number[] {
   const visited = new Set<number>();
   const temp = new Set<number>();
   const result: number[] = [];
@@ -197,7 +197,7 @@ function topologicalSort(graph: Map<number, Set<number>>, allNodes: Set<number>)
     }
   }
 
-  allNodes.forEach((node) => {
+  nodesArray.forEach((node) => {
     if (!visited.has(node)) {
       visit(node);
     }
@@ -226,8 +226,6 @@ function calculateDelaysAndDurations(
     let groupMaxEndTime = 0;
 
     cluster.forEach((data) => {
-      if (data.distance) console.log(data.key);
-
       const intraGroupDelay =
         groupMaxDistance > 0 ? ((groupMaxDistance - data.distance) / groupMaxDistance) * baseDuration : 0;
 
@@ -235,6 +233,8 @@ function calculateDelaysAndDurations(
 
       const totalDelay = cumulativeDelay + intraGroupDelay;
       const additionalDelay = cumulativeDelay === 0 ? 0 : baseDuration * 2;
+
+      if (data.distance) console.log(data.key, ` duration: ${duration}`);
 
       updatedCards[data.key] = {
         ...data.cardAppearance,
@@ -262,10 +262,39 @@ function calculateDelaysAndDurations(
   return updatedCards;
 }
 
-// Main function to calculate delays
-export function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict): GamePieceAppearances {
-  // Constants (define these according to your application's needs)
+function hasCycle(graph: Map<number, Set<number>>): boolean {
+  const visited = new Set<number>();
+  const recStack = new Set<number>();
 
+  function dfs(node: number): boolean {
+    if (!visited.has(node)) {
+      visited.add(node);
+      recStack.add(node);
+
+      const neighbors = graph.get(node) || new Set<number>();
+      for (const neighbor of neighbors) {
+        if (!visited.has(neighbor) && dfs(neighbor)) {
+          return true;
+        } else if (recStack.has(neighbor)) {
+          return true;
+        }
+      }
+    }
+
+    recStack.delete(node);
+    return false;
+  }
+
+  for (const node of graph.keys()) {
+    if (dfs(node)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict): GamePieceAppearances {
   // Step 1: Calculate motion data
   const motionData = calcMotionData(cards, cardsPrev);
 
@@ -274,25 +303,20 @@ export function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoor
 
   // Step 3: Cluster motions by endpoints
   const tolerance = cardHeight / 4;
-  const clusters = clusterByEndpoints(motionData, tolerance);
+  let clusters = clusterByEndpoints(motionData, tolerance);
 
   // Step 4: Build dependency graph
   const dependencyGraph = buildDependencyGraph(overlaps, motionData);
 
-  // Step 5: Topological sort
-  const allNodes = new Set<number>();
-  clusters.forEach((_value, key) => {
-    allNodes.add(key);
-  });
-
   let sortedClusterIndices: number[];
 
-  try {
-    sortedClusterIndices = topologicalSort(dependencyGraph, allNodes);
-  } catch (e) {
-    console.error("Error during topological sort:", e);
-    // Handle cycles if necessary
-    sortedClusterIndices = Array.from(clusters.keys()); // Fallback to original order
+  if (hasCycle(dependencyGraph)) {
+    // Merge all motion data into a single cluster
+    const allData = Array.from(clusters.values()).flat();
+    clusters = new Map<number, MotionDataEntry[]>([[0, allData]]);
+    sortedClusterIndices = [0];
+  } else {
+    sortedClusterIndices = topologicalSort(dependencyGraph, Array.from(clusters.keys()));
   }
 
   // Step 6: Calculate delays and durations

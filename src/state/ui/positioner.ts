@@ -21,6 +21,7 @@ import {
   GamePieceUID,
 } from "../types";
 import {
+  abilityOffset,
   cardXOffset,
   cardYOffset,
   extinctionTileYStart,
@@ -45,9 +46,20 @@ const zeroRotation = { x: 0, y: 0, z: 0 };
 const yFlipRotation = { y: -Math.PI };
 
 export const toUiState = (prevUiState: UiState | null, gameState: GameState): UiState => {
+  const allDelays = calcDelays(
+    {
+      ...calculateCardPositions(gameState),
+      ...calculateDeckPositions(gameState),
+    },
+    {
+      ...prevUiState?.cardPositions,
+      ...prevUiState?.deckPositions,
+    },
+  );
+  // TODO: get rid of cardPositions/deckPositions and use flat structure instead
   return {
-    cardPositions: calcDelays(calculateCardPositions(gameState), prevUiState?.cardPositions),
-    deckPositions: calculateDeckPositions(gameState),
+    cardPositions: allDelays,
+    deckPositions: allDelays,
   };
 };
 
@@ -61,6 +73,7 @@ const calculateCardPositions = (gameState: GameState): GamePieceCoordsDict => {
     ...positionExtinctionTiles(gameState),
     ...positionHabitatTiles(gameState),
     ...positionStagedCards(gameState),
+    ...positionAbilityTokens(gameState),
   };
 };
 
@@ -179,6 +192,63 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
   });
 
   return pieceCoordinates;
+};
+
+export const positionAbilityTokens = (gameState: GameState): GamePieceCoordsDict => {
+  return gameState.players.reduce((acc, player, playerIndex) => {
+    const deckPosition = supplyDeckPositions(gameState)[playerIndex];
+    const rotation = { x: 0, y: 0, z: playerIndex * (Math.PI / 2) };
+    const isVertical = playerIndex === 0 || playerIndex === 2;
+    const isHorizontal = !isVertical;
+
+    const startPosition = [
+      //first Player
+      { x: deckPosition.x - cardWidth, y: deckPosition.y - abilityOffset, z: 0 },
+
+      // second Player
+      { x: deckPosition.x - abilityOffset, y: deckPosition.y - cardWidth, z: 0 },
+
+      // third Player
+      { x: deckPosition.x + cardWidth, y: deckPosition.y - abilityOffset, z: 0 },
+
+      // fourth Player
+      { x: deckPosition.x - abilityOffset, y: deckPosition.y + cardWidth, z: 0 },
+    ][playerIndex];
+
+    player.abilities.forEach((ability, index) => {
+      acc[ability.uid] = {
+        position: {
+          x: isHorizontal ? startPosition.x + index * 7 : startPosition.x,
+          y: isVertical ? startPosition.y + index * 7 : startPosition.y,
+          z: startPosition.z,
+        },
+        rotation,
+        initialPosition: startPosition,
+        initialRotation: rotation,
+      };
+    });
+
+    if (gameState.stage?.eventType === "abilityRefresh") {
+      player.abilities
+        .filter(({ isUsed }) => isUsed)
+        .forEach((ability, index, usedAbilities) => {
+          acc[ability.uid] = {
+            ...acc[ability.uid],
+            position: {
+              x:
+                usedAbilities.length === 1
+                  ? 0
+                  : 0 - Math.ceil(usedAbilities.length / 2) * (abilityOffset / 2) + abilityOffset * index,
+              y: -cardHeight,
+              z: 50,
+            },
+            rotation: { x: 0, y: 0, z: 0 },
+          };
+        });
+    }
+
+    return acc;
+  }, {} as GamePieceCoordsDict);
 };
 
 export const positionExtinctionTiles = (gameState: GameState): GamePieceCoordsDict => {
@@ -352,7 +422,6 @@ export const positionElementDecks = (gameState: GameState): GamePieceCoordsDict 
 export const positionPlayerDecks = (gameState: GameState): GamePieceCoordsDict => {
   return gameState.players.reduce((acc, player, playerIndex) => {
     acc[`${player.uid}PlayerDeck`] = {
-      ...deckAnimationTimings,
       position: supplyDeckPositions(gameState)[playerIndex],
       initialPosition: supplyDeckPositions(gameState)[playerIndex],
       exitPosition: supplyDeckPositions(gameState)[playerIndex],

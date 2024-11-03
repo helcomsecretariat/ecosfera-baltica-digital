@@ -4,10 +4,10 @@ export const useAnimControls = () => {
   return useControls({
     animSpeed: {
       label: "Animation speed",
-      value: 22,
+      value: 10,
       min: 1,
       step: 1,
-      max: 100,
+      max: 40,
     },
     ease: {
       options: [
@@ -23,7 +23,7 @@ export const useAnimControls = () => {
         "backInOut",
         "anticipate",
       ],
-      value: "easeOut",
+      value: "anticipate",
     },
   });
 };

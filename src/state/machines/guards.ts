@@ -101,9 +101,9 @@ export const TurnMachineGuards = {
     );
   },
 
-  abilityAvailable: (_: { context: GameState }, token: AbilityTile) => {
-    return !token.isUsed;
-  },
+  abilityAvailable: ({ context: { turn, players } }: { context: GameState }, token: AbilityTile) =>
+    players[0].abilities.includes(token) &&
+    (turn.selectedAbilityCard ? turn.selectedAbilityCard.abilities.includes(token.name) : !token.isUsed),
 
   abilityCardAvailable: ({ context }: { context: GameState }, card: PlantCard | AnimalCard) => {
     return (context.turn.usedAbilities?.filter((ability) => ability.source === card.uid).length ?? 0) === 0;
@@ -147,9 +147,10 @@ export const TurnMachineGuards = {
     return player.hand.filter((card) => card.type === "disaster").length > 3;
   },
 
+  isAbilityUsed: (_: { context: GameState }, ability: AbilityTile) => ability.isUsed,
+
   canRefreshAbility: ({ context }: { context: GameState }) => {
     const player = find(context.players, { uid: context.turn.player })!;
-
     if (!player.abilities.some((ability) => ability.isUsed)) return false;
 
     const stagedAnimals = player.hand.filter(

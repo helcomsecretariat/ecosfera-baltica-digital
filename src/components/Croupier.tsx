@@ -1,22 +1,18 @@
 import { default as CardComponent } from "./Card";
 import Deck from "./Deck";
-import AbilityTiles from "./AbilityTiles";
 import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
-import { cardWidth } from "@/constants/card";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/game-state/hook";
 import { uniqBy } from "lodash-es";
-import { abilityOffset } from "@/constants/gameBoard";
-import GamePieceGroup from "./GamePieceGroup";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { NextButton } from "@/components/NextTurnBtn";
 import { TurnMachineGuards } from "@/state/machines/guards";
-import CardAbilityTiles from "@/components/CardAbilityTiles";
 import Stage from "@/components/Stage";
 import Tile from "./Tile";
-import TextWithShadow from "@/components/shapes/TextWithShadow";
+import PlayerTitle from "@/components/PlayerTitle";
+import AbilityToken from "@/components/AbilityToken";
 
 export type CardMoveLocation =
   | "animalTable"
@@ -73,7 +69,6 @@ const Croupier = () => {
           textColor="black"
           gamePieceAppearance={uiState.deckPositions[`${card.name}ElementDeck`]}
           cards={gameState.elementMarket.deck.filter((elementDeckCard) => elementDeckCard.name === card.name)}
-          isDimmed={!test.marketElementClick(card.name)}
           onClick={emit.marketElementClick(card.name)}
           isHighlighted={hasTag("usingAbility") && test.marketElementClick(card.name)}
         />
@@ -107,60 +102,32 @@ const Croupier = () => {
         onClick={() => console.error("Disaster deck click NOT IMPLEMENTED")}
       />
 
-      {/* Player HUD */}
+      {/* Player HUDs */}
       {gameState.players.map((player) => (
         <React.Fragment key={player.uid + "HUD"}>
-          <GamePieceGroup gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}>
-            <TextWithShadow
-              position={[0, 12, 0]}
-              fontSize={2}
-              color="#FBF6E3"
-              shadowColor="white"
-              anchorX="center"
-              anchorY="bottom"
-              textAlign="left"
-            >
-              {/* removing wierd space due to emoji */}
-              {player.name.replace(" ", "")}
-            </TextWithShadow>
-
-            <Deck
-              gamePieceAppearance={{
-                ...uiState.deckPositions[`${player.uid}PlayerDeck`],
-                position: { x: 0, y: 0, z: 0 },
-                initialPosition: { x: 0, y: 0, z: 0 },
-                rotation: { x: 0, y: 0, z: 0 },
-              }}
-              cards={player.deck}
-              onClick={emit.playerDeckClick()}
+          <Deck
+            gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}
+            cards={player.deck}
+            onClick={emit.playerDeckClick()}
+          />
+          <PlayerTitle
+            gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}
+            offset={[6, 10, 0]}
+            text={player.name}
+          />
+          {player.abilities.map((ability) => (
+            <AbilityToken
+              key={ability.uid}
+              ability={ability}
+              color={
+                player.uid === gameState.turn.player &&
+                (gameState.turn.selectedAbilityCard?.abilities.includes(ability.name) ||
+                  (TurnMachineGuards.canRefreshAbility({ context: gameState }) && ability.isUsed))
+                  ? "#1D86BC"
+                  : undefined
+              }
             />
-
-            {player.uid === gameState.turn.player && (
-              <>
-                {gameState.turn.selectedAbilityCard === undefined ? (
-                  <AbilityTiles
-                    canRefresh={TurnMachineGuards.canRefreshAbility({ context: gameState })}
-                    isClickable={true}
-                    xStart={0 - cardWidth}
-                    yStart={0 - abilityOffset}
-                    abilities={player.abilities}
-                  />
-                ) : (
-                  <CardAbilityTiles xStart={0 - cardWidth} yStart={0 - abilityOffset} />
-                )}
-              </>
-            )}
-
-            {player.uid !== gameState.turn.player && (
-              <AbilityTiles
-                canRefresh={false}
-                isClickable={false}
-                xStart={0 - cardWidth}
-                yStart={0 - abilityOffset}
-                abilities={player.abilities}
-              />
-            )}
-          </GamePieceGroup>
+          ))}
         </React.Fragment>
       ))}
 
@@ -187,16 +154,19 @@ const Croupier = () => {
       ))}
 
       {/* Player Discard */}
-      {gameState.players.map((player) => (
-        <Deck
-          gamePieceAppearance={{
-            ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
-          }}
-          cards={player.discard}
-          key={player.uid + "PlayerDiscard"}
-          onClick={() => console.error("discard click NOT IMPLEMENTED")}
-        />
-      ))}
+      {gameState.players.map(
+        (player) =>
+          player.discard.length > 0 && (
+            <Deck
+              gamePieceAppearance={{
+                ...uiState.deckPositions[`${player.uid}PlayerDiscard`],
+              }}
+              cards={player.discard}
+              key={player.uid + "PlayerDiscard"}
+              onClick={() => console.error("discard click NOT IMPLEMENTED")}
+            />
+          ),
+      )}
 
       {/* Player Cards */}
       {gameState.players.flatMap((player) =>

@@ -25,7 +25,7 @@ export const NextButton = () => {
   const texture = useSRGBTexture("/ecosfera_baltica/next_turn.avif");
   const index = players.findIndex((player) => player.uid === turn.player);
   const { ease, animSpeed } = useAnimControls();
-  const duration = (2 / animSpeed) * baseDuration * 400;
+  const duration = (baseDuration / animSpeed) * 400;
 
   return (
     <motion.mesh

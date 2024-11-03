@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useLayoutEffect, useMemo, useRef } from "react";
+import { createContext, ReactNode, useMemo } from "react";
 import config from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
 import { GameConfig, GameState, UiState } from "@/state/types";
@@ -6,8 +6,8 @@ import { SnapshotFrom, type EventFromLogic } from "xstate";
 import { ActionEmmiters, ActionTesters, createEmmiters, createTesters } from "@/state/action-handlers";
 import { inspect } from "@/state/machines/utils";
 import { TurnMachine } from "@/state/machines/turn";
-import { toUiState } from "@/state/ui/positioner";
 import type { DeckConfig } from "@/decks/schema";
+import { useAnimControls } from "@/hooks/useAnimationControls";
 
 interface StateContextType {
   snap: SnapshotFrom<typeof TurnMachine>;
@@ -28,6 +28,7 @@ export const GameStateProvider = ({
   difficulty,
   playerNames,
 }: GameConfig & { children: ReactNode }) => {
+  const { animSpeed } = useAnimControls();
   const [snap, send] = useMachine(TurnMachine, {
     inspect,
     input: {
@@ -40,22 +41,17 @@ export const GameStateProvider = ({
         playersPosition: "around",
         playerNames,
       },
+      animSpeed,
     },
   });
   const emit = useMemo(() => createEmmiters(send), [send]);
   const test = useMemo(() => createTesters(snap.can.bind(snap)), [snap]);
   const hasTag = useMemo(() => snap.hasTag.bind(snap), [snap]);
-  const prevUiStateRef = useRef<UiState | null>(null);
-  const uiState = useMemo(() => toUiState(prevUiStateRef.current, snap.context), [snap.context]);
-
-  useLayoutEffect(() => {
-    prevUiStateRef.current = uiState;
-  }, [uiState]);
 
   const value = {
     snap,
     state: snap.context,
-    uiState,
+    uiState: snap.context.ui!,
     send,
     emit,
     test,

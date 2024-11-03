@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { upperXBoundary, lowerXBoundary, upperYBoundary, lowerYBoundary, abilityOffset } from "@/constants/gameBoard";
+import { upperXBoundary, lowerXBoundary, upperYBoundary, lowerYBoundary } from "@/constants/gameBoard";
 import { useGameState } from "@/context/game-state/hook";
 import { Html } from "@react-three/drei";
-import AbilityTiles from "./AbilityTiles";
 import { cardHeight } from "@/constants/card";
-import { difference, filter, find, last } from "lodash";
+import { difference, find, last } from "lodash";
 import { motion } from "framer-motion-3d";
 import { getAssetPath } from "./utils";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
@@ -36,7 +35,6 @@ const Stage = () => {
     snap.matches({ stagingEvent: "habitatUnlock" }) ||
     snap.matches({ stagingEvent: "gameWon" });
   const lastRefreshedAbility = find(player.abilities, { uid: last(state.turn.refreshedAbilityUids) });
-  const abilityTiles = canRefresh ? filter(player.abilities, { isUsed: true }) : [lastRefreshedAbility!];
   const positiveTextureImageUrl = getAssetPath("stage", "positive");
   const negativeTextureImageUrl = getAssetPath("stage", "negative");
   const positiveTexture = useSRGBTexture(positiveTextureImageUrl);
@@ -66,17 +64,6 @@ const Stage = () => {
             map={isPositive ? positiveTexture : negativeTexture}
           />
         </mesh>
-        {state.stage.eventType === "abilityRefresh" && (
-          <AbilityTiles
-            isClickable={canRefresh}
-            canRefresh={canRefresh}
-            xStart={abilityTiles.length === 1 ? 0 : 0 - Math.ceil(abilityTiles.length / 2) * (abilityOffset / 2)}
-            yStart={-cardHeight}
-            zStart={50}
-            abilities={abilityTiles}
-            orientation="horizontal"
-          />
-        )}
         <Html wrapperClass="top-10" position={[0, -2.5 * cardHeight, 0]} transform scale={8}>
           <h1 className="mb-8 whitespace-pre-wrap text-center text-xl text-white">
             {eventName[state.stage.eventType]}

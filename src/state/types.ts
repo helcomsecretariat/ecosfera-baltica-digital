@@ -115,7 +115,7 @@ export interface AbilityTile extends GamePieceBase {
   uid: AbilityUID;
   isUsed: boolean;
 
-  name: "move" | "refresh" | "plus" | "special";
+  name: AbilityName;
 }
 
 export interface HabitatTile extends GamePieceBase {
@@ -246,7 +246,7 @@ export type GamePieceAppearance = GamePieceTransform & {
   doesFlip?: boolean;
 };
 
-export type EntitityRenderKey = GamePiece["uid"] | `${string}Deck` | `${string}Discard`;
+export type EntitityRenderKey = GamePiece["uid"] | `${string}Deck` | `${string}Discard` | `${string}AbilityTokens`;
 export interface GamePieceAppearances {
   [key: EntitityRenderKey]: GamePieceAppearance;
 }

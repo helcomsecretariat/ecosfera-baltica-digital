@@ -62,6 +62,7 @@ beforeEach(() => {
         useSpecialCards: false,
         playerNames: ["", ""],
       },
+      animSpeed: 10,
     },
   });
 

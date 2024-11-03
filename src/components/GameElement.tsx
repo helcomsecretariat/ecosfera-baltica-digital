@@ -8,8 +8,9 @@ import { usePresence } from "framer-motion";
 import { useAnimControls } from "@/hooks/useAnimationControls";
 
 type GameElementProps = {
-  height: number;
-  width: number;
+  // TODO: why do we need width and height?
+  height?: number;
+  width?: number;
   onClick?: () => void;
   children: ReactNode;
 } & (
@@ -32,10 +33,10 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
 
   const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);
-  const mainDuration = (2 / animSpeed) * (appearance.duration / baseDuration);
-  const mainDelay = (2 / animSpeed) * (appearance.delay / baseDuration);
-  const cardFlipDuration = mainDuration * 0.3;
-  const zDuration = mainDuration + cardFlipDuration * 3;
+  const mainDuration = appearance.duration / (animSpeed * baseDuration);
+  const mainDelay = appearance.delay / (animSpeed * baseDuration);
+  const cardFlipDuration = mainDuration * 0.2;
+  const zDuration = mainDuration + cardFlipDuration * 2;
   const flipDuration = appearance.doesFlip ? mainDuration + cardFlipDuration : 0;
   const flipDelay = appearance.doesFlip ? mainDuration + mainDelay : 0;
   const totalDuration = mainDelay + mainDuration + Math.max(mainDelay + zDuration, flipDelay + flipDuration);
@@ -61,7 +62,7 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
       position-z={zCoord}
       transition={{
         ease,
-        duration: Math.max(baseDuration, mainDuration),
+        duration: mainDuration,
         delay: mainDelay,
         rotateY: {
           duration: flipDuration,
@@ -71,6 +72,9 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
           delay: mainDelay,
           duration: zDuration,
           times: [0, 0.1, 0.3, 1],
+        },
+        scale: {
+          delay: 0,
         },
       }}
       animate={{

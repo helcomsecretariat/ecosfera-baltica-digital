@@ -1,3 +1,4 @@
+import { Coordinate } from "@/state/types";
 import { cardHeight, cardWidth } from "./card";
 
 // Game board
@@ -22,6 +23,17 @@ export const extinctionTileYStart = marketYStart + tileSize;
 export const habitatTileYStart = marketYStart - cardYOffset + tileSize;
 export const hexagonTileXOffset = 10;
 export const hexagonTileYOffset = 11;
+
+export const tileGridCoordinates = (baseX: number, baseY: number): Coordinate[] => {
+  return [
+    { x: baseX, y: baseY, z: 0 },
+    { x: baseX - tileSize, y: baseY - tileSize * 0.55, z: 0 },
+    { x: baseX + tileSize, y: baseY - tileSize * 0.55, z: 0 },
+    { x: baseX - tileSize, y: baseY - tileSize * 1.68, z: 0 },
+    { x: baseX, y: baseY - tileSize * 2.25, z: 0 },
+    { x: baseX + tileSize, y: baseY - tileSize * 1.68, z: 0 },
+  ];
+};
 
 // Rotation override
 export const rotationOverrideThreshold = 0.7;

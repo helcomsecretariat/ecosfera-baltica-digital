@@ -1,5 +1,5 @@
 import { AbilityTile, AnimalCard, Card, CardType, GameState, PlantCard } from "@/state/types";
-import { countBy, find, compact, every, intersection } from "lodash";
+import { countBy, find, compact, every, intersection, isEmpty } from "lodash";
 import { getAnimalHabitatPairs, getDuplicateElements } from "./helpers/turn";
 
 export const TurnMachineGuards = {
@@ -210,7 +210,15 @@ export const TurnMachineGuards = {
     return player.abilities.filter((ability) => ability.isUsed).length === 1;
   },
 
-  isMultiplayer: ({ context }: { context: GameState }) => {
-    return context.players.length > 1;
+  isMultiplayer: ({ context: { players } }: { context: GameState }) => {
+    return players.length > 1;
+  },
+
+  gameLost: ({ context: { extinctMarket } }: { context: GameState }) => {
+    return isEmpty(extinctMarket.deck) && !isEmpty(extinctMarket.table);
+  },
+
+  gameWon: ({ context: { habitatMarket } }: { context: GameState }) => {
+    return habitatMarket.deck.every((habitatTile) => habitatTile.isAcquired);
   },
 };

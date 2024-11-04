@@ -1,4 +1,4 @@
-import { uniqBy } from "lodash-es";
+import { isEmpty, uniqBy } from "lodash-es";
 import {
   AnimalCard,
   Card,
@@ -32,9 +32,10 @@ import {
   marketXStart,
   marketYStart,
   playerCardsYStart,
-  tileSize,
   upperXBoundary,
   upperYBoundary,
+  tileGridCoordinates,
+  tileSize,
 } from "@/constants/gameBoard";
 import { cardHeight, cardWidth } from "@/constants/card";
 import { TurnMachineGuards } from "./machines/guards";
@@ -332,14 +333,20 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
   const effect = gameState.stage?.effect;
 
   const pieceCoordinates = fanCards(cause);
+  const tileCoordinates = tileGridCoordinates(0, isEmpty(cause) ? 0 + tileSize : 20);
 
   effect?.forEach((uid: DisasterUID | HabitatUID | ExtinctionUID, index) => {
     const isTile = isHabitatUID(uid) || isExtinctionUID(uid);
+    const useTileCoordinates = isTile && effect.length > 2;
 
     pieceCoordinates[uid] = {
       position: {
-        x: effect.length === 1 ? 0 : -(6 * (effect.length - 1)) / 2 + index * 6,
-        y: cause.length === 0 ? 0 : cardHeight - 5,
+        x: useTileCoordinates
+          ? tileCoordinates[index].x
+          : effect.length === 1
+            ? 0
+            : -(6 * (effect.length - 1)) / 2 + index * 6,
+        y: useTileCoordinates ? tileCoordinates[index].y : cause.length === 0 ? 0 : cardHeight - 5,
         z: 75,
       },
       rotation: {
@@ -356,22 +363,14 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
 };
 
 export const positionExtinctionTiles = (gameState: GameState): GamePieceCoordsDict => {
-  const positions: Coordinate[] = [
-    { x: hexagonTileXStart - tileSize, y: extinctionTileYStart - tileSize * 0.55, z: 0 },
-    { x: hexagonTileXStart, y: extinctionTileYStart, z: 0 },
-    { x: hexagonTileXStart + tileSize, y: extinctionTileYStart - tileSize * 0.55, z: 0 },
-    { x: hexagonTileXStart - tileSize, y: extinctionTileYStart - tileSize * 1.68, z: 0 },
-    { x: hexagonTileXStart, y: extinctionTileYStart - tileSize * 2.25, z: 0 },
-    { x: hexagonTileXStart + tileSize, y: extinctionTileYStart - tileSize * 1.68, z: 0 },
-  ];
-
+  const coordinates = tileGridCoordinates(hexagonTileXStart, extinctionTileYStart);
   const allExtinctionTiles = [...gameState.extinctMarket.deck, ...gameState.extinctMarket.table];
 
   return {
     ...allExtinctionTiles.reduce((acc, extinctionTile: ExtinctionTile, index: number) => {
       acc[extinctionTile.uid] = {
-        position: positions[index],
-        initialPosition: positions[index],
+        position: coordinates[index],
+        initialPosition: coordinates[index],
         rotation: { x: -Math.PI / 2, y: 0, z: 0 },
         initialRotation: { x: -Math.PI / 2, y: 0, z: 0 },
       };
@@ -381,20 +380,13 @@ export const positionExtinctionTiles = (gameState: GameState): GamePieceCoordsDi
 };
 
 export const positionHabitatTiles = (gameState: GameState): GamePieceCoordsDict => {
-  const positions: Coordinate[] = [
-    { x: hexagonTileXStart - tileSize, y: habitatTileYStart - tileSize * 0.55, z: 0 },
-    { x: hexagonTileXStart, y: habitatTileYStart, z: 0 },
-    { x: hexagonTileXStart + tileSize, y: habitatTileYStart - tileSize * 0.55, z: 0 },
-    { x: hexagonTileXStart - tileSize, y: habitatTileYStart - tileSize * 1.68, z: 0 },
-    { x: hexagonTileXStart, y: habitatTileYStart - tileSize * 2.25, z: 0 },
-    { x: hexagonTileXStart + tileSize, y: habitatTileYStart - tileSize * 1.68, z: 0 },
-  ];
+  const coordinates = tileGridCoordinates(hexagonTileXStart, habitatTileYStart);
 
   return {
     ...gameState.habitatMarket.deck.reduce((acc, habitatTile: HabitatTile, index: number) => {
       acc[habitatTile.uid] = {
-        position: positions[index],
-        initialPosition: positions[index],
+        position: coordinates[index],
+        initialPosition: coordinates[index],
         rotation: { x: -Math.PI / 2, y: 0, z: 0 },
         initialRotation: { x: -Math.PI / 2, y: 0, z: 0 },
       };

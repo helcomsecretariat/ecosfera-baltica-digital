@@ -32,7 +32,9 @@ const Stage = () => {
   const player = find(state.players, { uid: state.turn.player })!;
   const canRefresh = TurnMachineGuards.canRefreshAbility({ context: state });
   const isPositive =
-    snap.matches({ stagingEvent: "abilityRefresh" }) || snap.matches({ stagingEvent: "habitatUnlock" });
+    snap.matches({ stagingEvent: "abilityRefresh" }) ||
+    snap.matches({ stagingEvent: "habitatUnlock" }) ||
+    snap.matches({ stagingEvent: "gameWon" });
   const lastRefreshedAbility = find(player.abilities, { uid: last(state.turn.refreshedAbilityUids) });
   const abilityTiles = canRefresh ? filter(player.abilities, { isUsed: true }) : [lastRefreshedAbility!];
   const positiveTextureImageUrl = getAssetPath("stage", "positive");
@@ -49,14 +51,20 @@ const Stage = () => {
       ? `Your ${lastRefreshedAbility?.name ?? ""} ability has been refreshed!`
       : "You can now refresh one of your used abilities.",
     habitatUnlock: getHabitatUnlockText(state, state.stage?.effect ?? []),
+    gameWin: "Congratulations!\nYou saved the Baltic ecosystem!",
+    gameLoss: "Game Over!\nYou could not save the Baltic Ecosystem.",
   };
 
   return (
     state.stage !== undefined && (
       <motion.group>
-        <mesh position={[0, 0, 40]}>
-          <planeGeometry args={[upperXBoundary - lowerXBoundary, upperYBoundary - lowerYBoundary, 1]} />
-          <meshPhysicalMaterial transparent opacity={0.7} map={isPositive ? positiveTexture : negativeTexture} />
+        <mesh position={[0, 0, 20]}>
+          <planeGeometry args={[upperXBoundary - lowerXBoundary + 5, upperYBoundary - lowerYBoundary, 1]} />
+          <meshPhysicalMaterial
+            transparent
+            opacity={state.stage.terminationEvent ? 1 : 0.7}
+            map={isPositive ? positiveTexture : negativeTexture}
+          />
         </mesh>
         {state.stage.eventType === "abilityRefresh" && (
           <AbilityTiles
@@ -76,6 +84,10 @@ const Stage = () => {
           <Button
             onClick={(e) => {
               e.stopPropagation();
+              if (state.stage?.terminationEvent) {
+                window.location.reload();
+                return;
+              }
               emit.stageConfirm()();
             }}
             disabled={
@@ -85,7 +97,7 @@ const Stage = () => {
             variant="default"
             className="w-full"
           >
-            Ok
+            {state.stage.terminationEvent ? "New game" : "Ok"}
           </Button>
         </Html>
       </motion.group>

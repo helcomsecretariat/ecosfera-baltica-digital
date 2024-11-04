@@ -302,6 +302,26 @@ export const TurnMachine = setup({
         };
       }),
     ),
+    stageGameWin: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.stage = {
+          eventType: "gameWin",
+          terminationEvent: true,
+          cause: undefined,
+          effect: map(context.habitatMarket.deck, "uid"),
+        };
+      }),
+    ),
+    stageGameLoss: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.stage = {
+          eventType: "gameLoss",
+          terminationEvent: true,
+          cause: undefined,
+          effect: map(context.extinctMarket.table, "uid"),
+        };
+      }),
+    ),
     stageHabitatUnlock: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player })!;
@@ -561,6 +581,14 @@ export const TurnMachine = setup({
         main: {
           always: [
             {
+              target: "#turn.stagingEvent.gameWon",
+              guard: "gameWon",
+            },
+            {
+              target: "#turn.stagingEvent.gameLost",
+              guard: "gameLost",
+            },
+            {
               target: "#turn.stagingEvent.massExtinction",
               guard: and([
                 "getsMassExtinction",
@@ -615,6 +643,38 @@ export const TurnMachine = setup({
         },
       },
       states: {
+        gameWon: {
+          initial: "awaitingConfirmation",
+          entry: "stageGameWin",
+          states: {
+            awaitingConfirmation: {
+              on: {
+                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+            },
+            transitioning: {
+              after: {
+                1200: { target: "#turn.buying" },
+              },
+            },
+          },
+        },
+        gameLost: {
+          initial: "awaitingConfirmation",
+          entry: "stageGameLoss",
+          states: {
+            awaitingConfirmation: {
+              on: {
+                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+            },
+            transitioning: {
+              after: {
+                1200: { target: "#turn.buying" },
+              },
+            },
+          },
+        },
         habitatUnlock: {
           initial: "awaitingConfirmation",
           entry: "stageHabitatUnlock",
@@ -626,7 +686,7 @@ export const TurnMachine = setup({
             },
             transitioning: {
               after: {
-                1200: { target: "#turn.buying" },
+                1200: { target: "#turn" },
               },
             },
           },

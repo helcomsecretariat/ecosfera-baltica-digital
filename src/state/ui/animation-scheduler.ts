@@ -295,6 +295,8 @@ function hasCycle(graph: Map<number, Set<number>>): boolean {
 }
 
 export function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsDict): GamePieceAppearances {
+  const isFirstRender = !cardsPrev || Object.keys(cardsPrev).length === 0;
+
   // Step 1: Calculate motion data
   const motionData = calcMotionData(cards, cardsPrev);
 
@@ -310,7 +312,7 @@ export function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoor
 
   let sortedClusterIndices: number[];
 
-  if (hasCycle(dependencyGraph)) {
+  if (hasCycle(dependencyGraph) || isFirstRender) {
     // Merge all motion data into a single cluster
     const allData = Array.from(clusters.values()).flat();
     clusters = new Map<number, MotionDataEntry[]>([[0, allData]]);

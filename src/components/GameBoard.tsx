@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Grid from "./Grid";
 import { useControls } from "leva";
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, Preload } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
@@ -47,16 +47,20 @@ export default function GameBoard() {
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
-      <PreloadAssets config={deckConfig as DeckConfig} />
       <Canvas shadows className="relative" style={{ width: size.width, height: size.height }}>
-        <ambientLight intensity={1.5} />
-        {/* <color attach="background" args={["#032C4E"]} /> */}
-        {showGrid && <Grid divisions={gridDivisions} />}
-        <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
-        {orbitControls && <OrbitControls />}
-        <Croupier />
+        <Suspense fallback={null}>
+          <ambientLight intensity={1.5} />
+          {/* <color attach="background" args={["#032C4E"]} /> */}
+          {showGrid && <Grid divisions={gridDivisions} />}
+          <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
+          {orbitControls && <OrbitControls />}
+          <Croupier />
 
-        {FPS && <Stats />}
+          {FPS && <Stats />}
+
+          <PreloadAssets config={deckConfig as DeckConfig} />
+          <Preload all />
+        </Suspense>
       </Canvas>
       <Leva collapsed flat hideCopyButton />
     </div>

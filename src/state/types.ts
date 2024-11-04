@@ -76,7 +76,16 @@ export interface GameState {
   habitatMarket: Market<HabitatTile>;
   extinctMarket: Market<ExtinctionTile>;
   stage?: {
-    eventType: "disaster" | "elementalDisaster" | "extinction" | "massExtinction" | "abilityRefresh" | "habitatUnlock";
+    terminationEvent?: boolean;
+    eventType:
+      | "disaster"
+      | "elementalDisaster"
+      | "extinction"
+      | "massExtinction"
+      | "abilityRefresh"
+      | "habitatUnlock"
+      | "gameLoss"
+      | "gameWin";
     cause: (AnimalUID | DisasterUID | ElementUID)[] | undefined;
     effect: (DisasterUID | ExtinctionUID | HabitatUID)[] | undefined;
   };

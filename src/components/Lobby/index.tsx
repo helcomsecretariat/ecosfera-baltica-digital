@@ -65,7 +65,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
       className="flex min-h-screen flex-col items-center justify-center bg-cover bg-center p-4"
       style={{ backgroundImage: "url(/ecosfera_baltica/lobby_bg.avif)" }}
     >
-      <section className="mt-auto flex w-full flex-col items-center justify-center space-y-5 rounded-lg p-2 pb-12 text-base text-white sm:w-8/12 md:w-5/12 lg:text-xl xl:text-2xl md:portrait:w-8/12 md:portrait:text-xl lg:portrait:text-3xl">
+      <section className="mt-auto flex w-full flex-col items-center justify-center space-y-5 rounded-lg p-2 pb-12 text-base text-white backdrop-blur-[3px] sm:w-8/12 md:w-5/12 lg:text-xl xl:text-2xl md:portrait:w-8/12 md:portrait:text-xl lg:portrait:text-3xl">
         {/* Number of Players */}
         <div className="relative flex w-full flex-col gap-1">
           <AnimatePresence mode="popLayout">

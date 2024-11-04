@@ -14,18 +14,6 @@ import Tile from "./Tile";
 import PlayerTitle from "@/components/PlayerTitle";
 import AbilityToken from "@/components/AbilityToken";
 
-export type CardMoveLocation =
-  | "animalTable"
-  | "animalDeck"
-  | "plantTable"
-  | "plantDeck"
-  | "elementTable"
-  | "elementDeck"
-  | "disasterTable"
-  | "disasterDeck"
-  | `playerDeck_${string}`
-  | `playerHand_${string}`;
-
 const Croupier = () => {
   const { state: gameState, uiState } = useGameState();
   const { emit, test, hasTag } = useGameState();
@@ -112,7 +100,7 @@ const Croupier = () => {
           />
           <PlayerTitle
             gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}
-            offset={[6, 10, 0]}
+            offset={[0, 10, 0]}
             text={player.name}
           />
           {player.abilities.map((ability) => (

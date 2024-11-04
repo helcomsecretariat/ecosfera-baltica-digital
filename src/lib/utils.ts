@@ -131,7 +131,7 @@ export function generateRandomName(existingNames: Set<string>): string {
     const namePart = match ? match[2] : randomName; // Extract the name part
 
     // Combine the emoji with the adjective and the name part
-    name = `${emoji} ${randomAdjective} ${namePart}`;
+    name = `${emoji}${randomAdjective} ${namePart}`;
   } while (existingNames.has(name));
 
   existingNames.add(name);

@@ -14,7 +14,7 @@ const PlayerTitle = ({
   <GameElement gamePieceAppearance={gamePieceAppearance}>
     <TextWithShadow
       position={offset}
-      fontSize={4}
+      fontSize={2}
       color="#FBF6E3"
       shadowColor="white"
       anchorX="center"
@@ -22,7 +22,7 @@ const PlayerTitle = ({
       textAlign="left"
     >
       {/* removing wierd space due to emoji */}
-      {text.replace(" ", "")}
+      {text}
     </TextWithShadow>
   </GameElement>
 );

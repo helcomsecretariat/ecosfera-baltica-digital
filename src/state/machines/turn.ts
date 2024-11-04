@@ -252,11 +252,6 @@ export const TurnMachine = setup({
     cancelAbility: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         draft.turn.currentAbility = undefined;
-      }),
-    ),
-    cancelAbilityCard: assign(({ context }: { context: GameState }) =>
-      produce(context, (draft) => {
-        draft.turn.currentAbility = undefined;
         draft.turn.selectedAbilityCard = undefined;
       }),
     ),
@@ -452,8 +447,6 @@ export const TurnMachine = setup({
     ),
     endTurn: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
-        // const currentPlayerIndex = context.players.findIndex((player) => player.uid === context.turn.player);
-        // const nextPlayerIndex = (currentPlayerIndex + 1) % context.players.length;
         const currentPlayer = context.players.find((player) => player.uid === context.turn.player)!;
         context.players = [...without(context.players, currentPlayer), currentPlayer];
 
@@ -585,9 +578,7 @@ export const TurnMachine = setup({
         },
         ending: {
           entry: "endTurn",
-          after: {
-            animationDuration: "#turn",
-          },
+          always: "#turn",
         },
       },
     },
@@ -613,6 +604,14 @@ export const TurnMachine = setup({
         main: {
           after: {
             animationDuration: [
+              {
+                target: "#turn.stagingEvent.gameWon",
+                guard: "gameWon",
+              },
+              {
+                target: "#turn.stagingEvent.gameLost",
+                guard: "gameLost",
+              },
               {
                 target: "#turn.stagingEvent.massExtinction",
                 guard: and([
@@ -662,14 +661,7 @@ export const TurnMachine = setup({
     stagingEvent: {
       tags: ["stagingEvent"],
       initial: "idle",
-      on: {
-        "user.click.token": {
-          // TODO: why it's not inside "abilityRefresh" state?
-          target: ".abilityRefresh.awaitingConfirmation",
-          actions: { type: "refreshAbility", params: ({ event: { token } }) => token.uid },
-          guard: { type: "isAbilityUsed", params: ({ event: { token } }) => token },
-        },
-      },
+
       states: {
         gameWon: {
           initial: "awaitingConfirmation",
@@ -682,7 +674,7 @@ export const TurnMachine = setup({
             },
             transitioning: {
               after: {
-                1200: { target: "#turn.buying" },
+                animationDuration: { target: "#turn.buying" },
               },
             },
           },
@@ -693,12 +685,15 @@ export const TurnMachine = setup({
           states: {
             awaitingConfirmation: {
               on: {
-                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+                "user.click.stage.confirm": {
+                  actions: "unstage",
+                  target: "transitioning",
+                },
               },
             },
             transitioning: {
               after: {
-                1200: { target: "#turn.buying" },
+                animationDuration: { target: "#turn.buying" },
               },
             },
           },
@@ -743,7 +738,15 @@ export const TurnMachine = setup({
             },
             awaitingConfirmation: {
               on: {
-                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+                "user.click.stage.confirm": {
+                  actions: "unstage",
+                  target: "transitioning",
+                  guard: "stageCardsUsedForAbilityRefresh",
+                },
+                "user.click.token": {
+                  actions: { type: "refreshAbility", params: ({ event: { token } }) => token.uid },
+                  guard: { type: "isAbilityUsed", params: ({ event: { token } }) => token },
+                },
               },
             },
             transitioning: {
@@ -765,7 +768,7 @@ export const TurnMachine = setup({
             transitioning: {
               entry: {
                 type: "markCheckAsDone",
-                params: "elementalDisasterCheck",
+                params: () => "elementalDisasterCheck",
               },
               after: {
                 animationDuration: { target: "#turn.endingTurn.drawing" },
@@ -785,7 +788,7 @@ export const TurnMachine = setup({
             transitioning: {
               entry: {
                 type: "markCheckAsDone",
-                params: "extinctionCheck",
+                params: () => "extinctionCheck",
               },
               after: {
                 animationDuration: { target: "#turn.endingTurn.drawing" },
@@ -805,7 +808,7 @@ export const TurnMachine = setup({
             transitioning: {
               entry: {
                 type: "markCheckAsDone",
-                params: "extinctionCheck",
+                params: () => "extinctionCheck",
               },
               after: {
                 animationDuration: { target: "#turn.endingTurn" },
@@ -825,7 +828,7 @@ export const TurnMachine = setup({
             transitioning: {
               entry: {
                 type: "markCheckAsDone",
-                params: "noBuyCheck",
+                params: () => "noBuyCheck",
               },
               after: {
                 animationDuration: { target: "#turn.checkingEventConditions.preDraw" },
@@ -932,7 +935,7 @@ export const TurnMachine = setup({
       },
       on: {
         "user.click.player.hand.card.ability": {
-          target: "#turn.usingAbility.cancelAbilityCard",
+          target: "#turn.usingAbility.cancel",
         },
         "user.click.token": {
           target: "#turn.usingAbility",
@@ -941,10 +944,10 @@ export const TurnMachine = setup({
             params: ({ event: { token } }) => token,
           },
           actions: assign({
-            turn: ({ context: { turn }, event: { token } }) => ({
-              ...turn,
-              currentAbility: { piece: turn.selectedAbilityCard!, name: token.name },
-            }),
+            turn: ({ context: { turn }, event: { token } }) =>
+              produce(turn, (draft) => {
+                draft.currentAbility = { piece: draft.selectedAbilityCard!, name: token.name };
+              }),
           }),
         },
       },
@@ -953,6 +956,14 @@ export const TurnMachine = setup({
     usingAbility: {
       tags: ["usingAbility"],
       initial: "idle",
+      on: {
+        "user.click.player.hand.card.ability": {
+          target: "#turn.usingAbility.cancel",
+        },
+        "user.click.token": {
+          target: "#turn.usingAbility.cancel",
+        },
+      },
       states: {
         idle: {
           after: {
@@ -977,15 +988,6 @@ export const TurnMachine = setup({
           states: {
             pickingTarget: {
               on: {
-                "user.click.cardToken": {
-                  target: "#turn.usingAbility.cancelAbilityCardSelection",
-                },
-                "user.click.token": {
-                  target: "#turn.usingAbility.cancel",
-                },
-                "user.click.player.hand.card.ability": {
-                  target: "#turn.usingAbility.cancelAbilityCard",
-                },
                 "user.click.player.hand.card": {
                   target: "pickingDestination",
                   actions: { type: "setAbilityTargetCard", params: ({ event: { card } }) => card },
@@ -1002,15 +1004,6 @@ export const TurnMachine = setup({
             },
             pickingDestination: {
               on: {
-                "user.click.player.hand.card.ability": {
-                  target: "#turn.usingAbility.cancelAbilityCard",
-                },
-                "user.click.cardToken": {
-                  target: "#turn.usingAbility.cancelAbilityCardSelection",
-                },
-                "user.click.token": {
-                  target: "#turn.usingAbility.cancel",
-                },
                 "user.click.player.hand.card": {
                   target: "#turn.usingAbility.done",
                   guard: not(({ context, event }) => TurnMachineGuards.cardFromRow({ context }, event.card)),
@@ -1046,15 +1039,6 @@ export const TurnMachine = setup({
         },
         refreshing: {
           on: {
-            "user.click.player.hand.card.ability": {
-              target: "#turn.usingAbility.cancelAbilityCard",
-            },
-            "user.click.cardToken": {
-              target: "#turn.usingAbility.cancelAbilityCardSelection",
-            },
-            "user.click.token.*": {
-              target: "#turn.usingAbility.cancel",
-            },
             "user.click.market.deck.animal": {
               target: "#turn.usingAbility.done",
               actions: "refreshAnimalDeck",
@@ -1082,20 +1066,8 @@ export const TurnMachine = setup({
           after: {
             animationDuration: {
               target: "#turn.buying",
-              action: "cancelAbility",
+              actions: "cancelAbility",
             },
-          },
-        },
-        cancelAbilityCardSelection: {
-          always: {
-            target: "#turn.cardAbility",
-            actions: "cancelAbility",
-          },
-        },
-        cancelAbilityCard: {
-          always: {
-            target: "#turn.buying",
-            actions: "cancelAbilityCard",
           },
         },
       },

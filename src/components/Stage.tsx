@@ -3,7 +3,7 @@ import { upperXBoundary, lowerXBoundary, upperYBoundary, lowerYBoundary } from "
 import { useGameState } from "@/context/game-state/hook";
 import { Html } from "@react-three/drei";
 import { cardHeight } from "@/constants/card";
-import { difference, find, last } from "lodash";
+import { find, last } from "lodash";
 import { motion } from "framer-motion-3d";
 import { getAssetPath } from "./utils";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
@@ -27,7 +27,7 @@ const getHabitatUnlockText = (state: GameState, uids: (HabitatUID | DisasterUID 
 };
 
 const Stage = () => {
-  const { emit, state, snap } = useGameState();
+  const { emit, state, snap, test } = useGameState();
   const player = find(state.players, { uid: state.turn.player })!;
   const canRefresh = TurnMachineGuards.canRefreshAbility({ context: state });
   const isPositive =
@@ -77,10 +77,7 @@ const Stage = () => {
               }
               emit.stageConfirm()();
             }}
-            disabled={
-              state.stage.eventType === "abilityRefresh" &&
-              difference(state.stage.cause, state.turn.uidsUsedForAbilityRefresh).length !== 0
-            }
+            disabled={!test.stageConfirm()}
             variant="default"
             className="w-full"
           >

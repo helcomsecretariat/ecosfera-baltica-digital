@@ -222,4 +222,8 @@ export const TurnMachineGuards = {
   gameWon: ({ context: { habitatMarket } }: { context: GameState }) => {
     return habitatMarket.deck.every((habitatTile) => habitatTile.isAcquired);
   },
+
+  stageCardsUsedForAbilityRefresh: ({ context: { turn, stage } }: { context: GameState }) =>
+    //@ts-expect-error uid type mismatch doesnt matter
+    stage?.cause?.every((uid) => turn.uidsUsedForAbilityRefresh.includes(uid)) ?? false,
 };

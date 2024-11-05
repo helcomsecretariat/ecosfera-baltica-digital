@@ -2,10 +2,10 @@ import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion-3d";
 import { GamePiece, GamePieceAppearance } from "@/state/types";
 import { MeshProps, ThreeEvent } from "@react-three/fiber";
-import { baseDuration } from "@/constants/animation";
 import { useGameState } from "@/context/game-state/hook";
 import { usePresence } from "framer-motion";
 import { useAnimControls } from "@/hooks/useAnimationControls";
+import { calculateDurations } from "@/state/utils";
 
 type GameElementProps = {
   // TODO: why do we need width and height?
@@ -33,13 +33,11 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
 
   const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);
-  const mainDuration = appearance.duration / (animSpeed * baseDuration);
-  const mainDelay = appearance.delay / (animSpeed * baseDuration);
-  const cardFlipDuration = mainDuration * 0.2;
-  const zDuration = mainDuration + cardFlipDuration * 2;
-  const flipDuration = appearance.doesFlip ? mainDuration + cardFlipDuration : 0;
-  const flipDelay = appearance.doesFlip ? mainDuration + mainDelay : 0;
-  const totalDuration = mainDelay + mainDuration + Math.max(mainDelay + zDuration, flipDelay + flipDuration);
+
+  const { mainDuration, mainDelay, zDuration, flipDuration, flipDelay, totalDuration } = calculateDurations(
+    appearance,
+    animSpeed,
+  );
 
   useEffect(() => {
     if (!isPresent) {

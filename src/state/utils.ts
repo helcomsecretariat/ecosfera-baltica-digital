@@ -1,4 +1,5 @@
-import { Card, Coordinate, GameState, PlayerState, UID } from "@/state/types";
+import { baseDuration } from "@/constants/animation";
+import { Card, Coordinate, GamePieceAppearance, GameState, PlayerState, UID } from "@/state/types";
 import { find, isMatch } from "lodash-es";
 
 // algorith need a lenghty seed to work somewhat OK
@@ -77,4 +78,24 @@ export function getDirectionArrow(rawAngle: number): string {
       7: "↘",
     }[sector] ?? "?"
   );
+}
+
+export function calculateDurations(appearance: GamePieceAppearance, animSpeed: number) {
+  const mainDuration = appearance.duration / (animSpeed * baseDuration);
+  const mainDelay = appearance.delay / (animSpeed * baseDuration);
+  const cardFlipDuration = mainDuration * 0.2;
+  const zDuration = mainDuration + cardFlipDuration * 2;
+  const flipDuration = appearance.doesFlip ? mainDuration + cardFlipDuration : 0;
+  const flipDelay = appearance.doesFlip ? mainDuration + mainDelay : 0;
+  const totalDuration = mainDelay + mainDuration + Math.max(mainDelay + zDuration, flipDelay + flipDuration);
+
+  return {
+    mainDuration,
+    mainDelay,
+    cardFlipDuration,
+    zDuration,
+    flipDuration,
+    flipDelay,
+    totalDuration,
+  };
 }

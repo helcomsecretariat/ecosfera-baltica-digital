@@ -17,10 +17,9 @@ import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
 import { TurnMachineGuards } from "@/state/machines/guards";
 import { compact, concat, countBy, entries, find, first, flatten, intersection, map, reject, without } from "lodash-es";
-import { replaceItem, shuffle } from "@/state/utils";
+import { calculateDurations, replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 import { toUiState } from "@/state/ui/positioner";
-import { baseDuration } from "@/constants/animation";
 
 export type TurnMachineContext = GameState & { ui?: UiState; animSpeed?: number };
 export type TurnMachineEvent =
@@ -427,10 +426,9 @@ export const TurnMachine = setup({
         draft.stage = undefined;
       }),
     ),
-    drawCards: assign(({ context }: { context: GameState }) =>
+    drawCards: assign(({ context }: { context: GameState }, playerIndex: number) =>
       produce(context, (draft) => {
-        const currentPlayerIndex = context.players.findIndex((player) => player.uid === context.turn.player);
-        const player = draft.players[currentPlayerIndex];
+        const player = draft.players[playerIndex];
         player.hand = player.deck.slice(0, 4);
         player.deck = player.deck.slice(player.hand.length);
 
@@ -442,10 +440,10 @@ export const TurnMachine = setup({
           player.hand = concat(player.hand, player.deck.slice(0, remainingDraw));
           player.deck = player.deck.slice(remainingDraw);
         }
-        draft.turn.phase = "draw";
+        // draft.turn.phase = "draw";
       }),
     ),
-    endTurn: assign(({ context }: { context: GameState }) =>
+    clearTurnStateAndSwitchPlayer: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         const currentPlayer = context.players.find((player) => player.uid === context.turn.player)!;
         context.players = [...without(context.players, currentPlayer), currentPlayer];
@@ -528,9 +526,13 @@ export const TurnMachine = setup({
   },
   delays: {
     animationDuration: ({ context: { ui, animSpeed } }) => {
-      const maxDuration = Math.max(...Object.values(ui!.cardPositions).map(({ duration, delay }) => delay + duration));
-      const duration = (1000 * maxDuration) / (animSpeed! * baseDuration);
-      console.log("waining for", duration);
+      const maxDuration = Math.max(
+        ...Object.values(ui!.cardPositions).map(
+          (appearance) => calculateDurations(appearance, animSpeed!).totalDuration,
+        ),
+      );
+      const duration = maxDuration * 1000;
+      console.log("waining for", ~~duration, "ms");
       return duration;
     },
   },
@@ -570,14 +572,23 @@ export const TurnMachine = setup({
             animationDuration: "#turn.checkingEventConditions.preDraw",
           },
         },
-        drawing: {
+        discardRow: {
           entry: "discardCards",
           after: {
-            animationDuration: { target: "ending", actions: "drawCards" },
+            animationDuration: "clearTurnState",
           },
         },
-        ending: {
-          entry: "endTurn",
+        clearTurnState: {
+          entry: "clearTurnStateAndSwitchPlayer",
+          after: {
+            animationDuration: "drawRow",
+          },
+        },
+        drawRow: {
+          entry: {
+            type: "drawCards",
+            params: ({ context }) => context.players.length - 1,
+          },
           always: "#turn",
         },
       },
@@ -642,11 +653,11 @@ export const TurnMachine = setup({
                 guard: "canUnlockHabitats",
               },
               {
-                target: "#turn.endingTurn.ending",
+                target: "#turn.endingTurn.clearTurnState",
                 guard: "drawPhase",
               },
               {
-                target: "#turn.endingTurn.drawing",
+                target: "#turn.endingTurn.discardRow",
                 guard: "endPhase",
               },
               {
@@ -771,7 +782,7 @@ export const TurnMachine = setup({
                 params: () => "elementalDisasterCheck",
               },
               after: {
-                animationDuration: { target: "#turn.endingTurn.drawing" },
+                animationDuration: { target: "#turn.endingTurn.discardRow" },
               },
             },
           },
@@ -791,7 +802,7 @@ export const TurnMachine = setup({
                 params: () => "extinctionCheck",
               },
               after: {
-                animationDuration: { target: "#turn.endingTurn.drawing" },
+                animationDuration: { target: "#turn.endingTurn.discardRow" },
               },
             },
           },

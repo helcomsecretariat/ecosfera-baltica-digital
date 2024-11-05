@@ -44,6 +44,7 @@ import { calcDelays } from "@/state/ui/animation-scheduler";
 
 const zeroRotation = { x: 0, y: 0, z: 0 };
 const yFlipRotation = { y: -Math.PI };
+const playerZRotations = [0, Math.PI / 2, 0, 3 * (Math.PI / 2)] as const;
 
 export const toUiState = (prevUiState: UiState | null, gameState: GameState): UiState => {
   const allDelays = calcDelays(
@@ -114,27 +115,29 @@ export const disasterDeckPosition: Coordinate = {
   z: 0,
 };
 
-export const supplyDeckPositions = (gameState: GameState): Coordinate[] => {
-  const positions: Coordinate[] = [];
-
-  if (gameState.players.length > 0) {
-    positions.push({ x: 0 - getSupplyDeckOffset(gameState.players[0].hand), y: playerCardsYStart, z: 0 });
-  }
-
-  if (gameState.players.length > 1) {
-    positions.push({ x: upperXBoundary - cardHeight / 2, y: 0 - getSupplyDeckOffset(gameState.players[1].hand), z: 0 });
-  }
-
-  if (gameState.players.length > 2) {
-    positions.push({ x: 0 + getSupplyDeckOffset(gameState.players[2].hand), y: upperYBoundary - cardHeight / 2, z: 0 });
-  }
-
-  if (gameState.players.length > 3) {
-    positions.push({ x: lowerXBoundary + cardHeight / 2, y: 0 + getSupplyDeckOffset(gameState.players[3].hand), z: 0 });
-  }
-
-  return positions;
-};
+export const supplyDeckPositions = (gameState: GameState) =>
+  [
+    gameState.players[0] && {
+      x: 0 - getSupplyDeckOffset(gameState.players[0]?.hand),
+      y: playerCardsYStart,
+      z: 0,
+    },
+    gameState.players[1] && {
+      x: upperXBoundary - cardHeight / 2,
+      y: 0 - getSupplyDeckOffset(gameState.players[1].hand),
+      z: 0,
+    },
+    gameState.players[2] && {
+      x: 0 - getSupplyDeckOffset(gameState.players[2].hand),
+      y: upperYBoundary - cardHeight / 2,
+      z: 0,
+    },
+    gameState.players[3] && {
+      x: lowerXBoundary + cardHeight / 2,
+      y: 0 + getSupplyDeckOffset(gameState.players[3].hand),
+      z: 0,
+    },
+  ] as Coordinate[];
 
 export const discardPositions = (gameState: GameState): Coordinate[] => {
   const positions: Coordinate[] = [];
@@ -197,7 +200,7 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
 export const positionAbilityTokens = (gameState: GameState): GamePieceCoordsDict => {
   return gameState.players.reduce((acc, player, playerIndex) => {
     const deckPosition = supplyDeckPositions(gameState)[playerIndex];
-    const rotation = { x: 0, y: 0, z: playerIndex * (Math.PI / 2) };
+    const rotation = { x: 0, y: 0, z: 0 };
     const isVertical = playerIndex === 0 || playerIndex === 2;
     const isHorizontal = !isVertical;
 
@@ -209,7 +212,7 @@ export const positionAbilityTokens = (gameState: GameState): GamePieceCoordsDict
       { x: deckPosition.x - abilityOffset, y: deckPosition.y - cardWidth, z: 0 },
 
       // third Player
-      { x: deckPosition.x + cardWidth, y: deckPosition.y - abilityOffset, z: 0 },
+      { x: deckPosition.x - cardWidth, y: deckPosition.y - abilityOffset, z: 0 },
 
       // fourth Player
       { x: deckPosition.x - abilityOffset, y: deckPosition.y + cardWidth, z: 0 },
@@ -228,6 +231,7 @@ export const positionAbilityTokens = (gameState: GameState): GamePieceCoordsDict
       };
     });
 
+    // refreshing abilities
     if (gameState.stage?.eventType === "abilityRefresh") {
       player.abilities
         .filter(({ isUsed }) => isUsed)
@@ -428,7 +432,7 @@ export const positionPlayerDecks = (gameState: GameState): GamePieceCoordsDict =
       rotation: {
         x: 0,
         y: 0,
-        z: playerIndex * (Math.PI / 2),
+        z: playerZRotations[playerIndex],
       },
     };
     acc[`${player.uid}PlayerDiscard`] = {
@@ -449,7 +453,7 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
   return gameState.players.reduce((acc, player, playerIndex) => {
     const deckPosition = supplyDeckPositions(gameState)[playerIndex];
     const discardPosition = discardPositions(gameState)[playerIndex];
-    const rotation = { x: 0, y: 0, z: playerIndex * (Math.PI / 2) };
+    const rotation = { x: 0, y: 0, z: playerZRotations[playerIndex] };
     const { playedCards, exhaustedCards } = gameState.turn;
     const deckRotation = { ...rotation, ...yFlipRotation };
     const discardRotation = { ...rotation };
@@ -543,7 +547,7 @@ const getPlayerCardOffset = (
     case 1:
       return { x: inPlayOffset, y: cardOffset };
     case 2:
-      return { x: -cardOffset, y: inPlayOffset };
+      return { x: cardOffset, y: inPlayOffset };
     case 3:
       return { x: inPlayOffset, y: -cardOffset };
     default:

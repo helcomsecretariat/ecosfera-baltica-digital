@@ -91,7 +91,7 @@ const Croupier = () => {
       />
 
       {/* Player HUDs */}
-      {gameState.players.map((player) => (
+      {gameState.players.map((player, playerIndex) => (
         <React.Fragment key={player.uid + "HUD"}>
           <Deck
             gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}
@@ -100,7 +100,15 @@ const Croupier = () => {
           />
           <PlayerTitle
             gamePieceAppearance={uiState.deckPositions[`${player.uid}PlayerDeck`]}
-            offset={[0, 10, 0]}
+            offset={
+              // TODO: use positioner for titles as well
+              [
+                [0, 10, 0],
+                [0, 10, 0],
+                [0, -13, 0],
+                [0, 10, 0],
+              ][playerIndex] as [number, number, number]
+            }
             text={player.name}
           />
           {player.abilities.map((ability) => (

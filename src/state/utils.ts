@@ -84,15 +84,17 @@ export function calculateDurations(appearance: GamePieceAppearance, animSpeed: n
   const mainDuration = appearance.duration / (animSpeed * baseDuration);
   const mainDelay = appearance.delay / (animSpeed * baseDuration);
   const cardFlipDuration = mainDuration * 0.2;
-  const zDuration = mainDuration + cardFlipDuration * 2;
+  const zDelay = mainDelay;
+  const zDuration = mainDuration + cardFlipDuration;
   const flipDuration = appearance.doesFlip ? mainDuration + cardFlipDuration : 0;
   const flipDelay = appearance.doesFlip ? mainDuration + mainDelay : 0;
-  const totalDuration = mainDelay + mainDuration + Math.max(mainDelay + zDuration, flipDelay + flipDuration);
+  const totalDuration = Math.max(mainDelay + mainDuration, zDelay + zDuration, flipDelay + flipDuration);
 
   return {
     mainDuration,
     mainDelay,
     cardFlipDuration,
+    zDelay,
     zDuration,
     flipDuration,
     flipDelay,

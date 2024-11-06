@@ -29,7 +29,7 @@ export type TurnMachineEvent =
   | { type: "user.click.market.deck.element"; name: ElementCard["name"] }
   | { type: "user.click.market.borrowed.card.element"; card: ElementCard }
   | { type: "user.click.market.table.card"; card: PlantCard | AnimalCard }
-  | { type: "iddqd"; context: GameState }
+  | { type: "iddqd"; context: Partial<TurnMachineContext> }
   | { type: "user.click.player.hand.card.ability"; card: PlantCard | AnimalCard }
   | { type: "user.click.stage.confirm" }
   | { type: "ability.cancel" }
@@ -426,9 +426,9 @@ export const TurnMachine = setup({
         draft.stage = undefined;
       }),
     ),
-    drawCards: assign(({ context }: { context: GameState }, playerIndex: number) =>
+    drawCards: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
-        const player = draft.players[playerIndex];
+        const player = draft.players[0];
         player.hand = player.deck.slice(0, 4);
         player.deck = player.deck.slice(player.hand.length);
 
@@ -518,7 +518,7 @@ export const TurnMachine = setup({
       }),
     ),
 
-    setContext: assign(({ context }, newContext: GameState) => ({ ...context, ...newContext })),
+    setContext: assign(({ context }, newContext: Partial<TurnMachineContext>) => ({ ...context, ...newContext })),
   },
   guards: {
     ...TurnMachineGuards,
@@ -572,23 +572,22 @@ export const TurnMachine = setup({
           },
         },
         discardingRow: {
-          entry: "discardCards",
-          after: {
-            animationDuration: "clearingTurnState",
-          },
-        },
-        clearingTurnState: {
-          entry: "clearTurnStateAndSwitchPlayer",
           after: {
             animationDuration: "drawingRow",
           },
+          exit: "discardCards",
         },
         drawingRow: {
-          entry: {
-            type: "drawCards",
-            params: ({ context }) => context.players.length - 1,
+          after: {
+            animationDuration: "clearingTurnState",
           },
-          always: "#turn",
+          exit: "drawCards",
+        },
+        clearingTurnState: {
+          after: {
+            animationDuration: "#turn",
+          },
+          exit: "clearTurnStateAndSwitchPlayer",
         },
       },
     },

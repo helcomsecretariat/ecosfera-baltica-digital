@@ -34,7 +34,7 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
   const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);
 
-  const { mainDuration, mainDelay, zDuration, flipDuration, flipDelay, totalDuration } = calculateDurations(
+  const { mainDuration, mainDelay, zDelay, zDuration, flipDuration, flipDelay, totalDuration } = calculateDurations(
     appearance,
     animSpeed,
   );
@@ -67,7 +67,7 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
           delay: flipDelay,
         },
         z: {
-          delay: mainDelay,
+          delay: zDelay,
           duration: zDuration,
           times: [0, 0.1, 0.3, 1],
         },

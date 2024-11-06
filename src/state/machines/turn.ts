@@ -571,19 +571,19 @@ export const TurnMachine = setup({
             animationDuration: "#turn.checkingEventConditions.preDraw",
           },
         },
-        discardRow: {
+        discardingRow: {
           entry: "discardCards",
           after: {
-            animationDuration: "clearTurnState",
+            animationDuration: "clearingTurnState",
           },
         },
-        clearTurnState: {
+        clearingTurnState: {
           entry: "clearTurnStateAndSwitchPlayer",
           after: {
-            animationDuration: "drawRow",
+            animationDuration: "drawingRow",
           },
         },
-        drawRow: {
+        drawingRow: {
           entry: {
             type: "drawCards",
             params: ({ context }) => context.players.length - 1,
@@ -652,7 +652,7 @@ export const TurnMachine = setup({
                 guard: "canUnlockHabitats",
               },
               {
-                target: "#turn.endingTurn.discardRow",
+                target: "#turn.endingTurn.discardingRow",
                 guard: "endPhase",
               },
               {
@@ -777,7 +777,7 @@ export const TurnMachine = setup({
                 params: () => "elementalDisasterCheck",
               },
               after: {
-                animationDuration: { target: "#turn.endingTurn.discardRow" },
+                animationDuration: { target: "#turn.endingTurn.discardingRow" },
               },
             },
           },
@@ -797,7 +797,7 @@ export const TurnMachine = setup({
                 params: () => "extinctionCheck",
               },
               after: {
-                animationDuration: { target: "#turn.endingTurn.discardRow" },
+                animationDuration: { target: "#turn.endingTurn.discardingRow" },
               },
             },
           },

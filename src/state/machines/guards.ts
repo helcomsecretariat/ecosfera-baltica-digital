@@ -174,10 +174,6 @@ export const TurnMachineGuards = {
     return !(context.turn.automaticEventChecks?.includes(checkName) ?? false);
   },
 
-  drawPhase: ({ context }: { context: GameState }) => {
-    return context.turn.phase === "draw";
-  },
-
   actionPhase: ({ context }: { context: GameState }) => {
     return context.turn.phase === "action";
   },

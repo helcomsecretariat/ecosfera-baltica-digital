@@ -440,7 +440,6 @@ export const TurnMachine = setup({
           player.hand = concat(player.hand, player.deck.slice(0, remainingDraw));
           player.deck = player.deck.slice(remainingDraw);
         }
-        // draft.turn.phase = "draw";
       }),
     ),
     clearTurnStateAndSwitchPlayer: assign(({ context }: { context: GameState }) =>
@@ -651,10 +650,6 @@ export const TurnMachine = setup({
               {
                 target: "#turn.stagingEvent.habitatUnlock",
                 guard: "canUnlockHabitats",
-              },
-              {
-                target: "#turn.endingTurn.clearTurnState",
-                guard: "drawPhase",
               },
               {
                 target: "#turn.endingTurn.discardRow",

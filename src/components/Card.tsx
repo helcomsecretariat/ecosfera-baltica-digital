@@ -33,6 +33,15 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
   const dropTexture = useTexture("/ecosfera_baltica/ability_drop.avif");
   const dropActiveTexture = useTexture("/ecosfera_baltica/ability_drop_active.avif");
   const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: false } });
+  let elementsSorted: string[] = [];
+
+  if (card.type === "plant") {
+    const elementsOrdering = state.deck.ordering.find(([type]) => type === "element")![1]!;
+
+    elementsSorted = elementsOrdering
+      .filter((element) => card.elements.includes(element))
+      .flatMap((element) => Array.from({ length: card.elements.filter((n) => n === element).length }, () => element));
+  }
 
   return (
     gamePieceAppearance && (
@@ -54,17 +63,18 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
             <meshBasicMaterial transparent={true} opacity={0} attach="material-1" />
           </mesh>
         )}
-        {/* @ts-expect-error TS is sad someties */}
-        {card.elements?.map((name, index) => (
+
+        {elementsSorted.map((name, index) => (
           <mesh
             key={index + name}
             rotation={[Math.PI / 2, 0, 0]}
-            position={[cardWidth * 0.42, -cardHeight * 0.44 + index * 1.6, 0.15]}
+            position={[-cardWidth * 0.42 + index * 1.6, -cardHeight * 0.44, 0.15]}
           >
             <cylinderGeometry args={[0.7, 0.7, 0.1, 5, 1]} />
             <meshBasicMaterial transparent={true} color={getElementColor(name)} />
           </mesh>
         ))}
+
         {/* @ts-expect-error TS is sad someties */}
         {card.habitats?.map((name, index) => (
           <React.Fragment key={index + name}>
@@ -112,10 +122,10 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
           )}
         {["plant", "animal"].includes(type) && (
           <TextWithShadow
-            position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 4, 0.15]}
+            position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 5.7, 0.15]}
             color="black"
             fontSize={1.5}
-            maxWidth={cardWidth * 0.85}
+            maxWidth={cardWidth * 0.9}
             anchorX="left"
             anchorY="top"
             textAlign="left"

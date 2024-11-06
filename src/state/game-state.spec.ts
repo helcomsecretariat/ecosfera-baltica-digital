@@ -15,11 +15,11 @@ const gameConfig: GameConfig = {
 
 describe("game state", () => {
   it("smoke", () => {
-    expect(spawnDeck(deckConfig as DeckConfig, gameConfig)).toBeTruthy();
+    expect(spawnDeck(deckConfig as unknown as DeckConfig, gameConfig)).toBeTruthy();
   });
 
   it("all players' cards have unique uids", () => {
-    const gameState = spawnDeck(deckConfig as DeckConfig, gameConfig);
+    const gameState = spawnDeck(deckConfig as unknown as DeckConfig, gameConfig);
 
     const allCards = gameState.players.flatMap((player) => [...player.deck, ...player.hand, ...player.discard]);
 
@@ -31,17 +31,21 @@ describe("game state", () => {
 
   it("difficulty level affects the number of cards in the decks", () => {
     // Spawn the game state with 1 player
-    const gameStateOnePlayer = spawnDeck(deckConfig as DeckConfig, gameConfig);
+    const gameStateOnePlayer = spawnDeck(deckConfig as unknown as DeckConfig, gameConfig);
     const onePlayerElementsDeckSize = gameStateOnePlayer.elementMarket.deck.length;
     const onePlayerDisastersDeckSize = gameStateOnePlayer.disasterMarket.deck.length;
 
     // Spawn the game state with 2 players
-    const gameStateTwoPlayers = spawnDeck(deckConfig as DeckConfig, { ...gameConfig, playerCount: 2 });
+    const gameStateTwoPlayers = spawnDeck(deckConfig as unknown as DeckConfig, { ...gameConfig, playerCount: 2 });
     const twoPlayerElementsDeckSize = gameStateTwoPlayers.elementMarket.deck.length;
     const twoPlayerDisastersDeckSize = gameStateTwoPlayers.disasterMarket.deck.length;
 
     // Spawn the game state with 2 player and higher difficulty
-    const gameStateHighDiff = spawnDeck(deckConfig as DeckConfig, { ...gameConfig, playerCount: 2, difficulty: 4 });
+    const gameStateHighDiff = spawnDeck(deckConfig as unknown as DeckConfig, {
+      ...gameConfig,
+      playerCount: 2,
+      difficulty: 4,
+    });
     const gameStateHighDiffElementsDeckSize = gameStateHighDiff.elementMarket.deck.length;
     const gameStateHighDiffDisastersDeckSize = gameStateHighDiff.disasterMarket.deck.length;
 
@@ -54,8 +58,8 @@ describe("game state", () => {
 
   it("deck remains the same with the same seed", () => {
     // Spawn the game state with 3 players twice with the same seed
-    const firstGameState = spawnDeck(deckConfig as DeckConfig, { ...gameConfig, playerCount: 3 });
-    const secondGameState = spawnDeck(deckConfig as DeckConfig, { ...gameConfig, playerCount: 3 });
+    const firstGameState = spawnDeck(deckConfig as unknown as DeckConfig, { ...gameConfig, playerCount: 3 });
+    const secondGameState = spawnDeck(deckConfig as unknown as DeckConfig, { ...gameConfig, playerCount: 3 });
 
     // Compare the JSON string representation of both game states
     const firstGameStateJSON = JSON.stringify(firstGameState);

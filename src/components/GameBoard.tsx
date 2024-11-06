@@ -58,7 +58,7 @@ export default function GameBoard() {
 
           {FPS && <Stats />}
 
-          <PreloadAssets config={deckConfig as DeckConfig} />
+          <PreloadAssets config={deckConfig as unknown as DeckConfig} />
           <Preload all />
         </Suspense>
       </Canvas>

@@ -1,7 +1,7 @@
 import { Actor, createActor } from "xstate";
 import { test, beforeEach } from "vitest";
 import { GameState, PlayerUID } from "@/state/types";
-import config from "@/decks/ecosfera-baltica.deck.json";
+import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import { DeckConfig } from "@/decks/schema";
 import { TurnMachine } from "@/state/machines/turn";
 
@@ -53,7 +53,7 @@ let actor: Actor<typeof TurnMachine>;
 beforeEach(() => {
   actor = createActor(TurnMachine, {
     input: {
-      deckConfig: config as DeckConfig,
+      deckConfig: deckConfig as unknown as DeckConfig,
       gameConfig: {
         playerCount: 2,
         seed: "42",

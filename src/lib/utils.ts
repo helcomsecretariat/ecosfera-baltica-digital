@@ -1,3 +1,5 @@
+import { DeckConfig } from "@/decks/schema";
+import { Card } from "@/state/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -136,4 +138,33 @@ export function generateRandomName(existingNames: Set<string>): string {
 
   existingNames.add(name);
   return name;
+}
+
+export function getCardComparator(ordering: DeckConfig["ordering"]): (a: Card, b: Card) => number {
+  const orderMap: { [key: string]: number } = {};
+  const elementSubOrderMap: { [key: string]: number } = {};
+
+  ordering.forEach((category, index) => {
+    const type = category[0] as string;
+    const subTypes = category[1];
+    orderMap[type] = index;
+
+    if (subTypes) {
+      subTypes.forEach((subType, subIndex) => {
+        elementSubOrderMap[subType] = subIndex;
+      });
+    }
+  });
+
+  return (a: Card, b: Card): number => {
+    if (orderMap[a.type] !== orderMap[b.type]) {
+      return orderMap[a.type] - orderMap[b.type];
+    }
+
+    if (a.type === "element" && b.type === "element") {
+      return elementSubOrderMap[a.name] - elementSubOrderMap[b.name];
+    }
+
+    return a.uid.localeCompare(b.uid);
+  };
 }

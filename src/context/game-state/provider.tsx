@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useMemo } from "react";
+import { createContext, ReactNode, useEffect, useMemo } from "react";
 import config from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
 import { GameConfig, GameState, UiState } from "@/state/types";
@@ -47,6 +47,10 @@ export const GameStateProvider = ({
   const emit = useMemo(() => createEmmiters(send), [send]);
   const test = useMemo(() => createTesters(snap.can.bind(snap)), [snap]);
   const hasTag = useMemo(() => snap.hasTag.bind(snap), [snap]);
+
+  useEffect(() => {
+    emit.iddqd({ animSpeed })();
+  }, [animSpeed]);
 
   const value = {
     snap,

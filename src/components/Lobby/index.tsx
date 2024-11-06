@@ -25,6 +25,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
   const [difficulty, setDifficulty] = useState<number>(1);
   const [seed, setSeed] = useState<string>(urlSeed);
   const nameInputRefs = useRef<HTMLInputElement[]>([]);
+  const seedInputRef = useRef<HTMLInputElement>(null);
 
   const existingNames = new Set<string>();
 
@@ -151,10 +152,14 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
                   <Input
                     id="seed"
                     type="text"
+                    ref={seedInputRef}
                     className="w-auto rounded-none border-0 border-transparent border-white bg-transparent text-end focus-visible:border-b-[1px] focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={seed}
                     onChange={(e) => setSeed(e.target.value)}
                   />
+                  <Button size="icon" variant="tertiary" onClick={() => seedInputRef?.current?.focus()}>
+                    <FaPen />
+                  </Button>
                   <Popover>
                     <PopoverTrigger asChild>
                       <span className="ml-2 cursor-pointer rounded-full bg-white p-1 text-xl text-black">

@@ -6,6 +6,7 @@ import {
   ElementConfig,
   ExtinctionConfig,
   PlantConfig,
+  DeckConfig,
 } from "@/decks/schema";
 
 // google "bradned types in TS" for explanation
@@ -91,6 +92,7 @@ export interface GameState {
     effect: (DisasterUID | ExtinctionUID | HabitatUID)[] | undefined;
   };
   config: GameConfig;
+  deck: DeckConfig;
 }
 
 export interface GameConfig {

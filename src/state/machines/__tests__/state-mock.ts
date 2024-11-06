@@ -1,6 +1,6 @@
 import { AnimalCard, ElementCard, GameState, PlantCard, PlayerState } from "@/state/types";
 import { createUID } from "@/state/utils";
-import deck from "@/decks/ecosfera-baltica.deck.json";
+import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import { DeckConfig } from "@/decks/schema";
 
 let ID_COUNTER = 0;
@@ -10,7 +10,7 @@ export function createTestUID<T extends string>(prefix: T, postfix = "") {
 }
 
 function plantFromDeck(name: string): PlantCard {
-  const plantData = (deck as DeckConfig).plants[name];
+  const plantData = (deckConfig as unknown as DeckConfig).plants[name];
   if (!plantData) throw new Error(`No plant named ${name} found in deck`);
 
   const uid = createTestUID("plant", name.toLowerCase().replace(/\s/g, "_"));
@@ -25,7 +25,7 @@ function plantFromDeck(name: string): PlantCard {
 }
 
 function animalFromDeck(name: string): AnimalCard {
-  const animalData = (deck as DeckConfig).animals[name];
+  const animalData = (deckConfig as unknown as DeckConfig).animals[name];
   if (!animalData) throw new Error(`No animal named ${name} found in deck`);
 
   const uid = createTestUID("animal", name.toLowerCase().replace(/\s/g, "_"));
@@ -76,6 +76,7 @@ const player: PlayerState = {
 };
 
 export const gameState: GameState = {
+  deck: deckConfig as unknown as DeckConfig,
   turn: {
     player: player.uid,
     currentAbility: undefined,

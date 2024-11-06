@@ -26,7 +26,7 @@ const Deck = ({
 }) => {
   const texture = useSRGBTexture(texturePath);
   const highlightTexture = useTexture(getHighlightTextureAssetPath());
-  const deckDepth = 0.1 * cards.length;
+  const deckDepth = 0.1 * (1 + cards.length);
   const textPosition: [number, number, number] = [
     -cardWidth / 2 + cardWidth * 0.15,
     cardHeight / 2 - cardHeight * 0.11,

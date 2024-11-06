@@ -4,7 +4,7 @@ import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/game-state/hook";
-import { uniqBy } from "lodash-es";
+import { keys } from "lodash-es";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { NextButton } from "@/components/NextTurnBtn";
@@ -50,17 +50,21 @@ const Croupier = () => {
           // onClick={emit.buyCard(card)}
         />
       ))}
-      {uniqBy(gameState.elementMarket.deck, "name").map((card: ElementCard) => (
-        <Deck
-          key={card.name}
-          texturePath={`/ecosfera_baltica/element_${card.name}.avif`}
-          textColor="black"
-          gamePieceAppearance={uiState.deckPositions[`${card.name}ElementDeck`]}
-          cards={gameState.elementMarket.deck.filter((elementDeckCard) => elementDeckCard.name === card.name)}
-          onClick={emit.marketElementClick(card.name)}
-          isHighlighted={hasTag("usingAbility") && test.marketElementClick(card.name)}
-        />
-      ))}
+
+      {keys(gameState.deck.elements)
+        .map((name: string) => ({ name, cards: gameState.elementMarket.deck.filter((card) => card.name === name) }))
+        .map(({ name, cards }: { name: string; cards: ElementCard[] }) => (
+          <Deck
+            key={name + "ElementDeck"}
+            texturePath={`/ecosfera_baltica/element_${name}.avif`}
+            textColor="black"
+            gamePieceAppearance={uiState.deckPositions[`${name}ElementDeck`]}
+            cards={cards}
+            onClick={emit.marketElementClick(name)}
+            isHighlighted={hasTag("usingAbility") && test.marketElementClick(name)}
+          />
+        ))}
+
       {gameState.turn.borrowedElement && (
         <CardComponent
           key={gameState.turn.borrowedElement.uid}
@@ -69,6 +73,7 @@ const Croupier = () => {
           onClick={emit.borrowedElementClick(gameState.turn.borrowedElement)}
         />
       )}
+
       <Deck
         key={"animalDeck"}
         gamePieceAppearance={uiState.deckPositions["animalDeck"]}

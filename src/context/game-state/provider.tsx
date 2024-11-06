@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useMemo } from "react";
-import config from "@/decks/ecosfera-baltica.deck.json";
+import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
 import { GameConfig, GameState, UiState } from "@/state/types";
 import { ActorRefFrom, SnapshotFrom, type EventFromLogic } from "xstate";
@@ -35,7 +35,7 @@ export const GameStateProvider = ({
   const [snap, send, actorRef] = useMachine(TurnMachine, {
     inspect,
     input: {
-      deckConfig: config as DeckConfig,
+      deckConfig: deckConfig as unknown as DeckConfig,
       gameConfig: {
         playerCount: playerCount,
         seed,

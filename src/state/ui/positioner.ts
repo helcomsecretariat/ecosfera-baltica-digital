@@ -1,4 +1,4 @@
-import { find, isEmpty, map, uniqBy } from "lodash-es";
+import { find, isEmpty, map } from "lodash-es";
 import {
   AnimalCard,
   Card,
@@ -379,12 +379,12 @@ export const positionPlantCards = (gameState: GameState): GamePieceCoordsDict =>
 export const positionElementMarketCards = (gameState: GameState): GamePieceCoordsDict =>
   ([gameState.turn.borrowedElement, ...gameState.elementMarket.deck].filter(Boolean) as ElementCard[]).reduce(
     (acc, card: ElementCard) => {
-      const borrowedPosition = {
-        x: marketXStart + 5 * cardXOffset,
-        y: marketYStart - 2 * cardYOffset,
-        z: 0,
+      const borrowedRotation = {
+        y: 0,
+        x: 0,
+        z: Math.PI / 9,
       };
-      const deckPosition = positionElementDecks(gameState)[`${card.name}ElementDeck`]?.position;
+      const deckPosition = positionElementDecks(gameState)[`${card.name}ElementDeck`].position!;
       const isBorrowed = gameState.turn.borrowedElement?.uid === card.uid;
 
       acc[card.uid] = {
@@ -392,8 +392,16 @@ export const positionElementMarketCards = (gameState: GameState): GamePieceCoord
         initialRotation: zeroRotation,
         exitPosition: deckPosition,
         exitRotation: zeroRotation,
-        position: isBorrowed ? borrowedPosition : undefined,
-        rotation: isBorrowed ? zeroRotation : undefined,
+        ...(isBorrowed
+          ? {
+              position: {
+                x: deckPosition.x,
+                y: deckPosition.y - cardHeight / 3,
+                z: deckPosition.z + 2,
+              },
+              rotation: borrowedRotation,
+            }
+          : undefined),
       } as AbsentPieceTransform;
 
       return acc;
@@ -428,10 +436,11 @@ export const positionDisasterCards = (gameState: GameState): GamePieceCoordsDict
 });
 
 export const positionElementDecks = (gameState: GameState): GamePieceCoordsDict => {
-  return uniqBy(gameState.elementMarket.deck, "name")
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .reduce((acc, card: ElementCard, index: number) => {
-      acc[`${card.name}ElementDeck`] = {
+  const acc: GamePieceCoordsDict = {};
+  gameState.deck.ordering
+    .filter(([name]) => name === "element")[0][1]!
+    .map((name, index) => {
+      acc[`${name}ElementDeck`] = {
         ...deckAnimationTimings,
         position: {
           x: marketXStart + index * cardXOffset,
@@ -449,8 +458,9 @@ export const positionElementDecks = (gameState: GameState): GamePieceCoordsDict 
           z: 0,
         },
       };
-      return acc;
     }, {} as GamePieceCoordsDict);
+
+  return acc;
 };
 
 export const positionPlayerDecks = (gameState: GameState): GamePieceCoordsDict => {

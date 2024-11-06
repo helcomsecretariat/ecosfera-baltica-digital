@@ -1,5 +1,11 @@
 {
   "assets_prefix": "ecosfera_baltica",
+  "ordering": [
+    ["element", ["oxygen", "temperature", "nutrients", "sun", "salinity"]],
+    ["plant"],
+    ["animal"],
+    ["disaster"]
+  ],
   "per_player": {
     "abilities": {
       "plus": {

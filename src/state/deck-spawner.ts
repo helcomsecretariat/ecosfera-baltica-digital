@@ -3,6 +3,7 @@ import type { GameConfig, GamePiece, GameState, Market, PieceToConfig, PlayerSta
 import { shuffle } from "./utils";
 import { Croupier } from "./croupier";
 import { entries, filter, pull, without } from "lodash-es";
+import { getCardComparator } from "@/lib/utils";
 
 function spawnAllPieces<T extends GamePiece>(
   items: Record<T["name"], PieceToConfig<T>>,
@@ -48,7 +49,7 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
       ].filter((a) => a !== undefined);
 
       deck = shuffle(deck, seed + index);
-      const hand = deck.slice(0, 4);
+      const hand = deck.slice(0, 4).sort(getCardComparator(deckConfig.ordering));
 
       pull(elements, ...deck);
       pull(disasters, ...deck);
@@ -89,5 +90,6 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
     disasterMarket: prepareMarket(disasters, 0, seed),
     stage: undefined,
     config: gameConfig,
+    deck: deckConfig,
   };
 }

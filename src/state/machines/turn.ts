@@ -20,6 +20,7 @@ import { compact, concat, countBy, entries, find, first, flatten, intersection, 
 import { calculateDurations, replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 import { toUiState } from "@/state/ui/positioner";
+import { getCardComparator } from "@/lib/utils";
 
 export type TurnMachineContext = GameState & { ui?: UiState; animSpeed?: number };
 export type TurnMachineEvent =
@@ -155,7 +156,7 @@ export const TurnMachine = setup({
         find(habitatMarket.deck, { name: tile.name })!.isAcquired = true;
       }),
     ),
-    drawPlayerDeck: assign(({ context }) =>
+    drawOneCard: assign(({ context }) =>
       produce(context, ({ turn, players }) => {
         const player = players.find(({ uid }) => uid === turn.player)!;
 
@@ -166,6 +167,7 @@ export const TurnMachine = setup({
 
         const drawnCard = player.deck.shift();
         if (drawnCard) player.hand.push(drawnCard);
+        player.hand = [...player.hand].sort(getCardComparator(context.deck.ordering));
       }),
     ),
     cardToAnimalDeck: assign(({ context }) =>
@@ -449,19 +451,32 @@ export const TurnMachine = setup({
           player.hand = concat(player.hand, player.deck.slice(0, remainingDraw));
           player.deck = player.deck.slice(remainingDraw);
         }
+
+        player.hand = [...player.hand].sort(getCardComparator(context.deck.ordering));
       }),
     ),
-    clearTurnStateAndSwitchPlayer: assign(({ context }: { context: GameState }) =>
-      produce(context, (draft) => {
-        const currentPlayer = context.players.find((player) => player.uid === context.turn.player)!;
-        context.players = [...without(context.players, currentPlayer), currentPlayer];
+    clearTurnStateAndSwitchPlayer: assign(({ context }: { context: GameState }) => {
+      const currentPlayer = context.players.find((player) => player.uid === context.turn.player)!;
+      const newPlayers = [...without(context.players, currentPlayer), currentPlayer];
+      // note that for single player nextPlayer === currentPlayer
+      const nextPlayer = newPlayers[0];
 
-        if (draft.turn.borrowedElement) {
-          draft.elementMarket.deck = [...draft.elementMarket.deck, draft.turn.borrowedElement];
-        }
-
-        draft.turn = {
-          player: context.players[0].uid,
+      return {
+        players: [
+          {
+            ...nextPlayer,
+            hand: [...nextPlayer.hand].sort(getCardComparator(context.deck.ordering)),
+          },
+          ...without(newPlayers, nextPlayer),
+        ],
+        elementMarket: {
+          ...context.elementMarket,
+          deck: context.turn.borrowedElement
+            ? [context.turn.borrowedElement, ...context.elementMarket.deck]
+            : context.elementMarket.deck,
+        },
+        turn: {
+          player: nextPlayer.uid,
           currentAbility: undefined,
           exhaustedCards: [],
           playedCards: [],
@@ -476,10 +491,10 @@ export const TurnMachine = setup({
           refreshedAbilityUids: [],
           selectedAbilityCard: undefined,
           automaticEventChecks: [],
-          phase: "action",
-        };
-      }),
-    ),
+          phase: "action" as const,
+        },
+      };
+    }),
     refreshAbility: assign(({ context }: { context: GameState }, abilityUid: AbilityUID) =>
       produce(context, ({ players, turn }) => {
         const player = find(players, { uid: context.turn.player })!;
@@ -545,7 +560,6 @@ export const TurnMachine = setup({
     },
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QBcCuAnAdgYgJYQgEcIBtABgF1FQAHAe1l2Vzs2pAA9EAmMgdm4A6AGwAObgFZuARmFkJAZgCcCgDQgAnogAsy0SPkKy0-trkSAvhfVos2VLkGoaEAIbJIg15lwBbdyyYACIYAazkVEgg9IzMrOxcCLzyggoSokbS4rLc2qLqWgja2iqCoqJkCmZ8CtImolY2GJiCYJgQuJhQACrNggDGABZg-QDWnVAAou0AEt4Q2BHsMUyBCYh8fAWIotKp3NxKvMV8EkpSfI0gti1tHV29WIIQ6K4A7hPYHLDI7mBeADMPOgABTePxhYKhOKYACU2BurXaE0eLRe7wmSyiKxh6wQCj4oiUglyCl2wlk4jE2wQSmEClS2l43D4FOkVSyV0RdxRfR5XS+Pz+gOBYJ8-hhIVeMPh3ORDz58qgWNoDFW8SiiWk2i2mh45X03GEciN0m4omENS5fSGI3GXUmADc2sgAMKsDow2CCGjoMBBV5vRaUZZq3GaxDpfRKPhKfgSczCJTSCQ03JmwTSFR8bTxiRSYTWp62sYTJ0u93Ir0+v0B96LaSRVWxNYRhBRwQxuOnRPJ1N6-HSPiZnVm3RkA66aRFlol+1TZ2YN0e9WYb2+-2BxbcJvRMOt0CJI1CPhkOm54RRuRqAcHI6dvJ0hT04zJ7QzgbDUsOxfLquBb1-E6YNdxxA9OEQClo1jeNexTGl2QpTskyUbQzlEXMJHfaxrhtL953LJdK09ADBCAnASEbUMWw1Q9IPNTsYJ7eQk3ggdtX4Ek42KMQLQETkcMROcy1-YjV0A1xgJIHdqNXPFhDyRjuwTFi+zTc0yBEc0BCpQlREsQS8LtESKxXatyMWBRQP3WiIIQeloOUuD+0KbUpBEEwxEnONzQUD9hJ-Uz-1YCSpO0ayaLYNt0KU2DVLYwpnyEaoSjqFRyj4adDOLfCTKIszSIskgJAiuS2zkRy4oTNSB1zYdCUJdIyH0xQTEubLZ1ywL8uCtcyMkijhFK8M6PsxSuyq1iXJ4BRJAfIl6RfLN5A-IUoDy5B7FgMB0AGAAbXAxkEZA6FGNoVT3SK8SOYRkLPM9DgtXy00qCRBBKND82fONL2wponjWjbBEGVwACMmHcABVTA9roI73kk5gukrAFcHQCVAi2nb9sO0ZBDW-5+lYVH0YusDbK1IchCTY00jNPiEsQbVLRJU9YyUFRjF2dr-paQHuuQYGwYh5Bodho7kFeNdV0+b5fg8EUdrFCFJWhQJZT6fmFxdIXwflsW4bxyXvEizEQ2xGyotG81FHesgKsUMkVBvVzUveukUzJSQzitDr8d+daBa8cGDuQDQACUwABP1YEGT9jK6ABBVATox-pI+juBBhA2SRrsrN9K4plHzMbgvYQlQ9iwg52TIHV6VqVaA6B4XQ4jqOY7jgKoGT1OAnTjus4bYbwK1JRC8OYuiVL8vbwnIRahTHNdkOBum9cQPtaXYPcDbjPO68N5EYmFG0Yx1gsd2-oDqOgmBmJs+yctvFcjITTLyzGNjRfSoK5jVIqhGGfKyA0hY-Za0IoLVuTB26Z1jsdKWpsBRy2FK4IEStwTnyhNKdWCJNbNyDtAsO+8s4IJNjLLoT8rpthtgyC8zVHZEgUC7HgE4q5nCkHkNhZd16b0ga0PaYBfAulcHtIIuBYCuB+NjBGqxkYP3RpCS+ONb4B0Jgo3wVCyqjTqAIEQdJ6QSHppaRmCBMp7FQooIxaFaaEl4UDMAgjhFLlEeIyR0jdrG2ljCWWQoFZoNFJgyEUpIQawBgQregtHFCJEWIiRUjgRkO8YEM2I8KY7F1K5DmJI0jzwJKlGM9ig5gA4EjfoMJD7H3kZgEmWDlHX1xv7De6iamP3Ns2bR+cqb6NpkY80JjpoIDNCmMouhTh5HKBpAyvMml8N-K0UpnRymBCSUgqAgp5b-ACRg8UwS1asDCXzCJ-CSllIqV4tZWi85Hn0nQ+2DDmFMJYUMg4t06RYWAbTBS0zcLhI3kDfwsBYCTEWZgZZrBKlyKgKfRRMJ6k3zxnfImrTSbtMup0ymeiaaGOMZlQZT4yiWKyEycoJoimRP6kCkFZyVkXIoeslB-j0GgiCarHBBy8F-LmTrQFwLQXgpaHSnxlC0XkytnZWhdsHaPOdjSce+g0qiAELNJkOYlDkv4ZgOgAAhVAGg3EJJkUfKFMK6moG2lfBFsyWm1KuaPJm3TsV036Xiiub8SRZk2JsKoFINXzK1bq-V8SPGrPpRs1BzLlZYJCTKTlRz-lBwDXqg1IahUpJFWk8ViRNhpmru9bQshuw8X0jzX5LRQZ6s+Oa7GDSJanXOqK5+bYqg5hHJSMwwgjQJgQl6kknCzQKV2OkH5iIK0aCrRalRRt62YEopmvEOoEyCDriyOo6Y9AV1yKkN+49YxpCOIcD8Y6J01qtTQPargNDYzuKiO16T8SZEENXAukgSi8QQlUN6SqcyZV4kOTKR7K0CmrZaxp-h0BnUFhAO0AiYlLjvVmnQAhtCCH4vII46HYwIXEMSCcnaTCZGqCOvox7gOTtrXjcDkHBCgzoOgdAdA3ieH6K4dAEBYPOOQAhhdpxoxTmNEyLIxge3MNQ0Y089siTob+mWmjQH1kganT6C9V7dog3aAMVjpBG3UNGswuoT7BPj1fXScoH7ziocqGaLCxhJ7EaeKRhT5Gz0qexup9jLG2Nztzvah9MhDMyGM1hUz+R2IlE0jGVkuT2Snj8n7Rz8KwOseo78UGgjNNeZ0xixALaUPanbcaLtwgXqyFQ4JndZ59KyEA+Osjp7GnnsvW5+YGX2NEI0Nx5tOo8sFrEB2or2H-4lEykSb1JRG5+08xAROIcYGJaOgAKk66NJVNIC3pDKEYWMzNAulqElpmbu85uKYo617oM7lv534DSZQxoi4yEvASLs-kDuzbDjnC2um7IxjW5J5dFIkwsnzB8mTiJzUTEO23QQ+BBEfY6dcyMlQyj5hOGcazl5isDhVQycodJUKHDOCoD84Ok5vY0NDiAsPvOfey+2dkyOsKLuTJIS8N3LTv0ygIBMZdTj2ZaCTnuZOKdU5kjThH7Yy4M9R8zhMgzlC2yJCYfgZdF3FGJ4wUnR2w7C7AJZed0VJctWl+jwZuYqhPs7RlHI8v1cQ6F+e81Gv1mXezaUMkJiy4XCNJjxKBxNIFqMLsZqz4C22811D3wdBHQTB9LjFErGYCbRO1ak6Z1Z1ZfFymZq7tmpoSNEcMwoXEq1GphaauSr7ZSDD4LrX5PI-R66LH78PQE9gCT85hrrm1Mtamy7xAyZNJkkUE+HyEhrtY7EG9fTmVDA6hZNXyHMCyJR5jzQOPXQghwCRko5PjTU8Nv1zoox+hwsYQLAX6kWOkpPrSrUOuVR+AL6F-X1f6+oCb5+J0HfHejqNdU0LDTXvDPXzFMBiU-PPQHQvG7AtBeAkdIRdS8T3J-WvZfBvKAJvecD-bfOFXfI6KjNvZ4GDIJPaPvIZRQE-OMM-fPXIS-RKMfYcCkXgVCZ8JharP2AXRfbXF-RvNfZvLAr-HAn-SjZLAg6DX-C9eDYA+9FMXQTsRQeQcTByYoNnTiDmdCM0VCJhZAiPFfHgt-fgzAb-erPAkQqDGDaJTjUgmQig3Pc-GgovHLJMBVAHN9AkDCXIbQpfP0OBQYE9UDOtNPKwsfGwqgyA2gnLPdd6Z8FMI4MfSQLKGZDgoXbwzuPwpTfAsw+GXZEgqQxDBAA0TsDiC4EbFQOXDCBkU0LCHMMuN+MBRIp3Tg8nFIrONI07DIwg8Q7wLjXIvEaeMoGfI4RqYuJQG7dKJ9Z8eQWLLCbUTw7XAXAAZRoBGFwFETh3RXFz6KVRMEGP0mGN+1E12DqDw2TGTAUlmPJwgFYF11IIe1ug7TcmOE2EtDZ3-lyDOALXQwkC53OM0zBUcTWLFTxGYVqACxfWC3fXYkvH0Af1yBKATFkAMhwi1Wg3gCiBuB83vUOBpAAFpbo358SCSCSZi-Z+QehmgMS8i0hRMHs4jeMoCBxTgGRO0mR8wMIOYOZQdFR7gyScoE4phZh5gKSgTx43of1Lx+BmpZAcwaQMpUNWQpBZovjigjEPxSTURnhAwJghTm10g9gaSJw6TwjaQkJahK4DhDiy51USSlR1TSTtS9MOZNIxT6DJTLRtA5UzASRjR+BThJTtQ9sjJm9IExIvR7TvsRjbxeAGRpj0gWRKhYweFJsupIkQzSINw6w3gwytQdR1I4wygFIjAC0LQd06jZNu5gyCoQp+pOgsydAt0z835f0qQDhczNILRxwiy5AzxSzEQIFfxaz8jLw7o4wjhx5LdnlHx5o65PZ2RFAAyuUgYQY9YoYYZDYBzkwGQ6R7pRynoMgP1RM6hblJADgahfVwFjl5klyRYDZ4ZjUkZoUNFIR1ykItyRzHpxyEJwtMx6QC0cheAcwez8EE0KUrz9ZVyJZEF6UByOJiQf00JUIYxeAFJPy8zZAOQ-zTBAKFzCEycSFY5oLJ9UNahyQKRxwiQe1-4nZLRYtAd5z41uVt52s8Ku5kze46A05mLoKagGQagshZBSLA8IyskNsfYV0jEH8Mg-UdYmLB54FZF7zTUnyxdfMZAiRCj6QRyvipSXpeASQjRCQyRlBigCQpLGLcLZK4401WAtTlLMT6R6oJxxAoy8g0hMlWFdLXkDKMhUIxlTKoknFYkU1gR1z6dXyHoxznoBwvjhxV08MFJ88xA-KONArg1El5KT5Hy85AS2wPZhzwrdznkagUMMhCQYxDKLQhwkqLCUr3FEkrKfAuhoLcxYLut3jEL7Z3SGSDMmRZpUJ5BjBi4qr+Usqm1RoNy8qdyPz2JJTvzRy5AG4YihqaUIV0rqlaklL4dfNcqwrJrIrXIy59BTznwoTjBTylqllzlILhUoAmqzwyscw2qBAOqEIZAp9Xqfy2YKQ+dZkAUpE+VlrxVsqxrQq5A3yIq9yBwcM9LbMRztjZokreVqULqVlVqHyUUsFnyLFQb8qprCgxzUMtjMh-zHYEa-qkawVLryFrrbqWqHqEKnrkKBwCUCRLSFIRSyQGhzzgLNUdVk1UqdoQrNzsbdqIbXJ5TDN8xNgEwzATKuaGLBYk0g1aqjUqk0b1qRqvtEhtrhb3y9qmYjgGQ10nYmRxS4sZk+ydZFagrsZ6qbLNrpDmr7r4LhskLOrXIiRiQkxeN6QhwzwEjZNHMBzZoTASRHKdQiRzRV4dKUMvivjLwvj4zJLJtXta8g7RzOw0hxALwCQahBksxdKnYKhmZyCsL+cGiycg69EsxLxttihDgDhnlahRN7ozwfY7xWQfiYcwABymRNJq6vi3wmQD0JyJwItahRwqgiznwfiHcgU7b1jfNLR9AzxvpPr0Mfcct0wyh+qqgqtDizbZMkiUDuCbrbK8jTxiQjR4ySULg8gbsYo34lVX0y4yROSngj6dC0CMD490BE8BzTgYrrxqj9IWQ76sdTw9gKhKDMoW1jAD6wdy7j7dD0DeDMCt8BDwIgb84X7GRec10zAshG7TxDRX4EwxBO10h4G+gP6vCLL56sHs0x87Y30PYBAnxRijFt7jR2RmEV61d2DEGocFilj+gVi9p-6dROwiR3jDEWQjh9jkpCRzTzg4xJafjLjMBu6z6X4JxiR4D8w6hd6swbsRsRA3DNCWQcwqgfiWM-jxHtGaFdGn0z8jF2Q8hjGr9O0RB2YKhNgZarArAgA */
   id: "turn",
   context: ({ input: { deckConfig, gameConfig, animSpeed } }) => {
     const gameState = spawnDeck(deckConfig, gameConfig);
@@ -619,6 +633,7 @@ export const TurnMachine = setup({
             ],
           },
         },
+
         main: {
           after: {
             animationDuration: [
@@ -630,6 +645,7 @@ export const TurnMachine = setup({
                 target: "#turn.stagingEvent.gameLost",
                 guard: "gameLost",
               },
+
               {
                 target: "#turn.stagingEvent.massExtinction",
                 guard: and([
@@ -867,6 +883,7 @@ export const TurnMachine = setup({
         },
       },
     },
+
     buying: {
       on: {
         "user.click.token": [
@@ -1011,7 +1028,7 @@ export const TurnMachine = setup({
           after: {
             animationDuration: {
               target: "done",
-              actions: "drawPlayerDeck",
+              actions: "drawOneCard",
             },
           },
         },

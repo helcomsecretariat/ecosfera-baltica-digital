@@ -71,9 +71,21 @@ function getRelatedFieldRefiner(
   ];
 }
 
+const ElementOrderingSchema = z.tuple([z.literal("element"), z.array(z.string())]);
+
 const DeckConfigSchema = z
   .object({
     assets_prefix: z.string(),
+    ordering: z
+      .array(
+        z.union([
+          ElementOrderingSchema,
+          z.tuple([z.literal("plant")]),
+          z.tuple([z.literal("animal")]),
+          z.tuple([z.literal("disaster")]),
+        ]),
+      )
+      .nonempty(),
     per_player: z.object({
       abilities: z.record(AbilityConfigSchema),
       disasters: z.record(DisasterConfigSchema),

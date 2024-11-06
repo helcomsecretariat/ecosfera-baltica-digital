@@ -1,4 +1,4 @@
-import { isEmpty, uniqBy } from "lodash-es";
+import { find, isEmpty, map, uniqBy } from "lodash-es";
 import {
   AnimalCard,
   Card,
@@ -19,6 +19,9 @@ import {
   isHabitatUID,
   isExtinctionUID,
   GamePieceUID,
+  AnimalUID,
+  PlantUID,
+  PlayerUID,
 } from "../types";
 import {
   abilityOffset,
@@ -36,6 +39,7 @@ import {
   upperYBoundary,
   tileGridCoordinates,
   tileSize,
+  overlappingCardXOffset,
 } from "@/constants/gameBoard";
 import { cardHeight, cardWidth } from "@/constants/card";
 import { TurnMachineGuards } from "../machines/guards";
@@ -103,8 +107,34 @@ const calculateDeckPositions = (gameState: GameState): GamePieceAppearances => {
   };
 };
 
-const getSupplyDeckOffset = (playerHand: Card[]) => {
-  return (playerHand.length <= 3 ? 2 : Math.floor((playerHand.length + 1) / 2)) * cardXOffset;
+const getSupplyDeckOffset = (gameState: GameState, playerUid: PlayerUID) => {
+  const player = find(gameState.players, { uid: playerUid })!;
+  const exhaustedCards = playerUid === gameState.turn.player ? gameState.turn.exhaustedCards : [];
+  const exhaustedCardsWithAbilities = exhaustedCards.filter(
+    (exhaustedCardUid) =>
+      player.hand.some(
+        (card: Card) =>
+          (card.type === "animal" || card.type === "plant") &&
+          card.uid === exhaustedCardUid &&
+          card.abilities.length > 0,
+      ) && !map(gameState.turn.usedAbilities, "source").includes(exhaustedCardUid as AnimalUID | PlantUID),
+  );
+
+  const numNonOverlappingCards = player.hand.length - exhaustedCards.length + exhaustedCardsWithAbilities.length;
+  const numOverlappingCards = exhaustedCards.length - exhaustedCardsWithAbilities.length;
+
+  const offset = Math.ceil(
+    (numNonOverlappingCards * cardXOffset +
+      numOverlappingCards * overlappingCardXOffset +
+      (exhaustedCards.length > 0 ? cardXOffset * 1.5 : 0)) /
+      2,
+  );
+
+  if (offset < cardXOffset * 2) {
+    return cardXOffset * 2;
+  }
+
+  return offset;
 };
 
 export const animalDeckPosition: Coordinate = { x: marketXStart, y: marketYStart, z: 0 };
@@ -118,23 +148,23 @@ export const disasterDeckPosition: Coordinate = {
 export const supplyDeckPositions = (gameState: GameState) =>
   [
     gameState.players[0] && {
-      x: 0 - getSupplyDeckOffset(gameState.players[0]?.hand),
+      x: 0 - getSupplyDeckOffset(gameState, gameState.players[0].uid),
       y: playerCardsYStart,
       z: 0,
     },
     gameState.players[1] && {
       x: upperXBoundary - cardHeight / 2,
-      y: 0 - getSupplyDeckOffset(gameState.players[1].hand),
+      y: 0 - getSupplyDeckOffset(gameState, gameState.players[1].uid),
       z: 0,
     },
     gameState.players[2] && {
-      x: 0 - getSupplyDeckOffset(gameState.players[2].hand),
+      x: 0 - getSupplyDeckOffset(gameState, gameState.players[2].uid),
       y: upperYBoundary - cardHeight / 2,
       z: 0,
     },
     gameState.players[3] && {
       x: lowerXBoundary + cardHeight / 2,
-      y: 0 + getSupplyDeckOffset(gameState.players[3].hand),
+      y: 0 - getSupplyDeckOffset(gameState, gameState.players[3].uid),
       z: 0,
     },
   ] as Coordinate[];
@@ -476,18 +506,18 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
       } as AbsentPieceTransform;
     });
 
+    // Use the deck position as the initial position to base the offset off of
+    let previousPosition = deckPosition;
     player.hand
       .filter((card) => !exhaustedCards.includes(card.uid))
-      .forEach((card: Card, cardIndex: number) => {
+
+      .forEach((card: Card) => {
         const inPlay = playedCards.includes(card.uid);
-        const offset = getPlayerCardOffset(playerIndex, cardIndex, player.hand.length, inPlay, false, true);
+        const offset = getPlayerCardOffset(previousPosition, deckPosition, playerIndex, inPlay, false);
+        previousPosition = offset;
 
         acc[card.uid] = {
-          position: {
-            x: deckPosition.x + offset.x,
-            y: deckPosition.y + offset.y,
-            z: 0,
-          },
+          position: offset,
           rotation,
           initialRotation: deckRotation,
           initialPosition: deckPosition,
@@ -496,25 +526,45 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
         };
       });
 
+    // Adds space between available cards and exhausted cards
+    previousPosition = {
+      ...previousPosition,
+      x: playerIndex === 0 || playerIndex === 2 ? previousPosition.x + cardXOffset / 2 : previousPosition.x,
+      y: playerIndex === 1 || playerIndex === 3 ? previousPosition.y + cardXOffset / 2 : previousPosition.y,
+    };
     player.hand
       .filter((card) => exhaustedCards.includes(card.uid))
+      .sort((a, b) => {
+        const aIsAnimalOrPlant = a.type === "animal" || a.type === "plant";
+        const bIsAnimalOrPlant = b.type === "animal" || b.type === "plant";
+        const aHasAbilities =
+          aIsAnimalOrPlant && !isEmpty(a.abilities) && !map(gameState.turn.usedAbilities, "source").includes(a.uid);
+        const bHasAbilities =
+          bIsAnimalOrPlant && !isEmpty(b.abilities) && !map(gameState.turn.usedAbilities, "source").includes(b.uid);
+
+        if (!aIsAnimalOrPlant && bIsAnimalOrPlant) return -1;
+        if (aIsAnimalOrPlant && !bIsAnimalOrPlant) return 1;
+        if (!aHasAbilities && bHasAbilities) return -1;
+        if (aHasAbilities && !bHasAbilities) return 1;
+
+        return 0;
+      })
       .forEach((card: Card, cardIndex: number) => {
         const inPlay = playedCards.includes(card.uid);
         const offset = getPlayerCardOffset(
+          previousPosition,
+          deckPosition,
           playerIndex,
-          cardIndex,
-          player.hand.length - exhaustedCards.length,
           inPlay,
-          true,
-          true,
+          cardIndex !== 0 &&
+            (isEmpty((card as AnimalCard).abilities) ||
+              map(gameState.turn.usedAbilities, "source").includes(card.uid as AnimalUID | PlantUID) ||
+              (card.type !== "animal" && card.type !== "plant")),
         );
+        previousPosition = offset;
 
         acc[card.uid] = {
-          position: {
-            x: deckPosition.x + offset.x,
-            y: deckPosition.y + offset.y,
-            z: 0,
-          },
+          position: offset,
           rotation,
           initialRotation: deckRotation,
           initialPosition: deckPosition,
@@ -528,30 +578,27 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
 };
 
 const getPlayerCardOffset = (
+  previousPosition: Coordinate,
+  basePosition: Coordinate,
   playerIndex: number,
-  cardIndex: number,
-  handLength: number,
   inPlay: boolean,
-  exhausted: boolean,
-  activePlayer: boolean,
+  canOverlap?: boolean,
 ) => {
-  const indexOffset = activePlayer ? 1 : 0.5;
-  const cardOffset = exhausted
-    ? (handLength + 1) * cardXOffset + (cardIndex + indexOffset) * cardXOffset
-    : (cardIndex + indexOffset) * cardXOffset;
+  const cardOffset = canOverlap ? overlappingCardXOffset : cardXOffset;
   const inPlayOffset = inPlay ? (playerIndex === 0 || playerIndex === 3 ? 4 : -4) : 0;
+  const z = previousPosition.z + 0.1;
 
   switch (playerIndex) {
     case 0:
-      return { x: cardOffset, y: inPlayOffset };
+      return { x: previousPosition.x + cardOffset, y: basePosition.y + inPlayOffset, z };
     case 1:
-      return { x: inPlayOffset, y: cardOffset };
+      return { x: basePosition.x + inPlayOffset, y: previousPosition.y + cardOffset, z };
     case 2:
-      return { x: cardOffset, y: inPlayOffset };
+      return { x: previousPosition.x + cardOffset, y: basePosition.y + inPlayOffset, z };
     case 3:
-      return { x: inPlayOffset, y: -cardOffset };
+      return { x: basePosition.z + inPlayOffset, y: previousPosition.y - cardOffset, z };
     default:
-      return { x: 0, y: 0 };
+      return { x: 0, y: 0, z: 0 };
   }
 };
 

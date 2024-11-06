@@ -8,6 +8,7 @@ import { getAssetPath } from "./utils";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import { useSelector } from "@xstate/react";
 import { MachineSelectors } from "@/state/machines/selectors";
+import { AnimatePresence } from "framer-motion";
 
 const Stage = () => {
   const { emit, state, test, actorRef } = useGameState();
@@ -19,18 +20,28 @@ const Stage = () => {
   const negativeTexture = useSRGBTexture(negativeTextureImageUrl);
 
   return (
-    state.stage !== undefined && (
-      <motion.group>
-        <mesh position={[0, 0, 20]}>
-          <planeGeometry args={[upperXBoundary - lowerXBoundary + 5, upperYBoundary - lowerYBoundary, 1]} />
-          <meshPhysicalMaterial
-            transparent
-            opacity={state.stage.terminationEvent ? 1 : 0.9}
-            map={isPositive ? positiveTexture : negativeTexture}
-          />
-        </mesh>
-        <Html wrapperClass="top-10" position={[0, -2.2 * cardHeight, 0]} transform scale={8}>
-          <h1 className="mb-8 whitespace-pre-wrap text-center text-2xl text-white">{eventText}</h1>
+    <>
+      <AnimatePresence>
+        {state.stage !== undefined && (
+          <motion.group>
+            <mesh position={[0, 0, 20]}>
+              <planeGeometry args={[upperXBoundary - lowerXBoundary + 5, upperYBoundary - lowerYBoundary, 1]} />
+              <motion.meshPhysicalMaterial
+                transparent
+                initial={{ opacity: 0 }}
+                animate={{ opacity: state.stage?.terminationEvent ? 1 : 0.7 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6, type: "aniticipate" }}
+                opacity={state.stage.terminationEvent ? 1 : 0.7}
+                map={isPositive ? positiveTexture : negativeTexture}
+              />
+            </mesh>
+          </motion.group>
+        )}
+      </AnimatePresence>
+      {state.stage !== undefined && (
+        <Html wrapperClass="top-10" position={[0, -2.5 * cardHeight, 0]} transform scale={8}>
+          <h1 className="mb-8 whitespace-pre-wrap text-center text-xl text-white">{eventText}</h1>
           <Button
             onClick={(e) => {
               e.stopPropagation();
@@ -47,8 +58,8 @@ const Stage = () => {
             {state.stage.terminationEvent ? "New game" : "Ok"}
           </Button>
         </Html>
-      </motion.group>
-    )
+      )}
+    </>
   );
 };
 

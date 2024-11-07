@@ -84,9 +84,10 @@ export interface GameState {
       | "massExtinction"
       | "abilityRefresh"
       | "habitatUnlock"
+      | "cardBuy"
       | "gameLoss"
       | "gameWin";
-    cause: (AnimalUID | DisasterUID | ElementUID)[] | undefined;
+    cause: (AnimalUID | DisasterUID | ElementUID | PlantUID)[] | undefined;
     effect: (DisasterUID | ExtinctionUID | HabitatUID)[] | undefined;
   };
   config: GameConfig;

@@ -3,11 +3,20 @@ import { upperXBoundary, lowerXBoundary, upperYBoundary, lowerYBoundary } from "
 import { useGameState } from "@/context/game-state/hook";
 import { Html } from "@react-three/drei";
 import { cardHeight } from "@/constants/card";
-import { find, last } from "lodash";
+import { find, first, last } from "lodash";
 import { motion } from "framer-motion-3d";
 import { getAssetPath } from "./utils";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
-import { DisasterUID, ExtinctionUID, GameState, HabitatUID, isHabitatUID } from "@/state/types";
+import {
+  AnimalUID,
+  DisasterUID,
+  ElementUID,
+  ExtinctionUID,
+  GameState,
+  HabitatUID,
+  isHabitatUID,
+  PlantUID,
+} from "@/state/types";
 import { TurnMachineGuards } from "@/state/machines/guards";
 
 const getHabitatUnlockText = (state: GameState, uids: (HabitatUID | DisasterUID | ExtinctionUID)[]) => {
@@ -26,6 +35,17 @@ const getHabitatUnlockText = (state: GameState, uids: (HabitatUID | DisasterUID 
   return `Congratulations!\nYou earned the ${habitatText} ${habitatCount > 1 ? "habitats" : "habitat"}`;
 };
 
+const getCardBoughtText = (state: GameState, uid: AnimalUID | PlantUID | ElementUID | DisasterUID | undefined) => {
+  if (!uid) {
+    return "";
+  }
+
+  const player = find(state.players, { uid: state.turn.player })!;
+  const cardName = find(player.hand, { uid })?.name;
+
+  return `Congratulations!\nYou bought a ${cardName}`;
+};
+
 const Stage = () => {
   const { emit, state, snap, test } = useGameState();
   const player = find(state.players, { uid: state.turn.player })!;
@@ -33,6 +53,7 @@ const Stage = () => {
   const isPositive =
     snap.matches({ stagingEvent: "abilityRefresh" }) ||
     snap.matches({ stagingEvent: "habitatUnlock" }) ||
+    snap.matches({ stagingEvent: "cardBuy" }) ||
     snap.matches({ stagingEvent: "gameWon" });
   const lastRefreshedAbility = find(player.abilities, { uid: last(state.turn.refreshedAbilityUids) });
   const positiveTextureImageUrl = getAssetPath("stage", "positive");
@@ -49,6 +70,7 @@ const Stage = () => {
       ? `Your ${lastRefreshedAbility?.name ?? ""} ability has been refreshed!`
       : "You can now refresh one of your used abilities.",
     habitatUnlock: getHabitatUnlockText(state, state.stage?.effect ?? []),
+    cardBuy: getCardBoughtText(state, first(state.stage?.cause ?? [])),
     gameWin: "Congratulations!\nYou saved the Baltic ecosystem!",
     gameLoss: "Game Over!\nYou could not save the Baltic Ecosystem.",
   };
@@ -60,12 +82,12 @@ const Stage = () => {
           <planeGeometry args={[upperXBoundary - lowerXBoundary + 5, upperYBoundary - lowerYBoundary, 1]} />
           <meshPhysicalMaterial
             transparent
-            opacity={state.stage.terminationEvent ? 1 : 0.7}
+            opacity={state.stage.terminationEvent ? 1 : 0.9}
             map={isPositive ? positiveTexture : negativeTexture}
           />
         </mesh>
-        <Html wrapperClass="top-10" position={[0, -2.5 * cardHeight, 0]} transform scale={8}>
-          <h1 className="mb-8 whitespace-pre-wrap text-center text-xl text-white">
+        <Html wrapperClass="top-10" position={[0, -2.2 * cardHeight, 0]} transform scale={8}>
+          <h1 className="mb-8 whitespace-pre-wrap text-center text-2xl text-white">
             {eventName[state.stage.eventType]}
           </h1>
           <Button

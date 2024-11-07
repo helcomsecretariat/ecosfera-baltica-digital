@@ -9,15 +9,18 @@ const Tile = ({
   name = "",
   onClick,
   opacity = 1,
+  withFloatAnimation = false,
 }: {
   tileUid: ExtinctionUID | HabitatUID;
   color: string;
   name?: string;
   onClick?: () => void;
+
   opacity?: number;
+  withFloatAnimation?: boolean;
 }) => {
   return (
-    <GameElement cardUID={tileUid} height={6} width={10} onClick={onClick}>
+    <GameElement cardUID={tileUid} height={6} width={10} onClick={onClick} withFloatAnimation={withFloatAnimation}>
       <cylinderGeometry args={[tileSize, tileSize, 0.1, 6, 1]} />
       <meshBasicMaterial color={color} opacity={opacity} transparent />
       <Text fontSize={1} color="black" rotation={[Math.PI / 2, 0, 0]} position={[0, -0.1, 0.1]}>

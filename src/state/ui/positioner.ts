@@ -11,9 +11,6 @@ import {
   UiState,
   GamePieceAppearances,
   AbsentPieceTransform,
-  DisasterUID,
-  HabitatUID,
-  ExtinctionUID,
   ExtinctionTile,
   HabitatTile,
   isHabitatUID,
@@ -200,7 +197,7 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
   const pieceCoordinates = fanCards(cause);
   const tileCoordinates = tileGridCoordinates(0, isEmpty(cause) ? 0 + tileSize : 20);
 
-  effect?.forEach((uid: DisasterUID | HabitatUID | ExtinctionUID, index) => {
+  effect?.forEach((uid, index) => {
     const isTile = isHabitatUID(uid) || isExtinctionUID(uid);
     const useTileCoordinates = isTile && effect.length > 2;
 
@@ -380,9 +377,14 @@ export const positionElementMarketCards = (gameState: GameState): GamePieceCoord
   ([gameState.turn.borrowedElement, ...gameState.elementMarket.deck].filter(Boolean) as ElementCard[]).reduce(
     (acc, card: ElementCard) => {
       const borrowedRotation = {
-        y: 0,
         x: 0,
-        z: Math.PI / 9,
+        y: 0,
+        z: 0,
+      };
+      const borrowedOffset = {
+        x: 0,
+        y: -cardHeight / 3,
+        z: 7,
       };
       const deckPosition = positionElementDecks(gameState)[`${card.name}ElementDeck`].position!;
       const isBorrowed = gameState.turn.borrowedElement?.uid === card.uid;
@@ -395,9 +397,9 @@ export const positionElementMarketCards = (gameState: GameState): GamePieceCoord
         ...(isBorrowed
           ? {
               position: {
-                x: deckPosition.x,
-                y: deckPosition.y - cardHeight / 3,
-                z: deckPosition.z + 2,
+                x: deckPosition.x + borrowedOffset.x,
+                y: deckPosition.y + borrowedOffset.y,
+                z: deckPosition.z + borrowedOffset.z,
               },
               rotation: borrowedRotation,
             }

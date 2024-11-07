@@ -71,6 +71,7 @@ const Croupier = () => {
           card={gameState.turn.borrowedElement}
           gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
           onClick={emit.borrowedElementClick(gameState.turn.borrowedElement)}
+          withFloatAnimation={true}
         />
       )}
 
@@ -151,6 +152,7 @@ const Croupier = () => {
           tileUid={habitatTile.uid}
           name={habitatTile.name}
           color={habitatTile.isAcquired ? "#2cba16" : "#66cc66"}
+          withFloatAnimation={gameState.stage?.effect?.includes(habitatTile.uid)}
         />
       ))}
 
@@ -184,6 +186,7 @@ const Croupier = () => {
                   (hasTag("usingAbility") && test.playerCardClick(card)) ||
                   (guards.isOnStage(card) && guards.isCardBuyStageEvent())
                 }
+                withFloatAnimation={gameState.stage?.effect?.includes(card.uid)}
               />
             ),
         ),

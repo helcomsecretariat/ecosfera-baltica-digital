@@ -20,6 +20,7 @@ export type HabitatUID = UID<"habitat">;
 export type ExtinctionUID = UID<"extinction">;
 export type PlayerUID = UID<"player">;
 export type GamePieceUID = AbilityUID | AnimalUID | PlantUID | ElementUID | DisasterUID | HabitatUID | ExtinctionUID;
+export type CardOrTileUID = Card["uid"] | HabitatUID | ExtinctionUID;
 
 export function isAbilityUID(uid: string): uid is AbilityUID {
   return uid.startsWith("ability-");
@@ -78,22 +79,24 @@ export interface GameState {
   extinctMarket: Market<ExtinctionTile>;
   stage?: {
     terminationEvent?: boolean;
-    eventType:
-      | "disaster"
-      | "elementalDisaster"
-      | "extinction"
-      | "massExtinction"
-      | "abilityRefresh"
-      | "habitatUnlock"
-      | "cardBuy"
-      | "gameLoss"
-      | "gameWin";
-    cause: (AnimalUID | DisasterUID | ElementUID | PlantUID)[] | undefined;
-    effect: (DisasterUID | ExtinctionUID | HabitatUID)[] | undefined;
+    eventType: StageEventType;
+    cause: CardOrTileUID[] | undefined;
+    effect: CardOrTileUID[] | undefined;
   };
   config: GameConfig;
   deck: DeckConfig;
 }
+
+export type StageEventType =
+  | "disaster"
+  | "elementalDisaster"
+  | "extinction"
+  | "massExtinction"
+  | "abilityRefresh"
+  | "habitatUnlock"
+  | "cardBuy"
+  | "gameLoss"
+  | "gameWin";
 
 export interface GameConfig {
   seed: string;

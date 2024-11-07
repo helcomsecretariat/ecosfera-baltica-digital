@@ -102,16 +102,17 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
           </AnimatePresence>
         </div>
         {playerCount < 4 && (
-          <Button
-            variant="wrapper"
-            className="group mx-auto !mt-0 flex w-full gap-3 p-0 text-xl"
-            onClick={() => setplayerCount(playerCount + 1)}
-          >
-            <Button size="icon" variant="secondary">
+          <div className="flex items-center space-x-3">
+            <Button size="icon" variant="secondary" onClick={() => setplayerCount(playerCount + 1)}>
               <FaPlus />
             </Button>
-            <span className="transition-all group-hover:opacity-85">Add player</span>
-          </Button>
+            <span
+              className="cursor-pointer text-xl transition-all group-hover:opacity-85"
+              onClick={() => setplayerCount(playerCount + 1)}
+            >
+              Add player
+            </span>
+          </div>
         )}
         {/* Game Difficulty */}
         <div className="flex w-full justify-between">
@@ -157,10 +158,14 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
                     value={seed}
                     onChange={(e) => setSeed(e.target.value)}
                   />
-                  <Button size="icon" variant="tertiary" onClick={() => {
-                    seedInputRef?.current?.focus();
-                    seedInputRef?.current?.select();
-                  }}>
+                  <Button
+                    size="icon"
+                    variant="tertiary"
+                    onClick={() => {
+                      seedInputRef?.current?.focus();
+                      seedInputRef?.current?.select();
+                    }}
+                  >
                     <FaPen />
                   </Button>
                   <Popover>

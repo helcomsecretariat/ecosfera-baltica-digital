@@ -157,7 +157,10 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
                     value={seed}
                     onChange={(e) => setSeed(e.target.value)}
                   />
-                  <Button size="icon" variant="tertiary" onClick={() => seedInputRef?.current?.focus()}>
+                  <Button size="icon" variant="tertiary" onClick={() => {
+                    seedInputRef?.current?.focus();
+                    seedInputRef?.current?.select();
+                  }}>
                     <FaPen />
                   </Button>
                   <Popover>

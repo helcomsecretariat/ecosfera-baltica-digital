@@ -564,12 +564,12 @@ export const fanCards = (cardUids: GamePieceUID[]): GamePieceCoordsDict => {
       position: {
         x: 0,
         y: 0,
-        z: 0,
+        z: 85,
       },
       rotation: {
         x: 0,
         y: 0,
-        z: 65,
+        z: 0,
       },
     };
     return gamePieceCoords;

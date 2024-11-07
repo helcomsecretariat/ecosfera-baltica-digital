@@ -1,6 +1,17 @@
 import { default as CardComponent } from "./Card";
 import Deck from "./Deck";
-import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
+import {
+  AnimalCard,
+  AnimalUID,
+  Card,
+  DisasterCard,
+  DisasterUID,
+  ElementCard,
+  ElementUID,
+  GameState,
+  PlantCard,
+  PlantUID,
+} from "@/state/types";
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/game-state/hook";
@@ -9,10 +20,14 @@ import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { NextButton } from "@/components/NextTurnBtn";
 import { TurnMachineGuards } from "@/state/machines/guards";
-import Stage from "@/components/Stage";
 import Tile from "./Tile";
 import PlayerTitle from "@/components/PlayerTitle";
 import AbilityToken from "@/components/AbilityToken";
+import Stage from "./Stage";
+
+const hasStageHighlight = (gameState: GameState, cardUid: AnimalUID | PlantUID | ElementUID | DisasterUID) => {
+  return gameState.stage?.eventType === "cardBuy" && gameState.stage?.cause?.includes(cardUid);
+};
 
 const Croupier = () => {
   const { state: gameState, uiState } = useGameState();
@@ -175,7 +190,9 @@ const Croupier = () => {
                 gamePieceAppearance={uiState.cardPositions[card.uid]}
                 onClick={emit.playerCardClick(card)}
                 options={{ showAbilityButton: gameState.turn.player === player.uid && !hasTag("stagingEvent") }}
-                isHighlighted={hasTag("usingAbility") && test.playerCardClick(card)}
+                isHighlighted={
+                  (hasTag("usingAbility") && test.playerCardClick(card)) || hasStageHighlight(gameState, card.uid)
+                }
               />
             ),
         ),

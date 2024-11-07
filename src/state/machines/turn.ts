@@ -322,6 +322,15 @@ export const TurnMachine = setup({
         };
       }),
     ),
+    stageCardBuy: assign(({ context }: { context: GameState }, card: AnimalCard | PlantCard) =>
+      produce(context, (draft) => {
+        draft.stage = {
+          eventType: "cardBuy",
+          cause: [card.uid],
+          effect: undefined,
+        };
+      }),
+    ),
     stageHabitatUnlock: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player })!;
@@ -668,6 +677,21 @@ export const TurnMachine = setup({
       initial: "idle",
 
       states: {
+        cardBuy: {
+          initial: "awaitingConfirmation",
+          states: {
+            awaitingConfirmation: {
+              on: {
+                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+            },
+            transitioning: {
+              after: {
+                animationDuration: { target: "#turn.buying" },
+              },
+            },
+          },
+        },
         gameWon: {
           initial: "awaitingConfirmation",
           entry: "stageGameWin",
@@ -905,11 +929,14 @@ export const TurnMachine = setup({
           },
         ],
         "user.click.market.table.card": {
-          target: "#turn",
-          actions: {
-            type: "buyCard",
-            params: ({ event: { card } }) => card,
-          },
+          target: "#turn.stagingEvent.cardBuy",
+          actions: [
+            {
+              type: "buyCard",
+              params: ({ event: { card } }) => card,
+            },
+            { type: "stageCardBuy", params: ({ event: { card } }) => card },
+          ],
           guard: { type: "canBuyCard", params: ({ event: { card } }) => card },
         },
         "user.click.player.hand.card.ability": [

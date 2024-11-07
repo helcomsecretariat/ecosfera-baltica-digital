@@ -1,7 +1,8 @@
 import { TurnMachine, TurnMachineContext } from "@/state/machines/turn";
-import { AbilityTile, AnimalCard, PlantCard, ElementCard, Card } from "@/state/types";
+import { AbilityTile, AnimalCard, PlantCard, ElementCard, Card, GameState } from "@/state/types";
 import { mapValues } from "lodash-es";
 import { EventFromLogic } from "xstate";
+import { ContextInjectedGuardMap, TurnMachineGuards } from "./machines/guards";
 
 export interface ActionEmmiters {
   playerCardClick: (card: Card) => () => void;
@@ -59,4 +60,14 @@ export const createTesters = (can: (e: EventFromLogic<typeof TurnMachine>) => bo
       return can(event);
     };
   });
+};
+
+export const createGuards = (context: GameState): ContextInjectedGuardMap => {
+  return Object.fromEntries(
+    Object.entries(TurnMachineGuards).map(([key, guardFn]) => [
+      key,
+      // @ts-expect-error dunno how to correctly type this
+      (...args: Parameters<(typeof TurnMachineGuards)[typeof key]>) => guardFn({ context }, ...args),
+    ]),
+  ) as ContextInjectedGuardMap;
 };

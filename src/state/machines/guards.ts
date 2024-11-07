@@ -1,6 +1,7 @@
 import { AbilityTile, AnimalCard, Card, CardType, GameState, PlantCard } from "@/state/types";
 import { countBy, find, compact, every, intersection, isEmpty } from "lodash";
 import { getAnimalHabitatPairs, getDuplicateElements } from "./helpers/turn";
+import { Tail } from "../../lib/types";
 
 export const TurnMachineGuards = {
   canBuyCard: ({ context: { players, turn } }: { context: GameState }, card: AnimalCard | PlantCard) => {
@@ -222,4 +223,18 @@ export const TurnMachineGuards = {
   stageCardsUsedForAbilityRefresh: ({ context: { turn, stage } }: { context: GameState }) =>
     //@ts-expect-error uid type mismatch doesnt matter
     stage?.cause?.every((uid) => turn.uidsUsedForAbilityRefresh.includes(uid)) ?? false,
+
+  isOnStage: ({ context: { stage } }: { context: GameState }, card: Card) => {
+    return stage?.cause?.includes(card.uid) ?? false;
+  },
+
+  isCardBuyStageEvent: ({ context: { stage } }: { context: GameState }) => {
+    return stage?.eventType === "cardBuy";
+  },
+};
+
+export type ContextInjectedGuardMap = {
+  [K in keyof typeof TurnMachineGuards]: (
+    ...args: Tail<Parameters<(typeof TurnMachineGuards)[K]>>
+  ) => ReturnType<(typeof TurnMachineGuards)[K]>;
 };

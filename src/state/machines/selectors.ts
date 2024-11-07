@@ -1,26 +1,15 @@
-import {
-  AnimalUID,
-  DisasterUID,
-  ElementUID,
-  ExtinctionUID,
-  GameState,
-  HabitatUID,
-  isHabitatUID,
-  PlantUID,
-} from "../types";
+import { CardOrTileUID, GameState, HabitatUID, isHabitatUID, StageEventType } from "../types";
 import { find, first, last } from "lodash";
 import { TurnMachineGuards } from "./guards";
 
 export const MachineSelectors = {
-  selectPlayer: ({ context }: { context: GameState }) => {
-    return find(context.players, { uid: context.turn.player })!;
-  },
+  selectPlayer: ({ context }: { context: GameState }) => find(context.players, { uid: context.turn.player })!,
 
   stageEventText: ({ context }: { context: GameState }) => {
     const player = MachineSelectors.selectPlayer({ context });
     const canRefresh = TurnMachineGuards.canRefreshAbility({ context });
 
-    const getHabitatUnlockText = (uids: (HabitatUID | DisasterUID | ExtinctionUID)[]) => {
+    const getHabitatUnlockText = (uids: CardOrTileUID[]) => {
       const unlockedHabitats = uids
         .filter((uid) => isHabitatUID(uid))
         .map((uid: HabitatUID) => find(context.habitatMarket.deck, { uid })?.name);
@@ -36,7 +25,7 @@ export const MachineSelectors = {
       return `Congratulations!\nYou earned the ${habitatText} ${habitatCount > 1 ? "habitats" : "habitat"}`;
     };
 
-    const getCardBoughtText = (uid: AnimalUID | PlantUID | ElementUID | DisasterUID | undefined) => {
+    const getCardBoughtText = (uid: CardOrTileUID | undefined) => {
       if (!uid) {
         return "";
       }
@@ -65,15 +54,18 @@ export const MachineSelectors = {
     return eventText[context.stage?.eventType ?? "default"];
   },
 
-  isPositiveStageEvent: ({ context }: { context: GameState }) => {
-    switch (context.stage?.eventType) {
-      case "habitatUnlock":
-      case "cardBuy":
-      case "abilityRefresh":
-      case "gameWin":
-        return true;
-      default:
-        return false;
-    }
-  },
+  isPositiveStageEvent: ({ context }: { context: GameState }) =>
+    (
+      ({
+        disaster: false,
+        elementalDisaster: false,
+        extinction: false,
+        massExtinction: false,
+        abilityRefresh: true,
+        habitatUnlock: true,
+        cardBuy: true,
+        gameLoss: false,
+        gameWin: true,
+      }) as Record<StageEventType, boolean>
+    )[context.stage?.eventType ?? "disaster"],
 };

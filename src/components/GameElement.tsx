@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion-3d";
 import { GamePiece, GamePieceAppearance } from "@/state/types";
-import { MeshProps, ThreeEvent } from "@react-three/fiber";
+import { MeshProps, ThreeEvent, useFrame } from "@react-three/fiber";
 import { useGameState } from "@/context/game-state/hook";
 import { usePresence } from "framer-motion";
 import { useAnimControls } from "@/hooks/useAnimationControls";
@@ -13,6 +13,7 @@ type GameElementProps = {
   width?: number;
   onClick?: () => void;
   children: ReactNode;
+  withFloatAnimation?: boolean;
 } & (
   | {
       gamePieceAppearance: GamePieceAppearance;
@@ -24,7 +25,13 @@ type GameElementProps = {
     }
 );
 
-const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameElementProps) => {
+const GameElement = ({
+  gamePieceAppearance,
+  onClick,
+  children,
+  cardUID,
+  withFloatAnimation = false,
+}: GameElementProps) => {
   const { uiState } = useGameState();
   const appearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
   const [isPresent, safeToRemove] = usePresence();
@@ -52,6 +59,29 @@ const GameElement = ({ gamePieceAppearance, onClick, children, cardUID }: GameEl
     },
     [isDisappearing, onClick],
   );
+
+  useFrame(({ clock }) => {
+    const time = clock.getElapsedTime();
+    const waveSpeed = 0.6;
+    const waveAmplitude = 3.2;
+    const maxRotationY = Math.PI / 12;
+    const maxRotationZ = Math.PI / 64;
+    const phaseOffset = (appearance.position?.x ?? 0) * 0.1;
+
+    if (withFloatAnimation && ref.current && ref.current.position) {
+      const mesh = ref.current;
+
+      const rotationY = Math.cos(time * waveSpeed + phaseOffset) * maxRotationY;
+      const rotationZ = Math.sin(time * waveSpeed + phaseOffset) * maxRotationZ;
+
+      // @ts-expect-error dunno why..
+      mesh.position.z = (appearance.position?.z ?? 0) + Math.sin(time * waveSpeed + phaseOffset) * waveAmplitude;
+      // @ts-expect-error dunno why..
+      mesh.rotation.y = appearance.rotation.y + rotationY;
+      // @ts-expect-error dunno why..
+      mesh.rotation.z = appearance.rotation.z + rotationZ;
+    }
+  });
 
   return (
     <motion.mesh

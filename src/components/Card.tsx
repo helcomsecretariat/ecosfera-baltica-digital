@@ -21,9 +21,18 @@ export type CardProps = {
   options?: CardOptions;
   isHighlighted?: boolean;
   isDimmed?: boolean;
+  withFloatAnimation?: boolean;
 };
 
-const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = false, isDimmed = false }: CardProps) => {
+const Card = ({
+  card,
+  gamePieceAppearance,
+  onClick,
+  options,
+  isHighlighted = false,
+  isDimmed = false,
+  withFloatAnimation = false,
+}: CardProps) => {
   const { emit, state } = useGameState();
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
@@ -45,7 +54,14 @@ const Card = ({ card, gamePieceAppearance, onClick, options, isHighlighted = fal
 
   return (
     gamePieceAppearance && (
-      <GameElement width={cardWidth} height={cardHeight} onClick={onClick} key={card.uid} cardUID={card.uid}>
+      <GameElement
+        width={cardWidth}
+        height={cardHeight}
+        onClick={onClick}
+        key={card.uid}
+        cardUID={card.uid}
+        withFloatAnimation={withFloatAnimation}
+      >
         <mesh position={[0, 0, -0.1]}>
           <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.02]} />
           <meshBasicMaterial attach="material-0" map={backTexture} />

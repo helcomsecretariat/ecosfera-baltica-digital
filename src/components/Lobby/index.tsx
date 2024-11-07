@@ -25,6 +25,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
   const [difficulty, setDifficulty] = useState<number>(1);
   const [seed, setSeed] = useState<string>(urlSeed);
   const nameInputRefs = useRef<HTMLInputElement[]>([]);
+  const seedInputRef = useRef<HTMLInputElement>(null);
 
   const existingNames = new Set<string>();
 
@@ -101,16 +102,17 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
           </AnimatePresence>
         </div>
         {playerCount < 4 && (
-          <Button
-            variant="wrapper"
-            className="group mx-auto !mt-0 flex w-full gap-3 p-0 text-xl"
-            onClick={() => setplayerCount(playerCount + 1)}
-          >
-            <Button size="icon" variant="secondary">
+          <div className="flex items-center space-x-3">
+            <Button size="icon" variant="secondary" onClick={() => setplayerCount(playerCount + 1)}>
               <FaPlus />
             </Button>
-            <span className="transition-all group-hover:opacity-85">Add player</span>
-          </Button>
+            <span
+              className="cursor-pointer text-xl transition-all group-hover:opacity-85"
+              onClick={() => setplayerCount(playerCount + 1)}
+            >
+              Add player
+            </span>
+          </div>
         )}
         {/* Game Difficulty */}
         <div className="flex w-full justify-between">
@@ -151,10 +153,21 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
                   <Input
                     id="seed"
                     type="text"
+                    ref={seedInputRef}
                     className="w-auto rounded-none border-0 border-transparent border-white bg-transparent text-end focus-visible:border-b-[1px] focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={seed}
                     onChange={(e) => setSeed(e.target.value)}
                   />
+                  <Button
+                    size="icon"
+                    variant="tertiary"
+                    onClick={() => {
+                      seedInputRef?.current?.focus();
+                      seedInputRef?.current?.select();
+                    }}
+                  >
+                    <FaPen />
+                  </Button>
                   <Popover>
                     <PopoverTrigger asChild>
                       <span className="ml-2 cursor-pointer rounded-full bg-white p-1 text-xl text-black">

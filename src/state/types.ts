@@ -66,7 +66,6 @@ export interface GameState {
     unlockedHabitat: boolean;
     uidsUsedForAbilityRefresh: AnimalUID[];
     refreshedAbilityUids: AbilityUID[];
-    selectedAbilityCard?: PlantCard | AnimalCard;
     automaticEventChecks?: string[];
     phase: "draw" | "end" | "action";
   };

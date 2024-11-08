@@ -1,5 +1,5 @@
 import { TurnMachine, TurnMachineContext } from "@/state/machines/turn";
-import { AbilityTile, AnimalCard, PlantCard, ElementCard, Card, GameState } from "@/state/types";
+import { AbilityTile, AnimalCard, PlantCard, ElementCard, Card, GameState, AbilityName } from "@/state/types";
 import { mapValues } from "lodash-es";
 import { EventFromLogic } from "xstate";
 import { ContextInjectedGuardMap, TurnMachineGuards } from "./machines/guards";
@@ -12,9 +12,9 @@ export interface ActionEmmiters {
   borrowedElementClick: (card: ElementCard) => () => void;
   marketCardClick: (card: PlantCard | AnimalCard) => () => void;
   tokenClick: (token: AbilityTile) => () => void;
+  cardTokenClick: (card: AnimalCard | PlantCard, abilityName: AbilityName) => () => void;
   animalDeckClick: () => () => void;
   plantDeckClick: () => () => void;
-  abilityCardClick: (card: PlantCard | AnimalCard) => () => void;
   stageConfirm: () => () => void;
   iddqd: (context: Partial<TurnMachineContext>) => () => void;
 }
@@ -35,7 +35,11 @@ const actionToEventMap: {
   animalDeckClick: () => ({ type: "user.click.market.deck.animal" }),
   plantDeckClick: () => ({ type: "user.click.market.deck.plant" }),
   tokenClick: (token: AbilityTile) => ({ type: "user.click.token", token }),
-  abilityCardClick: (card: PlantCard | AnimalCard) => ({ type: "user.click.player.hand.card.ability", card }),
+  cardTokenClick: (card: AnimalCard | PlantCard, abilityName: AbilityName) => ({
+    type: "user.click.player.hand.card.token",
+    card,
+    abilityName,
+  }),
   stageConfirm: () => ({ type: "user.click.stage.confirm" }),
   iddqd: (context: Partial<TurnMachineContext>) => ({ type: "iddqd", context }),
 } as const;

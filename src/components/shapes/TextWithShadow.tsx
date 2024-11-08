@@ -1,6 +1,6 @@
+import { useRelevantMaterial } from "@/components/MaterialProvider/hook";
 import { Text } from "@react-three/drei";
 import { ReactNode } from "react";
-import { MeshBasicMaterial } from "three";
 
 interface TextWithShadowProps {
   children: ReactNode;
@@ -17,14 +17,18 @@ const TextWithShadow = ({
   position,
   ...props
 }: TextWithShadowProps) => {
-  const material = new MeshBasicMaterial({ toneMapped: false, color });
+  const { getRelevantMaterial } = useRelevantMaterial();
 
   return (
     <>
       <Text {...props} color={shadowColor} position={[position[0] + 0.08, position[1] - 0.08, position[2]]}>
         {children}
       </Text>
-      <Text material={material} {...props} position={[position[0], position[1], position[2] + 0.05]}>
+      <Text
+        material={getRelevantMaterial({ color })}
+        {...props}
+        position={[position[0], position[1], position[2] + 0.05]}
+      >
         {children}
       </Text>
     </>

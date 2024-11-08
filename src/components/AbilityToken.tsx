@@ -2,6 +2,7 @@ import GameElement from "./GameElement";
 import { AbilityTile as AbilityTileType } from "@/state/types";
 import { useGameState } from "@/context/game-state/hook";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
+import withMaterialProvider from "@/components/utils/withMaterialProvider";
 
 const AbilityToken = ({ ability, color }: { ability: AbilityTileType; color?: string }) => {
   const { emit } = useGameState();
@@ -30,4 +31,4 @@ const AbilityToken = ({ ability, color }: { ability: AbilityTileType; color?: st
   );
 };
 
-export default AbilityToken;
+export default withMaterialProvider(AbilityToken);

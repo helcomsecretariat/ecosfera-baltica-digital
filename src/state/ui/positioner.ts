@@ -1,4 +1,4 @@
-import { find, isEmpty, map } from "lodash-es";
+import { find, isEmpty, last, map } from "lodash-es";
 import {
   AnimalCard,
   Card,
@@ -259,23 +259,25 @@ export const positionAbilityTokens = (gameState: GameState): GamePieceCoordsDict
     });
 
     // refreshing abilities
-    if (gameState.stage?.eventType === "abilityRefresh") {
-      player.abilities
-        .filter(({ isUsed }) => isUsed)
-        .forEach((ability, index, usedAbilities) => {
-          acc[ability.uid] = {
-            ...acc[ability.uid],
-            position: {
-              x:
-                usedAbilities.length === 1
-                  ? 0
-                  : 0 - Math.ceil(usedAbilities.length / 2) * (abilityOffset / 2) + abilityOffset * index,
-              y: -cardHeight,
-              z: 50,
-            },
-            rotation: { x: 0, y: 0, z: 0 },
-          };
-        });
+    if (player.uid === gameState.turn.player && gameState.stage?.eventType === "abilityRefresh") {
+      const canRefresh = TurnMachineGuards.canRefreshAbility({ context: gameState });
+      const lastRefreshedAbility = find(player.abilities, { uid: last(gameState.turn.refreshedAbilityUids) });
+      const abilitiesOnStage = canRefresh ? player.abilities.filter(({ isUsed }) => isUsed) : [lastRefreshedAbility!];
+
+      abilitiesOnStage.filter(Boolean).forEach((ability, index, usedAbilities) => {
+        acc[ability.uid] = {
+          ...acc[ability.uid],
+          position: {
+            x:
+              usedAbilities.length === 1
+                ? 0
+                : 0 - Math.ceil(usedAbilities.length / 2) * (abilityOffset / 2) + abilityOffset * index,
+            y: -cardHeight,
+            z: 50,
+          },
+          rotation: { x: 0, y: 0, z: 0 },
+        };
+      });
     }
 
     return acc;
@@ -383,7 +385,7 @@ export const positionElementMarketCards = (gameState: GameState): GamePieceCoord
       };
       const borrowedOffset = {
         x: 0,
-        y: -cardHeight / 3,
+        y: -cardHeight / 8,
         z: 7,
       };
       const deckPosition = positionElementDecks(gameState)[`${card.name}ElementDeck`].position!;

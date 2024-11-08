@@ -45,7 +45,7 @@ export const MachineSelectors = {
         ? `Your ${lastRefreshedAbility?.name ?? ""} ability has been refreshed!`
         : "You can now refresh one of your used abilities.",
       habitatUnlock: getHabitatUnlockText(context.stage?.effect ?? []),
-      cardBuy: getCardBoughtText(first(context.stage?.cause ?? [])),
+      cardBuy: getCardBoughtText(first(context.stage?.effect ?? [])),
       gameWin: "Congratulations!\nYou saved the Baltic ecosystem!",
       gameLoss: "Game Over!\nYou could not save the Baltic Ecosystem.",
       default: "",

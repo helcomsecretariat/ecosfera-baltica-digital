@@ -11,6 +11,7 @@ import { DeckConfig } from "@/decks/schema";
 import { Stats } from "@react-three/drei";
 import { Leva } from "leva";
 import { useBlocker } from "@/hooks/useBlocker";
+import { MaterialProvider } from "@/components/MaterialProvider/provider";
 
 export default function GameBoard() {
   useBlocker();
@@ -49,17 +50,20 @@ export default function GameBoard() {
     <div className="flex h-full w-full flex-col items-center justify-center">
       <Canvas shadows className="relative" style={{ width: size.width, height: size.height }}>
         <Suspense fallback={null}>
-          <ambientLight intensity={1.5} />
-          {/* <color attach="background" args={["#032C4E"]} /> */}
-          {showGrid && <Grid divisions={gridDivisions} />}
-          <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
-          {orbitControls && <OrbitControls />}
-          <Croupier />
+          <MaterialProvider isGlossy={false}>
+            <ambientLight intensity={3} />
+            <directionalLight position={[0, 0, cameraZoom]} intensity={0.5} />
 
-          {FPS && <Stats />}
+            {showGrid && <Grid divisions={gridDivisions} />}
+            <PerspectiveCamera makeDefault position={[0, 0, cameraZoom]} />
+            {orbitControls && <OrbitControls />}
+            <Croupier />
 
-          <PreloadAssets config={deckConfig as unknown as DeckConfig} />
-          <Preload all />
+            {FPS && <Stats />}
+
+            <PreloadAssets config={deckConfig as unknown as DeckConfig} />
+            <Preload all />
+          </MaterialProvider>
         </Suspense>
       </Canvas>
       <Leva collapsed flat hideCopyButton />

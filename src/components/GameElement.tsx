@@ -8,7 +8,6 @@ import { useAnimControls } from "@/hooks/useAnimationControls";
 import { calculateDurations } from "@/state/utils";
 
 type GameElementProps = {
-  // TODO: why do we need width and height?
   height?: number;
   width?: number;
   onClick?: () => void;
@@ -67,19 +66,19 @@ const GameElement = ({
     const maxRotationY = Math.PI / 12;
     const maxRotationZ = Math.PI / 64;
     const phaseOffset = (appearance.position?.x ?? 0) * 0.1;
+    const rotation = appearance.rotation || appearance.initialRotation;
+    const position = appearance.position || appearance.initialPosition;
 
-    if (withFloatAnimation && ref.current && ref.current.position) {
-      const mesh = ref.current;
-
+    if (withFloatAnimation && ref.current && ref.current.position && ref.current.rotation) {
       const rotationY = Math.cos(time * waveSpeed + phaseOffset) * maxRotationY;
       const rotationZ = Math.sin(time * waveSpeed + phaseOffset) * maxRotationZ;
 
-      // @ts-expect-error dunno why..
-      mesh.position.z = (appearance.position?.z ?? 0) + Math.sin(time * waveSpeed + phaseOffset) * waveAmplitude;
-      // @ts-expect-error dunno why..
-      mesh.rotation.y = appearance.rotation.y + rotationY;
-      // @ts-expect-error dunno why..
-      mesh.rotation.z = appearance.rotation.z + rotationZ;
+      // @ts-expect-error dunno why
+      ref.current.position.z = position.z + Math.sin(time * waveSpeed + phaseOffset) * waveAmplitude;
+      // @ts-expect-error dunno why
+      ref.current.rotation.y = rotation.y + rotationY;
+      // @ts-expect-error dunno why
+      ref.current.rotation.z = rotation.z + rotationZ;
     }
   });
 

@@ -31,7 +31,7 @@ const Stage = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: state.stage?.terminationEvent ? 1 : 0.7 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.6, type: "aniticipate" }}
+                transition={{ duration: 0.6, type: "anticipate" }}
                 opacity={state.stage.terminationEvent ? 1 : 0.7}
                 map={isPositive ? positiveTexture : negativeTexture}
               />

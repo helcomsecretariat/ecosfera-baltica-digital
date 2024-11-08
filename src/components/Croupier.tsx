@@ -1,4 +1,3 @@
-import { default as CardComponent } from "./Card";
 import Deck from "./Deck";
 import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/types";
 import { useThree } from "@react-three/fiber";
@@ -8,14 +7,15 @@ import { keys } from "lodash-es";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { TurnMachineGuards } from "@/state/machines/guards";
-import Tile from "./Tile";
 import PlayerTitle from "@/components/PlayerTitle";
-import AbilityToken from "@/components/AbilityToken";
 import Stage from "./Stage";
+import CardComponent from "@/components/utils/CardWithProvider";
+import AbilityToken from "@/components/utils/AbilityTokenWithProvider";
+import Tile from "@/components/utils/TileWithProvider";
 import EndTurnButton from "./EndTurnButton";
 
 const Croupier = () => {
-  const { state: gameState, uiState } = useGameState();
+  const { state: gameState, uiState, snap } = useGameState();
   const { emit, test, hasTag, guards } = useGameState();
   const { gl } = useThree();
   ColorManagement.enabled = true;
@@ -71,6 +71,7 @@ const Croupier = () => {
           card={gameState.turn.borrowedElement}
           gamePieceAppearance={uiState.cardPositions[gameState.turn.borrowedElement.uid]}
           onClick={emit.borrowedElementClick(gameState.turn.borrowedElement)}
+          isGlossy={true}
           withFloatAnimation={true}
         />
       )}
@@ -124,7 +125,9 @@ const Croupier = () => {
               color={
                 player.uid === gameState.turn.player &&
                 (gameState.turn.selectedAbilityCard?.abilities.includes(ability.name) ||
-                  (TurnMachineGuards.canRefreshAbility({ context: gameState }) && ability.isUsed))
+                  (TurnMachineGuards.canRefreshAbility({ context: gameState }) &&
+                    ability.isUsed &&
+                    snap.matches({ stagingEvent: "abilityRefresh" })))
                   ? "#1D86BC"
                   : undefined
               }
@@ -142,6 +145,8 @@ const Croupier = () => {
           key={extinctionTile.uid}
           tileUid={extinctionTile.uid}
           color={gameState.extinctMarket.deck.includes(extinctionTile) ? "#c3b091" : "#d17b79"}
+          isGlossy={gameState.stage?.effect?.includes(extinctionTile.uid)}
+          withFloatAnimation={gameState.stage?.effect?.includes(extinctionTile.uid)}
         />
       ))}
 
@@ -152,6 +157,7 @@ const Croupier = () => {
           tileUid={habitatTile.uid}
           name={habitatTile.name}
           color={habitatTile.isAcquired ? "#2cba16" : "#66cc66"}
+          isGlossy={gameState.stage?.effect?.includes(habitatTile.uid)}
           withFloatAnimation={gameState.stage?.effect?.includes(habitatTile.uid)}
         />
       ))}
@@ -186,6 +192,7 @@ const Croupier = () => {
                   (hasTag("usingAbility") && test.playerCardClick(card)) ||
                   (guards.isOnStage(card) && guards.isCardBuyStageEvent())
                 }
+                isGlossy={gameState.stage?.effect?.includes(card.uid)}
                 withFloatAnimation={gameState.stage?.effect?.includes(card.uid)}
               />
             ),

@@ -328,8 +328,8 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         draft.stage = {
           eventType: "cardBuy",
-          cause: [card.uid],
-          effect: undefined,
+          cause: undefined,
+          effect: [card.uid],
         };
       }),
     ),
@@ -703,7 +703,7 @@ export const TurnMachine = setup({
             },
             transitioning: {
               after: {
-                animationDuration: { target: "#turn.buying" },
+                animationDuration: { target: "#turn" },
               },
             },
           },
@@ -777,8 +777,17 @@ export const TurnMachine = setup({
                     },
                     guard: "singleAbilityUsed",
                   },
-                  { target: "awaitingConfirmation" },
+                  { target: "awatingTokenPick" },
                 ],
+              },
+            },
+            awatingTokenPick: {
+              on: {
+                "user.click.token": {
+                  target: "awaitingConfirmation",
+                  guard: { type: "isAbilityUsed", params: ({ event: { token } }) => token },
+                  actions: { type: "refreshAbility", params: ({ event: { token } }) => token.uid },
+                },
               },
             },
             awaitingConfirmation: {
@@ -787,10 +796,6 @@ export const TurnMachine = setup({
                   actions: "unstage",
                   target: "transitioning",
                   guard: "stageCardsUsedForAbilityRefresh",
-                },
-                "user.click.token": {
-                  actions: { type: "refreshAbility", params: ({ event: { token } }) => token.uid },
-                  guard: { type: "isAbilityUsed", params: ({ event: { token } }) => token },
                 },
               },
             },

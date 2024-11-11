@@ -68,4 +68,14 @@ export const MachineSelectors = {
         gameWin: true,
       }) as Record<StageEventType, boolean>
     )[context.stage?.eventType ?? "disaster"],
+
+  usedAbilities: ({ context }: { context: GameState }) => {
+    return context.turn.usedAbilities;
+  },
+
+  currentAbility: ({ context }: { context: GameState }) => {
+    return context.turn.currentAbility;
+  },
+
+  exhaustedCards: ({ context: { turn } }: { context: GameState }) => turn.exhaustedCards,
 };

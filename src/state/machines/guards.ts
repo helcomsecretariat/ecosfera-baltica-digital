@@ -102,16 +102,11 @@ export const TurnMachineGuards = {
     );
   },
 
-  abilityAvailable: ({ context: { turn, players } }: { context: GameState }, token: AbilityTile) =>
-    players[0].abilities.includes(token) &&
-    (turn.selectedAbilityCard ? turn.selectedAbilityCard.abilities.includes(token.name) : !token.isUsed),
+  abilityAvailable: ({ context: { players } }: { context: GameState }, token: AbilityTile) =>
+    players[0].abilities.includes(token) && !token.isUsed,
 
   abilityCardAvailable: ({ context }: { context: GameState }, card: PlantCard | AnimalCard) => {
     return (context.turn.usedAbilities?.filter((ability) => ability.source === card.uid).length ?? 0) === 0;
-  },
-
-  selectedAbilityCardHasSingleAbility: ({ context }: { context: GameState }) => {
-    return context.turn.selectedAbilityCard?.abilities.length === 1;
   },
 
   didNotBuy: ({ context: { turn } }: { context: GameState }) => {

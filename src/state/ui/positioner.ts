@@ -527,7 +527,7 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
 
       .forEach((card: Card) => {
         const inPlay = playedCards.includes(card.uid);
-        const offset = getPlayerCardOffset(previousPosition, deckPosition, playerIndex, inPlay, false);
+        const offset = getPlayerCardOffset(previousPosition, deckPosition, playerIndex, inPlay, false, false);
         previousPosition = offset;
 
         acc[card.uid] = {
@@ -570,6 +570,7 @@ export const positionPlayerCards = (gameState: GameState): GamePieceCoordsDict =
           deckPosition,
           playerIndex,
           inPlay,
+          true,
           cardIndex !== 0 &&
             (isEmpty((card as AnimalCard).abilities) ||
               map(gameState.turn.usedAbilities, "source").includes(card.uid as AnimalUID | PlantUID) ||
@@ -596,15 +597,17 @@ const getPlayerCardOffset = (
   basePosition: Coordinate,
   playerIndex: number,
   inPlay: boolean,
+  exhausted: boolean,
   canOverlap?: boolean,
 ) => {
   const cardOffset = canOverlap ? overlappingCardXOffset : cardXOffset;
   const inPlayOffset = inPlay ? (playerIndex === 0 || playerIndex === 3 ? 4 : -4) : 0;
-  const z = previousPosition.z + 0.1;
+  const exhaustedOffset = exhausted ? -cardHeight / 2 : 0;
+  const z = previousPosition.z + (exhausted ? 0.35 : 0.1);
 
   switch (playerIndex) {
     case 0:
-      return { x: previousPosition.x + cardOffset, y: basePosition.y + inPlayOffset, z };
+      return { x: previousPosition.x + cardOffset, y: basePosition.y + inPlayOffset + exhaustedOffset, z };
     case 1:
       return { x: basePosition.x + inPlayOffset, y: previousPosition.y + cardOffset, z };
     case 2:

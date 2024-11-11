@@ -10,13 +10,15 @@ import {
   GameState,
   PlantCard,
   UiState,
+  AbilityName,
+  isAbilityUID,
 } from "@/state/types";
 import { assign } from "@/state/machines/assign";
 import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
 import { TurnMachineGuards } from "@/state/machines/guards";
-import { compact, concat, countBy, entries, find, first, flatten, intersection, map, reject, without } from "lodash-es";
+import { compact, concat, countBy, entries, find, flatten, intersection, map, reject, without } from "lodash-es";
 import { calculateDurations, replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 import { toUiState } from "@/state/ui/positioner";
@@ -31,7 +33,7 @@ export type TurnMachineEvent =
   | { type: "user.click.market.borrowed.card.element"; card: ElementCard }
   | { type: "user.click.market.table.card"; card: PlantCard | AnimalCard }
   | { type: "iddqd"; context: Partial<TurnMachineContext> }
-  | { type: "user.click.player.hand.card.ability"; card: PlantCard | AnimalCard }
+  | { type: "user.click.player.hand.card.token"; card: AnimalCard | PlantCard; abilityName: AbilityName }
   | { type: "user.click.stage.confirm" }
   | { type: "ability.cancel" }
   | { type: "ability.markAsUsed" }
@@ -44,7 +46,6 @@ export type TurnMachineEvent =
   | { type: "ability.move.toElementDeck"; card: ElementCard; name: ElementCard["name"] }
   | { type: "user.click.market.deck.animal" }
   | { type: "user.click.market.deck.plant" }
-  | { type: "user.click.player.hand.card.ability"; card: PlantCard | AnimalCard }
   | { type: "user.click.player.deck" }
   | { type: "internal.target.selected"; target: Card };
 
@@ -233,27 +234,22 @@ export const TurnMachine = setup({
 
         if (!context.turn.currentAbility) return;
 
-        const ability = find(player.abilities, { uid: context.turn.currentAbility?.piece.uid });
-        if (ability) {
-          ability.isUsed = true;
+        const ability = find(player.abilities, { uid: context.turn.currentAbility?.piece?.uid });
+
+        if (ability && isAbilityUID(ability.uid)) {
+          (ability as AbilityTile).isUsed = true;
         }
+
         turn.usedAbilities.push({
           source: context.turn.currentAbility.piece.uid,
           name: context.turn.currentAbility.name,
         });
         turn.currentAbility = undefined;
-        turn.selectedAbilityCard = undefined;
-      }),
-    ),
-    markAbilityCardAsSelected: assign(({ context }, card: PlantCard | AnimalCard) =>
-      produce(context, ({ turn }) => {
-        turn.selectedAbilityCard = card;
       }),
     ),
     cancelAbility: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         draft.turn.currentAbility = undefined;
-        draft.turn.selectedAbilityCard = undefined;
       }),
     ),
     discardCards: assign(({ context }: { context: GameState }) =>
@@ -645,7 +641,6 @@ export const TurnMachine = setup({
                 target: "#turn.stagingEvent.gameLost",
                 guard: "gameLost",
               },
-
               {
                 target: "#turn.stagingEvent.massExtinction",
                 guard: and([
@@ -961,48 +956,20 @@ export const TurnMachine = setup({
           ],
           guard: { type: "canBuyCard", params: ({ event: { card } }) => card },
         },
-        "user.click.player.hand.card.ability": [
-          {
-            target: "#turn.cardAbility",
-            actions: { type: "markAbilityCardAsSelected", params: ({ event: { card } }) => card },
-            guard: { type: "abilityCardAvailable", params: ({ event: { card } }) => card },
-          },
-        ],
-      },
-    },
-
-    cardAbility: {
-      after: {
-        animationDuration: {
+        "user.click.player.hand.card.token": {
           target: "#turn.usingAbility",
-          actions: assign({
-            turn: ({ context: { turn } }) => ({
-              ...turn,
-              currentAbility: {
-                piece: turn.selectedAbilityCard!,
-                name: first(turn.selectedAbilityCard!.abilities)!,
-              },
-            }),
-          }),
-          guard: "selectedAbilityCardHasSingleAbility",
-        },
-      },
-      on: {
-        "user.click.player.hand.card.ability": {
-          target: "#turn.usingAbility.cancel",
-        },
-        "user.click.token": {
-          target: "#turn.usingAbility",
-          guard: {
-            type: "abilityAvailable",
-            params: ({ event: { token } }) => token,
-          },
-          actions: assign({
-            turn: ({ context: { turn }, event: { token } }) =>
-              produce(turn, (draft) => {
-                draft.currentAbility = { piece: draft.selectedAbilityCard!, name: token.name };
+          actions: [
+            assign({
+              turn: ({ context: { turn }, event: { card, abilityName } }) => ({
+                ...turn,
+                currentAbility: {
+                  piece: card,
+                  name: abilityName,
+                },
               }),
-          }),
+            }),
+          ],
+          guard: { type: "abilityCardAvailable", params: ({ event: { card } }) => card },
         },
       },
     },
@@ -1011,7 +978,7 @@ export const TurnMachine = setup({
       tags: ["usingAbility"],
       initial: "idle",
       on: {
-        "user.click.player.hand.card.ability": {
+        "user.click.player.hand.card.token": {
           target: "#turn.usingAbility.cancel",
         },
         "user.click.token": {

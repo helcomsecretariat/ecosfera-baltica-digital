@@ -10,9 +10,11 @@ import { useControls } from "leva";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import { useGameState } from "@/context/game-state/hook";
 import { useRelevantMaterial } from "@/components/MaterialProvider/hook";
+import CardAbilityTokens from "./CardAbilityTokens";
 
 export type CardOptions = {
-  showAbilityButton?: boolean;
+  showAbilityButtons?: boolean;
+  dimLevel?: number;
 };
 
 export type CardProps = {
@@ -34,14 +36,12 @@ const Card = ({
   isDimmed = false,
   withFloatAnimation = false,
 }: CardProps) => {
-  const { emit, state } = useGameState();
+  const { state } = useGameState();
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
   const texture = useSRGBTexture(cardIMGURL);
   const backTexture = useSRGBTexture("/ecosfera_baltica/back.avif");
   const highlightTexture = useTexture(getHighlightTextureAssetPath());
-  const dropTexture = useTexture("/ecosfera_baltica/ability_drop.avif");
-  const dropActiveTexture = useTexture("/ecosfera_baltica/ability_drop_active.avif");
   const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: false } });
   const isPlantOrAnimal = card.type === "plant" || card.type === "animal";
 
@@ -131,20 +131,8 @@ const Card = ({
             </TextWithShadow>
           ))}
         {/* Ability Button */}
-        {isPlantOrAnimal && options?.showAbilityButton && card.abilities.length > 0 && (
-          <mesh
-            position={[0, cardHeight / 2 + 3, 0]}
-            onClick={(e) => {
-              e.stopPropagation();
-              emit.abilityCardClick(card)();
-            }}
-          >
-            <circleGeometry args={[1.5, 32]} />
-            <meshBasicMaterial
-              map={state.turn.selectedAbilityCard?.uid === card.uid ? dropActiveTexture : dropTexture}
-              color={state.turn.usedAbilities?.map((ability) => ability.source).includes(card.uid) ? "#555" : undefined}
-            />
-          </mesh>
+        {isPlantOrAnimal && options?.showAbilityButtons && card.abilities.length > 0 && (
+          <CardAbilityTokens card={card} />
         )}
         {/* Name Label */}
         {["plant", "animal"].includes(type) && (
@@ -176,9 +164,9 @@ const Card = ({
         )}
         {/* Dimmed Overlay */}
         {useDimmed && isDimmed && (
-          <mesh>
-            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, 0.45]} />
-            <RelevantMaterial color="black" transparent opacity={0.8} />
+          <mesh position={[0, 0, 0.15]}>
+            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, 0.2]} />
+            <RelevantMaterial color="black" transparent opacity={options?.dimLevel ?? 0.8} />
           </mesh>
         )}
       </GameElement>

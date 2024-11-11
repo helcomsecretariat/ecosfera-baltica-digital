@@ -603,7 +603,7 @@ const getPlayerCardOffset = (
   const cardOffset = canOverlap ? overlappingCardXOffset : cardXOffset;
   const inPlayOffset = inPlay ? (playerIndex === 0 || playerIndex === 3 ? 4 : -4) : 0;
   const exhaustedOffset = exhausted ? -cardHeight / 2 : 0;
-  const z = previousPosition.z + (exhausted ? 0.25 : 0.1);
+  const z = previousPosition.z + (exhausted ? 0.35 : 0.1);
 
   switch (playerIndex) {
     case 0:

@@ -105,7 +105,7 @@ const Card = ({
                 <cylinderGeometry args={[1, 1, 0.1, 6, 1]} />
                 <RelevantMaterial color="#77dd77" transparent />
               </mesh>
-              <Text color="black" fontSize={1.2} position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.2]}>
+              <Text color="black" fontSize={1.2} position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.25]}>
                 {name[0].toUpperCase()}
               </Text>
             </React.Fragment>
@@ -165,7 +165,7 @@ const Card = ({
         {/* Dimmed Overlay */}
         {useDimmed && isDimmed && (
           <mesh position={[0, 0, 0.15]}>
-            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, 0.15]} />
+            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, 0.2]} />
             <RelevantMaterial color="black" transparent opacity={options?.dimLevel ?? 0.8} />
           </mesh>
         )}

@@ -14,12 +14,9 @@ import Tile from "@/components/utils/TileWithProvider";
 import EndTurnButton from "./EndTurnButton";
 import { useSelector } from "@xstate/react";
 import { MachineSelectors } from "@/state/machines/selectors";
-import EndTurnButton from "./EndTurnButton";
-import { useSelector } from "@xstate/react";
-import { MachineSelectors } from "@/state/machines/selectors";
 
 const Croupier = () => {
-  const { state: gameState, uiState, actorRef, snap } = useGameState();
+  const { state: gameState, uiState, actorRef } = useGameState();
   const { emit, test, hasTag, guards } = useGameState();
   const exhaustedCards = useSelector(actorRef, MachineSelectors.exhaustedCards);
   const { gl } = useThree();
@@ -127,6 +124,7 @@ const Croupier = () => {
           {player.abilities.map((ability) => (
             <AbilityToken
               key={ability.uid}
+              ability={ability}
               color={
                 (player.uid === gameState.turn.player && guards.canRefreshAbility()) ||
                 currentAbility?.piece?.uid === ability.uid

@@ -127,10 +127,7 @@ const Croupier = () => {
               key={ability.uid}
               ability={ability}
               color={
-                (player.uid === gameState.turn.player &&
-                  TurnMachineGuards.canRefreshAbility({ context: gameState }) &&
-                  ability.isUsed &&
-                  snap.matches({ stagingEvent: "abilityRefresh" })) ||
+                (player.uid === gameState.turn.player && guards.canRefreshAbility()) ||
                 currentAbility?.piece?.uid === ability.uid
                   ? "#1D86BC"
                   : undefined

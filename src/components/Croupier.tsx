@@ -6,7 +6,6 @@ import { useGameState } from "@/context/game-state/hook";
 import { keys } from "lodash-es";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
-import { TurnMachineGuards } from "@/state/machines/guards";
 import PlayerTitle from "@/components/PlayerTitle";
 import Stage from "./Stage";
 import CardComponent from "@/components/utils/CardWithProvider";
@@ -125,7 +124,6 @@ const Croupier = () => {
           {player.abilities.map((ability) => (
             <AbilityToken
               key={ability.uid}
-              ability={ability}
               color={
                 (player.uid === gameState.turn.player && guards.canRefreshAbility()) ||
                 currentAbility?.piece?.uid === ability.uid

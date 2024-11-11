@@ -714,7 +714,7 @@ export const TurnMachine = setup({
             },
             transitioning: {
               after: {
-                animationDuration: { target: "#turn.buying" },
+                animationDuration: { target: "#turn" },
               },
             },
           },
@@ -733,7 +733,7 @@ export const TurnMachine = setup({
             },
             transitioning: {
               after: {
-                animationDuration: { target: "#turn.buying" },
+                animationDuration: { target: "#turn" },
               },
             },
           },
@@ -749,7 +749,7 @@ export const TurnMachine = setup({
             },
             transitioning: {
               after: {
-                animationDuration: { target: "#turn.buying" },
+                animationDuration: { target: "#turn" },
               },
             },
           },
@@ -796,7 +796,7 @@ export const TurnMachine = setup({
             },
             transitioning: {
               after: {
-                animationDuration: { target: "#turn.buying" },
+                animationDuration: { target: "#turn" },
               },
             },
           },
@@ -1086,7 +1086,7 @@ export const TurnMachine = setup({
         cancel: {
           after: {
             animationDuration: {
-              target: "#turn.buying",
+              target: "#turn",
               actions: "cancelAbility",
             },
           },

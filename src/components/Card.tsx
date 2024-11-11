@@ -13,6 +13,7 @@ import { useRelevantMaterial } from "@/components/MaterialProvider/hook";
 
 export type CardOptions = {
   showAbilityButton?: boolean;
+  dimLevel?: 0.8 | 0.3;
 };
 
 export type CardProps = {
@@ -105,7 +106,7 @@ const Card = ({
                 <cylinderGeometry args={[1, 1, 0.1, 6, 1]} />
                 <RelevantMaterial color="#77dd77" transparent />
               </mesh>
-              <Text color="black" fontSize={1.2} position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.25]}>
+              <Text color="black" fontSize={1.2} position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.2]}>
                 {name[0].toUpperCase()}
               </Text>
             </React.Fragment>
@@ -176,9 +177,9 @@ const Card = ({
         )}
         {/* Dimmed Overlay */}
         {useDimmed && isDimmed && (
-          <mesh>
-            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, 0.45]} />
-            <RelevantMaterial color="black" transparent opacity={0.8} />
+          <mesh position={[0, 0, 0.15]}>
+            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, 0.15]} />
+            <RelevantMaterial color="black" transparent opacity={options?.dimLevel ?? 0.8} />
           </mesh>
         )}
       </GameElement>

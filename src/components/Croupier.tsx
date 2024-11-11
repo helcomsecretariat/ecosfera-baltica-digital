@@ -13,10 +13,13 @@ import CardComponent from "@/components/utils/CardWithProvider";
 import AbilityToken from "@/components/utils/AbilityTokenWithProvider";
 import Tile from "@/components/utils/TileWithProvider";
 import EndTurnButton from "./EndTurnButton";
+import { useSelector } from "@xstate/react";
+import { MachineSelectors } from "@/state/machines/selectors";
 
 const Croupier = () => {
-  const { state: gameState, uiState, snap } = useGameState();
+  const { state: gameState, uiState, actorRef, snap } = useGameState();
   const { emit, test, hasTag, guards } = useGameState();
+  const exhaustedCards = useSelector(actorRef, MachineSelectors.exhaustedCards);
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
@@ -187,12 +190,16 @@ const Croupier = () => {
                 card={card}
                 gamePieceAppearance={uiState.cardPositions[card.uid]}
                 onClick={emit.playerCardClick(card)}
-                options={{ showAbilityButton: gameState.turn.player === player.uid && !hasTag("stagingEvent") }}
+                options={{
+                  showAbilityButton: gameState.turn.player === player.uid && !hasTag("stagingEvent"),
+                  dimLevel: 0.3,
+                }}
                 isHighlighted={
                   (hasTag("usingAbility") && test.playerCardClick(card)) ||
                   (guards.isOnStage(card) && guards.isCardBuyStageEvent())
                 }
                 isGlossy={gameState.stage?.effect?.includes(card.uid)}
+                isDimmed={exhaustedCards.includes(card.uid) && !guards.isOnStage(card)}
                 withFloatAnimation={gameState.stage?.effect?.includes(card.uid)}
               />
             ),

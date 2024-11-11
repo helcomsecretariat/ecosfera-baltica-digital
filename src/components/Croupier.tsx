@@ -7,12 +7,12 @@ import { useGameState } from "@/context/game-state/hook";
 import { keys } from "lodash-es";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
-import { NextButton } from "@/components/NextTurnBtn";
 import { TurnMachineGuards } from "@/state/machines/guards";
 import Tile from "./Tile";
 import PlayerTitle from "@/components/PlayerTitle";
 import AbilityToken from "@/components/AbilityToken";
 import Stage from "./Stage";
+import EndTurnButton from "./EndTurnButton";
 
 const Croupier = () => {
   const { state: gameState, uiState } = useGameState();
@@ -192,7 +192,7 @@ const Croupier = () => {
         ),
       )}
 
-      <NextButton />
+      <EndTurnButton />
     </AnimatePresence>
   );
 };

@@ -16,7 +16,7 @@ import { useSelector } from "@xstate/react";
 import { MachineSelectors } from "@/state/machines/selectors";
 
 const Croupier = () => {
-  const { state: gameState, uiState, actorRef } = useGameState();
+  const { state: gameState, uiState, actorRef, snap} = useGameState();
   const { emit, test, hasTag, guards } = useGameState();
   const exhaustedCards = useSelector(actorRef, MachineSelectors.exhaustedCards);
   const { gl } = useThree();
@@ -126,7 +126,7 @@ const Croupier = () => {
               key={ability.uid}
               ability={ability}
               color={
-                (player.uid === gameState.turn.player && guards.canRefreshAbility()) ||
+                (player.uid === gameState.turn.player && (guards.canRefreshAbility() && ability.isUsed && snap.matches({stagingEvent: "abilityRefresh"})) ||
                 currentAbility?.piece?.uid === ability.uid
                   ? "#1D86BC"
                   : undefined

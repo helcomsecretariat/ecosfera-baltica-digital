@@ -20,10 +20,10 @@ const EndTurnButton = () => {
   return (
     <motion.mesh position={toVector3(position)} rotation={toVector3(rotation)}>
       <planeGeometry />
-      <meshPhysicalMaterial transparent opacity={5} />
-      <Html transform scale={7} occlude>
+      <meshPhysicalMaterial transparent opacity={0} />
+      <Html transform scale={7} occlude wrapperClass="bg-transparent" className="border-0 bg-transparent">
         <button
-          className="flex w-full items-center bg-[#0087BE] py-2 pl-8 pr-6 text-white transition-all hover:bg-[#075e81]"
+          className="flex w-full items-center bg-[#0087BE] py-2 pl-8 pr-6 text-white transition-all hover:bg-[#0087BE]/80"
           style={{
             clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 10% 100%)",
             WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 10% 100%)",

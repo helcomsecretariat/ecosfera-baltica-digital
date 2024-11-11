@@ -132,19 +132,7 @@ const Card = ({
           ))}
         {/* Ability Button */}
         {isPlantOrAnimal && options?.showAbilityButtons && card.abilities.length > 0 && (
-          <mesh
-            position={[0, cardHeight / 2 + 3, 0]}
-            onClick={(e) => {
-              e.stopPropagation();
-              emit.abilityCardClick(card)();
-            }}
-          >
-            <circleGeometry args={[1.5, 32]} />
-            <meshBasicMaterial
-              map={state.turn.selectedAbilityCard?.uid === card.uid ? dropActiveTexture : dropTexture}
-              color={state.turn.usedAbilities?.map((ability) => ability.source).includes(card.uid) ? "#555" : undefined}
-            />
-          </mesh>
+          <CardAbilityTokens card={card} />
         )}
         {/* Name Label */}
         {["plant", "animal"].includes(type) && (

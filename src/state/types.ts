@@ -8,6 +8,7 @@ import {
   PlantConfig,
   DeckConfig,
 } from "@/decks/schema";
+import { ExtCardName, ExtPackState } from "@/state/ext-pack";
 
 // google "bradned types in TS" for explanation
 export type UID<T extends string> = `${T}-${string}` & { readonly __brand: `${T}UID` };
@@ -84,6 +85,9 @@ export interface GameState {
   };
   config: GameConfig;
   deck: DeckConfig;
+
+  extPack: ExtPackState;
+  activeExtCards: ExtCardName[];
 }
 
 export type StageEventType =

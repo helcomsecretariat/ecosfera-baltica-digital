@@ -23,6 +23,8 @@ import { calculateDurations, replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 import { toUiState } from "@/state/ui/positioner";
 import { getCardComparator } from "@/lib/utils";
+import { extPackMainMachine } from "@/state/ext-pack";
+import { context } from "@react-three/fiber";
 
 export type TurnMachineContext = GameState & { ui?: UiState; animSpeed?: number };
 export type TurnMachineEvent =
@@ -577,6 +579,7 @@ export const TurnMachine = setup({
   },
 
   states: {
+    ...extPackMainMachine,
     hist: {
       type: "history",
       history: "deep",
@@ -640,6 +643,10 @@ export const TurnMachine = setup({
               {
                 target: "#turn.stagingEvent.gameLost",
                 guard: "gameLost",
+              },
+              {
+                target: "#turn.ext.substance_regulation",
+                guard: ({ context }) => context.activeExtCards.includes("substance_regulation"),
               },
               {
                 target: "#turn.stagingEvent.massExtinction",

@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "ObjectExpression > SpreadElement[argument.name='extPack']",
+        "message": "Spread assign for extPack is not allowed to prevent accidentally overwriting the extPack state cuased by sloppy copy-pasitng in the future. Please use immer's `produce` function instead."
+      }
+    ]
+  }
+}

@@ -161,7 +161,7 @@ export const supplyDeckPositions = (gameState: GameState) =>
     },
     gameState.players[3] && {
       x: lowerXBoundary + cardHeight / 2,
-      y: 0 - getSupplyDeckOffset(gameState, gameState.players[3].uid),
+      y: 0 + getSupplyDeckOffset(gameState, gameState.players[3].uid),
       z: 0,
     },
   ] as Coordinate[];
@@ -613,7 +613,7 @@ const getPlayerCardOffset = (
     case 2:
       return { x: previousPosition.x + cardOffset, y: basePosition.y + inPlayOffset, z };
     case 3:
-      return { x: basePosition.z + inPlayOffset, y: previousPosition.y - cardOffset, z };
+      return { x: basePosition.x + inPlayOffset, y: previousPosition.y - cardOffset, z };
     default:
       return { x: 0, y: 0, z: 0 };
   }

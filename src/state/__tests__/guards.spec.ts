@@ -15,7 +15,7 @@ import {
   temperature_1,
   temperature_2,
   temperature_3,
-} from "@/state/machines/__tests__/state-mock";
+} from "@/state/__tests__/state-mock";
 import { TurnMachineGuards } from "@/state/machines/guards";
 import { cloneDeep, map } from "lodash-es";
 import { AnimalCard, Card, ElementCard, PlantCard } from "@/state/types";

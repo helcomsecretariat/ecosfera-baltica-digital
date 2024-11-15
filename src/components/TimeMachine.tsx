@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { useGameState } from "@/context/game-state/hook";
 import { useControls, button } from "leva";
 import { SnapshotFrom } from "xstate";
@@ -8,7 +8,8 @@ const MAX_HISTORY_LENGTH = 40;
 const LOCAL_STORAGE_KEY_PREFIX = "ecoSferaStates_";
 
 export const TimeMachine = () => {
-  const { emit, snap } = useGameState();
+  const { emit, actorRef, snap: lowResSnap } = useGameState();
+  const snap = useMemo(() => actorRef.getPersistedSnapshot() as SnapshotFrom<typeof TurnMachine>, [lowResSnap]);
   const currentIndex = useRef(0);
   const gameStateHistory = useRef([snap]);
   const [options, setOptions] = useState<{ [key: string]: number }>({
@@ -48,12 +49,13 @@ export const TimeMachine = () => {
         },
       },
 
-      saveState: button(() => {
+      ["Save state"]: button(() => {
         const stateName = prompt("Enter name for current state");
         if (stateName) {
           const key = LOCAL_STORAGE_KEY_PREFIX + stateName + ` (${snap.context.players.length} players)`;
           try {
-            localStorage.setItem(key, JSON.stringify(snap));
+            const persistendSnap = actorRef.getPersistedSnapshot();
+            localStorage.setItem(key, JSON.stringify(persistendSnap));
             updatePersistedOptions();
           } catch (error) {
             console.error(error);

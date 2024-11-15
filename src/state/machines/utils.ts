@@ -1,8 +1,11 @@
 // import { createBrowserInspector } from "@statelyai/inspect";
 // const inspector = createBrowserInspector();
-// const inspect = inspector.inspect;
+// const xStateInspector = inspector.inspect;
 
-const inspect = undefined;
+import { TurnMachineContext } from "@/state/machines/turn";
+import { InspectionEvent } from "xstate";
+
+const xStateInspector = undefined;
 
 // let inspect: (inspectionEvent: InspectionEvent) => void = () => {};
 
@@ -18,4 +21,18 @@ const inspect = undefined;
 //     });
 // }
 
-export { inspect };
+function eventLogger(inspectionEvent: InspectionEvent) {
+  if (inspectionEvent.type === "@xstate.event") {
+    const event = inspectionEvent.event;
+    const { isLoggingEvents } = inspectionEvent.actorRef.getSnapshot().context as TurnMachineContext;
+    const isInternalEvent = event.type.startsWith("xstate.");
+
+    if (!isLoggingEvents || isInternalEvent) {
+      return;
+    }
+
+    console.info(event);
+  }
+}
+
+export { xStateInspector, eventLogger };

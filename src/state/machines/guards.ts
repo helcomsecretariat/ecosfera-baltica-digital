@@ -226,6 +226,14 @@ export const TurnMachineGuards = {
   isCardBuyStageEvent: ({ context: { stage } }: { context: GameState }) => {
     return stage?.eventType === "cardBuy";
   },
+
+  haveCardsInDeckOrDescard: ({ context: { turn, players } }: { context: GameState }) => {
+    const player = find(players, { uid: turn.player })!;
+    return player.deck.length > 0 || player.discard.length > 0;
+  },
+
+  // @ts-expect-error switch to TurnMachineContext
+  isStageAutoConfirm: ({ context: { isStageAutoConfirm } }: { context: GameState }) => isStageAutoConfirm,
 };
 
 export type ContextInjectedGuardMap = {

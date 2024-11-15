@@ -214,9 +214,9 @@ function calculateDelaysAndDurations(
   let cumulativeDelay = 0;
   const updatedCards: GamePieceAppearances = {};
 
-  console.log("===========================================");
-  console.log(`Total clusters detected: ${sortedClusterIndices.length}`);
-  console.log("---------");
+  log("===========================================");
+  log(`Total clusters detected: ${sortedClusterIndices.length}`);
+  log("---------");
 
   sortedClusterIndices.forEach((clusterIndex, groupIndex) => {
     const cluster = clusters.get(clusterIndex)!;
@@ -234,7 +234,7 @@ function calculateDelaysAndDurations(
       const totalDelay = cumulativeDelay + intraGroupDelay;
       const additionalDelay = cumulativeDelay === 0 ? 0 : baseDuration * 2;
 
-      if (data.distance) console.log(data.key, ` duration: ${duration}`);
+      if (data.distance) log(data.key, ` duration: ${duration}`);
 
       updatedCards[data.key] = {
         ...data.cardAppearance,
@@ -248,14 +248,14 @@ function calculateDelaysAndDurations(
     });
 
     if (cumulativeDelay !== groupMaxEndTime) {
-      console.log(
+      log(
         `Cluster ${groupIndex} - Max end time in cluster: ${groupMaxEndTime}, Cumulative delay before this cluster: ${cumulativeDelay}`,
       );
 
       cumulativeDelay = groupMaxEndTime;
 
-      console.log(`Cumulative delay after Cluster ${groupIndex}: ${cumulativeDelay}`);
-      console.log("---------");
+      log(`Cumulative delay after Cluster ${groupIndex}: ${cumulativeDelay}`);
+      log("---------");
     }
   });
 
@@ -326,3 +326,5 @@ export function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoor
 
   return updatedCards;
 }
+
+const log = (...args: unknown[]) => console.log(...args);

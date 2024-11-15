@@ -12,9 +12,11 @@ import { Stats } from "@react-three/drei";
 import { Leva } from "leva";
 import { useBlocker } from "@/hooks/useBlocker";
 import { MaterialProvider } from "@/components/MaterialProvider/provider";
+import { useTestControls } from "@/hooks/useTestControls";
 
 export default function GameBoard() {
   useBlocker();
+  useTestControls();
 
   const { showGrid, gridDivisions, orbitControls, FPS } = useControls({
     showGrid: false,

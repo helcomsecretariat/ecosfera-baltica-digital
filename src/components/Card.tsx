@@ -42,7 +42,7 @@ const Card = ({
   const texture = useSRGBTexture(cardIMGURL);
   const backTexture = useSRGBTexture("/ecosfera_baltica/back.avif");
   const highlightTexture = useTexture(getHighlightTextureAssetPath());
-  const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: false } });
+  const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: true } });
   const isPlantOrAnimal = card.type === "plant" || card.type === "animal";
 
   const { RelevantMaterial } = useRelevantMaterial();

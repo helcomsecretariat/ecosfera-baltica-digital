@@ -6,6 +6,7 @@ import { useGameState } from "@/context/game-state/hook";
 import { usePresence } from "framer-motion";
 import { useAnimControls } from "@/hooks/useAnimationControls";
 import { calculateDurations } from "@/state/utils";
+import { voidSpaceAppearance } from "@/constants/animation";
 
 type GameElementProps = {
   height?: number;
@@ -32,13 +33,19 @@ const GameElement = ({
   withFloatAnimation = false,
 }: GameElementProps) => {
   const { uiState } = useGameState();
-  const appearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
+  let appearance: GamePieceAppearance = cardUID ? uiState.cardPositions[cardUID] : gamePieceAppearance;
   const [isPresent, safeToRemove] = usePresence();
-  const isDisappearing = !appearance.position;
-  const zCoord = appearance.position?.z ?? 0;
-
   const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);
+
+  if (!appearance) {
+    // rare case. Happend during testing/development
+    console.error("No appearance found for", cardUID);
+    appearance = voidSpaceAppearance;
+  }
+
+  const isDisappearing = !appearance.position;
+  const zCoord = appearance.position?.z ?? 0;
 
   const { mainDuration, mainDelay, zDelay, zDuration, flipDuration, flipDelay, totalDuration } = calculateDurations(
     appearance,
@@ -89,6 +96,8 @@ const GameElement = ({
       position-z={zCoord}
       transition={{
         ease,
+
+        // dedicated "z" and "rotateY" config to get "lift -> move -> flip -> put down" animation order
         duration: mainDuration,
         delay: mainDelay,
         rotateY: {
@@ -100,6 +109,8 @@ const GameElement = ({
           duration: zDuration,
           times: [0, 0.1, 0.3, 1],
         },
+
+        // no matter the delay we need instant reaction to hover
         scale: {
           delay: 0,
         },

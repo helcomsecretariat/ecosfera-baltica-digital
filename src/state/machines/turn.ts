@@ -24,7 +24,13 @@ import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "
 import { toUiState } from "@/state/ui/positioner";
 import { getCardComparator } from "@/lib/utils";
 
-export type TurnMachineContext = GameState & { ui?: UiState; animSpeed?: number };
+type MachineConfig = {
+  animSpeed?: number;
+  ui?: UiState;
+  isStageAutoConfirm?: boolean;
+  isLoggingEvents?: boolean;
+};
+export type TurnMachineContext = GameState & MachineConfig;
 export type TurnMachineEvent =
   | { type: "user.click.player.endTurn" }
   | { type: "user.click.token"; token: AbilityTile }
@@ -35,15 +41,6 @@ export type TurnMachineEvent =
   | { type: "iddqd"; context: Partial<TurnMachineContext> }
   | { type: "user.click.player.hand.card.token"; card: AnimalCard | PlantCard; abilityName: AbilityName }
   | { type: "user.click.stage.confirm" }
-  | { type: "ability.cancel" }
-  | { type: "ability.markAsUsed" }
-  | { type: "ability.draw.playerDeck" }
-  | { type: "ability.refresh.animalDeck" }
-  | { type: "ability.refresh.plantDeck" }
-  | { type: "ability.move.toPlayer"; card: Card; destinationCard: Card }
-  | { type: "ability.move.toAnimalDeck"; card: AnimalCard }
-  | { type: "ability.move.toPlantDeck"; card: PlantCard }
-  | { type: "ability.move.toElementDeck"; card: ElementCard; name: ElementCard["name"] }
   | { type: "user.click.market.deck.animal" }
   | { type: "user.click.market.deck.plant" }
   | { type: "user.click.player.deck" }
@@ -551,7 +548,7 @@ export const TurnMachine = setup({
         ),
       );
       const duration = maxDuration * 1000;
-      console.log("waining for", ~~duration, "ms");
+      // console.log("waining for", ~~duration, "ms");
       return duration;
     },
   },
@@ -563,6 +560,8 @@ export const TurnMachine = setup({
       ...gameState,
       animSpeed,
       ui: toUiState(null, gameState),
+      isStageAutoConfirm: false,
+      isLoggingEvents: false,
     };
   },
   initial: "checkingEventConditions",
@@ -572,6 +571,8 @@ export const TurnMachine = setup({
       actions: {
         type: "setContext",
         params: ({ event: { context } }) => context,
+        target: "#turn",
+        reenter: true,
       },
     },
   },
@@ -694,6 +695,13 @@ export const TurnMachine = setup({
             awaitingConfirmation: {
               on: {
                 "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+              after: {
+                animationDuration: {
+                  target: "#turn",
+                  actions: "unstage",
+                  guard: "isStageAutoConfirm",
+                },
               },
             },
             transitioning: {
@@ -998,10 +1006,17 @@ export const TurnMachine = setup({
         },
         plussing: {
           after: {
-            animationDuration: {
-              target: "done",
-              actions: "drawOneCard",
-            },
+            animationDuration: [
+              {
+                target: "done",
+                actions: "drawOneCard",
+                guard: "haveCardsInDeckOrDescard",
+              },
+              {
+                target: "cancel",
+                guard: not("haveCardsInDeckOrDescard"),
+              },
+            ],
           },
         },
         moving: {

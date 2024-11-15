@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
-import { spawnDeck } from "./deck-spawner";
+import { spawnDeck } from "../deck-spawner";
 import { DeckConfig } from "@/decks/schema";
 import type { GameConfig } from "@/state/types";
 

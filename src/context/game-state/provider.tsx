@@ -4,7 +4,7 @@ import { useMachine } from "@xstate/react";
 import { GameConfig, GameState, UiState } from "@/state/types";
 import { ActorRefFrom, SnapshotFrom, type EventFromLogic } from "xstate";
 import { ActionEmmiters, ActionTesters, createEmmiters, createGuards, createTesters } from "@/state/action-handlers";
-import { inspect } from "@/state/machines/utils";
+import { eventLogger } from "@/state/machines/utils";
 import { TurnMachine } from "@/state/machines/turn";
 import type { DeckConfig } from "@/decks/schema";
 import { useAnimControls } from "@/hooks/useAnimationControls";
@@ -32,8 +32,10 @@ export const GameStateProvider = ({
   playerNames,
 }: GameConfig & { children: ReactNode }) => {
   const { animSpeed } = useAnimControls();
+
   const [snap, send, actorRef] = useMachine(TurnMachine, {
-    inspect,
+    inspect: eventLogger,
+    // inspect: xStateInspector,
     input: {
       deckConfig: deckConfig as unknown as DeckConfig,
       gameConfig: {

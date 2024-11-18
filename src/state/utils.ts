@@ -81,23 +81,48 @@ export function getDirectionArrow(rawAngle: number): string {
 }
 
 export function calculateDurations(appearance: GamePieceAppearance, animSpeed: number) {
-  const mainDuration = appearance.duration / (animSpeed * baseDuration);
-  const mainDelay = appearance.delay / (animSpeed * baseDuration);
-  const cardFlipDuration = mainDuration * 0.2;
-  const zDelay = mainDelay;
-  const zDuration = mainDuration + cardFlipDuration;
-  const flipDuration = appearance.doesFlip ? mainDuration + cardFlipDuration : 0;
-  const flipDelay = appearance.doesFlip ? mainDuration + mainDelay : 0;
-  const totalDuration = Math.max(mainDelay + mainDuration, zDelay + zDuration, flipDelay + flipDuration);
+  const isDisappearing = !appearance.position;
 
-  return {
-    mainDuration,
-    mainDelay,
-    cardFlipDuration,
-    zDelay,
-    zDuration,
-    flipDuration,
-    flipDelay,
-    totalDuration,
-  };
+  const startAnimationDelay = appearance.delay / (animSpeed * baseDuration);
+  const mainDuration = appearance.duration / (animSpeed * baseDuration);
+  const cardFlipDuration = mainDuration * 0.2;
+  const zDuration = mainDuration + cardFlipDuration;
+
+  if (isDisappearing) {
+    // For disappearing animations first flip, then move
+    const flipDelay = startAnimationDelay;
+    const flipDuration = appearance.doesFlip ? mainDuration + cardFlipDuration : 0;
+    const mainDelay = appearance.doesFlip ? startAnimationDelay + cardFlipDuration : startAnimationDelay;
+    const zDelay = mainDelay;
+    const totalDuration = Math.max(mainDelay + mainDuration, zDelay + zDuration, flipDelay + flipDuration);
+
+    return {
+      mainDuration,
+      mainDelay,
+      cardFlipDuration,
+      zDelay,
+      zDuration,
+      flipDuration,
+      flipDelay,
+      totalDuration,
+    };
+  } else {
+    // For appearing/moving animations first move, then flip
+    const mainDelay = startAnimationDelay;
+    const zDelay = mainDelay;
+    const flipDuration = appearance.doesFlip ? mainDuration + cardFlipDuration : 0;
+    const flipDelay = appearance.doesFlip ? mainDuration + mainDelay : 0;
+    const totalDuration = Math.max(mainDelay + mainDuration, zDelay + zDuration, flipDelay + flipDuration);
+
+    return {
+      mainDuration,
+      mainDelay,
+      cardFlipDuration,
+      zDelay,
+      zDuration,
+      flipDuration,
+      flipDelay,
+      totalDuration,
+    };
+  }
 }

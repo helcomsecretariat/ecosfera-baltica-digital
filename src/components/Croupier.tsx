@@ -3,26 +3,33 @@ import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/game-state/hook";
-import { keys } from "lodash-es";
+import { find, keys } from "lodash-es";
 import { AnimatePresence } from "framer-motion";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PlayerTitle from "@/components/PlayerTitle";
 import Stage from "./Stage";
 import CardComponent from "@/components/utils/CardWithProvider";
 import AbilityToken from "@/components/utils/AbilityTokenWithProvider";
 import Tile from "@/components/utils/TileWithProvider";
-import EndTurnButton from "./EndTurnButton";
 import { useSelector } from "@xstate/react";
 import { MachineSelectors } from "@/state/machines/selectors";
+import Policies from "./Policies";
+import PolicyCard from "./PolicyCard";
+import CommandBar from "./CommandBar";
+import PoliciesButton from "./ui/policiesButton";
+import EndTurnButton from "./ui/endTurnButton";
 
 const Croupier = () => {
   const { state: gameState, uiState, actorRef, snap } = useGameState();
   const { emit, test, hasTag, guards } = useGameState();
+  const [showPolicies, setShowPolicies] = useState(false);
   const exhaustedCards = useSelector(actorRef, MachineSelectors.exhaustedCards);
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
   const currentAbility = useSelector(actorRef, MachineSelectors.currentAbility);
+
+  useEffect(() => setShowPolicies(false), [gameState.policyMarket.table]);
 
   return (
     <AnimatePresence>
@@ -129,6 +136,7 @@ const Croupier = () => {
                 (player.uid === gameState.turn.player &&
                   guards.canRefreshAbility() &&
                   ability.isUsed &&
+                  // @ts-expect-error dunno why
                   snap.matches({ stagingEvent: "abilityRefresh" })) ||
                 currentAbility?.piece?.uid === ability.uid
                   ? "#1D86BC"
@@ -139,8 +147,21 @@ const Croupier = () => {
         </React.Fragment>
       ))}
 
+      {/* Policies */}
+      {showPolicies && <Policies />}
+      {gameState.stage?.eventType?.includes("policy_") &&
+        [...(gameState.stage?.effect ?? []), ...(gameState.stage?.cause ?? [])].map((cardUid) => {
+          const policyCard =
+            find(gameState.policyMarket.table, { uid: cardUid }) ??
+            find(gameState.policyMarket.acquired, { uid: cardUid });
+          return policyCard ? <PolicyCard key={cardUid} card={policyCard} /> : null;
+        })}
+
       {/* Stage */}
       <Stage key="stage" />
+
+      {/* Command bar */}
+      <CommandBar key="command-bar" />
 
       {/* Extinction tiles */}
       {[...gameState.extinctMarket.deck, ...gameState.extinctMarket.table].map((extinctionTile) => (
@@ -195,7 +216,7 @@ const Croupier = () => {
                   dimLevel: 0.3,
                 }}
                 isHighlighted={
-                  (hasTag("usingAbility") && test.playerCardClick(card)) ||
+                  ((hasTag("usingAbility") || hasTag("policy")) && test.playerCardClick(card)) ||
                   (guards.isOnStage(card) && guards.isCardBuyStageEvent())
                 }
                 isGlossy={gameState.stage?.effect?.includes(card.uid)}
@@ -206,6 +227,7 @@ const Croupier = () => {
         ),
       )}
 
+      <PoliciesButton onClick={() => setShowPolicies(!showPolicies)} />
       <EndTurnButton />
     </AnimatePresence>
   );

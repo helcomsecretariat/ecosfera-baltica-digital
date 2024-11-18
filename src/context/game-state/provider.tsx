@@ -30,6 +30,7 @@ export const GameStateProvider = ({
   seed,
   difficulty,
   playerNames,
+  useSpecialCards,
 }: GameConfig & { children: ReactNode }) => {
   const { animSpeed } = useAnimControls();
 
@@ -42,7 +43,7 @@ export const GameStateProvider = ({
         playerCount: playerCount,
         seed,
         difficulty,
-        useSpecialCards: false,
+        useSpecialCards,
         playersPosition: "around",
         playerNames,
       },

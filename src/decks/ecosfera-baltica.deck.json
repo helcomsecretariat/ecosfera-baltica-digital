@@ -82,6 +82,62 @@
       "count": 50
     }
   },
+  "policies": {
+    "Funding": {
+      "effect": "implementation",
+      "theme": "N/A",
+      "description": "This card must be paired with a measure card to allow the measure card to be implemented.",
+      "usage": "single"
+    },
+    "Funding #2": {
+      "effect": "implementation",
+      "theme": "N/A",
+      "description": "This card must be paired with a measure card to allow the measure card to be implemented.",
+      "usage": "single"
+    },
+    "Funding #3": {
+      "effect": "implementation",
+      "theme": "N/A",
+      "description": "This card must be paired with a measure card to allow the measure card to be implemented.",
+      "usage": "single"
+    },
+    "Funding #4": {
+      "effect": "implementation",
+      "theme": "N/A",
+      "description": "This card must be paired with a measure card to allow the measure card to be implemented.",
+      "usage": "single"
+    },
+    "Funding #5": {
+      "effect": "implementation",
+      "theme": "N/A",
+      "description": "This card must be paired with a measure card to allow the measure card to be implemented.",
+      "usage": "single"
+    },
+    "Hazardous substance regulation": {
+      "effect": "positive",
+      "theme": "hazard",
+      "description": "You can pair a producer and an animal sharing the same habitat symbol to secure a habitat-tile",
+      "usage": "single"
+    },
+    "Waste water treatment failure": {
+      "effect": "negative",
+      "theme": "eutro",
+      "description": "Every player with at least one nutrient card in their hand takes a human activity card and places it in their hand.",
+      "usage": "single"
+    },
+    "Warm summer": {
+      "effect": "dual",
+      "theme": "climateChange",
+      "description": "If min. one measure has been implemented when this card is lifted, all players can activate all action-tokens. If no measures have been implemented all players need to deactivate all action-token.",
+      "usage": "single"
+    },
+    "Climate change": {
+      "effect": "negative",
+      "theme": "climateChange",
+      "description": "Each time a player gets an impact-tile an additional impact-tile is added to the impact tile puzzle.",
+      "usage": "permanent"
+    }
+  },
   "plants": {
     "Myriophyllum spicatum": {
       "elements": ["sun", "oxygen", "nutrients"],

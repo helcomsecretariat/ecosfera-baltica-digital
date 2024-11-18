@@ -234,6 +234,32 @@ export const TurnMachineGuards = {
 
   // @ts-expect-error switch to TurnMachineContext
   isStageAutoConfirm: ({ context: { isStageAutoConfirm } }: { context: GameState }) => isStageAutoConfirm,
+
+  hasSufficientFunding: ({ context }: { context: GameState }) => {
+    return context.policyFunding > 0;
+  },
+
+  isPlantCard: ({ context: _ }: { context: GameState }, card: Card) => card.type === "plant",
+
+  isAnimalCard: ({ context: _ }: { context: GameState }, card: Card) => card.type === "animal",
+
+  hasSharedHabitatInHand: ({ context }: { context: GameState }, card: PlantCard) => {
+    const player = find(context.players, { uid: context.turn.player })!;
+
+    return card.habitats.some((habitatName) =>
+      player.hand
+        .filter((card) => card.type == "animal")
+        .some((animalCard) => animalCard.habitats.includes(habitatName)),
+    );
+  },
+
+  hasSharedHabitat: (
+    { context: _ }: { context: GameState },
+    { plantCard, animalCard }: { plantCard: PlantCard; animalCard: AnimalCard },
+  ) => plantCard.habitats.some((habitatName) => animalCard.habitats.includes(habitatName)),
+
+  isPolicyCardActive: ({ context }: { context: GameState }, policyCardName: string) =>
+    context.activePolicyCards.some((policyCard) => policyCard.name === policyCardName),
 };
 
 export type ContextInjectedGuardMap = {

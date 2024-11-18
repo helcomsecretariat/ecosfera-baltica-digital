@@ -27,6 +27,7 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
   const { seed, playerCount } = gameConfig;
   const croupier = new Croupier(deckConfig, gameConfig);
 
+  const policies = spawnAllPieces(deckConfig.policies, croupier.spawnPolicyCards.bind(croupier));
   const plants = spawnAllPieces(deckConfig.plants, croupier.spawnPlantCards.bind(croupier));
   const animals = spawnAllPieces(deckConfig.animals, croupier.spawnAnimalCards.bind(croupier));
   const elements = spawnAllPieces(deckConfig.elements, croupier.spawnElementCards.bind(croupier));
@@ -88,6 +89,9 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
     extinctMarket: prepareMarket(extinctions, 0, seed),
     habitatMarket: prepareMarket(habitats, 0, seed),
     disasterMarket: prepareMarket(disasters, 0, seed),
+    policyMarket: { ...prepareMarket(policies, 0, seed), acquired: [] },
+    policyFunding: 0,
+    activePolicyCards: [],
     stage: undefined,
     config: gameConfig,
     deck: deckConfig,

@@ -7,6 +7,7 @@ import {
   ExtinctionConfig,
   PlantConfig,
   DeckConfig,
+  PolicyConfig,
 } from "@/decks/schema";
 
 // google "bradned types in TS" for explanation
@@ -14,6 +15,7 @@ export type UID<T extends string> = `${T}-${string}` & { readonly __brand: `${T}
 export type AbilityUID = UID<"ability">;
 export type AnimalUID = UID<"animal">;
 export type PlantUID = UID<"plant">;
+export type PolicyUID = UID<"policy">;
 export type ElementUID = UID<"element">;
 export type DisasterUID = UID<"disaster">;
 export type HabitatUID = UID<"habitat">;
@@ -76,11 +78,18 @@ export interface GameState {
   disasterMarket: Market<DisasterCard>;
   habitatMarket: Market<HabitatTile>;
   extinctMarket: Market<ExtinctionTile>;
+  policyMarket: PolicyMarket;
+  policyFunding: number;
+  activePolicyCards: PolicyCard[];
   stage?: {
     terminationEvent?: boolean;
     eventType: StageEventType;
     cause: CardOrTileUID[] | undefined;
     effect: CardOrTileUID[] | undefined;
+    outcome: "positive" | "negative";
+  };
+  commandBar?: {
+    text: string;
   };
   config: GameConfig;
   deck: DeckConfig;
@@ -95,7 +104,10 @@ export type StageEventType =
   | "habitatUnlock"
   | "cardBuy"
   | "gameLoss"
-  | "gameWin";
+  | "gameWin"
+  | "policy_specialDraw"
+  | "policy_fundingIncrease"
+  | "policy_climateChange";
 
 export interface GameConfig {
   seed: string;
@@ -140,7 +152,7 @@ export interface GamePieceBase {
   uid: string;
 }
 
-export type Card = AnimalCard | PlantCard | ElementCard | DisasterCard;
+export type Card = AnimalCard | PlantCard | ElementCard | DisasterCard | PolicyCard;
 export type GamePiece = Card | HabitatTile | ExtinctionTile | AbilityTile;
 
 export type PositionedCard = Card & { x: number; y: number };
@@ -173,12 +185,21 @@ export type PieceToConfig<T> = T extends PlantCard
             ? HabitatConfig
             : T extends ExtinctionTile
               ? ExtinctionConfig
-              : never;
+              : T extends PolicyCard
+                ? PolicyConfig
+                : never;
 
 export interface Market<T extends GamePiece> {
   type: T["type"];
   deck: T[];
   table: T[];
+}
+
+export interface PolicyMarket extends Market<PolicyCard> {
+  type: PolicyCard["type"];
+  deck: PolicyCard[];
+  table: PolicyCard[];
+  acquired: PolicyCard[];
 }
 
 export interface AnimalCard extends GamePieceBase {
@@ -187,6 +208,20 @@ export interface AnimalCard extends GamePieceBase {
 
   habitats: HabitatTile["name"][];
   abilities: AbilityName[];
+}
+
+export type PolicyEffect = "positive" | "negative" | "dual" | "implementation";
+export type PolicyTheme = "hazard" | "eutro" | "climateChange" | "N/A";
+export type PolicyUsage = "single" | "permanent";
+
+export interface PolicyCard extends GamePieceBase {
+  type: "policy";
+  uid: PolicyUID;
+
+  effect: PolicyEffect;
+  theme: PolicyTheme;
+  description: string;
+  usage: PolicyUsage;
 }
 
 export interface PlantCard extends GamePieceBase {
@@ -209,7 +244,7 @@ export interface DisasterCard extends GamePieceBase {
 }
 
 export type AbilityName = "plus" | "refresh" | "move" | "special";
-export type CardType = "animal" | "plant" | "disaster" | "element";
+export type CardType = "animal" | "plant" | "disaster" | "element" | "policy";
 export type GamePieceType = CardType | "habitat" | "ability" | "extinction";
 
 export interface Coordinate {

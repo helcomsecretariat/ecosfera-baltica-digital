@@ -12,17 +12,31 @@ import {
   UiState,
   AbilityName,
   isAbilityUID,
+  PolicyCard,
 } from "@/state/types";
 import { assign } from "@/state/machines/assign";
 import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
 import { TurnMachineGuards } from "@/state/machines/guards";
-import { compact, concat, countBy, entries, find, flatten, intersection, map, reject, without } from "lodash-es";
+import {
+  compact,
+  concat,
+  countBy,
+  entries,
+  find,
+  flatten,
+  intersection,
+  isEmpty,
+  map,
+  reject,
+  without,
+} from "lodash-es";
 import { calculateDurations, replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 import { toUiState } from "@/state/ui/positioner";
 import { getCardComparator } from "@/lib/utils";
+import { expansionActions, expansionConditionChecks, expansionState } from "./expansion";
 
 type MachineConfig = {
   animSpeed?: number;
@@ -44,6 +58,7 @@ export type TurnMachineEvent =
   | { type: "user.click.market.deck.animal" }
   | { type: "user.click.market.deck.plant" }
   | { type: "user.click.player.deck" }
+  | { type: "user.click.policy.card.acquired"; card: PolicyCard }
   | { type: "internal.target.selected"; target: Card };
 
 export type TurnMachineInput = {
@@ -271,6 +286,7 @@ export const TurnMachine = setup({
           eventType: "disaster",
           cause: undefined,
           effect: [disasterCard.uid],
+          outcome: "negative",
         };
       }),
     ),
@@ -294,6 +310,30 @@ export const TurnMachine = setup({
           eventType: "elementalDisaster",
           cause: map(duplicateElementCards, "uid"),
           effect: [disasterCard.uid],
+          outcome: "positive",
+        };
+      }),
+    ),
+    stageSpecialDraw: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const policyCard = context.policyMarket.deck[0];
+
+        if (policyCard.effect === "positive") {
+          draft.policyMarket.acquired.push(policyCard);
+        } else if (policyCard.effect === "implementation") {
+          draft.policyFunding += 1;
+        } else {
+          draft.policyMarket.table.push(policyCard);
+          draft.activePolicyCards.push(policyCard);
+        }
+
+        draft.policyMarket.deck = without(context.policyMarket.deck, policyCard);
+
+        draft.stage = {
+          eventType: policyCard.effect === "implementation" ? "policy_fundingIncrease" : "policy_specialDraw",
+          cause: undefined,
+          effect: [policyCard.uid],
+          outcome: policyCard.effect === "positive" || policyCard.effect === "implementation" ? "positive" : "negative",
         };
       }),
     ),
@@ -304,6 +344,7 @@ export const TurnMachine = setup({
           terminationEvent: true,
           cause: undefined,
           effect: map(context.habitatMarket.deck, "uid"),
+          outcome: "positive",
         };
       }),
     ),
@@ -314,6 +355,7 @@ export const TurnMachine = setup({
           terminationEvent: true,
           cause: undefined,
           effect: map(context.extinctMarket.table, "uid"),
+          outcome: "negative",
         };
       }),
     ),
@@ -323,6 +365,7 @@ export const TurnMachine = setup({
           eventType: "cardBuy",
           cause: undefined,
           effect: [card.uid],
+          outcome: "positive",
         };
       }),
     ),
@@ -357,6 +400,7 @@ export const TurnMachine = setup({
           eventType: "habitatUnlock",
           cause: map(flatten(animalHabitatPairs), "uid"),
           effect: map(sharedHabitats, "uid"),
+          outcome: "positive",
         };
       }),
     ),
@@ -384,6 +428,7 @@ export const TurnMachine = setup({
           eventType: "abilityRefresh",
           cause: map(availableAnimalHabitatPairs[0], "uid"),
           effect: undefined,
+          outcome: "positive",
         };
       }),
     ),
@@ -391,18 +436,22 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player })!;
         const disasterCards = player?.hand.filter((card) => card.type === "disaster");
-        const extinctionTile = context.extinctMarket.deck[0];
+        const extinctionTiles = context.extinctMarket.deck.slice(
+          0,
+          TurnMachineGuards.isPolicyCardActive({ context }, "Climate change") ? 2 : 1,
+        );
 
         // TODO: Figure out what to do when extinction deck is empty
-        if (!extinctionTile) return;
+        if (isEmpty(extinctionTiles)) return;
 
-        draft.extinctMarket.deck = without(context.extinctMarket.deck, extinctionTile);
-        draft.extinctMarket.table.push(extinctionTile);
+        draft.extinctMarket.deck = without(context.extinctMarket.deck, ...extinctionTiles);
+        draft.extinctMarket.table = concat(draft.extinctMarket.table, extinctionTiles);
 
         draft.stage = {
           eventType: "extinction",
           cause: map(disasterCards, "uid"),
-          effect: [extinctionTile.uid],
+          effect: map(extinctionTiles, "uid"),
+          outcome: "negative",
         };
       }),
     ),
@@ -410,7 +459,10 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player })!;
         const disasterCards = player?.hand.filter((card) => card.type === "disaster");
-        const extinctionTiles = context.extinctMarket.deck.slice(0, 3);
+        const extinctionTiles = context.extinctMarket.deck.slice(
+          0,
+          TurnMachineGuards.isPolicyCardActive({ context }, "Climate change") ? 4 : 3,
+        );
 
         // TODO: Figure out what to do when extinction deck is empty
         if (extinctionTiles.length === 0) return;
@@ -422,6 +474,7 @@ export const TurnMachine = setup({
           eventType: "massExtinction",
           cause: map(disasterCards, "uid"),
           effect: map(extinctionTiles, "uid"),
+          outcome: "negative",
         };
       }),
     ),
@@ -536,6 +589,16 @@ export const TurnMachine = setup({
     ),
 
     setContext: assign(({ context }, newContext: Partial<TurnMachineContext>) => ({ ...context, ...newContext })),
+
+    unlockPolicyCard: assign(({ context }: { context: GameState }, card: PolicyCard) =>
+      produce(context, (draft) => {
+        draft.policyMarket.acquired = without(context.policyMarket.acquired, card);
+        draft.policyMarket.table.push(card);
+        draft.policyFunding -= 1;
+        draft.activePolicyCards.push(card);
+      }),
+    ),
+    ...expansionActions,
   },
   guards: {
     ...TurnMachineGuards,
@@ -571,8 +634,6 @@ export const TurnMachine = setup({
       actions: {
         type: "setContext",
         params: ({ event: { context } }) => context,
-        target: "#turn",
-        reenter: true,
       },
     },
   },
@@ -675,6 +736,9 @@ export const TurnMachine = setup({
                 target: "#turn.endingTurn.discardingRow",
                 guard: "endPhase",
               },
+              // @ts-expect-error dunno why
+              ...expansionConditionChecks,
+              // @ts-expect-error dunno why
               {
                 target: "#turn.buying",
                 guard: "actionPhase",
@@ -684,11 +748,28 @@ export const TurnMachine = setup({
         },
       },
     },
+    ...expansionState,
     stagingEvent: {
       tags: ["stagingEvent"],
       initial: "idle",
 
       states: {
+        drawingSpecial: {
+          initial: "awaitingConfirmation",
+          entry: "stageSpecialDraw",
+          states: {
+            awaitingConfirmation: {
+              on: {
+                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
+              },
+            },
+            transitioning: {
+              after: {
+                animationDuration: { target: "#turn.usingAbility.done" },
+              },
+            },
+          },
+        },
         cardBuy: {
           initial: "awaitingConfirmation",
           states: {
@@ -844,7 +925,10 @@ export const TurnMachine = setup({
                 params: () => "extinctionCheck",
               },
               after: {
-                animationDuration: { target: "#turn.endingTurn.discardingRow" },
+                animationDuration: [
+                  { target: "#turn.climateChange", guard: { type: "isPolicyCardActive", params: "Climate change" } },
+                  { target: "#turn.endingTurn.discardingRow" },
+                ],
               },
             },
           },
@@ -864,7 +948,10 @@ export const TurnMachine = setup({
                 params: () => "extinctionCheck",
               },
               after: {
-                animationDuration: { target: "#turn.endingTurn" },
+                animationDuration: [
+                  { target: "#turn.climateChange", guard: { type: "isPolicyCardActive", params: "Climate change" } },
+                  { target: "#turn.endingTurn" },
+                ],
               },
             },
           },
@@ -894,6 +981,11 @@ export const TurnMachine = setup({
 
     buying: {
       on: {
+        "user.click.policy.card.acquired": {
+          target: "#turn",
+          actions: { type: "unlockPolicyCard", params: ({ event }) => event.card },
+          guard: "hasSufficientFunding",
+        },
         "user.click.token": [
           {
             target: "#turn.usingAbility",
@@ -1087,7 +1179,7 @@ export const TurnMachine = setup({
         },
         usingSpecial: {
           after: {
-            animationDuration: "done",
+            animationDuration: "#turn.stagingEvent.drawingSpecial",
           },
         },
         done: {

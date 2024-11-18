@@ -584,6 +584,13 @@ export const TurnMachine = setup({
         turn.currentAbility.targetCard = card;
       }),
     ),
+    cardToPlayerSupply: assign(({ context }: { context: GameState }, card: Card) =>
+      produce(context, ({ players }) => {
+        const player = find(players, { uid: context.turn.player })!;
+        player.deck = [card, ...player.deck];
+        player.hand = reject(player.hand, { uid: card.uid });
+      }),
+    ),
 
     setContext: assign(({ context }, newContext: Partial<TurnMachineContext>) => ({ ...context, ...newContext })),
 
@@ -1127,6 +1134,14 @@ export const TurnMachine = setup({
               },
             },
             pickingDestination: {
+              always: {
+                target: "#turn.usingAbility.done",
+                guard: "isSinglePlayer",
+                actions: {
+                  type: "cardToPlayerSupply",
+                  params: ({ context }) => context.turn.currentAbility!.targetCard!,
+                },
+              },
               on: {
                 "user.click.player.hand.card": {
                   target: "#turn.usingAbility.done",

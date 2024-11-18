@@ -45,7 +45,7 @@ const GameElement = ({
   }
 
   const isDisappearing = !appearance.position;
-  const zCoord = appearance.position?.z ?? 0;
+  const zCoord = appearance.position?.z ?? appearance.exitPosition?.z ?? 0;
 
   const { mainDuration, mainDelay, zDelay, zDuration, flipDuration, flipDelay, totalDuration } = calculateDurations(
     appearance,
@@ -134,7 +134,7 @@ const GameElement = ({
       exit={{
         x: appearance.exitPosition?.x,
         y: appearance.exitPosition?.y,
-        z: appearance.exitPosition?.z,
+        z: zCoord > 8 ? zCoord : [zCoord, 8, 8, zCoord],
         rotateX: appearance.exitRotation?.x,
         rotateY: appearance.exitRotation?.y,
         rotateZ: appearance.exitRotation?.z,

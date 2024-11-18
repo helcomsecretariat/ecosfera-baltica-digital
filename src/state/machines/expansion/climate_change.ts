@@ -6,6 +6,9 @@ import { TurnMachineGuards } from "../guards";
 import { filter, map, without } from "lodash";
 
 const cardPrefix = "climateChange";
+export const stageEventText = {
+  policy_climateChange: "Because of climate change you get an additional extinction tile!",
+};
 
 export const actions = {
   [`${cardPrefix}Action`]: assign(({ context }: { context: GameState }) =>

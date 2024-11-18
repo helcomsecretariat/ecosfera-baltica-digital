@@ -48,7 +48,6 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
 
   const handleStartGame = () => {
     const selectedNames = playerNames.slice(0, playerCount).map((name, index) => name || `Player ${index + 1}`);
-    console.log(useExpansionPack);
     onStartGame({
       playerCount: playerCount,
       playerNames: selectedNames,

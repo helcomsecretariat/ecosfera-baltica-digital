@@ -23,3 +23,11 @@ export const expansionConditionChecks = [
   WasteWaterTreatmentFailure.conditionCheck,
   WarmSummer.conditionCheck,
 ];
+
+export const expansionStageEventText = {
+  policy_specialDraw: "You drew a special card!",
+  policy_fundingIncrease: "You drew a funding card that can\ncontribute towards the implementation of a measure!",
+  ...ClimateChange.stageEventText,
+};
+
+export type ExpansionPackStageEvent = "policy_specialDraw" | "policy_fundingIncrease" | "policy_climateChange";

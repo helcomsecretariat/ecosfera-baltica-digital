@@ -1,6 +1,7 @@
 import { CardOrTileUID, GameState, HabitatUID, isHabitatUID } from "../types";
 import { find, first, last } from "lodash";
 import { TurnMachineGuards } from "./guards";
+import { expansionStageEventText } from "./expansion";
 
 export const MachineSelectors = {
   selectPlayer: ({ context }: { context: GameState }) => find(context.players, { uid: context.turn.player })!,
@@ -48,9 +49,7 @@ export const MachineSelectors = {
       cardBuy: getCardBoughtText(first(context.stage?.effect ?? [])),
       gameWin: "Congratulations!\nYou saved the Baltic ecosystem!",
       gameLoss: "Game Over!\nYou could not save the Baltic Ecosystem.",
-      policy_specialDraw: "You drew a special card!",
-      policy_fundingIncrease: "You drew a funding card that can\ncontribute towards the implementation of a measure!",
-      policy_climateChange: "Because of climate change you get an additional extinction tile!",
+      ...expansionStageEventText,
       default: "",
     };
 

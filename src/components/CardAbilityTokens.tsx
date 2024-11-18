@@ -22,6 +22,7 @@ const CardAbilityTokens = ({ card }: { card: AnimalCard | PlantCard }) => {
     card.abilities.map((name, index) => {
       return (
         <motion.mesh
+          key={`${card.uid}_${name}_ability`}
           onHoverStart={(e) => e.stopPropagation()}
           whileHover={{ scale: 1.25 }}
           onClick={emit.cardTokenClick(card, name)}

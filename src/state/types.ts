@@ -9,6 +9,7 @@ import {
   DeckConfig,
   PolicyConfig,
 } from "@/decks/schema";
+import { ExpansionPackStageEvent } from "./machines/expansion";
 
 // google "bradned types in TS" for explanation
 export type UID<T extends string> = `${T}-${string}` & { readonly __brand: `${T}UID` };
@@ -105,9 +106,7 @@ export type StageEventType =
   | "cardBuy"
   | "gameLoss"
   | "gameWin"
-  | "policy_specialDraw"
-  | "policy_fundingIncrease"
-  | "policy_climateChange";
+  | ExpansionPackStageEvent;
 
 export interface GameConfig {
   seed: string;

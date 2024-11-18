@@ -18,7 +18,7 @@ const EndTurnButton = () => {
   };
 
   return (
-    <motion.mesh key="end-turn-button" position={toVector3(position)} rotation={toVector3(rotation)}>
+    <motion.mesh position={toVector3(position)} rotation={toVector3(rotation)}>
       <planeGeometry />
       <meshPhysicalMaterial transparent opacity={0} />
       <Html transform scale={7} occlude wrapperClass="bg-transparent" className="border-0 bg-transparent">

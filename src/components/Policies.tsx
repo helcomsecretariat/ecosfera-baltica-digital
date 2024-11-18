@@ -8,7 +8,7 @@ import { Text } from "@react-three/drei";
 const Policies = () => {
   const { state, emit } = useGameState();
   return (
-    <motion.mesh position={[0, 0, 8]}>
+    <motion.mesh key="policies" position={[0, 0, 8]}>
       <planeGeometry args={[upperXBoundary - lowerXBoundary * 0.5, upperYBoundary - lowerYBoundary * 0.6, 1]} />
       <meshBasicMaterial color="#0e1d36" />
       <Text position={[0, 35, 0]} fontSize={3} color="white">

@@ -20,7 +20,7 @@ import PoliciesButton from "./ui/policiesButton";
 import EndTurnButton from "./ui/endTurnButton";
 
 const Croupier = () => {
-  const { state: gameState, uiState, actorRef, snap } = useGameState();
+  const { state: gameState, uiState, actorRef, snap, gameConfig } = useGameState();
   const { emit, test, hasTag, guards } = useGameState();
   const [showPolicies, setShowPolicies] = useState(false);
   const exhaustedCards = useSelector(actorRef, MachineSelectors.exhaustedCards);
@@ -148,8 +148,9 @@ const Croupier = () => {
       ))}
 
       {/* Policies */}
-      {showPolicies && <Policies />}
-      {gameState.stage?.eventType?.includes("policy_") &&
+      {showPolicies && gameConfig.useSpecialCards && <Policies />}
+      {gameConfig.useSpecialCards &&
+        gameState.stage?.eventType?.includes("policy_") &&
         [...(gameState.stage?.effect ?? []), ...(gameState.stage?.cause ?? [])].map((cardUid) => {
           const policyCard =
             find(gameState.policyMarket.table, { uid: cardUid }) ??
@@ -227,8 +228,10 @@ const Croupier = () => {
         ),
       )}
 
-      <PoliciesButton onClick={() => setShowPolicies(!showPolicies)} />
-      <EndTurnButton />
+      {gameConfig.useSpecialCards && (
+        <PoliciesButton key="policies-button" onClick={() => setShowPolicies(!showPolicies)} />
+      )}
+      <EndTurnButton key="end-turn-button" />
     </AnimatePresence>
   );
 };

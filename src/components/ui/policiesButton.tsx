@@ -4,7 +4,7 @@ import { motion } from "framer-motion-3d";
 
 const PoliciesButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <motion.mesh key="policies-button" position={[upperXBoundary - 15, upperYBoundary, 1]} rotation={[0, 0, 0]}>
+    <motion.mesh position={[upperXBoundary - 15, upperYBoundary, 1]} rotation={[0, 0, 0]}>
       <planeGeometry />
       <meshPhysicalMaterial transparent opacity={0} />
       <Html transform scale={7} wrapperClass="bg-transparent" className="border-0 bg-transparent">

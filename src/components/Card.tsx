@@ -124,7 +124,7 @@ const Card = ({
                 : name === "plus"
                   ? "+"
                   : name === "refresh"
-                    ? "↻"
+                    ? "❋"
                     : name === "special"
                       ? "⚡"
                       : ""}

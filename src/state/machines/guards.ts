@@ -40,8 +40,6 @@ export const TurnMachineGuards = {
     return false;
   },
 
-  belowBorrowLimit: ({ context: { turn } }: { context: GameState }) => turn.borrowedCount < turn.borrowedLimit,
-
   notPlayedCard: (
     {
       context: {

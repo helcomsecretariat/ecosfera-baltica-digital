@@ -105,7 +105,6 @@ export const TurnMachine = setup({
           if (turn.borrowedElement && draft.turn.exhaustedCards.includes(turn.borrowedElement?.uid)) {
             draft.elementMarket.deck = without(draft.elementMarket.deck, turn.borrowedElement);
             player.hand.push({ ...turn.borrowedElement });
-            turn.borrowedCount++;
             turn.borrowedElement = undefined;
           }
 
@@ -474,8 +473,6 @@ export const TurnMachine = setup({
           exhaustedCards: [],
           playedCards: [],
           borrowedElement: undefined,
-          borrowedCount: 0,
-          borrowedLimit: context.turn.borrowedLimit,
           usedAbilities: [],
           boughtAnimal: false,
           boughtPlant: false,
@@ -919,7 +916,6 @@ export const TurnMachine = setup({
         "user.click.player.endTurn": [{ target: "endingTurn" }],
         "user.click.market.deck.element": {
           actions: { type: "borrowElement", params: ({ event: { name } }) => name },
-          guard: "belowBorrowLimit",
         },
         "user.click.market.borrowed.card.element": {
           actions: {

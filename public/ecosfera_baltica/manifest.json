@@ -1,6 +1,4 @@
 [
-  "ability_drop.avif",
-  "ability_drop_active.avif",
   "ability_move.avif",
   "ability_plus.avif",
   "ability_refresh.avif",
@@ -102,5 +100,6 @@
   "tile_rivers_icon.avif",
   "tile_rock.avif",
   "tile_rock_active.avif",
-  "tile_rock_icon.avif"
+  "tile_rock_icon.avif",
+  "stage_positive.avif"
 ]

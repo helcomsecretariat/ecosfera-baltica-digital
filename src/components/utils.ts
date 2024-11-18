@@ -5,10 +5,10 @@ const pastelColors = {
   plantsAndAnimals: "#e1e1e1",
   elements: {
     sun: "#F8AE58",
-    temperature: "#0290BD",
+    temperature: "#D85365",
     nutrients: "#66A468",
-    salinity: "#D85365",
-    oxygen: "#934786",
+    salinity: "#934786",
+    oxygen: "#0290BD",
   },
 };
 

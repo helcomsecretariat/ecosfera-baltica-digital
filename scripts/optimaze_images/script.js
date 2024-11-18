@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import sharp from "sharp";
-import { ensureDir, copy } from "fs-extra";
+import { ensureDir, copy, remove } from "fs-extra";
 
 const imgRegexp = /\.(webp|png|jpg|jpeg|svg)$/i;
 
@@ -28,6 +28,8 @@ async function processDir(inputDir, outputDir, subDir) {
   const inputSubDir = path.join(inputDir, subDir);
   const outputSubDir = path.join(outputDir, subDir);
 
+  console.log(`Clearing output directory: ${outputDir}`);
+  await remove(outputDir);
   await ensureDir(outputSubDir);
 
   const imageFiles = await getImageFiles(inputSubDir);
@@ -57,11 +59,16 @@ if (!inputDirectory || !outputDirectory) {
 }
 
 async function processAllDirs(inputDir, outputDir) {
-  const dirs = await getDirs(inputDir);
-  for (const dir of dirs) {
-    await processDir(inputDir, outputDir, dir);
+  try {
+    const dirs = await getDirs(inputDir);
+    for (const dir of dirs) {
+      await processDir(inputDir, outputDir, dir);
+    }
+    console.log("All directories processed successfully!");
+  } catch (error) {
+    console.error("Error processing directories:", error);
+    process.exit(1);
   }
-  console.log("All directories processed!");
 }
 
 processAllDirs(inputDirectory, outputDirectory).catch(console.error);

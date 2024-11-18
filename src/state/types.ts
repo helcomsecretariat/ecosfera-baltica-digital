@@ -61,8 +61,6 @@ export interface GameState {
     exhaustedCards: Card["uid"][];
     playedCards: Card["uid"][];
     borrowedElement: ElementCard | undefined;
-    borrowedCount: number;
-    borrowedLimit: number;
     usedAbilities: { source: (AbilityTile | PlantCard | AnimalCard)["uid"]; name: AbilityName }[];
     boughtAnimal: boolean;
     boughtPlant: boolean;

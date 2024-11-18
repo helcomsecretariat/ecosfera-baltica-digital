@@ -83,8 +83,6 @@ export const gameState: GameState = {
     exhaustedCards: [],
     playedCards: [createTestUID("element"), createTestUID("element")],
     borrowedElement: undefined,
-    borrowedCount: 0,
-    borrowedLimit: 1,
     usedAbilities: [],
     boughtAnimal: false,
     boughtPlant: false,

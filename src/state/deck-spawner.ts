@@ -73,8 +73,6 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
       playedCards: [],
       borrowedElement: undefined,
       usedAbilities: [],
-      borrowedCount: 0,
-      borrowedLimit: 1,
       boughtAnimal: false,
       boughtPlant: false,
       unlockedHabitat: false,

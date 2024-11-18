@@ -56,6 +56,10 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
       playersPosition: "around",
       useSpecialCards: useExpansionPack,
     });
+
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set("seed", seed);
+    window.history.pushState({}, "", currentUrl.toString());
   };
 
   const handleRemovePlayer = (index: number) => {

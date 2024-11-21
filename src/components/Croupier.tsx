@@ -3,7 +3,7 @@ import { AnimalCard, Card, DisasterCard, ElementCard, PlantCard } from "@/state/
 import { useThree } from "@react-three/fiber";
 import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/game-state/hook";
-import { find, keys } from "lodash-es";
+import { find, keys, map } from "lodash-es";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import PlayerTitle from "@/components/PlayerTitle";
@@ -100,12 +100,6 @@ const Croupier = () => {
         onClick={emit.plantDeckClick()}
         isHighlighted={test.plantDeckClick()}
       />
-      <Deck
-        key={"disasterDeck"}
-        gamePieceAppearance={uiState.deckPositions["disasterDeck"]}
-        cards={gameState.disasterMarket.deck}
-        onClick={() => console.error("Disaster deck click NOT IMPLEMENTED")}
-      />
 
       {/* Player HUDs */}
       {gameState.players.map((player, playerIndex) => (
@@ -169,9 +163,12 @@ const Croupier = () => {
         <Tile
           key={extinctionTile.uid}
           tileUid={extinctionTile.uid}
-          color={gameState.extinctMarket.deck.includes(extinctionTile) ? "#c3b091" : "#d17b79"}
+          type="extinction"
           isGlossy={gameState.stage?.effect?.includes(extinctionTile.uid)}
-          withFloatAnimation={gameState.stage?.effect?.includes(extinctionTile.uid)}
+          withFloatAnimation={
+            gameState.stage?.effect?.includes(extinctionTile.uid) && gameState.stage.eventType !== "gameLoss"
+          }
+          isAcquired={map(gameState.extinctMarket.table, "uid").includes(extinctionTile.uid)}
         />
       ))}
 
@@ -181,9 +178,12 @@ const Croupier = () => {
           key={habitatTile.uid}
           tileUid={habitatTile.uid}
           name={habitatTile.name}
-          color={habitatTile.isAcquired ? "#2cba16" : "#66cc66"}
+          type="habitat"
           isGlossy={gameState.stage?.effect?.includes(habitatTile.uid)}
-          withFloatAnimation={gameState.stage?.effect?.includes(habitatTile.uid)}
+          withFloatAnimation={
+            gameState.stage?.effect?.includes(habitatTile.uid) && gameState.stage.eventType !== "gameWin"
+          }
+          isAcquired={habitatTile.isAcquired}
         />
       ))}
 

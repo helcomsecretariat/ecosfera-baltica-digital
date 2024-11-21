@@ -69,8 +69,9 @@
     "coast": {},
     "pelagic": {},
     "rivers": {},
-    "soft bottom": {},
-    "hard benthic": {}
+    "mud": {},
+    "rock": {},
+    "baltic": {}
   },
   "extinctions": {
     "extinction": {
@@ -141,13 +142,13 @@
   "plants": {
     "Myriophyllum spicatum": {
       "elements": ["sun", "oxygen", "nutrients"],
-      "habitats": ["rivers", "soft bottom"],
+      "habitats": ["rivers", "mud"],
       "abilities": [],
       "flora_type": "vascular plant"
     },
     "Potamogeton perfoliatus": {
       "elements": ["sun", "oxygen", "nutrients"],
-      "habitats": ["rivers", "soft bottom"],
+      "habitats": ["rivers", "mud"],
       "abilities": ["move"],
       "flora_type": "vascular plant"
     },
@@ -159,7 +160,7 @@
     },
     "Ascophyllym nodosum": {
       "elements": ["sun", "oxygen", "salinity"],
-      "habitats": ["coast", "hard benthic"],
+      "habitats": ["coast", "rock"],
       "abilities": ["move"],
       "flora_type": "brown algae"
     },
@@ -177,19 +178,19 @@
     },
     "Najas marina": {
       "elements": ["sun", "oxygen", "nutrients"],
-      "habitats": ["rivers", "soft bottom"],
+      "habitats": ["rivers", "mud"],
       "abilities": [],
       "flora_type": "vascular plant"
     },
     "Fragmites australis": {
       "elements": ["sun", "oxygen", "nutrients", "nutrients"],
-      "habitats": ["coast", "soft bottom"],
+      "habitats": ["coast", "mud"],
       "abilities": ["plus"],
       "flora_type": "vascular plant"
     },
     "Fucus vesiculosus": {
       "elements": ["sun", "oxygen", "salinity", "temperature"],
-      "habitats": ["ice", "hard benthic"],
+      "habitats": ["ice", "rock"],
       "abilities": ["move"],
       "flora_type": "brown algae"
     },
@@ -201,13 +202,13 @@
     },
     "Planothidium spp.": {
       "elements": ["sun", "nutrients", "nutrients"],
-      "habitats": ["soft bottom"],
+      "habitats": ["mud"],
       "abilities": ["refresh"],
       "flora_type": "benthic microalgae"
     },
     "Pilayella littoralis": {
       "elements": ["sun", "nutrients", "nutrients", "temperature"],
-      "habitats": ["ice", "hard benthic"],
+      "habitats": ["ice", "rock"],
       "abilities": ["plus"],
       "flora_type": "brown algae"
     },
@@ -237,7 +238,7 @@
     },
     "Chara ssp.": {
       "elements": ["sun", "sun", "nutrients"],
-      "habitats": ["coast", "soft bottom"],
+      "habitats": ["coast", "mud"],
       "abilities": ["move"],
       "flora_type": "green algae"
     },
@@ -261,7 +262,7 @@
     },
     "Furcellaria lumbricalis": {
       "elements": ["oxygen", "salinity", "nutrients"],
-      "habitats": ["soft bottom", "hard benthic"],
+      "habitats": ["mud", "rock"],
       "abilities": [],
       "flora_type": "red algae"
     },
@@ -279,13 +280,13 @@
     },
     "Skeletonema marinoi": {
       "elements": ["salinity", "nutrients", "temperature"],
-      "habitats": ["pelagic", "hard benthic"],
+      "habitats": ["pelagic", "rock"],
       "abilities": [],
       "flora_type": "diatom"
     },
     "Vertebrata lanosa": {
       "elements": ["salinity", "temperature"],
-      "habitats": ["hard benthic"],
+      "habitats": ["rock"],
       "abilities": [],
       "flora_type": "red algae"
     },
@@ -297,13 +298,13 @@
     },
     "Nitzschia filifomis": {
       "elements": ["nutrients", "temperature", "temperature"],
-      "habitats": ["soft bottom", "hard benthic"],
+      "habitats": ["mud", "rock"],
       "abilities": [],
       "flora_type": "benthic microalgae"
     },
     "Ceramium tenuicorne": {
       "elements": ["nutrients", "nutrients", "temperature"],
-      "habitats": ["coast", "hard benthic"],
+      "habitats": ["coast", "rock"],
       "abilities": [],
       "flora_type": "red algae"
     },
@@ -323,7 +324,7 @@
   "animals": {
     "Calanoida": {
       "elements": [],
-      "habitats": ["ice", "coast", "pelagic", "rivers", "soft bottom", "hard benthic"],
+      "habitats": ["ice", "coast", "pelagic", "rivers", "mud", "rock"],
       "abilities": [],
       "fauna_type": "zooplankton"
     },
@@ -353,7 +354,7 @@
     },
     "Pusa hispida": {
       "elements": [],
-      "habitats": ["ice", "pelagic", "hard benthic"],
+      "habitats": ["ice", "pelagic", "rock"],
       "abilities": ["refresh"],
       "fauna_type": "mammals"
     },
@@ -371,19 +372,19 @@
     },
     "Somateria mollissima": {
       "elements": [],
-      "habitats": ["coast", "pelagic", "hard benthic"],
+      "habitats": ["coast", "pelagic", "rock"],
       "abilities": ["move"],
       "fauna_type": "birds"
     },
     "Platichthys flesus": {
       "elements": [],
-      "habitats": ["coast", "soft bottom"],
+      "habitats": ["coast", "mud"],
       "abilities": ["special"],
       "fauna_type": "fish/elasmobranch"
     },
     "Haematopus ostralegus": {
       "elements": [],
-      "habitats": ["coast", "soft bottom"],
+      "habitats": ["coast", "mud"],
       "abilities": ["move"],
       "fauna_type": "birds"
     },
@@ -443,61 +444,61 @@
     },
     "Mytilus edulis": {
       "elements": [],
-      "habitats": ["pelagic", "hard benthic"],
+      "habitats": ["pelagic", "rock"],
       "abilities": ["refresh"],
       "fauna_type": "zoobenthos"
     },
     "Salmo salar": {
       "elements": [],
-      "habitats": ["pelagic", "rivers", "hard benthic"],
+      "habitats": ["pelagic", "rivers", "rock"],
       "abilities": ["move"],
       "fauna_type": "fish/elasmobranch"
     },
     "Idotea baltica": {
       "elements": [],
-      "habitats": ["hard benthic"],
+      "habitats": ["rock"],
       "abilities": ["plus"],
       "fauna_type": "zoobenthos"
     },
     "Acipenser oxyrinchus": {
       "elements": [],
-      "habitats": ["rivers", "soft bottom"],
+      "habitats": ["rivers", "mud"],
       "abilities": ["move"],
       "fauna_type": "fish/elasmobranch"
     },
     "Myoxocephalus quadricornis": {
       "elements": [],
-      "habitats": ["rivers", "soft bottom", "hard benthic"],
+      "habitats": ["rivers", "mud", "rock"],
       "abilities": [],
       "fauna_type": "fish/elasmobranch"
     },
     "Perca fluviatilis": {
       "elements": [],
-      "habitats": ["rivers", "soft bottom", "hard benthic"],
+      "habitats": ["rivers", "mud", "rock"],
       "abilities": ["plus"],
       "fauna_type": "fish/elasmobranch"
     },
     "Esox lucius": {
       "elements": [],
-      "habitats": ["rivers", "soft bottom", "hard benthic"],
+      "habitats": ["rivers", "mud", "rock"],
       "abilities": ["refresh"],
       "fauna_type": "fish/elasmobranch"
     },
     "Saduria entomon": {
       "elements": [],
-      "habitats": ["soft bottom", "hard benthic"],
+      "habitats": ["mud", "rock"],
       "abilities": ["plus"],
       "fauna_type": "zoobenthos"
     },
     "Cygnus olor": {
       "elements": [],
-      "habitats": ["soft bottom"],
+      "habitats": ["mud"],
       "abilities": ["move"],
       "fauna_type": "birds"
     },
     "Macoma balthica": {
       "elements": [],
-      "habitats": ["soft bottom"],
+      "habitats": ["mud"],
       "abilities": ["refresh"],
       "fauna_type": "zoobenthos"
     }

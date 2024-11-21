@@ -35,17 +35,19 @@ import {
   playerCardsYStart,
   upperXBoundary,
   upperYBoundary,
-  tileGridCoordinates,
   tileSize,
   overlappingCardXOffset,
   policiesXStart,
   policyCardXOffset,
+  tileGridTransforms,
+  habitatTransforms,
 } from "@/constants/gameBoard";
 import { cardHeight, cardWidth } from "@/constants/card";
 import { TurnMachineGuards } from "../machines/guards";
 import { deckAnimationTimings } from "@/constants/animation";
 import { calcDelays } from "@/state/ui/animation-scheduler";
 
+const zeroPosition = { x: 0, y: 0, z: 0 };
 const zeroRotation = { x: 0, y: 0, z: 0 };
 const yFlipRotation = { y: -Math.PI };
 const playerZRotations = [0, Math.PI / 2, 0, 3 * (Math.PI / 2)] as const;
@@ -199,27 +201,32 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
   const effect = gameState.stage?.effect;
 
   const pieceCoordinates = fanCards(cause);
-  const tileCoordinates = tileGridCoordinates(0, isEmpty(cause) ? 0 + tileSize : 20);
+  const transforms = tileGridTransforms(0, isEmpty(cause) ? 0 + tileSize : 20);
+  const habitatSpecificTransforms = habitatTransforms(0, isEmpty(cause) ? 5 + tileSize : 20);
 
   effect?.forEach((uid, index) => {
     const isTile = isHabitatUID(uid) || isExtinctionUID(uid);
+    const isHabitatTile = isHabitatUID(uid);
     const useTileCoordinates = isTile && effect.length > 2;
+    const tileTransform = isHabitatTile
+      ? habitatSpecificTransforms[find(gameState.habitatMarket.deck, { uid })!.name]
+      : transforms[index];
 
     pieceCoordinates[uid] = {
       position: {
         x: useTileCoordinates
-          ? tileCoordinates[index].x
+          ? (tileTransform?.position?.x ?? zeroPosition.x)
           : effect.length === 1
             ? 0
             : -(6 * (effect.length - 1)) / 2 + index * 6,
-        y: useTileCoordinates ? tileCoordinates[index].y : cause.length === 0 ? 0 : cardHeight - 5,
+        y: useTileCoordinates
+          ? (tileTransform?.position?.y ?? zeroPosition.y)
+          : cause.length === 0
+            ? 0
+            : cardHeight - 5,
         z: 75,
       },
-      rotation: {
-        x: isTile ? -Math.PI / 2 : 0,
-        y: 0,
-        z: 0,
-      },
+      rotation: isTile ? (tileTransform?.rotation ?? zeroRotation) : zeroRotation,
       initialPosition: disasterDeckPosition,
       initialRotation: { x: 0, y: 0, z: 0 },
     };
@@ -289,16 +296,16 @@ export const positionAbilityTokens = (gameState: GameState): GamePieceCoordsDict
 };
 
 export const positionExtinctionTiles = (gameState: GameState): GamePieceCoordsDict => {
-  const coordinates = tileGridCoordinates(hexagonTileXStart, extinctionTileYStart);
+  const transforms = tileGridTransforms(hexagonTileXStart, extinctionTileYStart);
   const allExtinctionTiles = [...gameState.extinctMarket.deck, ...gameState.extinctMarket.table];
 
   return {
     ...allExtinctionTiles.reduce((acc, extinctionTile: ExtinctionTile, index: number) => {
       acc[extinctionTile.uid] = {
-        position: coordinates[index],
-        initialPosition: coordinates[index],
-        rotation: { x: -Math.PI / 2, y: 0, z: 0 },
-        initialRotation: { x: -Math.PI / 2, y: 0, z: 0 },
+        position: transforms[index]?.position ?? zeroPosition,
+        initialPosition: transforms[index]?.position,
+        rotation: transforms[index]?.rotation ?? zeroRotation,
+        initialRotation: transforms[index]?.rotation,
       };
       return acc;
     }, {} as GamePieceCoordsDict),
@@ -306,15 +313,15 @@ export const positionExtinctionTiles = (gameState: GameState): GamePieceCoordsDi
 };
 
 export const positionHabitatTiles = (gameState: GameState): GamePieceCoordsDict => {
-  const coordinates = tileGridCoordinates(hexagonTileXStart, habitatTileYStart);
+  const transforms = habitatTransforms(hexagonTileXStart, habitatTileYStart);
 
   return {
-    ...gameState.habitatMarket.deck.reduce((acc, habitatTile: HabitatTile, index: number) => {
+    ...gameState.habitatMarket.deck.reduce((acc, habitatTile: HabitatTile, _: number) => {
       acc[habitatTile.uid] = {
-        position: coordinates[index],
-        initialPosition: coordinates[index],
-        rotation: { x: -Math.PI / 2, y: 0, z: 0 },
-        initialRotation: { x: -Math.PI / 2, y: 0, z: 0 },
+        position: transforms[habitatTile.name]?.position ?? zeroPosition,
+        initialPosition: transforms[habitatTile.name]?.position,
+        rotation: transforms[habitatTile.name]?.rotation ?? zeroRotation,
+        initialRotation: transforms[habitatTile.name]?.rotation,
       };
       return acc;
     }, {} as GamePieceCoordsDict),

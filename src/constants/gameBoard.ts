@@ -1,5 +1,5 @@
-import { Coordinate } from "@/state/types";
 import { cardHeight, cardWidth, policyCardWidth } from "./card";
+import { GamePieceTransform, HabitatName } from "@/state/types";
 
 // Game board
 export const upperXBoundary = 100;
@@ -20,22 +20,53 @@ export const playerCardsYStart = lowerYBoundary + cardHeight / 2;
 export const abilityOffset = 7;
 
 // Habitat and extinction tiles
-export const tileSize = cardWidth / 3.5;
-export const hexagonTileXStart = marketXStart - cardXOffset * 1.2;
+export const tileSize = cardWidth / 2.1;
+export const hexagonTileXStart = marketXStart - cardXOffset * 1.8;
 export const extinctionTileYStart = marketYStart + tileSize;
-export const habitatTileYStart = marketYStart - cardYOffset + tileSize;
+export const habitatTileYStart = marketYStart - cardHeight * 1.4;
 export const hexagonTileXOffset = 10;
 export const hexagonTileYOffset = 11;
 
-export const tileGridCoordinates = (baseX: number, baseY: number): Coordinate[] => {
+export const tileGridTransforms = (baseX: number, baseY: number): GamePieceTransform[] => {
+  const spacingMultiplier = 1.4;
+  const rotation = { x: -Math.PI / 2, y: Math.PI / 2, z: 0 };
   return [
-    { x: baseX, y: baseY, z: 0 },
-    { x: baseX - tileSize, y: baseY - tileSize * 0.55, z: 0 },
-    { x: baseX + tileSize, y: baseY - tileSize * 0.55, z: 0 },
-    { x: baseX - tileSize, y: baseY - tileSize * 1.68, z: 0 },
-    { x: baseX, y: baseY - tileSize * 2.25, z: 0 },
-    { x: baseX + tileSize, y: baseY - tileSize * 1.68, z: 0 },
+    { position: { x: baseX, y: baseY, z: 0 }, rotation },
+    {
+      position: { x: baseX - tileSize * spacingMultiplier, y: baseY - tileSize * 0.6 * spacingMultiplier, z: 0 },
+      rotation,
+    },
+    {
+      position: { x: baseX + tileSize * spacingMultiplier, y: baseY - tileSize * 0.6 * spacingMultiplier, z: 0 },
+      rotation,
+    },
+    {
+      position: { x: baseX - tileSize * spacingMultiplier, y: baseY - tileSize * 1.76 * spacingMultiplier, z: 0 },
+      rotation,
+    },
+    {
+      position: { x: baseX, y: baseY - tileSize * 2.35 * spacingMultiplier, z: 0 },
+      rotation,
+    },
+    {
+      position: { x: baseX + tileSize * spacingMultiplier, y: baseY - tileSize * 1.76 * spacingMultiplier, z: 0 },
+      rotation,
+    },
+    { position: { x: baseX, y: baseY - tileSize * 1.65, z: 0 }, rotation },
   ];
+};
+
+export const habitatTransforms = (baseX: number, baseY: number): { [K in HabitatName]: GamePieceTransform } => {
+  const transforms = tileGridTransforms(baseX, baseY);
+  return {
+    pelagic: transforms[0],
+    rock: transforms[1],
+    ice: transforms[2],
+    mud: transforms[3],
+    rivers: transforms[4],
+    coast: transforms[5],
+    baltic: transforms[6],
+  };
 };
 
 // Rotation override

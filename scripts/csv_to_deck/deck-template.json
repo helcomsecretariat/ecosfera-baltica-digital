@@ -41,8 +41,9 @@
     "coast": {},
     "pelagic": {},
     "rivers": {},
-    "soft bottom": {},
-    "hard benthic": {}
+    "mud": {},
+    "rock": {},
+    "baltic": {}
   },
   "extinctions": {
     "extinction": { "count": 6 }

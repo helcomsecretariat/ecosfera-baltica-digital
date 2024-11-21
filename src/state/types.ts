@@ -134,10 +134,12 @@ export interface AbilityTile extends GamePieceBase {
   name: AbilityName;
 }
 
+export type HabitatName = "coast" | "ice" | "rivers" | "pelagic" | "mud" | "rock" | "baltic";
 export interface HabitatTile extends GamePieceBase {
   type: "habitat";
   isAcquired: boolean;
   uid: HabitatUID;
+  name: HabitatName;
 }
 
 export interface ExtinctionTile extends GamePieceBase {

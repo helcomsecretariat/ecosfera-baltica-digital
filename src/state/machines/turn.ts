@@ -1134,15 +1134,15 @@ export const TurnMachine = setup({
               },
             },
             pickingDestination: {
-              always: {
-                target: "#turn.usingAbility.done",
-                guard: "isSinglePlayer",
-                actions: {
-                  type: "cardToPlayerSupply",
-                  params: ({ context }) => context.turn.currentAbility!.targetCard!,
-                },
-              },
               on: {
+                "user.click.player.deck": {
+                  target: "#turn.usingAbility.done",
+                  guard: "isSinglePlayer",
+                  actions: {
+                    type: "cardToPlayerSupply",
+                    params: ({ context }) => context.turn.currentAbility!.targetCard!,
+                  },
+                },
                 "user.click.player.hand.card": {
                   target: "#turn.usingAbility.done",
                   guard: not(({ context, event }) => TurnMachineGuards.cardFromRow({ context }, event.card)),

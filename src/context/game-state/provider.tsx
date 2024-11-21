@@ -20,6 +20,7 @@ interface StateContextType {
   guards: ContextInjectedGuardMap;
   hasTag: (tag: string) => boolean;
   uiState: UiState;
+  gameConfig: GameConfig;
 }
 
 export const stateContext = createContext<StateContextType | undefined>(undefined);
@@ -30,22 +31,25 @@ export const GameStateProvider = ({
   seed,
   difficulty,
   playerNames,
+  useSpecialCards,
 }: GameConfig & { children: ReactNode }) => {
   const { animSpeed } = useAnimControls();
+
+  const gameConfig: GameConfig = {
+    playerCount,
+    seed,
+    difficulty,
+    useSpecialCards,
+    playersPosition: "around",
+    playerNames,
+  };
 
   const [snap, send, actorRef] = useMachine(TurnMachine, {
     inspect: eventLogger,
     // inspect: xStateInspector,
     input: {
       deckConfig: deckConfig as unknown as DeckConfig,
-      gameConfig: {
-        playerCount: playerCount,
-        seed,
-        difficulty,
-        useSpecialCards: false,
-        playersPosition: "around",
-        playerNames,
-      },
+      gameConfig,
       animSpeed,
     },
   });
@@ -67,6 +71,7 @@ export const GameStateProvider = ({
     test,
     guards: createGuards(snap.context),
     hasTag,
+    gameConfig,
   };
   return <stateContext.Provider value={value}>{children}</stateContext.Provider>;
 };

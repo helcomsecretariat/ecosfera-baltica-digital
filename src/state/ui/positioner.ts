@@ -15,10 +15,11 @@ import {
   HabitatTile,
   isHabitatUID,
   isExtinctionUID,
-  GamePieceUID,
   AnimalUID,
   PlantUID,
   PlayerUID,
+  PolicyCard,
+  CardOrTileUID,
 } from "../types";
 import {
   abilityOffset,
@@ -37,6 +38,8 @@ import {
   tileGridCoordinates,
   tileSize,
   overlappingCardXOffset,
+  policiesXStart,
+  policyCardXOffset,
 } from "@/constants/gameBoard";
 import { cardHeight, cardWidth } from "@/constants/card";
 import { TurnMachineGuards } from "../machines/guards";
@@ -69,6 +72,7 @@ const calculateCardPositions = (gameState: GameState): GamePieceCoordsDict => {
   return {
     ...positionAnimalCards(gameState),
     ...positionPlantCards(gameState),
+    ...positionPolicyCards(gameState),
     ...positionElementMarketCards(gameState),
     ...positionDisasterCards(gameState),
     ...positionPlayerCards(gameState),
@@ -375,6 +379,38 @@ export const positionPlantCards = (gameState: GameState): GamePieceCoordsDict =>
   };
 };
 
+export const positionPolicyCards = (gameState: GameState): GamePieceCoordsDict => {
+  return {
+    ...gameState.policyMarket.table.reduce((acc, card: PolicyCard, index: number) => {
+      acc[card.uid] = {
+        position: {
+          x: policiesXStart + (index + 1) * policyCardXOffset,
+          y: marketYStart - cardYOffset + 8,
+          z: 5,
+        },
+        rotation: zeroRotation,
+        initialPosition: plantDeckPosition,
+        initialRotation: { x: 0, y: -Math.PI, z: 0 },
+      };
+      return acc;
+    }, {} as GamePieceCoordsDict),
+
+    ...gameState.policyMarket.acquired.reduce((acc, card: PolicyCard, index: number) => {
+      acc[card.uid] = {
+        position: {
+          x: policiesXStart + (index + 1) * policyCardXOffset,
+          y: marketYStart - 2.2 * cardYOffset,
+          z: 5,
+        },
+        rotation: zeroRotation,
+        initialPosition: plantDeckPosition,
+        initialRotation: { x: 0, y: -Math.PI, z: 0 },
+      };
+      return acc;
+    }, {} as GamePieceCoordsDict),
+  };
+};
+
 export const positionElementMarketCards = (gameState: GameState): GamePieceCoordsDict =>
   ([gameState.turn.borrowedElement, ...gameState.elementMarket.deck].filter(Boolean) as ElementCard[]).reduce(
     (acc, card: ElementCard) => {
@@ -619,7 +655,7 @@ const getPlayerCardOffset = (
   }
 };
 
-export const fanCards = (cardUids: GamePieceUID[]): GamePieceCoordsDict => {
+export const fanCards = (cardUids: CardOrTileUID[]): GamePieceCoordsDict => {
   const gamePieceCoords: GamePieceCoordsDict = {};
   const count = cardUids.length;
 

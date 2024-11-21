@@ -46,6 +46,17 @@ const AnimalConfigSchema = deckItemConfig({
   fauna_type: faunaTypeSchema,
 });
 
+const policyEffectSchema = z.enum(["positive", "negative", "dual", "implementation"]);
+const policyThemeSchema = z.enum(["hazard", "eutro", "climateChange", "N/A"]);
+const policyUsageSchema = z.enum(["single", "permanent"]);
+
+const PolicyConfigSchema = deckItemConfig({
+  effect: policyEffectSchema,
+  theme: policyThemeSchema,
+  description: z.string(),
+  usage: policyUsageSchema,
+});
+
 function getRelatedFieldRefiner(
   items: string[],
   relatedField: string,
@@ -91,6 +102,7 @@ const DeckConfigSchema = z
       disasters: z.record(DisasterConfigSchema),
       elements: z.record(ElementConfigSchema),
     }),
+    policies: z.record(PolicyConfigSchema),
     abilities: z.record(AbilityConfigSchema),
     elements: z.record(ElementConfigSchema),
     plants: z.record(PlantConfigSchema),
@@ -106,6 +118,7 @@ const DeckConfigSchema = z
 export type DeckConfig = z.infer<typeof DeckConfigSchema>;
 export type AbilityConfig = z.infer<typeof AbilityConfigSchema>;
 export type PlantConfig = z.infer<typeof PlantConfigSchema>;
+export type PolicyConfig = z.infer<typeof PolicyConfigSchema>;
 export type AnimalConfig = z.infer<typeof AnimalConfigSchema>;
 export type ElementConfig = z.infer<typeof ElementConfigSchema>;
 export type HabitatConfig = z.infer<typeof HabitatConfigSchema>;

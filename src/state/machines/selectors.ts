@@ -1,6 +1,7 @@
-import { CardOrTileUID, GameState, HabitatUID, isHabitatUID, StageEventType } from "../types";
+import { CardOrTileUID, GameState, HabitatUID, isHabitatUID } from "../types";
 import { find, first, last } from "lodash";
 import { TurnMachineGuards } from "./guards";
+import { expansionStageEventText } from "./expansion";
 
 export const MachineSelectors = {
   selectPlayer: ({ context }: { context: GameState }) => find(context.players, { uid: context.turn.player })!,
@@ -48,26 +49,14 @@ export const MachineSelectors = {
       cardBuy: getCardBoughtText(first(context.stage?.effect ?? [])),
       gameWin: "Congratulations!\nYou saved the Baltic ecosystem!",
       gameLoss: "Game Over!\nYou could not save the Baltic Ecosystem.",
+      ...expansionStageEventText,
       default: "",
     };
 
     return eventText[context.stage?.eventType ?? "default"];
   },
 
-  isPositiveStageEvent: ({ context }: { context: GameState }) =>
-    (
-      ({
-        disaster: false,
-        elementalDisaster: false,
-        extinction: false,
-        massExtinction: false,
-        abilityRefresh: true,
-        habitatUnlock: true,
-        cardBuy: true,
-        gameLoss: false,
-        gameWin: true,
-      }) as Record<StageEventType, boolean>
-    )[context.stage?.eventType ?? "disaster"],
+  isPositiveStageEvent: ({ context }: { context: GameState }) => context.stage?.outcome === "positive",
 
   usedAbilities: ({ context }: { context: GameState }) => {
     return context.turn.usedAbilities;

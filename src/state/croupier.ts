@@ -6,6 +6,7 @@ import type {
   DisasterConfig,
   ExtinctionConfig,
   PlantConfig,
+  PolicyConfig,
 } from "@/decks/schema";
 import {
   AbilityTile,
@@ -16,6 +17,7 @@ import {
   GameConfig,
   HabitatTile,
   PlantCard,
+  PolicyCard,
 } from "./types";
 import { createUID } from "@/state/utils";
 
@@ -52,6 +54,19 @@ export class Croupier {
       habitats: config.habitats,
       abilities,
       uid: `animal-${this.nextUid()}` as AnimalCard["uid"],
+    }));
+  }
+
+  spawnPolicyCards(name: string, config: PolicyConfig): PolicyCard[] {
+    return Array.from(Array(config.count ?? 1), () => ({
+      // Funding cards have # to make name unique
+      name: name.split("#")[0].trim(),
+      type: "policy",
+      effect: config.effect,
+      theme: config.theme,
+      description: config.description,
+      usage: config.usage,
+      uid: `policy-${this.nextUid()}` as PolicyCard["uid"],
     }));
   }
 

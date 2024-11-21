@@ -1,5 +1,14 @@
 import { TurnMachine, TurnMachineContext } from "@/state/machines/turn";
-import { AbilityTile, AnimalCard, PlantCard, ElementCard, Card, GameState, AbilityName } from "@/state/types";
+import {
+  AbilityTile,
+  AnimalCard,
+  PlantCard,
+  ElementCard,
+  Card,
+  GameState,
+  AbilityName,
+  PolicyCard,
+} from "@/state/types";
 import { mapValues } from "lodash-es";
 import { EventFromLogic } from "xstate";
 import { ContextInjectedGuardMap, TurnMachineGuards } from "./machines/guards";
@@ -17,6 +26,7 @@ export interface ActionEmmiters {
   plantDeckClick: () => () => void;
   stageConfirm: () => () => void;
   iddqd: (context: Partial<TurnMachineContext>) => () => void;
+  acquiredPolicyCardClick: (card: PolicyCard) => () => void;
 }
 
 export type ActionTesters = {
@@ -42,6 +52,7 @@ const actionToEventMap: {
   }),
   stageConfirm: () => ({ type: "user.click.stage.confirm" }),
   iddqd: (context: Partial<TurnMachineContext>) => ({ type: "iddqd", context }),
+  acquiredPolicyCardClick: (card: PolicyCard) => ({ type: "user.click.policy.card.acquired", card }),
 } as const;
 
 export const createEmmiters = (send: (e: EventFromLogic<typeof TurnMachine>) => void): ActionEmmiters => {

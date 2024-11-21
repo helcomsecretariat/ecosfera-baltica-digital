@@ -11,6 +11,7 @@ import DifficultySelector from "./DifficultySelector";
 import ImageButton from "../ui/imageButton";
 import { without } from "lodash";
 import { AnimatePresence, motion } from "framer-motion";
+import { Checkbox } from "../ui/checkbox";
 
 interface LobbyScreenProps {
   onStartGame: (settings: GameConfig) => void;
@@ -23,6 +24,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
   const [playerCount, setplayerCount] = useState<number>(3);
   const [playerNames, setPlayerNames] = useState<string[]>(Array(4).fill(""));
   const [difficulty, setDifficulty] = useState<number>(1);
+  const [useExpansionPack, setUseExpansionPack] = useState(false);
   const [seed, setSeed] = useState<string>(urlSeed);
   const nameInputRefs = useRef<HTMLInputElement[]>([]);
   const seedInputRef = useRef<HTMLInputElement>(null);
@@ -52,7 +54,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
       difficulty: difficulty as 1 | 2 | 3 | 4 | 5 | 6,
       seed,
       playersPosition: "around",
-      useSpecialCards: false,
+      useSpecialCards: useExpansionPack,
     });
   };
 
@@ -144,7 +146,17 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
           <AccordionItem value="advanced">
             <AccordionTrigger>Advanced Options </AccordionTrigger>
             <AccordionContent>
-              {/* Game Seed */}
+              <div className="mt-4 flex items-center space-x-3">
+                <Checkbox
+                  id="expansionPack"
+                  className="rounded-[4px] border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                  value={+useExpansionPack}
+                  onClick={(_) => setUseExpansionPack(!useExpansionPack)}
+                />
+                <label htmlFor="expansionPack" className="flex items-center">
+                  Use expansion pack
+                </label>
+              </div>
               <div className="mt-4 flex justify-between">
                 <label htmlFor="seed" className="mb-2 flex items-center">
                   Seed

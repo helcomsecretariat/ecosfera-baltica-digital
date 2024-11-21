@@ -15,12 +15,14 @@ const CardAbilityTokens = ({ card }: { card: AnimalCard | PlantCard }) => {
   const plusTexture = useSRGBTexture("/ecosfera_baltica/ability_plus.avif");
   const refreshTexture = useSRGBTexture("/ecosfera_baltica/ability_refresh.avif");
   const moveTexture = useSRGBTexture("/ecosfera_baltica/ability_move.avif");
+  const specialTexture = useSRGBTexture("/ecosfera_baltica/ability_special.avif");
 
   return (
     !find(usedAbilities, { source: card.uid }) &&
     card.abilities.map((name, index) => {
       return (
         <motion.mesh
+          key={`${card.uid}_${name}_ability`}
           onHoverStart={(e) => e.stopPropagation()}
           whileHover={{ scale: 1.25 }}
           onClick={emit.cardTokenClick(card, name)}
@@ -29,7 +31,15 @@ const CardAbilityTokens = ({ card }: { card: AnimalCard | PlantCard }) => {
           <circleGeometry args={[1.8, 32]} />
           <meshBasicMaterial
             color={currentAbility?.piece?.uid !== card.uid || currentAbility?.name !== name ? "white" : "#1D86BC"}
-            map={name === "move" ? moveTexture : name === "plus" ? plusTexture : refreshTexture}
+            map={
+              name === "move"
+                ? moveTexture
+                : name === "plus"
+                  ? plusTexture
+                  : name === "special"
+                    ? specialTexture
+                    : refreshTexture
+            }
           />
         </motion.mesh>
       );

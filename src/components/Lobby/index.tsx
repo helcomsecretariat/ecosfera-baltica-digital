@@ -155,7 +155,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
                   id="expansionPack"
                   className="rounded-[4px] border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
                   value={+useExpansionPack}
-                  onClick={(_) => setUseExpansionPack(!useExpansionPack)}
+                  onClick={() => setUseExpansionPack(!useExpansionPack)}
                 />
                 <label htmlFor="expansionPack" className="flex items-center">
                   Use expansion pack

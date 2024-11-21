@@ -34,8 +34,14 @@ export function getTestActor(input?: Partial<TurnMachineContext>) {
     vi.useRealTimers();
   };
 
+  const can = (event: EventFromLogic<typeof TurnMachine>) => {
+    const snapshot = actor.getSnapshot();
+    return snapshot.can(event);
+  };
+
   return {
     send: wrappedSend,
+    can,
     actor,
     getState: () => actor.getSnapshot().context,
     logState: () => {

@@ -70,6 +70,7 @@ test("disaster can't be returned to market in multiplayer", async () => {
   });
 
   send({ type: "user.click.token", token: moveToken });
+  send({ type: "user.click.player.deck" });
   let state = getState();
   expect(state.turn.currentAbility?.piece.uid).toBe(moveToken.uid);
 
@@ -79,7 +80,7 @@ test("disaster can't be returned to market in multiplayer", async () => {
   expect(state.players[0].abilities.find(({ uid }) => uid === moveToken.uid)!.isUsed).toBe(false);
 });
 
-test("moving in single player sends card to supply", async () => {
+test("move card to supply in single player", async () => {
   const { send, getState } = getTestActor();
   const stateBefore = getState();
 
@@ -103,8 +104,35 @@ test("moving in single player sends card to supply", async () => {
   expect(state.turn.currentAbility?.piece.uid).toBe(moveToken.uid);
 
   send({ type: "user.click.player.hand.card", card: cardToMove });
+  send({ type: "user.click.player.deck" });
   state = getState();
   expect(state.players[0].deck[0]).toBe(cardToMove);
+  expect(state.players[0].hand).not.toContain(cardToMove);
+  expect(state.players[0].abilities.find(({ uid }) => uid === moveToken.uid)!.isUsed).toBe(true);
+});
+
+test("moving to other player's hand", async () => {
+  const { send, getState, can } = getTestActor();
+  const stateBefore = getState();
+  const moveToken = stateBefore.players[0].abilities.find(({ name }) => name === "move")!;
+  const cardToMove = stateBefore.players[0].hand[0];
+  const targetPlayer = stateBefore.players[1];
+
+  send({ type: "user.click.token", token: moveToken });
+  let state = getState();
+  expect(state.turn.currentAbility?.piece.uid).toBe(moveToken.uid);
+  expect(state.turn.currentAbility?.name).toBe("move");
+
+  send({ type: "user.click.player.hand.card", card: cardToMove });
+  expect(can({ type: "user.click.player.deck" })).toBe(false);
+  state = getState();
+  expect(state.turn.currentAbility?.targetCard?.uid).toBe(cardToMove.uid);
+
+  const targetPlayerCard = targetPlayer.hand[0];
+  send({ type: "user.click.player.hand.card", card: targetPlayerCard });
+  state = getState();
+
+  expect(state.players[1].hand).toContain(cardToMove);
   expect(state.players[0].hand).not.toContain(cardToMove);
   expect(state.players[0].abilities.find(({ uid }) => uid === moveToken.uid)!.isUsed).toBe(true);
 });

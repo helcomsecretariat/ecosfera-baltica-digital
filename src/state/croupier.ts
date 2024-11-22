@@ -15,6 +15,7 @@ import {
   ElementCard,
   ExtinctionTile,
   GameConfig,
+  HabitatName,
   HabitatTile,
   PlantCard,
   PolicyCard,
@@ -103,12 +104,11 @@ export class Croupier {
     }));
   }
 
-  spawnHabitatTiles(name: string, config: HabitatConfig): HabitatTile[] {
+  spawnHabitatTiles(name: HabitatName, config: HabitatConfig): HabitatTile[] {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "habitat",
-      isAcquired: false,
-      // uid: `habitat-${this.nextUid()}` as HabitatTile["uid"],
+      isAcquired: name === "baltic" ? true : false,
       uid: createUID("habitat", this.nextUid()),
     }));
   }

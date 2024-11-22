@@ -6,6 +6,7 @@ const DeckItemConfigSchema = z.object({
 });
 
 const abilityNameSchema = z.enum(["move", "plus", "refresh", "special"]);
+const habitatNameSchema = z.enum(["rock", "mud", "rivers", "pelagic", "coast", "ice"]);
 const floraTypeSchema = z.enum([
   "bacteria",
   "benthic microalgae",
@@ -35,13 +36,13 @@ const DisasterConfigSchema = deckItemConfig();
 
 const PlantConfigSchema = deckItemConfig({
   elements: z.array(z.string()),
-  habitats: z.array(z.string()),
+  habitats: z.array(habitatNameSchema),
   abilities: z.array(abilityNameSchema),
   flora_type: floraTypeSchema,
 });
 
 const AnimalConfigSchema = deckItemConfig({
-  habitats: z.array(z.string()),
+  habitats: z.array(habitatNameSchema),
   abilities: z.array(abilityNameSchema),
   fauna_type: faunaTypeSchema,
 });

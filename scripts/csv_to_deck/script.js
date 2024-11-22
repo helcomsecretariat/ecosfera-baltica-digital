@@ -71,6 +71,12 @@ function processRow(row) {
     // Add habitats
     habitatColumns.forEach((col) => {
       if (row[col].trim() !== "") {
+        if (col === "Soft bottom") {
+          col = "Mud";
+        }
+        if (col === "Hard benthic") {
+          col = "Rock";
+        }
         speciesData.habitats.push(col.toLowerCase());
       }
     });

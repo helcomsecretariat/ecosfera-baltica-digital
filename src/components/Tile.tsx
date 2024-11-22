@@ -1,35 +1,38 @@
-import { Text } from "@react-three/drei";
 import GameElement from "./GameElement";
 import { tileSize } from "@/constants/gameBoard";
 import { ExtinctionUID, HabitatUID } from "@/state/types";
 
 import withMaterialProvider from "@/components/utils/withMaterialProvider";
 import { useRelevantMaterial } from "@/components/MaterialProvider/hook";
+import { getAssetPath } from "./utils";
+import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 
 const Tile = ({
   tileUid,
-  color,
+  type,
   name = "",
   onClick,
-  opacity = 1,
   withFloatAnimation = false,
+  isAcquired,
 }: {
   tileUid: ExtinctionUID | HabitatUID;
-  color: string;
+  type: "habitat" | "extinction";
   name?: string;
   onClick?: () => void;
-  opacity?: number;
   withFloatAnimation?: boolean;
+  isAcquired: boolean;
 }) => {
   const { RelevantMaterial } = useRelevantMaterial();
+  const tileImageUrl = getAssetPath(
+    "tile",
+    type === "extinction" ? "extinction" : name === "" ? "default" : `${name}${isAcquired ? "_active" : ""}`,
+  );
+  const texture = useSRGBTexture(tileImageUrl);
 
   return (
     <GameElement cardUID={tileUid} height={6} width={10} onClick={onClick} withFloatAnimation={withFloatAnimation}>
       <cylinderGeometry args={[tileSize, tileSize, 0.1, 6, 1]} />
-      <RelevantMaterial color={color} opacity={opacity} transparent />
-      <Text fontSize={1} color="black" rotation={[Math.PI / 2, 0, 0]} position={[0, -0.1, 0.1]}>
-        {name}
-      </Text>
+      <RelevantMaterial opacity={isAcquired ? 1 : 0.6} transparent map={texture} />
     </GameElement>
   );
 };

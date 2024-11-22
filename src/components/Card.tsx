@@ -1,7 +1,7 @@
 import type { Card as CardType, GamePieceAppearance } from "@/state/types";
 import { cardHeight, cardWidth } from "../constants/card";
 import GameElement from "./GameElement";
-import { Text, useTexture } from "@react-three/drei";
+import { useTexture } from "@react-three/drei";
 import { getAssetPath, getElementColor, getHighlightTextureAssetPath } from "@/components/utils";
 import React, { useMemo } from "react";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
@@ -11,6 +11,9 @@ import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import { useGameState } from "@/context/game-state/hook";
 import { useRelevantMaterial } from "@/components/MaterialProvider/hook";
 import CardAbilityTokens from "./CardAbilityTokens";
+import { habitatTransforms } from "@/constants/gameBoard";
+import { toVector3 } from "@/utils/3d";
+import useHabitatIconTextures from "@/hooks/useHabitatIconTextures";
 
 export type CardOptions = {
   showAbilityButtons?: boolean;
@@ -44,6 +47,7 @@ const Card = ({
   const highlightTexture = useTexture(getHighlightTextureAssetPath());
   const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: true } });
   const isPlantOrAnimal = card.type === "plant" || card.type === "animal";
+  const habitatIconTextures = useHabitatIconTextures();
 
   const { RelevantMaterial } = useRelevantMaterial();
 
@@ -99,15 +103,18 @@ const Card = ({
           card.habitats?.map((name, index) => (
             <React.Fragment key={index + name}>
               <mesh
-                rotation={[Math.PI / 2, Math.PI, 0]}
+                rotation={toVector3(
+                  habitatTransforms(-cardWidth * 0.4, cardHeight / 2.3)[name]?.rotation ?? {
+                    x: Math.PI / 2,
+                    y: Math.PI,
+                    z: 0,
+                  },
+                )}
                 position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.15]}
               >
                 <cylinderGeometry args={[1, 1, 0.1, 6, 1]} />
-                <RelevantMaterial color="#77dd77" transparent />
+                <RelevantMaterial map={habitatIconTextures[name]} transparent />
               </mesh>
-              <Text color="black" fontSize={1.2} position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.25]}>
-                {name[0].toUpperCase()}
-              </Text>
             </React.Fragment>
           ))}
         {/* Abilities */}

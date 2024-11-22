@@ -322,10 +322,10 @@ export const TurnMachine = setup({
         if (policyCard.effect === "positive") {
           draft.policyMarket.acquired.push(policyCard);
         } else if (policyCard.effect === "implementation") {
-          draft.policyFunding += 1;
+          draft.policyMarket.funding.push(policyCard);
         } else {
           draft.policyMarket.table.push(policyCard);
-          draft.activePolicyCards.push(policyCard);
+          draft.policyMarket.active.push(policyCard);
         }
 
         draft.policyMarket.deck = without(context.policyMarket.deck, policyCard);
@@ -598,10 +598,11 @@ export const TurnMachine = setup({
 
     unlockPolicyCard: assign(({ context }: { context: GameState }, card: PolicyCard) =>
       produce(context, (draft) => {
+        console.log("askdfalsdkf");
         draft.policyMarket.acquired = without(context.policyMarket.acquired, card);
         draft.policyMarket.table.push(card);
-        draft.policyFunding -= 1;
-        draft.activePolicyCards.push(card);
+        draft.policyMarket.funding = context.policyMarket.funding.slice(0, -1);
+        draft.policyMarket.active.push(card);
       }),
     ),
     ...expansionActions,

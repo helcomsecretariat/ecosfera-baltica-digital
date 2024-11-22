@@ -15,7 +15,6 @@ export const overlappingCardXOffset = cardXOffset / 3;
 export const cardYOffset = cardHeight + 1;
 export const marketYStart = cardYOffset;
 export const marketXStart = -2 * cardXOffset;
-export const policiesXStart = -70;
 export const playerCardsYStart = lowerYBoundary + cardHeight / 2;
 export const abilityOffset = 7;
 

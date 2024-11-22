@@ -22,9 +22,13 @@ export const actions = {
   ),
   [`${cardPrefix}Done`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
-      draft.activePolicyCards = without(
-        context.activePolicyCards,
-        find(context.activePolicyCards, { name: cardName })!,
+      draft.policyMarket.active = without(
+        context.policyMarket.active,
+        find(context.policyMarket.active, { name: cardName })!,
+      );
+      draft.policyMarket.table = without(
+        context.policyMarket.table,
+        find(context.policyMarket.table, { name: cardName })!,
       );
     }),
   ),

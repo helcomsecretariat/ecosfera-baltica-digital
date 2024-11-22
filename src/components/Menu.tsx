@@ -4,12 +4,9 @@ import { GiCardPickup } from "react-icons/gi";
 import { useGameState } from "@/context/game-state/hook";
 import { filter } from "lodash";
 import clsx from "clsx";
-import { useEffect } from "react";
 
 const Menu = () => {
   const { state, showPolicies, setShowPolicies, gameConfig } = useGameState();
-
-  useEffect(() => setShowPolicies(false), [state.policyMarket.table, setShowPolicies]);
 
   return (
     <div className="absolute top-0 z-[1] flex h-14 w-screen justify-between self-start">
@@ -27,6 +24,21 @@ const Menu = () => {
         <FaHouse className="h-6 w-6" />
       </button>
       <div className="flex">
+        {gameConfig.useSpecialCards && state.commandBar && (
+          <div
+            className={clsx(
+              "-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all hover:bg-[#3070b8]",
+              showPolicies ? "bg-[#3070b8] hover:bg-[#204B7B]" : "",
+            )}
+            style={{
+              clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+              WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+            }}
+            onClick={() => setShowPolicies(!showPolicies)}
+          >
+            {state.commandBar.text}
+          </div>
+        )}
         {gameConfig.useSpecialCards && (
           <button
             className={clsx(

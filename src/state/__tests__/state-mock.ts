@@ -111,4 +111,8 @@ export const gameState: GameState = {
     playersPosition: "around",
     playerNames: [""],
   },
+  statistics: {
+    animalsBought: 0,
+    plantsBought: 0,
+  },
 };

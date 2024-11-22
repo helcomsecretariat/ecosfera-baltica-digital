@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useMemo } from "react";
+import { createContext, ReactNode, useEffect, useMemo, useState } from "react";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
 import { GameConfig, GameState, UiState } from "@/state/types";
@@ -21,6 +21,8 @@ interface StateContextType {
   hasTag: (tag: string) => boolean;
   uiState: UiState;
   gameConfig: GameConfig;
+  showPolicies: boolean;
+  setShowPolicies: (show: boolean) => void;
 }
 
 export const stateContext = createContext<StateContextType | undefined>(undefined);
@@ -34,6 +36,7 @@ export const GameStateProvider = ({
   useSpecialCards,
 }: GameConfig & { children: ReactNode }) => {
   const { animSpeed } = useAnimControls();
+  const [showPolicies, setShowPolicies] = useState<boolean>(false);
 
   const gameConfig: GameConfig = {
     playerCount,
@@ -72,6 +75,8 @@ export const GameStateProvider = ({
     guards: createGuards(snap.context),
     hasTag,
     gameConfig,
+    showPolicies,
+    setShowPolicies,
   };
   return <stateContext.Provider value={value}>{children}</stateContext.Provider>;
 };

@@ -5,7 +5,7 @@ import { ColorManagement, SRGBColorSpace } from "three";
 import { useGameState } from "@/context/game-state/hook";
 import { find, keys, map } from "lodash-es";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PlayerTitle from "@/components/PlayerTitle";
 import Stage from "./Stage";
 import CardComponent from "@/components/utils/CardWithProvider";
@@ -16,20 +16,16 @@ import { MachineSelectors } from "@/state/machines/selectors";
 import Policies from "./Policies";
 import PolicyCard from "./PolicyCard";
 import CommandBar from "./CommandBar";
-import PoliciesButton from "./ui/policiesButton";
 import EndTurnButton from "./ui/endTurnButton";
 
 const Croupier = () => {
-  const { state: gameState, uiState, actorRef, snap, gameConfig } = useGameState();
+  const { state: gameState, uiState, actorRef, snap, gameConfig, showPolicies } = useGameState();
   const { emit, test, hasTag, guards } = useGameState();
-  const [showPolicies, setShowPolicies] = useState(false);
   const exhaustedCards = useSelector(actorRef, MachineSelectors.exhaustedCards);
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
   const currentAbility = useSelector(actorRef, MachineSelectors.currentAbility);
-
-  useEffect(() => setShowPolicies(false), [gameState.policyMarket.table]);
 
   return (
     <AnimatePresence>
@@ -228,9 +224,6 @@ const Croupier = () => {
         ),
       )}
 
-      {gameConfig.useSpecialCards && (
-        <PoliciesButton key="policies-button" onClick={() => setShowPolicies(!showPolicies)} />
-      )}
       <EndTurnButton key="end-turn-button" />
     </AnimatePresence>
   );

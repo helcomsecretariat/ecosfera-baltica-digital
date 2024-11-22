@@ -93,5 +93,9 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
     stage: undefined,
     config: gameConfig,
     deck: deckConfig,
+    statistics: {
+      animalsBought: 0,
+      plantsBought: 0,
+    },
   };
 }

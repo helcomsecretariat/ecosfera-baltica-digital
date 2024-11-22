@@ -13,6 +13,7 @@ import { Leva } from "leva";
 import { useBlocker } from "@/hooks/useBlocker";
 import { MaterialProvider } from "@/components/MaterialProvider/provider";
 import { useTestControls } from "@/hooks/useTestControls";
+import Menu from "./Menu";
 
 export default function GameBoard() {
   useBlocker();
@@ -50,6 +51,7 @@ export default function GameBoard() {
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
+      <Menu />
       <Canvas shadows className="relative" style={{ width: size.width, height: size.height }}>
         <Suspense fallback={null}>
           <MaterialProvider isGlossy={false}>
@@ -68,7 +70,9 @@ export default function GameBoard() {
           </MaterialProvider>
         </Suspense>
       </Canvas>
-      <Leva collapsed flat hideCopyButton />
+      <div className="absolute left-1/2 top-0 z-[2] -translate-x-1/2">
+        <Leva collapsed flat hideCopyButton fill />
+      </div>
     </div>
   );
 }

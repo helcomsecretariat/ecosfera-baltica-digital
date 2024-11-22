@@ -92,7 +92,13 @@ export interface GameState {
   };
   config: GameConfig;
   deck: DeckConfig;
+  statistics: GameStateStatistics;
 }
+
+export type GameStateStatistics = {
+  animalsBought: number;
+  plantsBought: number;
+};
 
 export type StageEventType =
   | "disaster"

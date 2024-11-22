@@ -78,8 +78,6 @@ export interface GameState {
   habitatMarket: Market<HabitatTile>;
   extinctMarket: Market<ExtinctionTile>;
   policyMarket: PolicyMarket;
-  policyFunding: number;
-  activePolicyCards: PolicyCard[];
   stage?: {
     terminationEvent?: boolean;
     eventType: StageEventType;
@@ -205,6 +203,8 @@ export interface PolicyMarket extends Market<PolicyCard> {
   deck: PolicyCard[];
   table: PolicyCard[];
   acquired: PolicyCard[];
+  funding: PolicyCard[];
+  active: PolicyCard[];
 }
 
 export interface AnimalCard extends GamePieceBase {

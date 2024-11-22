@@ -6,6 +6,7 @@ import { TurnMachineGuards } from "../guards";
 import { filter, map, without } from "lodash";
 
 const cardPrefix = "climateChange";
+const cardName = "Climate change";
 export const stageEventText = {
   policy_climateChange: "Because of climate change you get an additional extinction tile!",
 };
@@ -22,7 +23,7 @@ export const actions = {
 
       draft.stage = {
         eventType: "policy_climateChange",
-        cause: map(filter(context.activePolicyCards, { name: "Climate change" }), "uid"),
+        cause: map(filter(context.policyMarket.active, { name: cardName }), "uid"),
         effect: [extinctionTile.uid],
         outcome: "negative",
       };

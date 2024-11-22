@@ -37,7 +37,6 @@ import {
   upperYBoundary,
   tileSize,
   overlappingCardXOffset,
-  policiesXStart,
   policyCardXOffset,
   tileGridTransforms,
   habitatTransforms,
@@ -389,28 +388,48 @@ export const positionPlantCards = (gameState: GameState): GamePieceCoordsDict =>
 export const positionPolicyCards = (gameState: GameState): GamePieceCoordsDict => {
   return {
     ...gameState.policyMarket.table.reduce((acc, card: PolicyCard, index: number) => {
+      const xPositions = spreadAroundBase(0, policyCardXOffset, gameState.policyMarket.table.length);
+      const position = {
+        x: xPositions[index],
+        y: marketYStart - cardYOffset + 28,
+        z: 20,
+      };
       acc[card.uid] = {
-        position: {
-          x: policiesXStart + (index + 1) * policyCardXOffset,
-          y: marketYStart - cardYOffset + 8,
-          z: 5,
-        },
+        position,
         rotation: zeroRotation,
-        initialPosition: plantDeckPosition,
+        initialPosition: position,
         initialRotation: { x: 0, y: -Math.PI, z: 0 },
       };
       return acc;
     }, {} as GamePieceCoordsDict),
 
     ...gameState.policyMarket.acquired.reduce((acc, card: PolicyCard, index: number) => {
+      const xPositions = spreadAroundBase(0, policyCardXOffset, gameState.policyMarket.acquired.length);
+      const position = {
+        x: xPositions[index],
+        y: marketYStart - 1.1 * cardYOffset,
+        z: 20,
+      };
       acc[card.uid] = {
-        position: {
-          x: policiesXStart + (index + 1) * policyCardXOffset,
-          y: marketYStart - 2.2 * cardYOffset,
-          z: 5,
-        },
+        position,
         rotation: zeroRotation,
-        initialPosition: plantDeckPosition,
+        initialPosition: position,
+        initialRotation: { x: 0, y: -Math.PI, z: 0 },
+      };
+      return acc;
+    }, {} as GamePieceCoordsDict),
+
+    ...gameState.policyMarket.funding.reduce((acc, card: PolicyCard, index: number) => {
+      const xPositions = spreadAroundBase(0, cardXOffset, gameState.policyMarket.funding.length);
+      const position = {
+        x: xPositions[index],
+        y: marketYStart - 2.7 * cardYOffset,
+        z: 20,
+      };
+      acc[card.uid] = {
+        position,
+        rotation: zeroRotation,
+        initialPosition: position,
         initialRotation: { x: 0, y: -Math.PI, z: 0 },
       };
       return acc;
@@ -740,4 +759,26 @@ export const fanCards = (cardUids: CardOrTileUID[]): GamePieceCoordsDict => {
   }
 
   return gamePieceCoords;
+};
+
+const spreadAroundBase = (baseX: number, offset: number, numberOfElements: number): number[] => {
+  if (numberOfElements === 1) {
+    return [baseX];
+  }
+
+  const positions: number[] = [];
+
+  if (numberOfElements % 2 === 1) {
+    const middleIndex = Math.floor(numberOfElements / 2);
+    for (let i = 0; i < numberOfElements; i++) {
+      positions.push(baseX + (i - middleIndex) * offset);
+    }
+  } else {
+    const middleLeftIndex = numberOfElements / 2 - 1;
+    for (let i = 0; i < numberOfElements; i++) {
+      positions.push(baseX + (i - middleLeftIndex - 0.5) * offset);
+    }
+  }
+
+  return positions;
 };

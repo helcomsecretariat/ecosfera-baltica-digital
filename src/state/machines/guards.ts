@@ -236,7 +236,7 @@ export const TurnMachineGuards = {
   isStageAutoConfirm: ({ context: { isStageAutoConfirm } }: { context: GameState }) => isStageAutoConfirm,
 
   hasSufficientFunding: ({ context }: { context: GameState }) => {
-    return context.policyFunding > 0;
+    return context.policyMarket.funding.length > 0;
   },
 
   isPlantCard: ({ context: _ }: { context: GameState }, card: Card) => card.type === "plant",
@@ -259,7 +259,7 @@ export const TurnMachineGuards = {
   ) => plantCard.habitats.some((habitatName) => animalCard.habitats.includes(habitatName)),
 
   isPolicyCardActive: ({ context }: { context: GameState }, policyCardName: string) =>
-    context.activePolicyCards.some((policyCard) => policyCard.name === policyCardName),
+    context.policyMarket.active.some((policyCard) => policyCard.name === policyCardName),
 
   isSinglePlayer: ({ context: { players } }: { context: GameState }) => players.length === 1,
 };

@@ -98,9 +98,7 @@ export const gameState: GameState = {
   disasterMarket: { type: "disaster", deck: [], table: [] },
   habitatMarket: { type: "habitat", deck: [], table: [] },
   extinctMarket: { type: "extinction", deck: [], table: [] },
-  policyMarket: { type: "policy", deck: [], table: [], acquired: [] },
-  policyFunding: 0,
-  activePolicyCards: [],
+  policyMarket: { type: "policy", deck: [], table: [], acquired: [], active: [], funding: [] },
   config: {
     seed: "test-seed",
     playerCount: 1,

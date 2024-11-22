@@ -64,6 +64,12 @@ export const GameStateProvider = ({
     emit.iddqd({ animSpeed })();
   }, [animSpeed]);
 
+  useEffect(() => {
+    // TODO looks a bit weird
+    // This is so that the policy screen automatically closes when activating a card
+    setShowPolicies(false);
+  }, [snap.context.policyMarket.active, setShowPolicies]);
+
   const value = {
     snap,
     actorRef,

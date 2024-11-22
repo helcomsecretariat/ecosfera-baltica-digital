@@ -13,13 +13,13 @@ import AbilityToken from "@/components/utils/AbilityTokenWithProvider";
 import Tile from "@/components/utils/TileWithProvider";
 import { useSelector } from "@xstate/react";
 import { MachineSelectors } from "@/state/machines/selectors";
-import Policies from "./Policies";
-import PolicyCard from "./PolicyCard";
-import CommandBar from "./CommandBar";
 import EndTurnButton from "./ui/endTurnButton";
+import Policies from "./Policies/Policies";
+import PolicyCard from "./Policies/PolicyCard";
+import FundingCard from "./Policies/FundingCard";
 
 const Croupier = () => {
-  const { state: gameState, uiState, actorRef, snap, gameConfig, showPolicies } = useGameState();
+  const { state: gameState, uiState, actorRef, snap, gameConfig } = useGameState();
   const { emit, test, hasTag, guards } = useGameState();
   const exhaustedCards = useSelector(actorRef, MachineSelectors.exhaustedCards);
   const { gl } = useThree();
@@ -138,21 +138,30 @@ const Croupier = () => {
       ))}
 
       {/* Policies */}
-      {showPolicies && gameConfig.useSpecialCards && <Policies />}
+      <Policies />
       {gameConfig.useSpecialCards &&
         gameState.stage?.eventType?.includes("policy_") &&
         [...(gameState.stage?.effect ?? []), ...(gameState.stage?.cause ?? [])].map((cardUid) => {
+          if (find(gameState.policyMarket.funding, { uid: cardUid })) {
+            return <FundingCard key={cardUid} cardUid={cardUid} />;
+          }
+
           const policyCard =
-            find(gameState.policyMarket.table, { uid: cardUid }) ??
-            find(gameState.policyMarket.acquired, { uid: cardUid });
-          return policyCard ? <PolicyCard key={cardUid} card={policyCard} /> : null;
+            find(gameState.policyMarket.acquired, { uid: cardUid }) ??
+            find(gameState.policyMarket.table, { uid: cardUid });
+          return policyCard ? (
+            <PolicyCard
+              key={cardUid}
+              card={policyCard}
+              isActive={gameState.policyMarket.active.some((policyCard) => policyCard.uid === cardUid)}
+              isOpaque={true}
+              allowActivation={false}
+            />
+          ) : null;
         })}
 
       {/* Stage */}
       <Stage key="stage" />
-
-      {/* Command bar */}
-      <CommandBar key="command-bar" />
 
       {/* Extinction tiles */}
       {[...gameState.extinctMarket.deck, ...gameState.extinctMarket.table].map((extinctionTile) => (

@@ -70,7 +70,7 @@ export default function GameBoard() {
           </MaterialProvider>
         </Suspense>
       </Canvas>
-      <div className="absolute left-1/2 top-0 z-[2] -translate-x-1/2">
+      <div className="absolute left-[20%] top-0 z-[2]">
         <Leva collapsed flat hideCopyButton fill />
       </div>
     </div>

@@ -1,5 +1,5 @@
 import type { Card as CardType, GamePieceAppearance } from "@/state/types";
-import { cardHeight, cardWidth } from "../constants/card";
+import { cardHeight, cardWidth, coordScale } from "../constants/card";
 import GameElement from "./GameElement";
 import { useTexture } from "@react-three/drei";
 import { getAssetPath, getElementColor, getHighlightTextureAssetPath } from "@/components/utils";
@@ -14,6 +14,19 @@ import CardAbilityTokens from "./CardAbilityTokens";
 import { habitatTransforms } from "@/constants/gameBoard";
 import { toVector3 } from "@/utils/3d";
 import useHabitatIconTextures from "@/hooks/useHabitatIconTextures";
+import useAbilityTextures from "@/hooks/useAbilityTextures";
+
+const PADDING_MAP: Record<CardType["type"], [number, number, number, number]> = {
+  animal: [6, 6, 8, 6].map((n) => n / coordScale) as [number, number, number, number],
+  plant: [6, 6, 6, 6].map((n) => n / coordScale) as [number, number, number, number],
+  element: [6, 6, 6, 6].map((n) => n / coordScale) as [number, number, number, number],
+  disaster: [6, 6, 6, 6].map((n) => n / coordScale) as [number, number, number, number],
+  policy: [6, 6, 6, 6].map((n) => n / coordScale) as [number, number, number, number],
+};
+
+const HABITAT_ICON_RADIUS = 1;
+const ELEMENT_ICON_RADIUS = 0.7;
+const ABILITY_ICON_RADIUS = 11 / coordScale / 2;
 
 export type CardOptions = {
   showAbilityButtons?: boolean;
@@ -48,6 +61,8 @@ const Card = ({
   const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: true } });
   const isPlantOrAnimal = card.type === "plant" || card.type === "animal";
   const habitatIconTextures = useHabitatIconTextures();
+  const [paddingTop, paddingRight, paddingBottom, paddingLeft] = PADDING_MAP[card.type];
+  const abilityTextures = useAbilityTextures().zoomedIn;
 
   const { RelevantMaterial } = useRelevantMaterial();
 
@@ -60,6 +75,7 @@ const Card = ({
       .filter((element) => card.elements.includes(element))
       .flatMap((element) => Array.from({ length: card.elements.filter((n) => n === element).length }, () => element));
   }, []);
+  const namePaddingBottom = elementsSorted.length > 0 ? ELEMENT_ICON_RADIUS * 2 + paddingBottom * 2 : paddingBottom;
 
   return (
     gamePieceAppearance && (
@@ -88,16 +104,7 @@ const Card = ({
             <meshBasicMaterial transparent opacity={0} attach="material-1" />
           </mesh>
         )}
-        {elementsSorted.map((name, index) => (
-          <mesh
-            key={index + name}
-            rotation={[Math.PI / 2, 0, 0]}
-            position={[-cardWidth * 0.42 + index * 1.6, -cardHeight * 0.44, 0.15]}
-          >
-            <cylinderGeometry args={[0.7, 0.7, 0.1, 5, 1]} />
-            <RelevantMaterial transparent color={getElementColor(name)} />
-          </mesh>
-        ))}
+
         {/* Habitats */}
         {(card.type === "animal" || card.type === "plant") &&
           card.habitats?.map((name, index) => (
@@ -110,9 +117,13 @@ const Card = ({
                     z: 0,
                   },
                 )}
-                position={[-cardWidth * 0.4 + index * 2, cardHeight / 2.3, 0.15]}
+                position={[
+                  -cardWidth * 0.5 + paddingLeft + HABITAT_ICON_RADIUS + index * HABITAT_ICON_RADIUS * 2,
+                  cardHeight * 0.5 - paddingTop - HABITAT_ICON_RADIUS,
+                  0.15,
+                ]}
               >
-                <cylinderGeometry args={[1, 1, 0.1, 6, 1]} />
+                <cylinderGeometry args={[HABITAT_ICON_RADIUS, HABITAT_ICON_RADIUS, 0.1, 6, 1]} />
                 <RelevantMaterial map={habitatIconTextures[name]} transparent />
               </mesh>
             </React.Fragment>
@@ -120,46 +131,60 @@ const Card = ({
         {/* Abilities */}
         {isPlantOrAnimal &&
           card.abilities?.map((name, index) => (
-            <TextWithShadow
-              key={index + name + "text"}
-              color="#222"
-              fontSize={1.9}
-              position={[cardWidth * 0.4, cardHeight / 2.3 - index * 1.7, 0.15]}
+            <mesh
+              key={index + name}
+              rotation={[Math.PI / 2, Math.PI / 2, 0]}
+              position={[
+                cardWidth * 0.5 - paddingRight - ABILITY_ICON_RADIUS,
+                cardHeight * 0.5 - paddingTop - ABILITY_ICON_RADIUS - index * 1.8,
+                0.25,
+              ]}
             >
-              {name === "move"
-                ? "→"
-                : name === "plus"
-                  ? "+"
-                  : name === "refresh"
-                    ? "❋"
-                    : name === "special"
-                      ? "⚡"
-                      : ""}
-            </TextWithShadow>
+              <cylinderGeometry args={[ABILITY_ICON_RADIUS, ABILITY_ICON_RADIUS, 0.25, 32, 1]} />
+              <RelevantMaterial color={"white"} map={abilityTextures[name]} />
+            </mesh>
           ))}
         {/* Ability Button */}
         {isPlantOrAnimal && options?.showAbilityButtons && card.abilities.length > 0 && (
           <CardAbilityTokens card={card} />
         )}
+
         {/* Name Label */}
         {["plant", "animal"].includes(type) && (
           <TextWithShadow
-            position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 5.7, 0.15]}
+            position={[-cardWidth * 0.5 + paddingLeft, -cardHeight * 0.5 + namePaddingBottom, 0.15]}
             color="black"
+            fontStyle={"italic"}
             fontSize={1.5}
             maxWidth={cardWidth * 0.9}
             anchorX="left"
-            anchorY="top"
+            anchorY="bottom"
             textAlign="left"
           >
             {name}
           </TextWithShadow>
         )}
+
+        {elementsSorted.map((name, index) => (
+          <mesh
+            key={index + name}
+            rotation={[Math.PI / 2, 0, 0]}
+            position={[
+              -cardWidth * 0.5 + paddingLeft + ELEMENT_ICON_RADIUS + index * ELEMENT_ICON_RADIUS * 2,
+              -cardHeight * 0.5 + paddingBottom + ELEMENT_ICON_RADIUS,
+              0.15,
+            ]}
+          >
+            <cylinderGeometry args={[ELEMENT_ICON_RADIUS, ELEMENT_ICON_RADIUS, 0.1, 5, 1]} />
+            <RelevantMaterial transparent color={getElementColor(name)} />
+          </mesh>
+        ))}
         {/* UID */}
         {isShowUID && (
           <TextWithShadow
-            position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 3, 0.15]}
-            color="black"
+            position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 3, 0.25]}
+            color="#ffffff"
+            shadowColor="#000000"
             fontSize={1.5}
             maxWidth={cardWidth * 0.85}
             anchorX="left"

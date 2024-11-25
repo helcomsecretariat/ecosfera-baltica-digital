@@ -19,6 +19,7 @@
   "element_temperature.avif",
   "entity_acipenser_oxyrinchus.avif",
   "entity_alca_torda.avif",
+  "entity_anguilla.avif",
   "entity_anguilla_anguilla.avif",
   "entity_aphanizomenon_flosaquae.avif",
   "entity_ascophyllym_nodosum.avif",
@@ -100,6 +101,5 @@
   "tile_rivers_icon.avif",
   "tile_rock.avif",
   "tile_rock_active.avif",
-  "tile_rock_icon.avif",
-  "stage_positive.avif"
+  "tile_rock_icon.avif"
 ]

@@ -1,16 +1,14 @@
 import GameElement from "./GameElement";
 import { AbilityTile as AbilityTileType } from "@/state/types";
 import { useGameState } from "@/context/game-state/hook";
-import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import withMaterialProvider from "@/components/utils/withMaterialProvider";
+import useAbilityTextures from "@/hooks/useAbilityTextures";
 
 const AbilityToken = ({ ability, color }: { ability: AbilityTileType; color?: string }) => {
   const { emit } = useGameState();
   const { uiState } = useGameState();
 
-  const plusTexture = useSRGBTexture("/ecosfera_baltica/ability_plus.avif");
-  const refreshTexture = useSRGBTexture("/ecosfera_baltica/ability_refresh.avif");
-  const moveTexture = useSRGBTexture("/ecosfera_baltica/ability_move.avif");
+  const abilityTextures = useAbilityTextures().fullSize;
 
   return (
     <GameElement
@@ -23,10 +21,7 @@ const AbilityToken = ({ ability, color }: { ability: AbilityTileType; color?: st
       onClick={emit.tokenClick(ability)}
     >
       <circleGeometry args={[3, 32]} />
-      <meshBasicMaterial
-        color={color ?? (ability.isUsed ? "#555" : "white")}
-        map={ability.name === "move" ? moveTexture : ability.name === "plus" ? plusTexture : refreshTexture}
-      />
+      <meshBasicMaterial color={color ?? (ability.isUsed ? "#555" : "white")} map={abilityTextures[ability.name]} />
     </GameElement>
   );
 };

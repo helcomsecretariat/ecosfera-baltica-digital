@@ -1,4 +1,3 @@
-import { useRelevantMaterial } from "@/components/MaterialProvider/hook";
 import { Text } from "@react-three/drei";
 import { ReactNode } from "react";
 
@@ -17,18 +16,12 @@ const TextWithShadow = ({
   position,
   ...props
 }: TextWithShadowProps) => {
-  const { getRelevantMaterial } = useRelevantMaterial();
-
   return (
     <>
       <Text {...props} color={shadowColor} position={[position[0] + 0.08, position[1] - 0.08, position[2]]}>
         {children}
       </Text>
-      <Text
-        material={getRelevantMaterial({ color })}
-        {...props}
-        position={[position[0], position[1], position[2] + 0.05]}
-      >
+      <Text {...props} color={color} position={[position[0], position[1], position[2] + 0.15]}>
         {children}
       </Text>
     </>

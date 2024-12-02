@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import sharp from "sharp";
-import { ensureDir, copy, remove } from "fs-extra";
+import { ensureDir, remove } from "fs-extra";
 
 const imgRegexp = /\.(webp|png|jpg|jpeg|svg)$/i;
 
@@ -28,8 +28,8 @@ async function processDir(inputDir, outputDir, subDir) {
   const inputSubDir = path.join(inputDir, subDir);
   const outputSubDir = path.join(outputDir, subDir);
 
-  console.log(`Clearing output directory: ${outputDir}`);
-  await remove(outputDir);
+  console.log(`Clearing output subdirectory: ${outputSubDir}`);
+  await remove(outputSubDir);
   await ensureDir(outputSubDir);
 
   const imageFiles = await getImageFiles(inputSubDir);
@@ -38,7 +38,7 @@ async function processDir(inputDir, outputDir, subDir) {
   for (const filePath of imageFiles) {
     const relativePath = path.relative(inputSubDir, filePath);
     const outputFilePath = path.join(outputSubDir, relativePath).replace(imgRegexp, ".avif");
-    await sharp(filePath).toFormat("avif").toFile(outputFilePath);
+    await sharp(filePath).toColorspace("srgb").toFormat("avif").toFile(outputFilePath);
 
     manifest.push(path.basename(outputFilePath));
 

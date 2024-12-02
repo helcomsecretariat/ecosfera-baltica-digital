@@ -14,6 +14,7 @@ import { useBlocker } from "@/hooks/useBlocker";
 import { MaterialProvider } from "@/components/MaterialProvider/provider";
 import { useTestControls } from "@/hooks/useTestControls";
 import Menu from "./Menu";
+import { SRGBColorSpace } from "three";
 
 export default function GameBoard() {
   useBlocker();
@@ -52,7 +53,12 @@ export default function GameBoard() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
       <Menu />
-      <Canvas shadows className="relative" style={{ width: size.width, height: size.height }}>
+      <Canvas
+        shadows
+        className="relative"
+        style={{ width: size.width, height: size.height }}
+        gl={{ outputColorSpace: SRGBColorSpace }}
+      >
         <Suspense fallback={null}>
           <MaterialProvider isGlossy={false}>
             <ambientLight intensity={3} />

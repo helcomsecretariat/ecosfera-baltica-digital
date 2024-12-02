@@ -152,10 +152,13 @@ const Card = ({
         {/* Name Label */}
         {["plant", "animal"].includes(type) && (
           <TextWithShadow
-            position={[-cardWidth * 0.5 + paddingLeft, -cardHeight * 0.5 + namePaddingBottom, 0.15]}
-            color="black"
-            fontStyle={"italic"}
-            fontSize={1.5}
+            position={[-cardWidth * 0.5 + paddingLeft, -cardHeight * 0.5 + namePaddingBottom, 0]}
+            fontStyle="italic"
+            strokeColor="#ffffff"
+            outlineColor="#222222"
+            outlineBlur="15%"
+            fontSize={1.9}
+            overflowWrap="break-word"
             maxWidth={cardWidth * 0.9}
             anchorX="left"
             anchorY="bottom"
@@ -182,14 +185,15 @@ const Card = ({
         {/* UID */}
         {isShowUID && (
           <TextWithShadow
-            position={[-cardWidth / 2 + cardWidth * 0.05, -cardHeight / 3, 0.25]}
-            color="#ffffff"
-            shadowColor="#000000"
-            fontSize={1.5}
-            maxWidth={cardWidth * 0.85}
-            anchorX="left"
-            anchorY="top"
-            textAlign="left"
+            position={[0, 0, 0]}
+            strokeColor="white"
+            outlineColor="#222222"
+            outlineBlur={0.8}
+            outlineOpacity={1}
+            fontSize={2}
+            anchorX="center"
+            anchorY="middle"
+            textAlign="center"
           >
             {card.uid}
           </TextWithShadow>

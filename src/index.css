@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* josefin-sans-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Josefin Sans";
+  font-style: normal;
+  font-weight: 400;
+  /* !!! Using ttf instead of woff2 cuz woff2 isn't supported by troika-js */
+  src: url("/fonts/josefin-sans-v32-latin-regular.ttf") format("truetype");
+}
+/* josefin-sans-italic - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Josefin Sans";
+  font-style: italic;
+  font-weight: 400;
+  /* !!! Using ttf instead of woff2 cuz woff2 isn't supported by troika-js */
+  src: url("/fonts/josefin-sans-v32-latin-italic.ttf") format("truetype");
+}
+
 :root {
 }
 

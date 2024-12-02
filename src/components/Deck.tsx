@@ -57,7 +57,14 @@ const Deck = ({
           <circleGeometry args={[1.5, 16]} />
           <meshBasicMaterial color="white" opacity={isDimmed ? 0.2 : 0.5} transparent />
         </mesh>
-        <TextWithShadow textAlign="center" fontSize={2} position={textPosition} opacity={0.5}>
+        <TextWithShadow
+          textAlign="center"
+          anchorX="center"
+          anchorY="middle"
+          fontSize={1.8}
+          position={textPosition}
+          strokeColor="#555"
+        >
           {cards.length}
         </TextWithShadow>
 

@@ -1,30 +1,43 @@
 import { Text } from "@react-three/drei";
-import { ReactNode } from "react";
+import { useRelevantMaterial } from "@/components/MaterialProvider/hook";
+import { ComponentProps } from "react";
 
-interface TextWithShadowProps {
-  children: ReactNode;
-  color?: string;
-  shadowColor?: string;
-  position: [number, number, number];
-  [key: string]: unknown;
-}
+type TextWithShadowProps = ComponentProps<typeof Text>;
 
 const TextWithShadow = ({
   children,
-  color = "black",
-  shadowColor = "lightgrey",
-  position,
+  strokeColor = "#000000",
+  outlineColor = "#ffffff",
+  outlineOpacity = 1,
+  strokeWidth = 0.5,
+  outlineBlur = "10%",
+  font,
+  fontStyle = "normal",
+  depthOffset = -100,
   ...props
 }: TextWithShadowProps) => {
+  const { getRelevantMaterial } = useRelevantMaterial();
+  const defaultFont =
+    fontStyle === "italic" ? "/fonts/josefin-sans-v32-latin-italic.ttf" : "/fonts/josefin-sans-v32-latin-regular.ttf";
+
+  const fontPath = font || defaultFont;
+
   return (
-    <>
-      <Text {...props} color={shadowColor} position={[position[0] + 0.08, position[1] - 0.08, position[2]]}>
-        {children}
-      </Text>
-      <Text {...props} color={color} position={[position[0], position[1], position[2] + 0.15]}>
-        {children}
-      </Text>
-    </>
+    <Text
+      {...{
+        ...props,
+        strokeColor,
+        strokeWidth,
+        depthOffset,
+        outlineBlur,
+        outlineColor,
+        outlineOpacity,
+      }}
+      material={getRelevantMaterial()}
+      font={fontPath}
+    >
+      {children}
+    </Text>
   );
 };
 

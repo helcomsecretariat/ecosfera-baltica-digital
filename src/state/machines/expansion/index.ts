@@ -3,7 +3,26 @@ import * as WasteWaterTreatmentFailure from "./waste_water_treatment_failure";
 import * as WarmSummer from "./warm_summer";
 import * as ClimateChange from "./climate_change";
 import * as OilSpill from "./oil_spill";
+import * as Funding from "./funding.ts";
 import { ExpansionActionFunctionMap } from "@/lib/types";
+
+export const names = [
+  OilSpill.cardName,
+  ClimateChange.cardName,
+  WarmSummer.cardName,
+  WasteWaterTreatmentFailure.cardName,
+  HazardousSubstanceRegulation.cardName,
+  Funding.cardName,
+] as const;
+
+export const uiStrings = {
+  ...OilSpill.uiStrings,
+  ...ClimateChange.uiStrings,
+  ...WarmSummer.uiStrings,
+  ...WasteWaterTreatmentFailure.uiStrings,
+  ...HazardousSubstanceRegulation.uiStrings,
+  ...Funding.uiStrings,
+};
 
 export const expansionActions = {
   ...HazardousSubstanceRegulation.actions,

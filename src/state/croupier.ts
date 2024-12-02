@@ -66,7 +66,6 @@ export class Croupier {
       type: "policy",
       effect: config.effect,
       theme: config.theme,
-      description: config.description,
       usage: config.usage,
       uid: `policy-${this.nextUid()}` as PolicyCard["uid"],
     }));

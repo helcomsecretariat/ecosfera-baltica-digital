@@ -13,7 +13,8 @@
       "move": { "count": 1 }
     },
     "disasters": {
-      "flood": { "count": 2 }
+      "flood": { "count": 1 },
+      "fire": { "count": 1 }
     },
     "elements": {
       "sun": { "count": 1 },
@@ -49,7 +50,12 @@
     "extinction": { "count": 6 }
   },
   "disasters": {
-    "flood": { "count": 50 }
+    "flood": {
+      "count": 25
+    },
+    "fire": {
+      "count": 25
+    }
   },
   "plants": {},
   "animals": {}

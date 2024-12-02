@@ -27,12 +27,13 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
   const { seed, playerCount } = gameConfig;
   const croupier = new Croupier(deckConfig, gameConfig);
 
-  const policies = spawnAllPieces(deckConfig.policies, croupier.spawnPolicyCards.bind(croupier));
+  const policies = shuffle(spawnAllPieces(deckConfig.policies, croupier.spawnPolicyCards.bind(croupier)), seed);
+  const disasters = shuffle(spawnAllPieces(deckConfig.disasters, croupier.spawnDisasterCards.bind(croupier)), seed);
+
   const plants = spawnAllPieces(deckConfig.plants, croupier.spawnPlantCards.bind(croupier));
   const animals = spawnAllPieces(deckConfig.animals, croupier.spawnAnimalCards.bind(croupier));
   const elements = spawnAllPieces(deckConfig.elements, croupier.spawnElementCards.bind(croupier));
   const habitats = spawnAllPieces(deckConfig.habitats, croupier.spawnHabitatTiles.bind(croupier));
-  const disasters = spawnAllPieces(deckConfig.disasters, croupier.spawnDisasterCards.bind(croupier));
   const extinctions = spawnAllPieces(deckConfig.extinctions, croupier.spawnExtinctionTiles.bind(croupier));
 
   const players = Array(playerCount)

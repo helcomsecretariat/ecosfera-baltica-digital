@@ -5,9 +5,17 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { and } from "xstate";
+import { t } from "i18next";
 
-const cardPrefix = "hazardousSubstanceRegulation";
-const cardName = "Hazardous substance regulation";
+export const cardPrefix = "hazardousSubstanceRegulation";
+export const cardName = "Hazardous substance regulation";
+
+export const uiStrings = {
+  [cardName]: {
+    name: t("deck.policies.hazardousSubstanceRegulation.name"),
+    description: t("deck.policies.hazardousSubstanceRegulation.description"),
+  },
+};
 
 const internalContext: { target: PlantCard | null; destination: AnimalCard | null } = {
   target: null,

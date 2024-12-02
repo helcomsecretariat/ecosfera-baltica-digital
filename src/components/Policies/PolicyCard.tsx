@@ -5,6 +5,7 @@ import GameElement from "../GameElement";
 import clsx from "clsx";
 import { Button } from "../ui/button";
 import { FaInfo } from "react-icons/fa6";
+import { uiStrings } from "@/state/machines/expansion";
 
 const PolicyCard = ({
   card,
@@ -19,6 +20,8 @@ const PolicyCard = ({
   allowActivation?: boolean;
   isOpaque?: boolean;
 }) => {
+  const cardName = card.name as keyof typeof uiStrings;
+
   return (
     <GameElement width={cardWidth} height={cardHeight} key={card.uid} cardUID={card.uid}>
       <Html transform scale={4}>
@@ -34,8 +37,8 @@ const PolicyCard = ({
                 : "h-56 bg-[#555]/50",
           )}
         >
-          <h1 className="font-bold">{card.name}</h1>
-          <p className="text-sm font-light">{card.description}</p>
+          <h1 className="font-bold">{uiStrings[cardName].name}</h1>
+          <p className="text-sm font-light">{uiStrings[cardName].description}</p>
           {!isActive && allowActivation && (
             <div className="flex w-full items-center justify-between space-x-2">
               <Button className="flex-1" onClick={onClick}>

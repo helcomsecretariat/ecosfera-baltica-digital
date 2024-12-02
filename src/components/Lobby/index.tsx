@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { generateRandomName, generateRandomString } from "@/lib/utils";
@@ -18,6 +19,7 @@ interface LobbyScreenProps {
 }
 
 const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
+  const { t } = useTranslation();
   const searchParams = new URLSearchParams(window.location.search);
   const urlSeed = searchParams.get("seed") ?? generateRandomString(8);
 
@@ -84,7 +86,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -300, opacity: 0 }}
               >
-                <label htmlFor={`playerName_${key}`}>Player {key + 1}</label>
+                <label htmlFor={`playerName_${key}`}>{t("lobby.player", { number: key + 1 })}</label>
                 <div className="flex gap-2">
                   <Input
                     type="text"
@@ -116,13 +118,13 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
               className="cursor-pointer text-xl transition-all group-hover:opacity-85"
               onClick={() => setplayerCount(playerCount + 1)}
             >
-              Add player
+              {t("lobby.addPlayer")}
             </span>
           </div>
         )}
         {/* Game Difficulty */}
         <div className="flex w-full justify-between">
-          <span>Difficulty</span>
+          <span>{t("lobby.difficulty")}</span>
           <div className="flex items-center justify-between space-x-6">
             <DifficultySelector onDifficultyChange={(difficulty: number) => setDifficulty(difficulty)} />
             <Popover>
@@ -137,10 +139,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
                 align="start"
                 className="max-w-xs rounded-md bg-white p-2 text-base text-black shadow-md"
               >
-                <p>
-                  Difficulty affects the total number of element cards that can be borrowed from the market throughout
-                  the game, not just in a single turn.{" "}
-                </p>
+                <p>{t("lobby.difficultyInfo")}</p>
               </PopoverContent>
             </Popover>
           </div>
@@ -148,7 +147,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
         {/* Advanced Options */}
         <Accordion type="single" collapsible className="!mt-0 w-full">
           <AccordionItem value="advanced">
-            <AccordionTrigger>Advanced Options </AccordionTrigger>
+            <AccordionTrigger>{t("lobby.advancedOptions")}</AccordionTrigger>
             <AccordionContent>
               <div className="mt-4 flex items-center space-x-3">
                 <Checkbox
@@ -158,12 +157,12 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
                   onClick={() => setUseExpansionPack(!useExpansionPack)}
                 />
                 <label htmlFor="expansionPack" className="flex items-center">
-                  Use expansion pack
+                  {t("lobby.useExpansionPack")}
                 </label>
               </div>
               <div className="mt-4 flex justify-between">
                 <label htmlFor="seed" className="mb-2 flex items-center">
-                  Seed
+                  {t("lobby.seed")}
                 </label>
                 <div className="flex items-center">
                   <Input
@@ -196,10 +195,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
                       align="start"
                       className="max-w-xs rounded-md bg-white p-2 text-base text-black shadow-md"
                     >
-                      <p>
-                        The seed ensures a consistent game deck shuffle. Using the same seed will result in the same
-                        deck order each time.
-                      </p>
+                      <p>{t("lobby.seedInfo")}</p>
                     </PopoverContent>
                   </Popover>
                 </div>
@@ -209,7 +205,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
         </Accordion>
         {/* Start Game Button */}
         <div className="flex w-full justify-center pt-12">
-          <ImageButton onClick={handleStartGame}>Play!</ImageButton>
+          <ImageButton onClick={handleStartGame}>{t("lobby.playButton")}</ImageButton>
         </div>
       </section>
     </div>

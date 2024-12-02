@@ -4,7 +4,7 @@ import { useGameState } from "@/context/game-state/hook";
 import withMaterialProvider from "@/components/utils/withMaterialProvider";
 import useAbilityTextures from "@/hooks/useAbilityTextures";
 
-const AbilityToken = ({ ability, color }: { ability: AbilityTileType; color?: string }) => {
+const AbilityToken = withMaterialProvider(({ ability, color }: { ability: AbilityTileType; color?: string }) => {
   const { emit } = useGameState();
   const { uiState } = useGameState();
 
@@ -24,6 +24,6 @@ const AbilityToken = ({ ability, color }: { ability: AbilityTileType; color?: st
       <meshBasicMaterial color={color ?? (ability.isUsed ? "#555" : "white")} map={abilityTextures[ability.name]} />
     </GameElement>
   );
-};
+});
 
-export default withMaterialProvider(AbilityToken);
+export default AbilityToken;

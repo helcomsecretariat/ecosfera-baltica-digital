@@ -58,11 +58,11 @@ export function createUID<T extends string>(prefix: T, id: string): UID<T> {
 
 export const mapFaunaType = (faunaType: string): FaunaType => {
   const faunaTypeMap: { [key: string]: FaunaType } = {
-    "birds": "bird",
+    birds: "bird",
     "fish/elasmobranch": "fish",
-    "mammals": "mammal",
-    "zooplankton": "zooplankton",
-    "zoobenthos": "zoobenthos"
+    mammals: "mammal",
+    zooplankton: "zooplankton",
+    zoobenthos: "zoobenthos",
   };
 
   return faunaTypeMap[faunaType] || "unknown";

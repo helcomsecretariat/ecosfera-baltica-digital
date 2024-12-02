@@ -14,14 +14,13 @@ const PlayerTitle = ({
   <GameElement gamePieceAppearance={gamePieceAppearance}>
     <TextWithShadow
       position={offset}
-      fontSize={2}
-      color="#FBF6E3"
-      shadowColor="white"
+      fontSize={2.1}
+      strokeColor="#ffffff"
+      outlineBlur={0}
       anchorX="center"
       anchorY="bottom"
       textAlign="left"
     >
-      {/* removing wierd space due to emoji */}
       {text}
     </TextWithShadow>
   </GameElement>

@@ -1,6 +1,6 @@
 // MaterialProvider.tsx
 
-import { createContext, ReactNode } from "react";
+import { createContext, ReactNode, useMemo } from "react";
 import {
   Material,
   MeshBasicMaterial,
@@ -21,7 +21,7 @@ type MaterialProps<T extends boolean> = T extends true ? MaterialPropsStandard :
 type MaterialContextType = {
   RelevantMaterial: <T extends boolean>(props: MaterialProps<T>) => JSX.Element;
   lightProps?: Partial<MeshStandardMaterial>;
-  getRelevantMaterial: <T extends boolean>(props: MaterialProps<T>) => Material;
+  getRelevantMaterial: <T extends boolean>(props?: MaterialProps<T>) => Material;
 };
 
 export const MaterialContext = createContext<MaterialContextType | undefined>(undefined);
@@ -30,6 +30,22 @@ export const MaterialProvider = ({ isGlossy, children }: { isGlossy: boolean; ch
   const lightProps = isGlossy
     ? ({ metalness: 0.8, roughness: 0.4, castShadow: true, recieveShadow: true } as Partial<MeshStandardMaterial>)
     : {};
+
+  const getRelevantMaterial = useMemo(
+    () =>
+      <T extends boolean>(props?: MaterialProps<T>): Material => {
+        if (isGlossy) {
+          return new MeshStandardMaterial({
+            ...(lightProps as MeshStandardMaterialParameters),
+            ...(props as MeshStandardMaterialParameters),
+          });
+        } else {
+          return new MeshBasicMaterial({ ...(props as MeshBasicMaterialParameters) });
+        }
+      },
+    [isGlossy, lightProps],
+  );
+
   const RelevantMaterial = <T extends boolean>(props: MaterialProps<T>) => {
     return isGlossy ? (
       <meshStandardMaterial
@@ -42,18 +58,6 @@ export const MaterialProvider = ({ isGlossy, children }: { isGlossy: boolean; ch
       <meshBasicMaterial {...(props as MaterialPropsBasic)} />
     );
   };
-
-  const getRelevantMaterial = <T extends boolean>(props: MaterialProps<T>): Material => {
-    if (isGlossy) {
-      return new MeshStandardMaterial({
-        ...(lightProps as MeshStandardMaterialParameters),
-        ...(props as MeshStandardMaterialParameters),
-      });
-    } else {
-      return new MeshBasicMaterial({ ...(props as MeshBasicMaterialParameters) });
-    }
-  };
-
   return (
     <MaterialContext.Provider value={{ RelevantMaterial, lightProps, getRelevantMaterial }}>
       {children}

@@ -1,0 +1,13 @@
+{
+  "lobby": {
+    "player": "Player {{number}}",
+    "addPlayer": "Add player",
+    "difficulty": "Difficulty",
+    "difficultyInfo": "Difficulty affects the total number of element cards that can be borrowed from the market throughout the game, not just in a single turn.",
+    "advancedOptions": "Advanced Options",
+    "useExpansionPack": "Use expansion pack",
+    "seed": "Seed",
+    "seedInfo": "The seed ensures a consistent game deck shuffle. Using the same seed will result in the same deck order each time.",
+    "playButton": "Play!"
+  }
+}

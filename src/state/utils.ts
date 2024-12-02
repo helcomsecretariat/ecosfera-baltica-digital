@@ -1,5 +1,5 @@
 import { baseDuration } from "@/constants/animation";
-import { Card, Coordinate, GamePieceAppearance, GameState, PlayerState, UID } from "@/state/types";
+import { Card, Coordinate, FaunaType, GamePieceAppearance, GameState, PlayerState, UID } from "@/state/types";
 import { find, isMatch } from "lodash-es";
 
 // algorith need a lenghty seed to work somewhat OK
@@ -55,6 +55,23 @@ export function findOwner(state: GameState, card: Card): PlayerState["uid"] {
 export function createUID<T extends string>(prefix: T, id: string): UID<T> {
   return `${prefix}-${id}` as UID<T>;
 }
+
+export const mapFaunaType = (faunaType: string): FaunaType => {
+  switch (faunaType) {
+    case "birds":
+      return "bird";
+    case "fish/elasmobranch":
+      return "fish";
+    case "mammals":
+      return "mammal";
+    case "zooplankton":
+      return "zooplankton";
+    case "zoobenthos":
+      return "zoobenthos";
+    default:
+      return "unknown";
+  }
+};
 
 export function getAngleSector(rawAngle: number, numSectors: number): number {
   return Math.floor((rawAngle / (2 * Math.PI)) * numSectors) % numSectors;

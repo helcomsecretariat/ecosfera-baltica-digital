@@ -20,7 +20,7 @@ import {
   PlantCard,
   PolicyCard,
 } from "./types";
-import { createUID } from "@/state/utils";
+import { createUID, mapFaunaType } from "@/state/utils";
 
 export class Croupier {
   private uid = 0;
@@ -55,6 +55,7 @@ export class Croupier {
       habitats: config.habitats,
       abilities,
       uid: `animal-${this.nextUid()}` as AnimalCard["uid"],
+      faunaType: mapFaunaType(config.fauna_type),
     }));
   }
 

@@ -207,12 +207,15 @@ export interface PolicyMarket extends Market<PolicyCard> {
   active: PolicyCard[];
 }
 
+export type FaunaType = "bird" | "zooplankton" | "mammal" | "zoobenthos" | "fish" | "unknown";
+
 export interface AnimalCard extends GamePieceBase {
   type: "animal";
   uid: AnimalUID;
 
   habitats: HabitatTile["name"][];
   abilities: AbilityName[];
+  faunaType: FaunaType;
 }
 
 export type PolicyEffect = "positive" | "negative" | "dual" | "implementation";

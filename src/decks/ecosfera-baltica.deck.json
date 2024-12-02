@@ -137,6 +137,12 @@
       "theme": "climateChange",
       "description": "Each time a player gets an impact-tile an additional impact-tile is added to the impact tile puzzle.",
       "usage": "permanent"
+    },
+    "Oil spill": {
+      "effect": "negative",
+      "theme": "hazard",
+      "description": "Discard all birds open on the table (in players hands and in the market). Cards in hands are not replaced.",
+      "usage": "single"
     }
   },
   "plants": {

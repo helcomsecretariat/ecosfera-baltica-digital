@@ -4,9 +4,17 @@ import { find, map, without } from "lodash";
 import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
+import i18n from "@/i18n";
 
-const cardPrefix = "wasteWaterTreatmentFailure";
-const cardName = "Waste water treatment failure";
+export const cardPrefix = "wasteWaterTreatmentFailure";
+export const cardName = "Waste water treatment failure";
+
+export const uiStrings = {
+  [cardName]: {
+    name: i18n.t("deck.policies.wasteWaterTreatmentFailure.name"),
+    description: i18n.t("deck.policies.wasteWaterTreatmentFailure.description"),
+  },
+} as const;
 
 export const actions = {
   [`${cardPrefix}Action`]: assign(({ context }: { context: GameState }) =>

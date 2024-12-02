@@ -228,7 +228,6 @@ export interface PolicyCard extends GamePieceBase {
 
   effect: PolicyEffect;
   theme: PolicyTheme;
-  description: string;
   usage: PolicyUsage;
 }
 

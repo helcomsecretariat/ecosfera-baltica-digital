@@ -9,5 +9,34 @@
     "seed": "Seed",
     "seedInfo": "The seed ensures a consistent game deck shuffle. Using the same seed will result in the same deck order each time.",
     "playButton": "Play!"
+  },
+  "deck": {
+    "policies": {
+      "funding": {
+        "name": "Funding",
+        "description": "This card must be paired with a measure card to allow the measure card to be implemented."
+      },
+      "hazardousSubstanceRegulation": {
+        "name": "Hazardous substance regulation",
+        "description": "You can pair a producer and an animal sharing the same habitat symbol to secure a habitat-tile"
+      },
+      "wasteWaterTreatmentFailure": {
+        "name": "Waste water treatment failure",
+        "description": "Every player with at least one nutrient card in their hand takes a human activity card and places it in their hand."
+      },
+      "warmSummer": {
+        "name": "Warm summer",
+        "description": "If min. one measure has been implemented when this card is lifted, all players can activate all action-tokens. If no measures have been implemented all players need to deactivate all action-token."
+      },
+      "climateChange": {
+        "name": "Climate change",
+        "description": "Each time a player gets an impact-tile an additional impact-tile is added to the impact tile puzzle.",
+        "stageEventText": "Because of climate change you get an additional extinction tile!"
+      },
+      "oilSpill": {
+        "name": "Oil spill",
+        "description": "Discard all birds open on the table (in players hands and in the market). Cards in hands are not replaced."
+      }
+    }
   }
 }

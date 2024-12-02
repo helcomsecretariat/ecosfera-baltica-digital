@@ -54,7 +54,6 @@ const policyUsageSchema = z.enum(["single", "permanent"]);
 const PolicyConfigSchema = deckItemConfig({
   effect: policyEffectSchema,
   theme: policyThemeSchema,
-  description: z.string(),
   usage: policyUsageSchema,
 });
 

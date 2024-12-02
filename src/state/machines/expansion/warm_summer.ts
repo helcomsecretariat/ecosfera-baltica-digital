@@ -4,9 +4,17 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { find, without } from "lodash";
+import i18n from "@/i18n";
 
-const cardPrefix = "warmSummer";
-const cardName = "Warm summer";
+export const cardPrefix = "warmSummer";
+export const cardName = "Warm summer";
+
+export const uiStrings = {
+  [cardName]: {
+    name: i18n.t("deck.policies.warmSummer.name"),
+    description: i18n.t("deck.policies.warmSummer.description"),
+  },
+} as const;
 
 export const actions = {
   [`${cardPrefix}Action`]: assign(({ context }: { context: GameState }) =>

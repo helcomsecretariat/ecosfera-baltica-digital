@@ -4,9 +4,17 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { concat, filter, find, without } from "lodash";
+import i18n from "@/i18n";
 
-const cardPrefix = "oilSpill";
-const cardName = "Oil spill";
+export const cardPrefix = "oilSpill";
+export const cardName = "Oil spill";
+
+export const uiStrings = {
+  [cardName]: {
+    name: i18n.t("deck.policies.oilSpill.name"),
+    description: i18n.t("deck.policies.oilSpill.description"),
+  },
+} as const;
 
 export const actions = {
   [`${cardPrefix}DiscardMarketBirds`]: assign(({ context }: { context: GameState }) =>

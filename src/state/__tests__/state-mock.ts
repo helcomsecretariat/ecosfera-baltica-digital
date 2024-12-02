@@ -1,5 +1,5 @@
 import { AnimalCard, ElementCard, GameState, PlantCard, PlayerState } from "@/state/types";
-import { createUID } from "@/state/utils";
+import { createUID, mapFaunaType } from "@/state/utils";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import { DeckConfig } from "@/decks/schema";
 
@@ -35,6 +35,7 @@ function animalFromDeck(name: string): AnimalCard {
     habitats: animalData.habitats,
     abilities: animalData.abilities,
     uid,
+    faunaType: mapFaunaType(animalData.fauna_type),
   };
 }
 

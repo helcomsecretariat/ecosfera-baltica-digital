@@ -2,6 +2,7 @@ import * as HazardousSubstanceRegulation from "./hazardous_substance_regulation"
 import * as WasteWaterTreatmentFailure from "./waste_water_treatment_failure";
 import * as WarmSummer from "./warm_summer";
 import * as ClimateChange from "./climate_change";
+import * as OilSpill from "./oil_spill";
 import { ExpansionActionFunctionMap } from "@/lib/types";
 
 export const expansionActions = {
@@ -9,6 +10,7 @@ export const expansionActions = {
   ...WasteWaterTreatmentFailure.actions,
   ...WarmSummer.actions,
   ...ClimateChange.actions,
+  ...OilSpill.actions,
 } as ExpansionActionFunctionMap;
 
 export const expansionState = {
@@ -16,12 +18,14 @@ export const expansionState = {
   ...WasteWaterTreatmentFailure.state,
   ...WarmSummer.state,
   ...ClimateChange.state,
+  ...OilSpill.state,
 };
 
 export const expansionConditionChecks = [
   HazardousSubstanceRegulation.conditionCheck,
   WasteWaterTreatmentFailure.conditionCheck,
   WarmSummer.conditionCheck,
+  OilSpill.conditionCheck,
 ];
 
 export const expansionStageEventText = {

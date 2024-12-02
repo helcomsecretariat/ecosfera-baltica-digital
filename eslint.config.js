@@ -20,7 +20,8 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      // forcing this to keep HMR working. We care about development experience.
+      "react-refresh/only-export-components": ["error", { allowConstantExport: true }],
       "no-restricted-imports": [
         "error",
         {

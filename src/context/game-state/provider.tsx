@@ -1,31 +1,13 @@
-import { createContext, ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import { useMachine } from "@xstate/react";
-import { GameConfig, GameState, UiState } from "@/state/types";
-import { ActorRefFrom, SnapshotFrom, type EventFromLogic } from "xstate";
-import { ActionEmmiters, ActionTesters, createEmmiters, createGuards, createTesters } from "@/state/action-handlers";
+import { GameConfig } from "@/state/types";
+import { createEmmiters, createGuards, createTesters } from "@/state/action-handlers";
 import { eventLogger } from "@/state/machines/utils";
 import { TurnMachine } from "@/state/machines/turn";
 import type { DeckConfig } from "@/decks/schema";
 import { useAnimControls } from "@/hooks/useAnimationControls";
-import { ContextInjectedGuardMap } from "@/state/machines/guards";
-
-interface StateContextType {
-  snap: SnapshotFrom<typeof TurnMachine>;
-  actorRef: ActorRefFrom<typeof TurnMachine>;
-  state: GameState;
-  send: (e: EventFromLogic<typeof TurnMachine>) => void;
-  emit: ActionEmmiters;
-  test: ActionTesters;
-  guards: ContextInjectedGuardMap;
-  hasTag: (tag: string) => boolean;
-  uiState: UiState;
-  gameConfig: GameConfig;
-  showPolicies: boolean;
-  setShowPolicies: (show: boolean) => void;
-}
-
-export const stateContext = createContext<StateContextType | undefined>(undefined);
+import { stateContext } from "@/context/game-state/context";
 
 export const GameStateProvider = ({
   children,

@@ -57,22 +57,16 @@ export function createUID<T extends string>(prefix: T, id: string): UID<T> {
 }
 
 export const mapFaunaType = (faunaType: string): FaunaType => {
-  switch (faunaType) {
-    case "birds":
-      return "bird";
-    case "fish/elasmobranch":
-      return "fish";
-    case "mammals":
-      return "mammal";
-    case "zooplankton":
-      return "zooplankton";
-    case "zoobenthos":
-      return "zoobenthos";
-    default:
-      return "unknown";
-  }
-};
+  const faunaTypeMap: { [key: string]: FaunaType } = {
+    "birds": "bird",
+    "fish/elasmobranch": "fish",
+    "mammals": "mammal",
+    "zooplankton": "zooplankton",
+    "zoobenthos": "zoobenthos"
+  };
 
+  return faunaTypeMap[faunaType] || "unknown";
+};
 export function getAngleSector(rawAngle: number, numSectors: number): number {
   return Math.floor((rawAngle / (2 * Math.PI)) * numSectors) % numSectors;
 }

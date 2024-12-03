@@ -140,6 +140,21 @@
       "effect": "negative",
       "theme": "hazard",
       "usage": "single"
+    },
+    "Habitat restoration": {
+      "effect": "positive",
+      "theme": "restore",
+      "usage": "single"
+    },
+    "Bubble curtains": {
+      "effect": "positive",
+      "theme": "noise",
+      "usage": "single"
+    },
+    "Nutrient upwelling and internal nutrient cycling": {
+      "effect": "dual",
+      "theme": "eutro",
+      "usage": "single"
     }
   },
   "plants": {

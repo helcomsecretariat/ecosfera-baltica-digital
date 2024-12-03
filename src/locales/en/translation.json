@@ -52,6 +52,18 @@
       "atmosphericDeposition": {
         "name": "Atmospheric deposition of hazardous substances",
         "description": "Remove Calanoida from the game, irrespective of where it is."
+      },
+      "habitatRestoration": {
+        "name": "Habitat restoration",
+        "description": "You can remove one impact-tile from the impact tile-puzzle"
+      },
+      "bubbleCurtains": {
+        "name": "Bubble curtains",
+        "description": "All players can restore all three of their ability tokens."
+      },
+      "nutrientUpwelling": {
+        "name": "Nutrient upwelling and internal nutrient cycling",
+        "description": "All players take turns (starting from the active player) to add up to two nutrient cards to their hand, or until the market is empty."
       }
     }
   }

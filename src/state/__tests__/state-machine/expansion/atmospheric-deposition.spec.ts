@@ -1,12 +1,17 @@
 import { expect, test } from "vitest";
 import { getTestActor } from "../../utils";
-import { filter, find } from "lodash";
+import { concat, filter, find } from "lodash";
 
 test("removing calanoida from animal table", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
+  stateBefore.animalMarket.deck = concat(stateBefore.animalMarket.deck, stateBefore.animalMarket.table);
+  stateBefore.animalMarket.table = [];
   const calanoida = find(stateBefore.animalMarket.deck, { name: "Calanoida" })!;
-  stateBefore.animalMarket.table = stateBefore.animalMarket.table.slice(0, 3);
+  stateBefore.animalMarket.table = filter(
+    stateBefore.animalMarket.deck,
+    (animalDeckCard) => animalDeckCard.name !== "Calanoida",
+  ).slice(0, 3);
   stateBefore.animalMarket.table.push(calanoida);
 
   const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
@@ -36,6 +41,8 @@ test("removing calanoida from animal table", async () => {
 test("removing calanoida from animal deck", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
+  stateBefore.animalMarket.deck = concat(stateBefore.animalMarket.deck, stateBefore.animalMarket.table);
+  stateBefore.animalMarket.table = [];
   const calanoida = find(stateBefore.animalMarket.deck, { name: "Calanoida" })!;
 
   const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
@@ -64,6 +71,8 @@ test("removing calanoida from animal deck", async () => {
 test("removing calanoida from singleplayer cards", async () => {
   const { send, getState } = getTestActor({}, true, 1);
   const stateBefore = getState();
+  stateBefore.animalMarket.deck = concat(stateBefore.animalMarket.deck, stateBefore.animalMarket.table);
+  stateBefore.animalMarket.table = [];
   const calanoida = find(stateBefore.animalMarket.deck, { name: "Calanoida" })!;
   stateBefore.players[0].hand.push(calanoida);
   stateBefore.players[0].deck.push(calanoida);
@@ -97,6 +106,8 @@ test("removing calanoida from singleplayer cards", async () => {
 test("removing calanoida from multiplayer cards", async () => {
   const { send, getState } = getTestActor({}, true, 4);
   const stateBefore = getState();
+  stateBefore.animalMarket.deck = concat(stateBefore.animalMarket.deck, stateBefore.animalMarket.table);
+  stateBefore.animalMarket.table = [];
   const calanoida = find(stateBefore.animalMarket.deck, { name: "Calanoida" })!;
   stateBefore.players[2].hand.push(calanoida);
   stateBefore.players[2].deck.push(calanoida);

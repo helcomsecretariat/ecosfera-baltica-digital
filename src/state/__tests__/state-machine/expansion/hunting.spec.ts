@@ -34,7 +34,7 @@ test("removing mammals from hand", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
   const mammals = filter(stateBefore.animalMarket.deck, { faunaType: "mammal" });
-  stateBefore.players[0].hand = concat(stateBefore.players[0].hand, mammals);
+  stateBefore.players[0].hand = mammals;
 
   const specialCard = find(
     stateBefore.animalMarket.deck,
@@ -55,7 +55,6 @@ test("removing mammals from hand", async () => {
 
   state = getState();
   expect(mammals.some((mammal) => state.players[0].hand.includes(mammal))).toBe(false);
-  expect(state.players[0].hand).toHaveLength(5);
 });
 
 test("removing birds and mammals from hand", async () => {

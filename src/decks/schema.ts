@@ -48,7 +48,15 @@ const AnimalConfigSchema = deckItemConfig({
 });
 
 const policyEffectSchema = z.enum(["positive", "negative", "dual", "implementation"]);
-const policyThemeSchema = z.enum(["hazard", "eutro", "climateChange", "extractionOfSpecies", "N/A"]);
+const policyThemeSchema = z.enum([
+  "hazard",
+  "eutro",
+  "climateChange",
+  "extractionOfSpecies",
+  "restore",
+  "noise",
+  "N/A",
+]);
 const policyUsageSchema = z.enum(["single", "permanent"]);
 
 const PolicyConfigSchema = deckItemConfig({

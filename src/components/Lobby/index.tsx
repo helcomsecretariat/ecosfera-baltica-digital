@@ -26,7 +26,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
   const [playerCount, setplayerCount] = useState<number>(3);
   const [playerNames, setPlayerNames] = useState<string[]>(Array(4).fill(""));
   const [difficulty, setDifficulty] = useState<number>(1);
-  const [useExpansionPack, setUseExpansionPack] = useState(true);
+  const [useExpansionPack, setUseExpansionPack] = useState(false);
   const [seed, setSeed] = useState<string>(urlSeed);
   const nameInputRefs = useRef<HTMLInputElement[]>([]);
   const seedInputRef = useRef<HTMLInputElement>(null);

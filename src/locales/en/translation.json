@@ -36,6 +36,22 @@
       "oilSpill": {
         "name": "Oil spill",
         "description": "Discard all birds open on the table (in players hands and in the market). Cards in hands are not replaced."
+      },
+      "hazardousIndustrialSubstances": {
+        "name": "Hazardous substances from industry",
+        "description": "Discard all producer cards on the table (in each players hands and in the market). Cards in hands are not replaced."
+      },
+      "overfishing": {
+        "name": "Overfishing",
+        "description": "Discard all fish open on the table (in players hands and in the market). Cards in hands are not replaced."
+      },
+      "hunting": {
+        "name": "Hunting",
+        "description": "Permanently remove all mammals and birds in your hand from the game."
+      },
+      "atmosphericDeposition": {
+        "name": "Atmospheric deposition of hazardous substances",
+        "description": "Remove Calanoida from the game, irrespective of where it is."
       }
     }
   }

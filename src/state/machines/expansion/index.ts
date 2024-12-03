@@ -4,6 +4,10 @@ import * as WarmSummer from "./warm_summer";
 import * as ClimateChange from "./climate_change";
 import * as OilSpill from "./oil_spill";
 import * as Funding from "./funding.ts";
+import * as HazardousIndustrialSubstances from "./hazardous_industrial_substances";
+import * as Overfishing from "./overfishing";
+import * as Hunting from "./hunting";
+import * as AtmosphericDeposition from "./atmospheric_deposition";
 import { ExpansionActionFunctionMap } from "@/lib/types";
 
 export const names = [
@@ -13,6 +17,10 @@ export const names = [
   WasteWaterTreatmentFailure.cardName,
   HazardousSubstanceRegulation.cardName,
   Funding.cardName,
+  HazardousIndustrialSubstances.cardName,
+  Overfishing.cardName,
+  Hunting.cardName,
+  AtmosphericDeposition.cardName,
 ] as const;
 
 export const uiStrings = {
@@ -22,6 +30,10 @@ export const uiStrings = {
   ...WasteWaterTreatmentFailure.uiStrings,
   ...HazardousSubstanceRegulation.uiStrings,
   ...Funding.uiStrings,
+  ...HazardousIndustrialSubstances.uiStrings,
+  ...Overfishing.uiStrings,
+  ...Hunting.uiStrings,
+  ...AtmosphericDeposition.uiStrings,
 };
 
 export const expansionActions = {
@@ -30,6 +42,10 @@ export const expansionActions = {
   ...WarmSummer.actions,
   ...ClimateChange.actions,
   ...OilSpill.actions,
+  ...HazardousIndustrialSubstances.actions,
+  ...Overfishing.actions,
+  ...Hunting.actions,
+  ...AtmosphericDeposition.actions,
 } as ExpansionActionFunctionMap;
 
 export const expansionState = {
@@ -38,6 +54,10 @@ export const expansionState = {
   ...WarmSummer.state,
   ...ClimateChange.state,
   ...OilSpill.state,
+  ...HazardousIndustrialSubstances.state,
+  ...Overfishing.state,
+  ...Hunting.state,
+  ...AtmosphericDeposition.state,
 };
 
 export const expansionConditionChecks = [
@@ -45,6 +65,10 @@ export const expansionConditionChecks = [
   WasteWaterTreatmentFailure.conditionCheck,
   WarmSummer.conditionCheck,
   OilSpill.conditionCheck,
+  HazardousIndustrialSubstances.conditionCheck,
+  Overfishing.conditionCheck,
+  Hunting.conditionCheck,
+  AtmosphericDeposition.conditionCheck,
 ];
 
 export const expansionStageEventText = {

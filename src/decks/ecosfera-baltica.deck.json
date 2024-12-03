@@ -120,6 +120,26 @@
       "effect": "negative",
       "theme": "hazard",
       "usage": "single"
+    },
+    "Hazardous substances from industry": {
+      "effect": "negative",
+      "theme": "hazard",
+      "usage": "single"
+    },
+    "Overfishing": {
+      "effect": "negative",
+      "theme": "extractionOfSpecies",
+      "usage": "single"
+    },
+    "Hunting": {
+      "effect": "negative",
+      "theme": "extractionOfSpecies",
+      "usage": "single"
+    },
+    "Atmospheric deposition of hazardous substances": {
+      "effect": "negative",
+      "theme": "hazard",
+      "usage": "single"
     }
   },
   "plants": {

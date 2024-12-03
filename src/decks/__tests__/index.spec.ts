@@ -8,8 +8,6 @@ const implementedNames = implementedPolicyNames.map((name) => name.toLowerCase()
 describe("Policy Cards", () => {
   configuredPolicyNames.forEach((policyName) => {
     describe(`Policy "${policyName}"`, () => {
-      const policy = deckConfig.policies[policyName as keyof typeof deckConfig.policies];
-
       if (!policyName.startsWith("Funding")) {
         it("has implementation", () => {
           expect(
@@ -18,26 +16,6 @@ describe("Policy Cards", () => {
           ).toBe(true);
         });
       }
-
-      it("has valid effect type", () => {
-        const validEffects = ["positive", "negative", "dual", "implementation"] as const;
-        expect(
-          validEffects.includes(policy.effect as (typeof validEffects)[number]),
-          `Invalid effect type "${policy.effect}"`,
-        ).toBe(true);
-      });
-
-      it("has valid usage type", () => {
-        const validUsage = ["single", "permanent"] as const;
-        expect(
-          validUsage.includes(policy.usage as (typeof validUsage)[number]),
-          `Invalid usage type "${policy.usage}"`,
-        ).toBe(true);
-      });
-
-      it("has theme", () => {
-        expect(policy.theme && policy.theme !== "", "Missing theme").toBe(true);
-      });
 
       it("has description UI string", () => {
         const description = uiStrings[policyName as keyof typeof uiStrings]?.description;

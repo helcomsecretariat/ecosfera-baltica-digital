@@ -9,9 +9,8 @@ test("removing calanoida from animal table", async () => {
   stateBefore.animalMarket.table = stateBefore.animalMarket.table.slice(0, 3);
   stateBefore.animalMarket.table.push(calanoida);
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType === "fish",
+  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
+    animalDeckCard.abilities.includes("special"),
   )!;
   stateBefore.players[0].hand.push(specialCard);
   stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, {
@@ -39,9 +38,8 @@ test("removing calanoida from animal deck", async () => {
   const stateBefore = getState();
   const calanoida = find(stateBefore.animalMarket.deck, { name: "Calanoida" })!;
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType === "fish",
+  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
+    animalDeckCard.abilities.includes("special"),
   )!;
   stateBefore.players[0].hand.push(specialCard);
   stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, {
@@ -71,9 +69,8 @@ test("removing calanoida from singleplayer cards", async () => {
   stateBefore.players[0].deck.push(calanoida);
   stateBefore.players[0].discard.push(calanoida);
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType === "fish",
+  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
+    animalDeckCard.abilities.includes("special"),
   )!;
   stateBefore.players[0].hand.push(specialCard);
   stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, {
@@ -105,9 +102,8 @@ test("removing calanoida from multiplayer cards", async () => {
   stateBefore.players[2].deck.push(calanoida);
   stateBefore.players[2].discard.push(calanoida);
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType === "fish",
+  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
+    animalDeckCard.abilities.includes("special"),
   )!;
   stateBefore.players[0].hand.push(specialCard);
   stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, {

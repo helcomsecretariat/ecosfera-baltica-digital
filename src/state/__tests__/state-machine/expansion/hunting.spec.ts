@@ -10,7 +10,7 @@ test("removing birds from hand", async () => {
 
   const specialCard = find(
     stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType === "fish",
+    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType !== "bird",
   )!;
   stateBefore.players[0].hand.push(specialCard);
   stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Hunting" });
@@ -38,7 +38,7 @@ test("removing mammals from hand", async () => {
 
   const specialCard = find(
     stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType === "fish",
+    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType !== "mammal",
   )!;
   stateBefore.players[0].hand.push(specialCard);
   stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Hunting" });
@@ -67,7 +67,10 @@ test("removing birds and mammals from hand", async () => {
 
   const specialCard = find(
     stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType === "fish",
+    (animalDeckCard) =>
+      animalDeckCard.abilities.includes("special") &&
+      animalDeckCard.faunaType !== "bird" &&
+      animalDeckCard.faunaType !== "mammal",
   )!;
   stateBefore.players[0].hand.push(specialCard);
   stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Hunting" });
@@ -94,7 +97,10 @@ test("removing when hand contains no birds or mammals", async () => {
 
   const specialCard = find(
     stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType === "fish",
+    (animalDeckCard) =>
+      animalDeckCard.abilities.includes("special") &&
+      animalDeckCard.faunaType !== "bird" &&
+      animalDeckCard.faunaType !== "mammal",
   )!;
   stateBefore.players[0].hand.push(specialCard);
   stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Hunting" });

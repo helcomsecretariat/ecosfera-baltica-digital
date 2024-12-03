@@ -4,9 +4,17 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { filter, find, without } from "lodash";
+import i18n from "@/i18n";
 
-const cardPrefix = "hunting";
-const cardName = "Hunting";
+export const cardPrefix = "hunting";
+export const cardName = "Hunting";
+
+export const uiStrings = {
+  [cardName]: {
+    name: i18n.t("deck.policies.hunting.name"),
+    description: i18n.t("deck.policies.hunting.description"),
+  },
+} as const;
 
 export const actions = {
   [`${cardPrefix}RemovePlayerBirdsAndMammals`]: assign(({ context }: { context: GameState }) =>

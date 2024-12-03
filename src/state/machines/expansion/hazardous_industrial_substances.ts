@@ -4,9 +4,17 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { concat, filter, find, without } from "lodash";
+import i18n from "@/i18n";
 
-const cardPrefix = "hazardousIndustrialSubstances";
-const cardName = "Hazardous substances from industry";
+export const cardPrefix = "hazardousIndustrialSubstances";
+export const cardName = "Hazardous substances from industry";
+
+export const uiStrings = {
+  [cardName]: {
+    name: i18n.t("deck.policies.hazardousIndustrialSubstances.name"),
+    description: i18n.t("deck.policies.hazardousIndustrialSubstances.description"),
+  },
+} as const;
 
 export const actions = {
   [`${cardPrefix}DiscardMarketPlants`]: assign(({ context }: { context: GameState }) =>

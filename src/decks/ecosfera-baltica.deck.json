@@ -124,25 +124,21 @@
     "Hazardous substances from industry": {
       "effect": "negative",
       "theme": "hazard",
-      "description": "Discard all producer cards on the table (in each players hands and in the market). Cards in hands are not replaced.",
       "usage": "single"
     },
     "Overfishing": {
       "effect": "negative",
       "theme": "extractionOfSpecies",
-      "description": "Discard all fish open on the table (in players hands and in the market). Cards in hands are not replaced.",
       "usage": "single"
     },
     "Hunting": {
       "effect": "negative",
       "theme": "extractionOfSpecies",
-      "description": "Permanently remove all mammals and birds in your hand from the game.",
       "usage": "single"
     },
     "Atmospheric deposition of hazardous substances": {
       "effect": "negative",
       "theme": "hazard",
-      "description": "Remove Calanoida from the game, irrespective of where it is.",
       "usage": "single"
     }
   },

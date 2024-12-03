@@ -17,6 +17,10 @@ export const names = [
   WasteWaterTreatmentFailure.cardName,
   HazardousSubstanceRegulation.cardName,
   Funding.cardName,
+  HazardousIndustrialSubstances.cardName,
+  Overfishing.cardName,
+  Hunting.cardName,
+  AtmosphericDeposition.cardName,
 ] as const;
 
 export const uiStrings = {
@@ -26,6 +30,10 @@ export const uiStrings = {
   ...WasteWaterTreatmentFailure.uiStrings,
   ...HazardousSubstanceRegulation.uiStrings,
   ...Funding.uiStrings,
+  ...HazardousIndustrialSubstances.uiStrings,
+  ...Overfishing.uiStrings,
+  ...Hunting.uiStrings,
+  ...AtmosphericDeposition.uiStrings,
 };
 
 export const expansionActions = {

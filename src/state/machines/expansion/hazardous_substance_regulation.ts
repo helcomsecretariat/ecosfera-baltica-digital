@@ -5,15 +5,14 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { and } from "xstate";
-import { t } from "i18next";
-
+import i18n from "@/i18n";
 export const cardPrefix = "hazardousSubstanceRegulation";
 export const cardName = "Hazardous substance regulation";
 
 export const uiStrings = {
   [cardName]: {
-    name: t("deck.policies.hazardousSubstanceRegulation.name"),
-    description: t("deck.policies.hazardousSubstanceRegulation.description"),
+    name: i18n.t("deck.policies.hazardousSubstanceRegulation.name"),
+    description: i18n.t("deck.policies.hazardousSubstanceRegulation.description"),
   },
 };
 

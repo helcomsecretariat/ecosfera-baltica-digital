@@ -4,36 +4,28 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { concat, filter, find, without } from "lodash";
-import i18n from "@/i18n";
 
-export const cardPrefix = "oilSpill";
-export const cardName = "Oil spill";
-
-export const uiStrings = {
-  [cardName]: {
-    name: i18n.t("deck.policies.oilSpill.name"),
-    description: i18n.t("deck.policies.oilSpill.description"),
-  },
-} as const;
+const cardPrefix = "overfishing";
+const cardName = "Overfishing";
 
 export const actions = {
-  [`${cardPrefix}DiscardMarketBirds`]: assign(({ context }: { context: GameState }) =>
+  [`${cardPrefix}DiscardMarketFish`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
-      const marketBirds = filter(context.animalMarket.table, { faunaType: "bird" });
-      draft.animalMarket.table = without(context.animalMarket.table, ...marketBirds);
-      draft.animalMarket.deck = concat(context.animalMarket.deck, marketBirds);
+      const marketFish = filter(context.animalMarket.table, { faunaType: "fish" });
+      draft.animalMarket.table = without(context.animalMarket.table, ...marketFish);
+      draft.animalMarket.deck = concat(context.animalMarket.deck, marketFish);
 
-      const replacementAnimals = context.animalMarket.deck.slice(0, marketBirds.length);
+      const replacementAnimals = context.animalMarket.deck.slice(0, marketFish.length);
       draft.animalMarket.deck = without(draft.animalMarket.deck, ...replacementAnimals);
       draft.animalMarket.table = concat(draft.animalMarket.table, replacementAnimals);
     }),
   ),
-  [`${cardPrefix}DiscardPlayerBirds`]: assign(({ context }: { context: GameState }) =>
+  [`${cardPrefix}DiscardPlayerFish`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
       draft.players.forEach((player) => {
-        const playerBirds = filter(filter(player.hand, { type: "animal" }) as AnimalCard[], { faunaType: "bird" });
-        player.hand = without(player.hand, ...playerBirds);
-        player.discard = concat(player.discard, playerBirds);
+        const playerFish = filter(filter(player.hand, { type: "animal" }) as AnimalCard[], { faunaType: "fish" });
+        player.hand = without(player.hand, ...playerFish);
+        player.discard = concat(player.discard, playerFish);
       });
     }),
   ),
@@ -59,16 +51,16 @@ export const state: {
 } = {
   [cardPrefix]: {
     tags: ["policy", cardPrefix],
-    initial: "discardMarketBirds",
+    initial: "discardMarketFish",
     states: {
-      discardMarketBirds: {
-        entry: [`${cardPrefix}DiscardMarketBirds`],
+      discardMarketFish: {
+        entry: [`${cardPrefix}DiscardMarketFish`],
         after: {
-          animationDuration: "discardPlayerBirds",
+          animationDuration: "discardPlayerFish",
         },
       },
-      discardPlayerBirds: {
-        entry: [`${cardPrefix}DiscardPlayerBirds`],
+      discardPlayerFish: {
+        entry: [`${cardPrefix}DiscardPlayerFish`],
         after: {
           animationDuration: "done",
         },

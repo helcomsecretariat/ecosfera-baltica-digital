@@ -74,7 +74,15 @@ const Menu = () => {
           </div>
           <div className="flex items-center space-x-2 text-xl">
             <MdHexagon className="h-6 w-6 text-blue-500" />
-            <span>{filter(state.habitatMarket.deck, { isAcquired: true }).length}/6</span>
+            <span>
+              {
+                filter(
+                  state.habitatMarket.deck,
+                  (habitatTile) => habitatTile.name !== "baltic" && habitatTile.isAcquired,
+                ).length
+              }
+              /6
+            </span>
           </div>
         </div>
       </div>

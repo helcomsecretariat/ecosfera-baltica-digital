@@ -74,7 +74,8 @@ const Card = ({
     return elementsOrdering
       .filter((element) => card.elements.includes(element))
       .flatMap((element) => Array.from({ length: card.elements.filter((n) => n === element).length }, () => element));
-  }, []);
+  }, [card]);
+
   const namePaddingBottom = elementsSorted.length > 0 ? ELEMENT_ICON_RADIUS * 2 + paddingBottom * 2 : paddingBottom;
 
   return (

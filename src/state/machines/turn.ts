@@ -598,7 +598,6 @@ export const TurnMachine = setup({
 
     unlockPolicyCard: assign(({ context }: { context: GameState }, card: PolicyCard) =>
       produce(context, (draft) => {
-        console.log("askdfalsdkf");
         draft.policyMarket.acquired = without(context.policyMarket.acquired, card);
         draft.policyMarket.table.push(card);
         draft.policyMarket.funding = context.policyMarket.funding.slice(0, -1);

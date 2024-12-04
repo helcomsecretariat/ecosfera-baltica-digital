@@ -155,6 +155,21 @@
       "effect": "dual",
       "theme": "eutro",
       "usage": "single"
+    },
+    "Excessive fertiliser use": {
+      "effect": "negative",
+      "theme": "eutro",
+      "usage": "single"
+    },
+    "Upgraded waste water treatment": {
+      "effect": "positive",
+      "theme": "eutro",
+      "usage": "single"
+    },
+    "Improved nutrient retention in agriculture": {
+      "effect": "positive",
+      "theme": "eutro",
+      "usage": "permanent"
     }
   },
   "plants": {

@@ -1,6 +1,6 @@
 import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
-import { filter, find } from "lodash";
+import { activatePolicy, getTestActor } from "@/state/__tests__/utils";
+import { filter } from "lodash";
 
 test("distributes two elements in singplayer", async () => {
   const { send, getState } = getTestActor({}, true, 1);
@@ -11,20 +11,7 @@ test("distributes two elements in singplayer", async () => {
     (card) => card.name !== "nutrients",
   ).slice(0, 4);
 
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, {
-    name: "Nutrient upwelling and internal nutrient cycling",
-  });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
+  activatePolicy(stateBefore, send, "Nutrient upwelling and internal nutrient cycling");
 
   send({ type: "user.click.stage.confirm" });
 
@@ -49,20 +36,7 @@ test("partially distributes elements in singplayer", async () => {
     ...filter(stateBefore.elementMarket.deck, { name: "nutrients" }).slice(0, 1),
   ];
 
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, {
-    name: "Nutrient upwelling and internal nutrient cycling",
-  });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
+  activatePolicy(stateBefore, send, "Nutrient upwelling and internal nutrient cycling");
 
   send({ type: "user.click.stage.confirm" });
 
@@ -86,20 +60,7 @@ test("distributes two elements in multiplayer", async () => {
     };
   });
 
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, {
-    name: "Nutrient upwelling and internal nutrient cycling",
-  });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
+  activatePolicy(stateBefore, send, "Nutrient upwelling and internal nutrient cycling");
 
   send({ type: "user.click.stage.confirm" });
 
@@ -126,20 +87,7 @@ test("partially distributes elements in multiplayer", async () => {
     ...filter(stateBefore.elementMarket.deck, { name: "nutrients" }).slice(0, 4),
   ];
 
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, {
-    name: "Nutrient upwelling and internal nutrient cycling",
-  });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
+  activatePolicy(stateBefore, send, "Nutrient upwelling and internal nutrient cycling");
 
   send({ type: "user.click.stage.confirm" });
 
@@ -163,20 +111,7 @@ test("no distribution with empty deck", async () => {
   });
   stateBefore.elementMarket.deck = [...filter(stateBefore.elementMarket.deck, (card) => card.name !== "nutrients")];
 
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, {
-    name: "Nutrient upwelling and internal nutrient cycling",
-  });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
+  activatePolicy(stateBefore, send, "Nutrient upwelling and internal nutrient cycling");
 
   send({ type: "user.click.stage.confirm" });
 

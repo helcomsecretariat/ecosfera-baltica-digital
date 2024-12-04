@@ -327,4 +327,7 @@ export function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoor
   return updatedCards;
 }
 
-const log = (...args: unknown[]) => console.log(...args);
+// @disable-next-line no-unused-vars
+const log = (...args: unknown[]) => {
+  console.log(...args);
+};

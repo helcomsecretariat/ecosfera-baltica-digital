@@ -11,6 +11,9 @@ import * as AtmosphericDeposition from "./atmospheric_deposition";
 import * as HabitatRestoration from "./habitat_restoration";
 import * as BubbleCurtains from "./bubble_curtains";
 import * as NutrientUpwelling from "./nutrient_upwelling";
+import * as ExcessiveFertilizerUse from "./excessive_fertilizer_use";
+import * as UpgradedWasteWaterTreatment from "./upgraded_waste_water_treatment";
+import * as ImprovedNutrientRetention from "./improved_nutrient_retention";
 import { ExpansionActionFunctionMap } from "@/lib/types";
 
 export const names = [
@@ -27,6 +30,9 @@ export const names = [
   HabitatRestoration.cardName,
   BubbleCurtains.cardName,
   NutrientUpwelling.cardName,
+  ExcessiveFertilizerUse.cardName,
+  UpgradedWasteWaterTreatment.cardName,
+  ImprovedNutrientRetention.cardName,
 ] as const;
 
 export const uiStrings = {
@@ -43,6 +49,9 @@ export const uiStrings = {
   ...HabitatRestoration.uiStrings,
   ...BubbleCurtains.uiStrings,
   ...NutrientUpwelling.uiStrings,
+  ...ExcessiveFertilizerUse.uiStrings,
+  ...UpgradedWasteWaterTreatment.uiStrings,
+  ...ImprovedNutrientRetention.uiStrings,
 };
 
 export const expansionActions = {
@@ -58,6 +67,9 @@ export const expansionActions = {
   ...HabitatRestoration.actions,
   ...BubbleCurtains.actions,
   ...NutrientUpwelling.actions,
+  ...ExcessiveFertilizerUse.actions,
+  ...UpgradedWasteWaterTreatment.actions,
+  ...ImprovedNutrientRetention.actions,
 } as ExpansionActionFunctionMap;
 
 export const expansionState = {
@@ -73,6 +85,9 @@ export const expansionState = {
   ...HabitatRestoration.state,
   ...BubbleCurtains.state,
   ...NutrientUpwelling.state,
+  ...ExcessiveFertilizerUse.state,
+  ...UpgradedWasteWaterTreatment.state,
+  ...ImprovedNutrientRetention.state,
 };
 
 export const expansionConditionChecks = [
@@ -87,6 +102,9 @@ export const expansionConditionChecks = [
   HabitatRestoration.conditionCheck,
   BubbleCurtains.conditionCheck,
   NutrientUpwelling.conditionCheck,
+  ExcessiveFertilizerUse.conditionCheck,
+  UpgradedWasteWaterTreatment.conditionCheck,
+  ImprovedNutrientRetention.conditionCheck,
 ];
 
 export const expansionStageEventText = {

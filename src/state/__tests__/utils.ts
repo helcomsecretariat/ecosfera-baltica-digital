@@ -5,14 +5,19 @@ import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import { DeckConfig } from "@/decks/schema";
 import { Card } from "@/state/types";
 
-export function getTestActor(input?: Partial<TurnMachineContext>, useSpecialCards?: boolean, playerCount?: number) {
+export function getTestActor(
+  input?: Partial<TurnMachineContext>,
+  useSpecialCards?: boolean,
+  playerCount?: number,
+  difficulty?: 1 | 2 | 3 | 4 | 5 | 6,
+) {
   const actor = createActor(TurnMachine, {
     input: {
       deckConfig: deckConfig as unknown as DeckConfig,
       gameConfig: {
         playerCount: playerCount ?? 2,
         seed: "42",
-        difficulty: 3,
+        difficulty: difficulty ?? 3,
         playersPosition: "around",
         useSpecialCards: useSpecialCards ?? false,
         playerNames: ["", ""],

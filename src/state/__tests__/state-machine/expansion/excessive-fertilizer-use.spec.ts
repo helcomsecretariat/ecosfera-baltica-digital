@@ -1,106 +1,72 @@
 import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
-import { every, filter, find, without } from "lodash";
+import { activatePolicy, getTestActor } from "@/state/__tests__/utils";
 
 test("distributing nutrient cards to active player", async () => {
   const { send, getState } = getTestActor({}, true, 1);
   const stateBefore = getState();
 
-  stateBefore.players[0].hand = filter(
-    [...stateBefore.players[0].deck, ...stateBefore.players[0].hand],
-    (card) => card.name !== "nutrients",
-  ).slice(0, 4);
+  stateBefore.players[0].hand = [...stateBefore.players[0].deck, ...stateBefore.players[0].hand]
+    .filter((card) => card.name !== "nutrients")
+    .slice(0, 4);
 
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Excessive fertiliser use" });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  send({ type: "user.click.stage.confirm" });
+  activatePolicy(stateBefore, send, "Excessive fertiliser use");
 
   const state = getState();
-  expect(
-    filter(stateBefore.elementMarket.deck, { name: "nutrients" }).length -
-      filter(state.elementMarket.deck, { name: "nutrients" }).length,
-  ).toBe(2);
-  expect(filter(state.players[0].hand, { name: "nutrients" })).toHaveLength(2);
+  const marketNutrientsBefore = stateBefore.elementMarket.deck.filter((card) => card.name === "nutrients").length;
+  const marketNutrientsAfter = state.elementMarket.deck.filter((card) => card.name === "nutrients").length;
+  const playerNutrientsBefore = stateBefore.players[0].hand.filter((card) => card.name === "nutrients").length;
+  const playerNutrientsAfter = state.players[0].hand.filter((card) => card.name === "nutrients").length;
+
+  expect(marketNutrientsBefore - marketNutrientsAfter).toBe(2);
+  expect(playerNutrientsAfter - playerNutrientsBefore).toBe(2);
 });
 
 test("distributing disaster card to active player", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
 
-  stateBefore.players[0].hand = filter(
-    [...stateBefore.players[0].deck, ...stateBefore.players[0].hand],
-    (card) => card.name !== "nutrients" && card.type !== "disaster",
-  ).slice(0, 4);
-  stateBefore.elementMarket.deck = [
-    ...filter(stateBefore.elementMarket.deck, (card) => card.name !== "nutrients"),
-    ...filter(stateBefore.elementMarket.deck, { name: "nutrients" }).slice(0, 1),
-  ];
+  stateBefore.players[0].hand = [...stateBefore.players[0].deck, ...stateBefore.players[0].hand]
+    .filter((card) => card.name !== "nutrients" && card.type !== "disaster")
+    .slice(0, 4);
 
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Excessive fertiliser use" });
+  stateBefore.elementMarket.deck = [...stateBefore.elementMarket.deck]
+    .filter((card) => card.name !== "nutrients")
+    .concat([...stateBefore.elementMarket.deck].filter((card) => card.name === "nutrients").slice(0, 1));
 
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  send({ type: "user.click.stage.confirm" });
+  activatePolicy(stateBefore, send, "Excessive fertiliser use");
 
   const state = getState();
-  expect(
-    filter(stateBefore.elementMarket.deck, { name: "nutrients" }).length -
-      filter(state.elementMarket.deck, { name: "nutrients" }).length,
-  ).toBe(0);
-  expect(filter(stateBefore.players[0].hand, { type: "disaster" })).toHaveLength(0);
-  expect(filter(state.players[0].hand, { type: "disaster" })).toHaveLength(1);
+  const nutrientsBefore = stateBefore.elementMarket.deck.filter((card) => card.name === "nutrients").length;
+  const nutrientsAfter = state.elementMarket.deck.filter((card) => card.name === "nutrients").length;
+
+  expect(nutrientsBefore - nutrientsAfter).toBe(0);
+  expect(stateBefore.players[0].hand.filter((card) => card.type === "disaster").length).toBe(0);
+  expect(state.players[0].hand.filter((card) => card.type === "disaster").length).toBe(1);
 });
 
 test("removing oxygen cards from hands", async () => {
   const { send, getState } = getTestActor({}, true, 4);
   const stateBefore = getState();
 
-  const oxygenCards = filter(stateBefore.elementMarket.deck, { name: "oxygen" }).slice(0, stateBefore.players.length);
-  stateBefore.players = stateBefore.players.map((player, index) => {
-    return { ...player, hand: [oxygenCards[index]] };
-  });
-  stateBefore.elementMarket.deck = without(stateBefore.elementMarket.deck, ...oxygenCards);
+  const oxygenCards = [...stateBefore.elementMarket.deck]
+    .filter((card) => card.name === "oxygen")
+    .slice(0, stateBefore.players.length);
 
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Excessive fertiliser use" });
+  stateBefore.players = stateBefore.players.map((player, index) => ({
+    ...player,
+    hand: [oxygenCards[index]],
+  }));
 
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
+  stateBefore.elementMarket.deck = [...stateBefore.elementMarket.deck].filter((card) => !oxygenCards.includes(card));
 
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  send({ type: "user.click.stage.confirm" });
+  activatePolicy(stateBefore, send, "Excessive fertiliser use");
 
   const state = getState();
-  expect(
-    filter(state.elementMarket.deck, { name: "oxygen" }).length -
-      filter(stateBefore.elementMarket.deck, { name: "oxygen" }).length,
-  ).toBe(4);
-  expect(every(stateBefore.players, (player) => filter(player.hand, { name: "oxygen" }).length === 1)).toBe(true);
-  expect(every(state.players, (player) => filter(player.hand, { name: "oxygen" }).length === 0)).toBe(true);
+  const oxygenBefore = stateBefore.elementMarket.deck.filter((card) => card.name === "oxygen").length;
+  const oxygenAfter = state.elementMarket.deck.filter((card) => card.name === "oxygen").length;
+
+  expect(oxygenAfter - oxygenBefore).toBe(4);
+
+  stateBefore.players.forEach((player) => expect(player.hand.filter((card) => card.name === "oxygen").length).toBe(1));
+  state.players.forEach((player) => expect(player.hand.filter((card) => card.name === "oxygen").length).toBe(0));
 });

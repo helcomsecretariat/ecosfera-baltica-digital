@@ -1,116 +1,79 @@
 import { expect, test } from "vitest";
-import { getTestActor } from "../../utils";
-import { concat, filter, find } from "lodash";
+import { activatePolicy, getTestActor } from "../../utils";
+import { remove } from "lodash";
 
 test("removing birds from hand", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
-  const birds = filter(stateBefore.animalMarket.deck, { faunaType: "bird" });
-  stateBefore.players[0].hand = concat(stateBefore.players[0].hand, birds);
+  const birds = remove(stateBefore.animalMarket.deck, { faunaType: "bird" });
+  const handBeforeAddingBirds = [...stateBefore.players[0].hand];
+  stateBefore.players[0].hand = [...stateBefore.players[0].hand, ...birds];
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType !== "bird",
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Hunting" });
+  activatePolicy(stateBefore, send, "Hunting");
 
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  let state = getState();
-  send({ type: "user.click.stage.confirm" });
-
-  state = getState();
+  const state = getState();
   expect(birds.some((bird) => state.players[0].hand.includes(bird))).toBe(false);
-  expect(state.players[0].hand).toHaveLength(5);
+  expect(state.players[0].hand).toEqual(handBeforeAddingBirds);
 });
 
 test("removing mammals from hand", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
-  const mammals = filter(stateBefore.animalMarket.deck, { faunaType: "mammal" });
-  stateBefore.players[0].hand = [...mammals];
+  const specialCards = remove(stateBefore.plantMarket.deck, { abilities: ["special"] });
+  const mammals = remove(stateBefore.animalMarket.deck, { faunaType: "mammal" });
 
-  const specialCard = find(stateBefore.plantMarket.deck, (plantMarketCard) =>
-    plantMarketCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Hunting" });
+  stateBefore.players[0].hand = [...stateBefore.players[0].hand, ...specialCards];
+  const handBeforeAddingMammals = [...stateBefore.players[0].hand];
+  stateBefore.players[0].hand = [...stateBefore.players[0].hand, ...mammals];
 
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  send({ type: "user.click.stage.confirm" });
+  activatePolicy(stateBefore, send, "Hunting");
 
   const state = getState();
+  expect(state.players[0].hand).toEqual(handBeforeAddingMammals);
   expect(mammals.some((mammal) => state.players[0].hand.includes(mammal))).toBe(false);
 });
 
 test("removing birds and mammals from hand", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
-  const birds = filter(stateBefore.animalMarket.deck, { faunaType: "bird" });
-  const mammals = filter(stateBefore.animalMarket.deck, { faunaType: "mammal" });
-  stateBefore.players[0].hand = concat(stateBefore.players[0].hand, [...birds, ...mammals]);
+  const birds = remove(stateBefore.animalMarket.deck, { faunaType: "bird" });
+  const mammals = remove(stateBefore.animalMarket.deck, { faunaType: "mammal" });
+  const handBeforeAddingAnimals = [...stateBefore.players[0].hand];
+  stateBefore.players[0].hand = [...stateBefore.players[0].hand, ...birds, ...mammals];
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) =>
-      animalDeckCard.abilities.includes("special") &&
-      animalDeckCard.faunaType !== "bird" &&
-      animalDeckCard.faunaType !== "mammal",
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Hunting" });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  send({ type: "user.click.stage.confirm" });
+  activatePolicy(stateBefore, send, "Hunting");
 
   const state = getState();
   expect(birds.some((bird) => state.players[0].hand.includes(bird))).toBe(false);
   expect(mammals.some((mammal) => state.players[0].hand.includes(mammal))).toBe(false);
-  expect(state.players[0].hand).toHaveLength(5);
+  expect(state.players[0].hand).toEqual(handBeforeAddingAnimals);
 });
 
 test("removing when hand contains no birds or mammals", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
+  const handBefore = [...stateBefore.players[0].hand];
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) =>
-      animalDeckCard.abilities.includes("special") &&
-      animalDeckCard.faunaType !== "bird" &&
-      animalDeckCard.faunaType !== "mammal",
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Hunting" });
+  activatePolicy(stateBefore, send, "Hunting");
 
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
+  const state = getState();
+  expect(state.players[0].hand).toEqual(handBefore);
+});
 
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
+test("other animals remain in hand after hunting", async () => {
+  const { send, getState } = getTestActor({}, true);
+  const stateBefore = getState();
 
-  let state = getState();
-  send({ type: "user.click.stage.confirm" });
+  const birds = remove(stateBefore.animalMarket.deck, { faunaType: "bird" });
+  const mammals = remove(stateBefore.animalMarket.deck, { faunaType: "mammal" });
+  const reptiles = remove(stateBefore.animalMarket.deck, { faunaType: "zoobenthos" });
 
-  state = getState();
-  expect(state.players[0].hand).toHaveLength(5);
+  stateBefore.players[0].hand = [...stateBefore.players[0].hand, ...reptiles, ...birds, ...mammals];
+
+  activatePolicy(stateBefore, send, "Hunting");
+
+  const state = getState();
+  expect(birds.some((bird) => state.players[0].hand.includes(bird))).toBe(false);
+  expect(mammals.some((mammal) => state.players[0].hand.includes(mammal))).toBe(false);
+  expect(reptiles.every((reptile) => state.players[0].hand.includes(reptile))).toBe(true);
 });

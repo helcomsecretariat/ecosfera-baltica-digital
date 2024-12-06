@@ -1,10 +1,12 @@
 import { test, expect } from "vitest";
-import { activatePolicy, getTestActor } from "@/state/__tests__/utils";
+import { getTestActor } from "@/state/__tests__/utils";
 import { filter, find, without } from "lodash";
 import { removeOne } from "@/lib/utils";
 
 test("discarding market with birds", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
   const marketDeckBird = find(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, marketDeckBird);
@@ -14,7 +16,10 @@ test("discarding market with birds", async () => {
   ];
   const tableBefore = [...stateBefore.animalMarket.table];
 
-  activatePolicy(stateBefore, send, "Oil spill");
+  activatePolicy({
+    policyName: "Oil spill",
+    stateBefore,
+  });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();
@@ -29,13 +34,18 @@ test("discarding market with birds", async () => {
 });
 
 test("discarding market with birds when deck is empty", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
   const marketDeckBird = removeOne(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
   stateBefore.animalMarket.table = [marketDeckBird];
   stateBefore.animalMarket.deck = [];
 
-  activatePolicy(stateBefore, send, "Oil spill");
+  activatePolicy({
+    policyName: "Oil spill",
+    stateBefore,
+  });
 
   const state = getState();
   expect(state.animalMarket.deck).toContain(marketDeckBird);
@@ -44,7 +54,9 @@ test("discarding market with birds when deck is empty", async () => {
 });
 
 test("discarding market with birds when deck is partially empty", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
   const marketDeckBirds = filter(stateBefore.animalMarket.deck, { faunaType: "bird" }).slice(0, 3);
   const marketDeckNonBirds = filter(stateBefore.animalMarket.deck, (card) => card.faunaType !== "bird");
@@ -53,7 +65,10 @@ test("discarding market with birds when deck is partially empty", async () => {
   stateBefore.animalMarket.deck = marketDeckNonBirds.slice(2, 3);
   const tableBefore = [...stateBefore.animalMarket.table];
 
-  activatePolicy(stateBefore, send, "Oil spill");
+  activatePolicy({
+    policyName: "Oil spill",
+    stateBefore,
+  });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();
@@ -72,13 +87,18 @@ test("discarding market with birds when deck is partially empty", async () => {
 });
 
 test("discarding market without birds", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
   const nonBirdCards = filter(stateBefore.animalMarket.deck, (card) => card.faunaType !== "bird").slice(0, 4);
   stateBefore.animalMarket.table = nonBirdCards;
   const tableBefore = [...stateBefore.animalMarket.table];
 
-  activatePolicy(stateBefore, send, "Oil spill");
+  activatePolicy({
+    policyName: "Oil spill",
+    stateBefore,
+  });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();
@@ -86,13 +106,19 @@ test("discarding market without birds", async () => {
 });
 
 test("discarding singleplayer with bird", async () => {
-  const { send, getState } = getTestActor({}, true, 1);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 1,
+  });
   const stateBefore = getState();
   const marketDeckBird = find(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, marketDeckBird);
   stateBefore.players[0].hand = [marketDeckBird];
 
-  activatePolicy(stateBefore, send, "Oil spill");
+  activatePolicy({
+    policyName: "Oil spill",
+    stateBefore,
+  });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();
@@ -101,7 +127,10 @@ test("discarding singleplayer with bird", async () => {
 });
 
 test("discarding multiplayer with birds", async () => {
-  const { send, getState } = getTestActor({}, true, 4);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 4,
+  });
   const stateBefore = getState();
   const marketDeckBirds = filter(stateBefore.animalMarket.deck, { faunaType: "bird" }).slice(0, 4);
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, ...marketDeckBirds);
@@ -110,7 +139,10 @@ test("discarding multiplayer with birds", async () => {
     player.hand = [marketDeckBirds[index]];
   });
 
-  activatePolicy(stateBefore, send, "Oil spill");
+  activatePolicy({
+    policyName: "Oil spill",
+    stateBefore,
+  });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();
@@ -124,12 +156,18 @@ test("discarding multiplayer with birds", async () => {
 });
 
 test("discarding singleplayer without bird", async () => {
-  const { send, getState } = getTestActor({}, true, 1);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 1,
+  });
   const stateBefore = getState();
   const nonBirdCard = find(stateBefore.animalMarket.deck, (card) => card.faunaType !== "bird")!;
   stateBefore.players[0].hand = [nonBirdCard];
 
-  activatePolicy(stateBefore, send, "Oil spill");
+  activatePolicy({
+    policyName: "Oil spill",
+    stateBefore,
+  });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();
@@ -137,7 +175,10 @@ test("discarding singleplayer without bird", async () => {
 });
 
 test("discarding multiplayer without birds", async () => {
-  const { send, getState } = getTestActor({}, true, 4);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 4,
+  });
   const stateBefore = getState();
   const nonBirdCards = filter(stateBefore.animalMarket.deck, { faunaType: "fish" }).slice(0, 4);
 
@@ -149,7 +190,10 @@ test("discarding multiplayer without birds", async () => {
     player.hand.push(nonBirdCards[index]);
   });
 
-  activatePolicy(stateBefore, send, "Oil spill");
+  activatePolicy({
+    policyName: "Oil spill",
+    stateBefore,
+  });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();

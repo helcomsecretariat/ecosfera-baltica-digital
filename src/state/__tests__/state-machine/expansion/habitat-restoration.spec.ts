@@ -1,16 +1,21 @@
 import { test, expect } from "vitest";
-import { activatePolicy, getTestActor } from "@/state/__tests__/utils";
+import { getTestActor } from "@/state/__tests__/utils";
 import { without } from "lodash";
 
 test("restoring extinction tile", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
 
   const extinctionTile = stateBefore.extinctMarket.deck[0];
   stateBefore.extinctMarket.deck = without(stateBefore.extinctMarket.deck, extinctionTile);
   stateBefore.extinctMarket.table = [...stateBefore.extinctMarket.table, extinctionTile];
 
-  activatePolicy(stateBefore, send, "Habitat restoration");
+  activatePolicy({
+    policyName: "Habitat restoration",
+    stateBefore,
+  });
 
   const state = getState();
   expect(state.policyMarket.funding).toHaveLength(0);

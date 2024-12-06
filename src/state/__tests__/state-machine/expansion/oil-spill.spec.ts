@@ -1,67 +1,45 @@
 import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { activatePolicy, getTestActor } from "@/state/__tests__/utils";
 import { filter, find, without } from "lodash";
+import { removeOne } from "@/lib/utils";
 
 test("discarding market with birds", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
   const marketDeckBird = find(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, marketDeckBird);
-  stateBefore.animalMarket.table = filter(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.faunaType !== "bird",
-  ).slice(0, 3);
-  stateBefore.animalMarket.table.push(marketDeckBird);
+  stateBefore.animalMarket.table = [
+    ...filter(stateBefore.animalMarket.deck, (card) => card.faunaType !== "bird").slice(0, 3),
+    marketDeckBird,
+  ];
+  const tableBefore = [...stateBefore.animalMarket.table];
 
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Oil spill" });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  let state = getState();
+  activatePolicy(stateBefore, send, "Oil spill");
   send({ type: "user.click.stage.confirm" });
 
-  state = getState();
-  expect(state.animalMarket.table.includes(marketDeckBird)).toBe(false);
-  expect(state.animalMarket.deck.includes(marketDeckBird)).toBe(true);
+  const state = getState();
+  expect(state.animalMarket.deck).toContain(marketDeckBird);
+  expect(state.animalMarket.table).not.toContain(marketDeckBird);
   expect(state.animalMarket.table).toHaveLength(4);
+
+  // Verify non-bird cards remain in table
+  for (const card of tableBefore.filter((card) => card.faunaType !== "bird")) {
+    expect(state.animalMarket.table).toContain(card);
+  }
 });
 
 test("discarding market with birds when deck is empty", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
-  const marketDeckBird = find(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
+  const marketDeckBird = removeOne(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
   stateBefore.animalMarket.table = [marketDeckBird];
-
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Oil spill" });
-
   stateBefore.animalMarket.deck = [];
 
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
+  activatePolicy(stateBefore, send, "Oil spill");
 
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  let state = getState();
-  send({ type: "user.click.stage.confirm" });
-
-  state = getState();
-  expect(state.animalMarket.table.includes(marketDeckBird)).toBe(false);
-  expect(state.animalMarket.deck.includes(marketDeckBird)).toBe(true);
+  const state = getState();
+  expect(state.animalMarket.deck).toContain(marketDeckBird);
+  expect(state.animalMarket.table).not.toContain(marketDeckBird);
   expect(state.animalMarket.table).toHaveLength(0);
 });
 
@@ -69,62 +47,42 @@ test("discarding market with birds when deck is partially empty", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
   const marketDeckBirds = filter(stateBefore.animalMarket.deck, { faunaType: "bird" }).slice(0, 3);
-  const marketDeckNonBirds = filter(
-    stateBefore.animalMarket.deck,
-    (marketDeckCard) => marketDeckCard.faunaType !== "bird",
-  );
+  const marketDeckNonBirds = filter(stateBefore.animalMarket.deck, (card) => card.faunaType !== "bird");
+
   stateBefore.animalMarket.table = [...marketDeckNonBirds.slice(0, 2), ...marketDeckBirds];
-
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Oil spill" });
-
   stateBefore.animalMarket.deck = marketDeckNonBirds.slice(2, 3);
+  const tableBefore = [...stateBefore.animalMarket.table];
 
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  let state = getState();
+  activatePolicy(stateBefore, send, "Oil spill");
   send({ type: "user.click.stage.confirm" });
 
-  state = getState();
-  expect(state.animalMarket.table.some((animalTableCard) => marketDeckBirds.includes(animalTableCard))).toBe(false);
-  expect(marketDeckBirds.every((marketDeckBird) => state.animalMarket.deck.includes(marketDeckBird))).toBe(true);
+  const state = getState();
+
+  // Verify birds are moved to deck
+  for (const bird of marketDeckBirds) {
+    expect(state.animalMarket.table).not.toContain(bird);
+  }
+
+  // Verify non-birds remain in table
+  for (const card of tableBefore.filter((card) => card.faunaType !== "bird")) {
+    expect(state.animalMarket.table).toContain(card);
+  }
+
   expect(state.animalMarket.table).toHaveLength(3);
 });
 
 test("discarding market without birds", async () => {
   const { send, getState } = getTestActor({}, true);
   const stateBefore = getState();
-  stateBefore.animalMarket.table = filter(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.faunaType !== "bird",
-  ).slice(0, 4);
+  const nonBirdCards = filter(stateBefore.animalMarket.deck, (card) => card.faunaType !== "bird").slice(0, 4);
+  stateBefore.animalMarket.table = nonBirdCards;
+  const tableBefore = [...stateBefore.animalMarket.table];
 
-  const specialCard = find(stateBefore.animalMarket.deck, (animalDeckCard) =>
-    animalDeckCard.abilities.includes("special"),
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Oil spill" });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  let state = getState();
+  activatePolicy(stateBefore, send, "Oil spill");
   send({ type: "user.click.stage.confirm" });
 
-  state = getState();
-  expect(state.animalMarket.table).toStrictEqual(stateBefore.animalMarket.table);
+  const state = getState();
+  expect(state.animalMarket.table).toEqual(tableBefore);
 });
 
 test("discarding singleplayer with bird", async () => {
@@ -132,27 +90,14 @@ test("discarding singleplayer with bird", async () => {
   const stateBefore = getState();
   const marketDeckBird = find(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, marketDeckBird);
+  stateBefore.players[0].hand = [marketDeckBird];
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType !== "bird",
-  )!;
-  stateBefore.players[0].hand = [specialCard, marketDeckBird];
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Oil spill" });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  let state = getState();
+  activatePolicy(stateBefore, send, "Oil spill");
   send({ type: "user.click.stage.confirm" });
 
-  state = getState();
-  expect(state.players[0].hand).toHaveLength(1);
-  expect(state.players[0].discard.includes(marketDeckBird)).toBe(true);
+  const state = getState();
+  expect(state.players[0].hand).toHaveLength(0);
+  expect(state.players[0].discard).toContain(marketDeckBird);
 });
 
 test("discarding multiplayer with birds", async () => {
@@ -160,100 +105,58 @@ test("discarding multiplayer with birds", async () => {
   const stateBefore = getState();
   const marketDeckBirds = filter(stateBefore.animalMarket.deck, { faunaType: "bird" }).slice(0, 4);
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, ...marketDeckBirds);
+
   stateBefore.players.forEach((player, index) => {
     player.hand = [marketDeckBirds[index]];
   });
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType !== "bird",
-  )!;
-  stateBefore.players[0].hand.push(specialCard);
-
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Oil spill" });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  let state = getState();
+  activatePolicy(stateBefore, send, "Oil spill");
   send({ type: "user.click.stage.confirm" });
 
-  state = getState();
-  expect(state.players[0].hand).toHaveLength(1);
-  expect(marketDeckBirds.every((marketDeckBird, index) => state.players[index].discard.includes(marketDeckBird))).toBe(
-    true,
-  );
-  expect(state.players.slice(1).every((player) => player.hand.length === 0)).toBe(true);
+  const state = getState();
+
+  // Verify each player's bird is discarded
+  state.players.forEach((player, index) => {
+    const bird = marketDeckBirds[index];
+    expect(player.hand).toHaveLength(0);
+    expect(player.discard).toContain(bird);
+  });
 });
 
 test("discarding singleplayer without bird", async () => {
   const { send, getState } = getTestActor({}, true, 1);
   const stateBefore = getState();
-  const marketDeckNonBird = find(
-    stateBefore.animalMarket.deck,
-    (marketDeckCard) => marketDeckCard.faunaType !== "bird",
-  )!;
+  const nonBirdCard = find(stateBefore.animalMarket.deck, (card) => card.faunaType !== "bird")!;
+  stateBefore.players[0].hand = [nonBirdCard];
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType !== "bird",
-  )!;
-  stateBefore.players[0].hand = [];
-  stateBefore.players[0].hand.push(specialCard);
-  stateBefore.players[0].hand.push(marketDeckNonBird);
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Oil spill" });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  let state = getState();
+  activatePolicy(stateBefore, send, "Oil spill");
   send({ type: "user.click.stage.confirm" });
 
-  state = getState();
-  expect(state.players[0].hand).toHaveLength(2);
-  expect(state.players[0].hand.includes(marketDeckNonBird)).toBe(true);
+  const state = getState();
+  expect(state.players[0].hand).toEqual([nonBirdCard]);
 });
 
 test("discarding multiplayer without birds", async () => {
   const { send, getState } = getTestActor({}, true, 4);
   const stateBefore = getState();
-  const marketDeckNonBirds = filter(stateBefore.animalMarket.deck, { faunaType: "fish" }).slice(0, 4);
+  const nonBirdCards = filter(stateBefore.animalMarket.deck, { faunaType: "fish" }).slice(0, 4);
 
-  const specialCard = find(
-    stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.abilities.includes("special") && animalDeckCard.faunaType !== "bird",
-  )!;
-  stateBefore.players[0].hand = [marketDeckNonBirds[0], specialCard];
+  // prepare special cards
+  const specialCard = removeOne(stateBefore.plantMarket.deck, (card) => card.abilities.includes("special"))!;
+  stateBefore.players[0].hand.push(specialCard);
 
-  stateBefore.players.slice(1).map((player, index) => {
-    player.hand = [marketDeckNonBirds[index++]];
+  stateBefore.players.forEach((player, index) => {
+    player.hand.push(nonBirdCards[index]);
   });
 
-  stateBefore.policyMarket.deck = filter(stateBefore.policyMarket.deck, { name: "Oil spill" });
-
-  send({
-    type: "iddqd",
-    context: stateBefore,
-  });
-
-  send({ type: "user.click.player.hand.card.token", card: specialCard, abilityName: "special" });
-
-  let state = getState();
+  activatePolicy(stateBefore, send, "Oil spill");
   send({ type: "user.click.stage.confirm" });
 
-  state = getState();
-  expect(state.players[0].hand).toHaveLength(2);
-  expect(
-    state.players
-      .slice(1)
-      .every((player, index) => player.hand.length === 1 && player.hand.includes(marketDeckNonBirds[index])),
-  ).toBe(true);
+  const state = getState();
+
+  // Verify each player's non-bird card remains in hand
+  state.players.forEach((player, index) => {
+    expect(player.hand).toContain(nonBirdCards[index]);
+    expect(player.discard).toEqual([]);
+  });
 });

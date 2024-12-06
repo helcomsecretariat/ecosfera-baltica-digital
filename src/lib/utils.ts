@@ -1,6 +1,8 @@
 import { DeckConfig } from "@/decks/schema";
 import { Card } from "@/state/types";
 import { clsx, type ClassValue } from "clsx";
+import { ListIterateeCustom } from "lodash";
+import { findIndex } from "lodash-es";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -167,4 +169,12 @@ export function getCardComparator(ordering: DeckConfig["ordering"]): (a: Card, b
 
     return a.uid.localeCompare(b.uid);
   };
+}
+
+export function removeOne<T>(array: T[], predicate: ListIterateeCustom<T, boolean>): T | undefined {
+  const index = findIndex(array, predicate);
+  if (index > -1) {
+    return array.splice(index, 1)[0];
+  }
+  return undefined;
 }

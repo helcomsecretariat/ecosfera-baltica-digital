@@ -1,9 +1,12 @@
 import { test, expect } from "vitest";
-import { activatePolicy, getTestActor } from "@/state/__tests__/utils";
+import { getTestActor } from "@/state/__tests__/utils";
 import { filter } from "lodash";
 
 test("distributes two elements in singplayer", async () => {
-  const { send, getState } = getTestActor({}, true, 1);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 1,
+  });
   const stateBefore = getState();
 
   stateBefore.players[0].hand = filter(
@@ -11,7 +14,10 @@ test("distributes two elements in singplayer", async () => {
     (card) => card.name !== "nutrients",
   ).slice(0, 4);
 
-  activatePolicy(stateBefore, send, "Nutrient upwelling and internal nutrient cycling");
+  activatePolicy({
+    policyName: "Nutrient upwelling and internal nutrient cycling",
+    stateBefore,
+  });
 
   send({ type: "user.click.stage.confirm" });
 
@@ -24,7 +30,10 @@ test("distributes two elements in singplayer", async () => {
 });
 
 test("partially distributes elements in singplayer", async () => {
-  const { send, getState } = getTestActor({}, true, 1);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 1,
+  });
   const stateBefore = getState();
 
   stateBefore.players[0].hand = filter(
@@ -36,7 +45,10 @@ test("partially distributes elements in singplayer", async () => {
     ...filter(stateBefore.elementMarket.deck, { name: "nutrients" }).slice(0, 1),
   ];
 
-  activatePolicy(stateBefore, send, "Nutrient upwelling and internal nutrient cycling");
+  activatePolicy({
+    policyName: "Nutrient upwelling and internal nutrient cycling",
+    stateBefore,
+  });
 
   send({ type: "user.click.stage.confirm" });
 
@@ -50,7 +62,11 @@ test("partially distributes elements in singplayer", async () => {
 });
 
 test("distributes two elements in multiplayer", async () => {
-  const { send, getState } = getTestActor({}, true, 4, 1);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 4,
+    difficulty: 1,
+  });
   const stateBefore = getState();
 
   stateBefore.players = stateBefore.players.map((player) => {
@@ -60,7 +76,10 @@ test("distributes two elements in multiplayer", async () => {
     };
   });
 
-  activatePolicy(stateBefore, send, "Nutrient upwelling and internal nutrient cycling");
+  activatePolicy({
+    policyName: "Nutrient upwelling and internal nutrient cycling",
+    stateBefore,
+  });
 
   send({ type: "user.click.stage.confirm" });
 
@@ -73,7 +92,10 @@ test("distributes two elements in multiplayer", async () => {
 });
 
 test("partially distributes elements in multiplayer", async () => {
-  const { send, getState } = getTestActor({}, true, 4);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 4,
+  });
   const stateBefore = getState();
 
   stateBefore.players = stateBefore.players.map((player) => {
@@ -87,7 +109,10 @@ test("partially distributes elements in multiplayer", async () => {
     ...filter(stateBefore.elementMarket.deck, { name: "nutrients" }).slice(0, 4),
   ];
 
-  activatePolicy(stateBefore, send, "Nutrient upwelling and internal nutrient cycling");
+  activatePolicy({
+    policyName: "Nutrient upwelling and internal nutrient cycling",
+    stateBefore,
+  });
 
   send({ type: "user.click.stage.confirm" });
 
@@ -100,7 +125,10 @@ test("partially distributes elements in multiplayer", async () => {
 });
 
 test("no distribution with empty deck", async () => {
-  const { send, getState } = getTestActor({}, true, 4);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 4,
+  });
   const stateBefore = getState();
 
   stateBefore.players = stateBefore.players.map((player) => {
@@ -111,7 +139,10 @@ test("no distribution with empty deck", async () => {
   });
   stateBefore.elementMarket.deck = [...filter(stateBefore.elementMarket.deck, (card) => card.name !== "nutrients")];
 
-  activatePolicy(stateBefore, send, "Nutrient upwelling and internal nutrient cycling");
+  activatePolicy({
+    policyName: "Nutrient upwelling and internal nutrient cycling",
+    stateBefore,
+  });
 
   send({ type: "user.click.stage.confirm" });
 

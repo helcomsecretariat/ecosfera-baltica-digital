@@ -1,15 +1,20 @@
 import { test, expect } from "vitest";
-import { activatePolicy, getTestActor } from "@/state/__tests__/utils";
+import { getTestActor } from "@/state/__tests__/utils";
 
 test("distributing nutrient cards to active player", async () => {
-  const { send, getState } = getTestActor({}, true, 1);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
 
   stateBefore.players[0].hand = [...stateBefore.players[0].deck, ...stateBefore.players[0].hand]
     .filter((card) => card.name !== "nutrients")
     .slice(0, 4);
 
-  activatePolicy(stateBefore, send, "Excessive fertiliser use");
+  activatePolicy({
+    policyName: "Excessive fertiliser use",
+    stateBefore,
+  });
 
   const state = getState();
   const marketNutrientsBefore = stateBefore.elementMarket.deck.filter((card) => card.name === "nutrients").length;
@@ -22,7 +27,9 @@ test("distributing nutrient cards to active player", async () => {
 });
 
 test("distributing disaster card to active player", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
 
   stateBefore.players[0].hand = [...stateBefore.players[0].deck, ...stateBefore.players[0].hand]
@@ -33,7 +40,10 @@ test("distributing disaster card to active player", async () => {
     .filter((card) => card.name !== "nutrients")
     .concat([...stateBefore.elementMarket.deck].filter((card) => card.name === "nutrients").slice(0, 1));
 
-  activatePolicy(stateBefore, send, "Excessive fertiliser use");
+  activatePolicy({
+    policyName: "Excessive fertiliser use",
+    stateBefore,
+  });
 
   const state = getState();
   const nutrientsBefore = stateBefore.elementMarket.deck.filter((card) => card.name === "nutrients").length;
@@ -45,7 +55,10 @@ test("distributing disaster card to active player", async () => {
 });
 
 test("removing oxygen cards from hands", async () => {
-  const { send, getState } = getTestActor({}, true, 4);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 4,
+  });
   const stateBefore = getState();
 
   const oxygenCards = [...stateBefore.elementMarket.deck]
@@ -59,7 +72,10 @@ test("removing oxygen cards from hands", async () => {
 
   stateBefore.elementMarket.deck = [...stateBefore.elementMarket.deck].filter((card) => !oxygenCards.includes(card));
 
-  activatePolicy(stateBefore, send, "Excessive fertiliser use");
+  activatePolicy({
+    policyName: "Excessive fertiliser use",
+    stateBefore,
+  });
 
   const state = getState();
   const oxygenBefore = stateBefore.elementMarket.deck.filter((card) => card.name === "oxygen").length;

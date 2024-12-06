@@ -1,12 +1,17 @@
 import { test, expect } from "vitest";
-import { activatePolicy, getTestActor } from "@/state/__tests__/utils";
+import { getTestActor } from "@/state/__tests__/utils";
 
 test("discarding plant market", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
   const tablePlantsBefore = stateBefore.plantMarket.table;
 
-  activatePolicy(stateBefore, send, "Hazardous substances from industry");
+  activatePolicy({
+    policyName: "Hazardous substances from industry",
+    stateBefore,
+  });
 
   const state = getState();
 
@@ -23,13 +28,18 @@ test("discarding plant market", async () => {
 });
 
 test("discarding plant market when deck is empty", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
   const tablePlantsBefore = stateBefore.plantMarket.table;
 
   stateBefore.plantMarket.deck = [];
 
-  activatePolicy(stateBefore, send, "Hazardous substances from industry");
+  activatePolicy({
+    policyName: "Hazardous substances from industry",
+    stateBefore,
+  });
 
   const state = getState();
 
@@ -46,13 +56,18 @@ test("discarding plant market when deck is empty", async () => {
 });
 
 test("discarding plant market when deck is partially empty", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
   const tablePlantsBefore = stateBefore.plantMarket.table;
 
   stateBefore.plantMarket.deck = stateBefore.plantMarket.deck.slice(-2);
 
-  activatePolicy(stateBefore, send, "Hazardous substances from industry");
+  activatePolicy({
+    policyName: "Hazardous substances from industry",
+    stateBefore,
+  });
 
   const state = getState();
 
@@ -69,12 +84,18 @@ test("discarding plant market when deck is partially empty", async () => {
 });
 
 test("discarding singleplayer with plants", async () => {
-  const { send, getState } = getTestActor({}, true, 1);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 1,
+  });
   const stateBefore = getState();
   const plantCards = stateBefore.plantMarket.table.filter((card) => card.type === "plant");
   stateBefore.players[0].hand = [...stateBefore.players[0].hand, ...plantCards];
 
-  activatePolicy(stateBefore, send, "Hazardous substances from industry");
+  activatePolicy({
+    policyName: "Hazardous substances from industry",
+    stateBefore,
+  });
 
   const state = getState();
 
@@ -87,14 +108,20 @@ test("discarding singleplayer with plants", async () => {
 });
 
 test("discarding multiplayer with plants", async () => {
-  const { send, getState } = getTestActor({}, true, 4);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 4,
+  });
   const stateBefore = getState();
   const plantCards = stateBefore.plantMarket.table.slice(0, 4);
   stateBefore.players.forEach((player, index) => {
     player.hand.push(plantCards[index]);
   });
 
-  activatePolicy(stateBefore, send, "Hazardous substances from industry");
+  activatePolicy({
+    policyName: "Hazardous substances from industry",
+    stateBefore,
+  });
 
   const state = getState();
 
@@ -110,20 +137,32 @@ test("discarding multiplayer with plants", async () => {
 });
 
 test("discarding singleplayer without plants", async () => {
-  const { send, getState } = getTestActor({}, true, 1);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 1,
+  });
   const stateBefore = getState();
 
-  activatePolicy(stateBefore, send, "Hazardous substances from industry");
+  activatePolicy({
+    policyName: "Hazardous substances from industry",
+    stateBefore,
+  });
 
   const state = getState();
   expect(state.players[0].hand).toHaveLength(5);
 });
 
 test("discarding multiplayer without plants", async () => {
-  const { send, getState } = getTestActor({}, true, 4);
+  const { activatePolicy, getState } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 4,
+  });
   const stateBefore = getState();
 
-  activatePolicy(stateBefore, send, "Hazardous substances from industry");
+  activatePolicy({
+    policyName: "Hazardous substances from industry",
+    stateBefore,
+  });
 
   const state = getState();
   expect(state.players[0].hand).toHaveLength(5);

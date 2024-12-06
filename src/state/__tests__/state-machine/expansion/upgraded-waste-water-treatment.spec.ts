@@ -1,16 +1,22 @@
 import { test, expect } from "vitest";
-import { activatePolicy, getTestActor } from "@/state/__tests__/utils";
+import { getTestActor } from "@/state/__tests__/utils";
 import { filter } from "lodash";
 
 // Test skipped for now because it conflicts with the conditions for elemental disaster
 test.skip("nutrient to market when player has 3 nutrients", async () => {
-  const { send, getState } = getTestActor({}, true, 1);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 1,
+  });
   const stateBefore = getState();
 
   const marketNutrients = filter(stateBefore.elementMarket.deck, { name: "nutrients" }).slice(0, 3);
   stateBefore.players[0].hand = marketNutrients;
 
-  activatePolicy(stateBefore, send, "Upgraded waste water treatment");
+  activatePolicy({
+    policyName: "Upgraded waste water treatment",
+    stateBefore,
+  });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();
@@ -26,7 +32,9 @@ test.skip("nutrient to market when player has 3 nutrients", async () => {
 });
 
 test("player gets additional nutrient", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
 
   stateBefore.players[0].hand = filter(
@@ -34,7 +42,10 @@ test("player gets additional nutrient", async () => {
     (card) => card.name === "nutrients",
   ).slice(0, 1);
 
-  activatePolicy(stateBefore, send, "Upgraded waste water treatment");
+  activatePolicy({
+    policyName: "Upgraded waste water treatment",
+    stateBefore,
+  });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();
@@ -50,7 +61,9 @@ test("player gets additional nutrient", async () => {
 });
 
 test("player gets no additional nutrient when deck is empty", async () => {
-  const { send, getState } = getTestActor({}, true);
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+  });
   const stateBefore = getState();
 
   stateBefore.players[0].hand = filter(
@@ -59,7 +72,10 @@ test("player gets no additional nutrient when deck is empty", async () => {
   ).slice(0, 1);
   stateBefore.elementMarket.deck = filter(stateBefore.elementMarket.deck, (card) => card.name !== "nutrients");
 
-  activatePolicy(stateBefore, send, "Upgraded waste water treatment");
+  activatePolicy({
+    policyName: "Upgraded waste water treatment",
+    stateBefore,
+  });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();

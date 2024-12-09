@@ -486,8 +486,17 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         draft.stage = {
           eventType: "abilityUseBlocked",
-          // cause: context.blockers.ability.reasons,
-          cause: ["policy-8"],
+          cause: context.blockers.ability.reasons,
+          effect: undefined,
+          outcome: "negative",
+        };
+      }),
+    ),
+    stageSkipTurn: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.stage = {
+          eventType: "skipTurn",
+          cause: context.blockers.turn.reasons,
           effect: undefined,
           outcome: "negative",
         };
@@ -739,6 +748,11 @@ export const TurnMachine = setup({
                 guard: "gameLost",
               },
               {
+                target: "#turn.stagingEvent.skipTurn",
+                guard: "isTurnBlocked",
+                actions: "stageSkipTurn",
+              },
+              {
                 target: "#turn.stagingEvent.massExtinction",
                 guard: and([
                   "getsMassExtinction",
@@ -789,6 +803,14 @@ export const TurnMachine = setup({
       initial: "idle",
 
       states: {
+        skipTurn: {
+          on: {
+            "user.click.stage.confirm": {
+              actions: "unstage",
+              target: "#turn.endingTurn.clearingTurnState",
+            },
+          },
+        },
         abilityUseBlocked: {
           on: {
             "user.click.stage.confirm": { actions: "unstage", target: "#turn" },

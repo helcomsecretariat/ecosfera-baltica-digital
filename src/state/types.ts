@@ -113,6 +113,7 @@ export type StageEventType =
   | "gameLoss"
   | "gameWin"
   | "abilityUseBlocked"
+  | "skipTurn"
   | ExpansionPackStageEvent;
 
 export interface GameConfig {

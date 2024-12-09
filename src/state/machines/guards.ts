@@ -262,6 +262,10 @@ export const TurnMachineGuards = {
     context.policyMarket.active.some((policyCard) => policyCard.name === policyCardName),
 
   isSinglePlayer: ({ context: { players } }: { context: GameState }) => players.length === 1,
+
+  isAbilityUseBlocked: ({ context }: { context: GameState }) => context.blockers.ability.isBloked,
+
+  isTurnBlocked: ({ context }: { context: GameState }) => context.blockers.turn.isBloked,
 };
 
 export type ContextInjectedGuardMap = {

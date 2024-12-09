@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { Button } from "../ui/button";
 import { FaInfo } from "react-icons/fa6";
 import { uiStrings } from "@/state/machines/expansion";
+import i18n from "@/i18n";
 
 const PolicyCard = ({
   card,
@@ -42,7 +43,7 @@ const PolicyCard = ({
           {!isActive && allowActivation && (
             <div className="flex w-full items-center justify-between space-x-2">
               <Button className="flex-1" onClick={onClick}>
-                Activate
+                {i18n.t("policies.activate")}
               </Button>
               <Button size="icon" variant="tertiary">
                 <FaInfo />

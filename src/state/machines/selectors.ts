@@ -2,6 +2,7 @@ import { CardOrTileUID, GameState, HabitatUID, isHabitatUID } from "../types";
 import { find, first, last } from "lodash";
 import { TurnMachineGuards } from "./guards";
 import { expansionStageEventText } from "./expansion";
+import i18n from "@/i18n";
 
 export const MachineSelectors = {
   selectPlayer: ({ context }: { context: GameState }) => find(context.players, { uid: context.turn.player })!,
@@ -23,7 +24,11 @@ export const MachineSelectors = {
           ? unlockedHabitats[0]
           : `${unlockedHabitats.slice(0, -1).join(", ")} and ${unlockedHabitats[habitatCount - 1]}`;
 
-      return `Congratulations!\nYou earned the ${habitatText} ${habitatCount > 1 ? "habitats" : "habitat"}`;
+      return (
+        i18n.t("stageEventText.congratulations") +
+        "\n" +
+        i18n.t("stageEventText.earnedHabitat", { habitatText, count: habitatCount })
+      );
     };
 
     const getCardBoughtText = (uid: CardOrTileUID | undefined) => {
@@ -33,22 +38,22 @@ export const MachineSelectors = {
 
       const cardName = find(player.hand, { uid })?.name;
 
-      return `Congratulations!\nYou bought a ${cardName}`;
+      return i18n.t("stageEventText.congratulations") + "\n" + i18n.t("stageEventText.boughtCard", { cardName });
     };
 
     const lastRefreshedAbility = find(player.abilities, { uid: last(context.turn.refreshedAbilityUids) });
     const eventText = {
-      disaster: "You did not buy anything.\nYou get a disaster card.",
-      extinction: "Too many disasters causes an extinction.\nYou get an extinction tile.",
-      massExtinction: "Too many disasters causes a mass extinction.\nYou get 3 extinction tiles.",
-      elementalDisaster: "Too many elements causes a disaster.\nYou get a disaster card.",
+      disaster: i18n.t("stageEventText.disaster"),
+      extinction: i18n.t("stageEventText.extinction"),
+      massExtinction: i18n.t("stageEventText.massExtinction"),
+      elementalDisaster: i18n.t("stageEventText.elementalDisaster"),
       abilityRefresh: !canRefresh
-        ? `Your ${lastRefreshedAbility?.name ?? ""} ability has been refreshed!`
-        : "You can now refresh one of your used abilities.",
+        ? i18n.t("stageEventText.abilityRefreshed", { abilityName: lastRefreshedAbility?.name ?? "" })
+        : i18n.t("stageEventText.canRefreshAbility"),
       habitatUnlock: getHabitatUnlockText(context.stage?.effect ?? []),
       cardBuy: getCardBoughtText(first(context.stage?.effect ?? [])),
-      gameWin: "Congratulations!\nYou saved the Baltic ecosystem!",
-      gameLoss: "Game Over!\nYou could not save the Baltic Ecosystem.",
+      gameWin: i18n.t("stageEventText.gameWin"),
+      gameLoss: i18n.t("stageEventText.gameLoss"),
       ...expansionStageEventText,
       default: "",
     };

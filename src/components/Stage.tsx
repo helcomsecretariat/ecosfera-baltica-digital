@@ -9,6 +9,7 @@ import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import { useSelector } from "@xstate/react";
 import { MachineSelectors } from "@/state/machines/selectors";
 import { AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const Stage = () => {
   const { emit, state, test, actorRef } = useGameState();
@@ -18,6 +19,7 @@ const Stage = () => {
   const negativeTextureImageUrl = getAssetPath("stage", "negative");
   const positiveTexture = useSRGBTexture(positiveTextureImageUrl);
   const negativeTexture = useSRGBTexture(negativeTextureImageUrl);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -55,7 +57,7 @@ const Stage = () => {
             variant="default"
             className="w-full"
           >
-            {state.stage.terminationEvent ? "New game" : "Ok"}
+            {state.stage.terminationEvent ? t("stageEventText.newGame") : t("stageEventText.ok")}
           </Button>
         </Html>
       )}

@@ -1,18 +1,19 @@
 import { TurnMachine, TurnMachineContext } from "@/state/machines/turn";
-import { vi } from "vitest";
+import { test, vi } from "vitest";
 import { createActor, EventFromLogic } from "xstate";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import { DeckConfig } from "@/decks/schema";
 import { Card, AnimalCard, PlantCard } from "@/state/types";
 import { find, filter, without } from "lodash";
 import { names } from "@/state/machines/expansion";
-import { removeOne } from "@/lib/utils";
+import { generateRandomString, removeOne } from "@/lib/utils";
 
 interface TestActorConfig {
   context?: Partial<TurnMachineContext>;
   useSpecialCards?: boolean;
   playerCount?: number;
   difficulty?: 1 | 2 | 3 | 4 | 5 | 6;
+  seed?: string;
 }
 
 export function getTestActor({
@@ -20,13 +21,14 @@ export function getTestActor({
   useSpecialCards = false,
   playerCount = 2,
   difficulty = 3,
+  seed = "42",
 }: TestActorConfig = {}) {
   const actor = createActor(TurnMachine, {
     input: {
       deckConfig: deckConfig as unknown as DeckConfig,
       gameConfig: {
         playerCount: playerCount ?? 2,
-        seed: "42",
+        seed: seed,
         difficulty: difficulty ?? 3,
         playersPosition: "around",
         useSpecialCards: useSpecialCards ?? false,
@@ -42,7 +44,7 @@ export function getTestActor({
   vi.useRealTimers();
 
   const send = (event: EventFromLogic<typeof TurnMachine>) => {
-    vi.useFakeTimers();
+    vi.useFakeTimers()!;
     actor.send(event);
     // let state machine proceed all delayed transitions
     vi.advanceTimersByTime(10000);
@@ -65,9 +67,10 @@ export function getTestActor({
   interface ActivatePolicyConfig {
     policyName: (typeof names)[number];
     stateBefore?: TurnMachineContext;
+    specialCardSource?: "animals" | "plants";
   }
 
-  const activatePolicy = ({ policyName, stateBefore }: ActivatePolicyConfig) => {
+  const activatePolicy = ({ policyName, stateBefore, specialCardSource }: ActivatePolicyConfig) => {
     const state = stateBefore ?? getState();
     const policyCard = find(state.policyMarket.deck, { name: policyName })!;
     const fundingCard = find(state.policyMarket.deck, { name: "Funding" })!;
@@ -81,11 +84,14 @@ export function getTestActor({
     const cardsToAdd: Card[] = [];
 
     while (specialCardsInHand.length + cardsToAdd.length < neededSpecialCards) {
-      const specialCard =
-        removeOne(state.animalMarket.deck, (card) => card.abilities.includes("special")) ??
-        removeOne(state.plantMarket.deck, (card) => card.abilities.includes("special"));
+      const specialCard = removeOne<AnimalCard | PlantCard>(
+        specialCardSource === "plants" ? state.plantMarket.deck : state.animalMarket.deck,
+        (card) => card.abilities.includes("special"),
+      );
 
-      if (specialCard) cardsToAdd.push(specialCard);
+      if (!specialCard) throw new Error(`Special card not found in ${specialCardSource} deck`);
+
+      cardsToAdd.push(specialCard);
     }
 
     state.players[0].hand = [...state.players[0].hand, ...cardsToAdd];
@@ -133,4 +139,11 @@ export function getTestActor({
 
 export function compareCards(cardA: Card, cardB: Card) {
   return cardA.uid.localeCompare(cardB.uid);
+}
+
+export function testRandomSeed(name: string, callback: (seed: string) => void, numRuns: number = 10) {
+  return test.concurrent.each([...Array(numRuns).keys()].map(() => ({ seed: generateRandomString(12) })))(
+    `${name} (seed: %s)`,
+    async ({ seed }) => callback(seed),
+  );
 }

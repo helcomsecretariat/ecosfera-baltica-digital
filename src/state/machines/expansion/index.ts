@@ -14,6 +14,10 @@ import * as NutrientUpwelling from "./nutrient_upwelling";
 import * as ExcessiveFertilizerUse from "./excessive_fertilizer_use";
 import * as UpgradedWasteWaterTreatment from "./upgraded_waste_water_treatment";
 import * as ImprovedNutrientRetention from "./improved_nutrient_retention";
+import * as MigratoryBarrierRemoval from "./migratory_barrier_removal";
+import * as FishingGearRegulation from "./fishing_gear_regulation";
+import * as RecyclingAndWasteDisposal from "./recycling_and_waste_disposal";
+import * as GreenEnergy from "./green_energy";
 import { ExpansionActionFunctionMap } from "@/lib/types";
 import i18n from "@/i18n";
 
@@ -34,6 +38,10 @@ export const names = [
   ExcessiveFertilizerUse.cardName,
   UpgradedWasteWaterTreatment.cardName,
   ImprovedNutrientRetention.cardName,
+  MigratoryBarrierRemoval.cardName,
+  FishingGearRegulation.cardName,
+  RecyclingAndWasteDisposal.cardName,
+  GreenEnergy.cardName,
 ] as const;
 
 export const uiStrings = {
@@ -53,6 +61,10 @@ export const uiStrings = {
   ...ExcessiveFertilizerUse.uiStrings,
   ...UpgradedWasteWaterTreatment.uiStrings,
   ...ImprovedNutrientRetention.uiStrings,
+  ...MigratoryBarrierRemoval.uiStrings,
+  ...FishingGearRegulation.uiStrings,
+  ...RecyclingAndWasteDisposal.uiStrings,
+  ...GreenEnergy.uiStrings,
 };
 
 export const expansionActions = {
@@ -71,6 +83,10 @@ export const expansionActions = {
   ...ExcessiveFertilizerUse.actions,
   ...UpgradedWasteWaterTreatment.actions,
   ...ImprovedNutrientRetention.actions,
+  ...MigratoryBarrierRemoval.actions,
+  ...FishingGearRegulation.actions,
+  ...RecyclingAndWasteDisposal.actions,
+  ...GreenEnergy.actions,
 } as ExpansionActionFunctionMap;
 
 export const expansionState = {
@@ -89,6 +105,10 @@ export const expansionState = {
   ...ExcessiveFertilizerUse.state,
   ...UpgradedWasteWaterTreatment.state,
   ...ImprovedNutrientRetention.state,
+  ...MigratoryBarrierRemoval.state,
+  ...FishingGearRegulation.state,
+  ...RecyclingAndWasteDisposal.state,
+  ...GreenEnergy.state,
 };
 
 export const expansionConditionChecks = [
@@ -106,6 +126,10 @@ export const expansionConditionChecks = [
   ExcessiveFertilizerUse.conditionCheck,
   UpgradedWasteWaterTreatment.conditionCheck,
   ImprovedNutrientRetention.conditionCheck,
+  MigratoryBarrierRemoval.conditionCheck,
+  FishingGearRegulation.conditionCheck,
+  RecyclingAndWasteDisposal.conditionCheck,
+  GreenEnergy.conditionCheck,
 ];
 
 export const expansionStageEventText = {

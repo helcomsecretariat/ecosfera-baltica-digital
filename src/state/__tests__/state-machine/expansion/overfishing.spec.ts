@@ -1,11 +1,12 @@
-import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { expect } from "vitest";
+import { getTestActor, testRandomSeed } from "@/state/__tests__/utils";
 import { filter, find, without } from "lodash";
 import { removeOne } from "@/lib/utils";
 
-test("discarding market with fish", async () => {
+testRandomSeed("discarding market with fish", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const marketDeckFish = find(stateBefore.animalMarket.deck, { faunaType: "fish" })!;
@@ -19,6 +20,7 @@ test("discarding market with fish", async () => {
   activatePolicy({
     policyName: "Overfishing",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   send({ type: "user.click.stage.confirm" });
@@ -29,9 +31,10 @@ test("discarding market with fish", async () => {
   expect(state.animalMarket.table).toHaveLength(4);
 });
 
-test("discarding market with fish when deck is empty", async () => {
+testRandomSeed("discarding market with fish when deck is empty", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const marketDeckFish = find(stateBefore.animalMarket.deck, { faunaType: "fish" })!;
@@ -41,6 +44,7 @@ test("discarding market with fish when deck is empty", async () => {
   activatePolicy({
     policyName: "Overfishing",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   send({ type: "user.click.stage.confirm" });
@@ -51,9 +55,10 @@ test("discarding market with fish when deck is empty", async () => {
   expect(state.animalMarket.table).toHaveLength(0);
 });
 
-test("discarding market with fish when deck is partially empty", async () => {
+testRandomSeed("discarding market with fish when deck is partially empty", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const marketDeckFish = filter(stateBefore.animalMarket.deck, { faunaType: "fish" }).slice(0, 3);
@@ -67,6 +72,7 @@ test("discarding market with fish when deck is partially empty", async () => {
   activatePolicy({
     policyName: "Overfishing",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   send({ type: "user.click.stage.confirm" });
@@ -79,19 +85,21 @@ test("discarding market with fish when deck is partially empty", async () => {
   expect(state.animalMarket.table).toHaveLength(3);
 });
 
-test("discarding market without fish", async () => {
+testRandomSeed("discarding market without fish", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   stateBefore.animalMarket.table = filter(
     stateBefore.animalMarket.deck,
-    (animalDeckCard) => animalDeckCard.faunaType !== "fish",
+    (animalDeckCard) => animalDeckCard.faunaType !== "fish" && !animalDeckCard.abilities.includes("special"),
   ).slice(0, 4);
 
   activatePolicy({
     policyName: "Overfishing",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   send({ type: "user.click.stage.confirm" });
@@ -100,19 +108,24 @@ test("discarding market without fish", async () => {
   expect(state.animalMarket.table).toStrictEqual(stateBefore.animalMarket.table);
 });
 
-test("discarding singleplayer with fish", async () => {
+testRandomSeed("discarding singleplayer with fish", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 1,
+    seed,
   });
   const stateBefore = getState();
-  const marketDeckFish = find(stateBefore.animalMarket.deck, { faunaType: "fish" })!;
+  const marketDeckFish = find(
+    stateBefore.animalMarket.deck,
+    (card) => card.faunaType === "fish" && !card.abilities.includes("special"),
+  )!;
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, marketDeckFish);
   stateBefore.players[0].hand = [marketDeckFish];
 
   activatePolicy({
     policyName: "Overfishing",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   send({ type: "user.click.stage.confirm" });
@@ -122,13 +135,17 @@ test("discarding singleplayer with fish", async () => {
   expect(state.players[0].discard).toContain(marketDeckFish);
 });
 
-test("discarding multiplayer with fish", async () => {
+testRandomSeed("discarding multiplayer with fish", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
+    seed,
   });
   const stateBefore = getState();
-  const marketDeckFish = filter(stateBefore.animalMarket.deck, { faunaType: "fish" }).slice(0, 4);
+  const marketDeckFish = filter(
+    stateBefore.animalMarket.deck,
+    (card) => card.faunaType === "fish" && !card.abilities.includes("special"),
+  ).slice(0, 4);
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, ...marketDeckFish);
   stateBefore.players.forEach((player, index) => {
     player.hand = [marketDeckFish[index]];
@@ -137,6 +154,7 @@ test("discarding multiplayer with fish", async () => {
   activatePolicy({
     policyName: "Overfishing",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   send({ type: "user.click.stage.confirm" });
@@ -149,21 +167,23 @@ test("discarding multiplayer with fish", async () => {
   expect(state.players.slice(1).every((player) => player.hand.length === 0)).toBe(true);
 });
 
-test("discarding singleplayer without fish", async () => {
+testRandomSeed("discarding singleplayer without fish", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 1,
+    seed,
   });
   const stateBefore = getState();
   const marketDeckNonFish = find(
-    stateBefore.animalMarket.deck,
-    (marketDeckCard) => marketDeckCard.faunaType !== "fish",
+    [...stateBefore.animalMarket.deck, ...stateBefore.animalMarket.table],
+    (marketDeckCard) => marketDeckCard.faunaType !== "fish" && !marketDeckCard.abilities.includes("special"),
   )!;
   stateBefore.players[0].hand = [marketDeckNonFish];
 
   activatePolicy({
     policyName: "Overfishing",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   send({ type: "user.click.stage.confirm" });
@@ -173,10 +193,11 @@ test("discarding singleplayer without fish", async () => {
   expect(state.players[0].hand).toContain(marketDeckNonFish);
 });
 
-test("discarding multiplayer without fish", async () => {
+testRandomSeed("discarding multiplayer without fish", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
+    seed,
   });
   const stateBefore = getState();
   const marketDeckNonFish = filter(stateBefore.animalMarket.deck, { faunaType: "bird" }).slice(0, 4);
@@ -190,6 +211,7 @@ test("discarding multiplayer without fish", async () => {
   activatePolicy({
     policyName: "Overfishing",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   const state = getState();

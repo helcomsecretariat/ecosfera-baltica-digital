@@ -1,9 +1,10 @@
-import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { expect } from "vitest";
+import { getTestActor, testRandomSeed } from "@/state/__tests__/utils";
 
-test("restores single ability in singleplayer", async () => {
+testRandomSeed("restores single ability in singleplayer", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
 
@@ -12,30 +13,34 @@ test("restores single ability in singleplayer", async () => {
   activatePolicy({
     policyName: "Bubble curtains",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   const state = getState();
   expect(state.players[0].abilities.every((ability) => !ability.isUsed)).toBe(true);
 });
 
-test("restores abilities after using special abilities", async () => {
+testRandomSeed("restores abilities after using special abilities", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
 
   activatePolicy({
     policyName: "Bubble curtains",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   const state = getState();
   expect(state.players[0].abilities.every((ability) => !ability.isUsed)).toBe(true);
 });
 
-test("restores all abilities in singleplayer", async () => {
+testRandomSeed("restores all abilities in singleplayer", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
 
@@ -47,16 +52,18 @@ test("restores all abilities in singleplayer", async () => {
   activatePolicy({
     policyName: "Bubble curtains",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   const state = getState();
   expect(state.players[0].abilities.every((ability) => !ability.isUsed)).toBe(true);
 });
 
-test("restores abilities in multiplayer", async () => {
+testRandomSeed("restores abilities in multiplayer", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
+    seed,
   });
   const stateBefore = getState();
 
@@ -68,6 +75,7 @@ test("restores abilities in multiplayer", async () => {
   activatePolicy({
     policyName: "Bubble curtains",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   const state = getState();

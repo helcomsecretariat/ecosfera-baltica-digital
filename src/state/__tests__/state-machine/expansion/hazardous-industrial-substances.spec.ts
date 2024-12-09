@@ -1,9 +1,10 @@
-import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { expect } from "vitest";
+import { getTestActor, testRandomSeed } from "@/state/__tests__/utils";
 
-test("discarding plant market", async () => {
+testRandomSeed("discarding plant market", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const tablePlantsBefore = stateBefore.plantMarket.table;
@@ -27,9 +28,10 @@ test("discarding plant market", async () => {
   expect(state.plantMarket.table).toHaveLength(4);
 });
 
-test("discarding plant market when deck is empty", async () => {
+testRandomSeed("discarding plant market when deck is empty", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const tablePlantsBefore = stateBefore.plantMarket.table;
@@ -55,9 +57,10 @@ test("discarding plant market when deck is empty", async () => {
   expect(state.plantMarket.table).toHaveLength(0);
 });
 
-test("discarding plant market when deck is partially empty", async () => {
+testRandomSeed("discarding plant market when deck is partially empty", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const tablePlantsBefore = stateBefore.plantMarket.table;
@@ -83,13 +86,16 @@ test("discarding plant market when deck is partially empty", async () => {
   expect(state.plantMarket.table).toHaveLength(2);
 });
 
-test("discarding singleplayer with plants", async () => {
+testRandomSeed("discarding singleplayer with plants", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
     playerCount: 1,
+    seed,
   });
   const stateBefore = getState();
-  const plantCards = stateBefore.plantMarket.table.filter((card) => card.type === "plant");
+  const plantCards = stateBefore.plantMarket.table.filter(
+    (card) => card.type === "plant" && !card.abilities.includes("special"),
+  );
   stateBefore.players[0].hand = [...stateBefore.players[0].hand, ...plantCards];
 
   activatePolicy({
@@ -107,13 +113,14 @@ test("discarding singleplayer with plants", async () => {
   expect(state.players[0].hand).toHaveLength(5);
 });
 
-test("discarding multiplayer with plants", async () => {
+testRandomSeed("discarding multiplayer with plants", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
+    seed,
   });
   const stateBefore = getState();
-  const plantCards = stateBefore.plantMarket.table.slice(0, 4);
+  const plantCards = stateBefore.plantMarket.deck.filter((card) => !card.abilities.includes("special")).slice(0, 4);
   stateBefore.players.forEach((player, index) => {
     player.hand.push(plantCards[index]);
   });
@@ -136,10 +143,11 @@ test("discarding multiplayer with plants", async () => {
   expect(state.players.slice(1, 4).every((player) => player.hand.length === 4)).toBe(true);
 });
 
-test("discarding singleplayer without plants", async () => {
+testRandomSeed("discarding singleplayer without plants", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
     playerCount: 1,
+    seed,
   });
   const stateBefore = getState();
 
@@ -152,10 +160,11 @@ test("discarding singleplayer without plants", async () => {
   expect(state.players[0].hand).toHaveLength(5);
 });
 
-test("discarding multiplayer without plants", async () => {
+testRandomSeed("discarding multiplayer without plants", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
+    seed,
   });
   const stateBefore = getState();
 

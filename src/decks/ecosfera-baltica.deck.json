@@ -170,6 +170,26 @@
       "effect": "positive",
       "theme": "eutro",
       "usage": "permanent"
+    },
+    "Migratory barrier removal": {
+      "effect": "positive",
+      "theme": "restore",
+      "usage": "single"
+    },
+    "Fishing gear regulation": {
+      "effect": "positive",
+      "theme": "fishing",
+      "usage": "single"
+    },
+    "Recycling and waste disposal": {
+      "effect": "positive",
+      "theme": "litter",
+      "usage": "single"
+    },
+    "Green energy": {
+      "effect": "dual",
+      "theme": "msp",
+      "usage": "single"
     }
   },
   "plants": {

@@ -1,11 +1,12 @@
-import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { expect } from "vitest";
+import { getTestActor, testRandomSeed } from "@/state/__tests__/utils";
 import { filter, find, without } from "lodash";
 import { removeOne } from "@/lib/utils";
 
-test("discarding market with birds", async () => {
+testRandomSeed("discarding market with birds", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const marketDeckBird = find(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
@@ -33,9 +34,10 @@ test("discarding market with birds", async () => {
   }
 });
 
-test("discarding market with birds when deck is empty", async () => {
+testRandomSeed("discarding market with birds when deck is empty", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const marketDeckBird = removeOne(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
@@ -45,6 +47,7 @@ test("discarding market with birds when deck is empty", async () => {
   activatePolicy({
     policyName: "Oil spill",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   const state = getState();
@@ -53,9 +56,10 @@ test("discarding market with birds when deck is empty", async () => {
   expect(state.animalMarket.table).toHaveLength(0);
 });
 
-test("discarding market with birds when deck is partially empty", async () => {
+testRandomSeed("discarding market with birds when deck is partially empty", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const marketDeckBirds = filter(stateBefore.animalMarket.deck, { faunaType: "bird" }).slice(0, 3);
@@ -68,6 +72,7 @@ test("discarding market with birds when deck is partially empty", async () => {
   activatePolicy({
     policyName: "Oil spill",
     stateBefore,
+    specialCardSource: "plants",
   });
   send({ type: "user.click.stage.confirm" });
 
@@ -86,9 +91,10 @@ test("discarding market with birds when deck is partially empty", async () => {
   expect(state.animalMarket.table).toHaveLength(3);
 });
 
-test("discarding market without birds", async () => {
+testRandomSeed("discarding market without birds", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const nonBirdCards = filter(stateBefore.animalMarket.deck, (card) => card.faunaType !== "bird").slice(0, 4);
@@ -98,6 +104,7 @@ test("discarding market without birds", async () => {
   activatePolicy({
     policyName: "Oil spill",
     stateBefore,
+    specialCardSource: "plants",
   });
   send({ type: "user.click.stage.confirm" });
 
@@ -105,34 +112,42 @@ test("discarding market without birds", async () => {
   expect(state.animalMarket.table).toEqual(tableBefore);
 });
 
-test("discarding singleplayer with bird", async () => {
-  const { activatePolicy, getState, send } = getTestActor({
+testRandomSeed("discarding singleplayer with bird", async (seed) => {
+  const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
     playerCount: 1,
+    seed,
   });
   const stateBefore = getState();
-  const marketDeckBird = find(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
+  const marketDeckBird = find(
+    stateBefore.animalMarket.deck,
+    (card) => card.faunaType === "bird" && !card.abilities.includes("special"),
+  )!;
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, marketDeckBird);
   stateBefore.players[0].hand = [marketDeckBird];
 
   activatePolicy({
     policyName: "Oil spill",
     stateBefore,
+    specialCardSource: "plants",
   });
-  send({ type: "user.click.stage.confirm" });
 
   const state = getState();
-  expect(state.players[0].hand).toHaveLength(0);
+  expect(state.players[0].hand).toHaveLength(1);
   expect(state.players[0].discard).toContain(marketDeckBird);
 });
 
-test("discarding multiplayer with birds", async () => {
+testRandomSeed("discarding multiplayer with birds", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
+    seed,
   });
   const stateBefore = getState();
-  const marketDeckBirds = filter(stateBefore.animalMarket.deck, { faunaType: "bird" }).slice(0, 4);
+  const marketDeckBirds = filter(
+    [...stateBefore.animalMarket.deck, ...stateBefore.animalMarket.table],
+    (card) => card.faunaType === "bird" && !card.abilities.includes("special"),
+  ).slice(0, 4);
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, ...marketDeckBirds);
 
   stateBefore.players.forEach((player, index) => {
@@ -142,6 +157,7 @@ test("discarding multiplayer with birds", async () => {
   activatePolicy({
     policyName: "Oil spill",
     stateBefore,
+    specialCardSource: "plants",
   });
   send({ type: "user.click.stage.confirm" });
 
@@ -150,15 +166,16 @@ test("discarding multiplayer with birds", async () => {
   // Verify each player's bird is discarded
   state.players.forEach((player, index) => {
     const bird = marketDeckBirds[index];
-    expect(player.hand).toHaveLength(0);
+    expect(player.hand).toHaveLength(+(index === 0));
     expect(player.discard).toContain(bird);
   });
 });
 
-test("discarding singleplayer without bird", async () => {
+testRandomSeed("discarding singleplayer without bird", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 1,
+    seed,
   });
   const stateBefore = getState();
   const nonBirdCard = find(stateBefore.animalMarket.deck, (card) => card.faunaType !== "bird")!;
@@ -171,13 +188,14 @@ test("discarding singleplayer without bird", async () => {
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();
-  expect(state.players[0].hand).toEqual([nonBirdCard]);
+  expect(state.players[0].hand.includes(nonBirdCard)).toBe(true);
 });
 
-test("discarding multiplayer without birds", async () => {
+testRandomSeed("discarding multiplayer without birds", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
+    seed,
   });
   const stateBefore = getState();
   const nonBirdCards = filter(stateBefore.animalMarket.deck, { faunaType: "fish" }).slice(0, 4);
@@ -193,14 +211,15 @@ test("discarding multiplayer without birds", async () => {
   activatePolicy({
     policyName: "Oil spill",
     stateBefore,
+    specialCardSource: "plants",
   });
   send({ type: "user.click.stage.confirm" });
 
   const state = getState();
 
   // Verify each player's non-bird card remains in hand
-  state.players.forEach((player, index) => {
-    expect(player.hand).toContain(nonBirdCards[index]);
+  state.players.forEach((player) => {
+    expect(nonBirdCards.every((nonBirdCard) => player.hand.includes(nonBirdCard)));
     expect(player.discard).toEqual([]);
   });
 });

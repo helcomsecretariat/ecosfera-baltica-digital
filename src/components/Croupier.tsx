@@ -189,6 +189,7 @@ const Croupier = () => {
             gameState.stage?.effect?.includes(habitatTile.uid) && gameState.stage.eventType !== "gameWin"
           }
           isAcquired={habitatTile.isAcquired}
+          onClick={emit.habitatTileClick(habitatTile.name)}
         />
       ))}
 

@@ -8,6 +8,7 @@ import {
   GameState,
   AbilityName,
   PolicyCard,
+  HabitatName,
 } from "@/state/types";
 import { mapValues } from "lodash-es";
 import { EventFromLogic } from "xstate";
@@ -17,6 +18,7 @@ export interface ActionEmmiters {
   playerCardClick: (card: Card) => () => void;
   playerDeckClick: () => () => void;
   playerEndTurnClick: () => () => void;
+  habitatTileClick: (name: HabitatName) => () => void;
   marketElementClick: (name: ElementCard["name"]) => () => void;
   borrowedElementClick: (card: ElementCard) => () => void;
   marketCardClick: (card: PlantCard | AnimalCard) => () => void;
@@ -39,6 +41,7 @@ const actionToEventMap: {
   playerCardClick: (card: Card) => ({ type: "user.click.player.hand.card", card }),
   playerDeckClick: () => ({ type: "user.click.player.deck" }),
   playerEndTurnClick: () => ({ type: "user.click.player.endTurn" }),
+  habitatTileClick: (name: HabitatName) => ({ type: "user.click.market.deck.habitat", name }),
   marketElementClick: (name: ElementCard["name"]) => ({ type: "user.click.market.deck.element", name }),
   borrowedElementClick: (card: ElementCard) => ({ type: "user.click.market.borrowed.card.element", card }),
   marketCardClick: (card: PlantCard | AnimalCard) => ({ type: "user.click.market.table.card", card }),

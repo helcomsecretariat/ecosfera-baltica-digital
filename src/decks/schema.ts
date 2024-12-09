@@ -55,6 +55,9 @@ const policyThemeSchema = z.enum([
   "extractionOfSpecies",
   "restore",
   "noise",
+  "fishing",
+  "litter",
+  "msp",
   "N/A",
 ]);
 const policyUsageSchema = z.enum(["single", "permanent"]);

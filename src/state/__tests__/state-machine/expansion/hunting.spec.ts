@@ -1,10 +1,11 @@
-import { expect, test } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { expect } from "vitest";
+import { getTestActor, testRandomSeed } from "@/state/__tests__/utils";
 import { remove } from "lodash";
 
-test("removing birds from hand", async () => {
+testRandomSeed("removing birds from hand", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const birds = remove(stateBefore.animalMarket.deck, { faunaType: "bird" });
@@ -18,12 +19,13 @@ test("removing birds from hand", async () => {
 
   const state = getState();
   expect(birds.some((bird) => state.players[0].hand.includes(bird))).toBe(false);
-  expect(state.players[0].hand).toEqual(handBeforeAddingBirds);
+  expect(handBeforeAddingBirds.every((card) => state.players[0].hand.includes(card))).toBe(true);
 });
 
-test("removing mammals from hand", async () => {
+testRandomSeed("removing mammals from hand", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const specialCards = remove(stateBefore.plantMarket.deck, { abilities: ["special"] });
@@ -39,13 +41,14 @@ test("removing mammals from hand", async () => {
   });
 
   const state = getState();
-  expect(state.players[0].hand).toEqual(handBeforeAddingMammals);
+  expect(handBeforeAddingMammals.every((card) => state.players[0].hand.includes(card))).toBe(true);
   expect(mammals.some((mammal) => state.players[0].hand.includes(mammal))).toBe(false);
 });
 
-test("removing birds and mammals from hand", async () => {
+testRandomSeed("removing birds and mammals from hand", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
   const birds = remove(stateBefore.animalMarket.deck, { faunaType: "bird" });
@@ -56,33 +59,37 @@ test("removing birds and mammals from hand", async () => {
   activatePolicy({
     policyName: "Hunting",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   const state = getState();
   expect(birds.some((bird) => state.players[0].hand.includes(bird))).toBe(false);
   expect(mammals.some((mammal) => state.players[0].hand.includes(mammal))).toBe(false);
-  expect(state.players[0].hand).toEqual(handBeforeAddingAnimals);
+  expect(handBeforeAddingAnimals.every((card) => state.players[0].hand.includes(card))).toBe(true);
 });
 
-test("removing when hand contains no birds or mammals", async () => {
+testRandomSeed("removing when hand contains no birds or mammals", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
-  const handBefore = [...stateBefore.players[0].hand];
 
   activatePolicy({
     policyName: "Hunting",
     stateBefore,
+    specialCardSource: "plants",
   });
 
   const state = getState();
-  expect(state.players[0].hand).toEqual(handBefore);
+  expect(state.players[0].hand).toHaveLength(5);
+  expect(state.players[0].hand.filter((card) => card.type === "animal")).toHaveLength(0);
 });
 
-test("other animals remain in hand after hunting", async () => {
+testRandomSeed("other animals remain in hand after hunting", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
 

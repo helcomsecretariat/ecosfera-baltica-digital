@@ -1,4 +1,4 @@
-import { AbilityTile, AnimalCard, Card, CardType, GameState, PlantCard } from "@/state/types";
+import { AbilityTile, AnimalCard, Card, CardType, GameState, HabitatName, PlantCard } from "@/state/types";
 import { countBy, find, compact, every, intersection, isEmpty } from "lodash";
 import { getAnimalHabitatPairs, getDuplicateElements } from "./helpers/turn";
 import { Tail } from "../../lib/types";
@@ -243,6 +243,14 @@ export const TurnMachineGuards = {
 
   isAnimalCard: ({ context: _ }: { context: GameState }, card: Card) => card.type === "animal",
 
+  isDisasterCard: ({ context: _ }: { context: GameState }, card: Card) => card.type === "disaster",
+
+  isBirdCard: ({ context: _ }: { context: GameState }, card: Card) =>
+    card.type === "animal" && card.faunaType === "bird",
+
+  isFishCard: ({ context: _ }: { context: GameState }, card: Card) =>
+    card.type === "animal" && card.faunaType === "fish",
+
   hasSharedHabitatInHand: ({ context }: { context: GameState }, card: PlantCard) => {
     const player = find(context.players, { uid: context.turn.player })!;
 
@@ -262,6 +270,12 @@ export const TurnMachineGuards = {
     context.policyMarket.active.some((policyCard) => policyCard.name === policyCardName),
 
   isSinglePlayer: ({ context: { players } }: { context: GameState }) => players.length === 1,
+
+  playerHasDisasterCardInHand: ({ context: { players } }: { context: GameState }) =>
+    players.some((player) => player.hand.some((card) => card.type === "disaster")),
+
+  habitatUnlocked: ({ context: { habitatMarket } }: { context: GameState }, habitatName: HabitatName) =>
+    find(habitatMarket.deck, { name: habitatName })?.isAcquired ?? false,
 };
 
 export type ContextInjectedGuardMap = {

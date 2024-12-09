@@ -39,7 +39,7 @@ const PolicyCard = ({
           )}
         >
           <h1 className="font-bold">{uiStrings[cardName].name}</h1>
-          <p className="text-sm font-light">{uiStrings[cardName].description}</p>
+          <p className="text-xs font-light">{uiStrings[cardName].description}</p>
           {!isActive && allowActivation && (
             <div className="flex w-full items-center justify-between space-x-2">
               <Button className="flex-1" onClick={onClick}>

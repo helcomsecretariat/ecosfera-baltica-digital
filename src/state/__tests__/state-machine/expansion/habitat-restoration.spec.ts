@@ -1,10 +1,11 @@
-import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { expect } from "vitest";
+import { getTestActor, testRandomSeed } from "@/state/__tests__/utils";
 import { without } from "lodash";
 
-test("restoring extinction tile", async () => {
+testRandomSeed("restoring extinction tile", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
 

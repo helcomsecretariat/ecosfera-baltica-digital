@@ -219,7 +219,17 @@ export interface AnimalCard extends GamePieceBase {
 }
 
 export type PolicyEffect = "positive" | "negative" | "dual" | "implementation";
-export type PolicyTheme = "hazard" | "eutro" | "climateChange" | "extractionOfSpecies" | "restore" | "noise" | "N/A";
+export type PolicyTheme =
+  | "hazard"
+  | "eutro"
+  | "climateChange"
+  | "extractionOfSpecies"
+  | "restore"
+  | "noise"
+  | "fishing"
+  | "litter"
+  | "msp"
+  | "N/A";
 export type PolicyUsage = "single" | "permanent";
 
 export interface PolicyCard extends GamePieceBase {

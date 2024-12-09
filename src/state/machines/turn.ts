@@ -13,6 +13,7 @@ import {
   AbilityName,
   isAbilityUID,
   PolicyCard,
+  HabitatName,
 } from "@/state/types";
 import { assign } from "@/state/machines/assign";
 import { DeckConfig } from "@/decks/schema";
@@ -49,6 +50,7 @@ export type TurnMachineEvent =
   | { type: "user.click.player.endTurn" }
   | { type: "user.click.token"; token: AbilityTile }
   | { type: "user.click.player.hand.card"; card: Card }
+  | { type: "user.click.market.deck.habitat"; name: HabitatName }
   | { type: "user.click.market.deck.element"; name: ElementCard["name"] }
   | { type: "user.click.market.borrowed.card.element"; card: ElementCard }
   | { type: "user.click.market.table.card"; card: PlantCard | AnimalCard }

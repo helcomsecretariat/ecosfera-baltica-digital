@@ -1,9 +1,10 @@
-import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { expect } from "vitest";
+import { getTestActor, testRandomSeed } from "@/state/__tests__/utils";
 
-test("distributing nutrient cards to active player", async () => {
+testRandomSeed("distributing nutrient cards to active player", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
 
@@ -26,9 +27,10 @@ test("distributing nutrient cards to active player", async () => {
   expect(playerNutrientsAfter - playerNutrientsBefore).toBe(2);
 });
 
-test("distributing disaster card to active player", async () => {
+testRandomSeed("distributing disaster card to active player", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
 
@@ -54,10 +56,11 @@ test("distributing disaster card to active player", async () => {
   expect(state.players[0].hand.filter((card) => card.type === "disaster").length).toBe(1);
 });
 
-test("removing oxygen cards from hands", async () => {
+testRandomSeed("removing oxygen cards from hands", async (seed) => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
+    seed,
   });
   const stateBefore = getState();
 

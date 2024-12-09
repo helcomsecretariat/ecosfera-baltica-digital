@@ -78,6 +78,27 @@
       "improvedNutrientRetention": {
         "name": "Improved nutrient retention in agriculture",
         "description": "All producer cards requires one nutrient less for the rest of the game."
+      },
+      "migratoryBarrierRemoval": {
+        "name": "Migratory barrier removal",
+        "description": "Take one fish or bird card from the market and add it to any players hand.",
+        "pickSpeciesCommandBarText": "Pick a fish or bird card from the market",
+        "pickPlayerCommandBarText": "Pick a player's hand to move your chosen card to"
+      },
+      "fishingGearRegulation": {
+        "name": "Fishing gear regulation",
+        "description": "Add all cards in the market which have a mud symbol to any players hand.",
+        "commandBarText": "Pick a player's hand to move all the mud species to"
+      },
+      "recyclingAndWasteDisposal": {
+        "name": "Recycling and waste disposal",
+        "description": "Remove two human activity cards from the hand(s) of any player(s) and replace the cards with cards from the player(s) deck(s).",
+        "commandBarText": "Pick a disaster card to discard from any player's hand"
+      },
+      "greenEnergy": {
+        "name": "Green energy",
+        "description": "If coastal, hard- or soft bottom habitats have already been restored when this card is lifted, add an impact tile. If none of the above habitats have been restored prior to lifting this card, choose one of these habitats to immediately restore.",
+        "commandBarText": "Choose either the Rock or Mud habitat to unlock"
       }
     }
   },

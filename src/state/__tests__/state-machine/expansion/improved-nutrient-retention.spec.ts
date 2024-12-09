@@ -1,5 +1,5 @@
-import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { expect } from "vitest";
+import { getTestActor, testRandomSeed } from "@/state/__tests__/utils";
 import { GameState, PlantCard } from "@/state/types";
 
 const getAllPlantCards = (state: GameState): PlantCard[] => {
@@ -14,11 +14,12 @@ const getAllPlantCards = (state: GameState): PlantCard[] => {
   ];
 };
 
-test("all plant cards require one less nutrient", async () => {
-  const { activatePolicy, getState, send } = getTestActor({
+testRandomSeed("all plant cards require one less nutrient", async (seed) => {
+  const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
     difficulty: 1,
+    seed,
   });
   const stateBefore = getState();
   const plantCardsBefore = getAllPlantCards(stateBefore);
@@ -27,8 +28,6 @@ test("all plant cards require one less nutrient", async () => {
     policyName: "Improved nutrient retention in agriculture",
     stateBefore,
   });
-
-  send({ type: "user.click.stage.confirm" });
 
   const state = getState();
   const plantCardsAfter = getAllPlantCards(state);

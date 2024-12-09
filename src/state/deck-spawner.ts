@@ -83,11 +83,11 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
     },
     blockers: {
       ability: {
-        isBloked: false,
+        isBlocked: false,
         reasons: [],
       },
       turn: {
-        isBloked: false,
+        isBlocked: false,
         reasons: [],
       },
     },

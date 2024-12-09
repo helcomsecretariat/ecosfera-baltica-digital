@@ -239,6 +239,7 @@ export type PolicyTheme =
 export type PolicyUsage = "single" | "permanent";
 
 export interface BasePolicyCard extends GamePieceBase {
+  type: "policy";
   effect: PolicyEffect;
   theme: PolicyTheme;
   usage: PolicyUsage;
@@ -331,6 +332,6 @@ export interface UiState {
 }
 
 type GameFeatureBlocker = {
-  isBloked: boolean;
+  isBlocked: boolean;
   reasons: GamePiece["uid"][];
 };

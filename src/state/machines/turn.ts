@@ -14,6 +14,7 @@ import {
   isAbilityUID,
   PolicyCard,
   HabitatName,
+  GamePiece,
 } from "@/state/types";
 import { assign } from "@/state/machines/assign";
 import { DeckConfig } from "@/decks/schema";
@@ -416,7 +417,7 @@ export const TurnMachine = setup({
         ) as AnimalCard[];
 
         const availableAnimalHabitatPairs = getAnimalHabitatPairs([
-          ...player.hand.filter((card) => card.type === "animal"),
+          ...(player.hand.filter((card) => card.type === "animal") as AnimalCard[]),
           ...stagedAnimals,
         ]).filter(
           (animalHabitatPair) =>
@@ -481,9 +482,34 @@ export const TurnMachine = setup({
         };
       }),
     ),
+    stageAbilityUseBlocked: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.stage = {
+          eventType: "abilityUseBlocked",
+          // cause: context.blockers.ability.reasons,
+          cause: ["policy-8"],
+          effect: undefined,
+          outcome: "negative",
+        };
+      }),
+    ),
     unstage: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         draft.stage = undefined;
+      }),
+    ),
+    blockAbilityUse: assign(({ context }: { context: GameState }, reasons: GamePiece["uid"]) =>
+      produce(context, (draft) => {
+        draft.blockers.ability.isBloked = true;
+        draft.blockers.ability.reasons = [...draft.blockers.ability.reasons, reasons];
+      }),
+    ),
+    unblockAbilityUse: assign(({ context }: { context: GameState }, reasons: GamePiece["uid"]) =>
+      produce(context, (draft) => {
+        draft.blockers.ability.reasons = without(draft.blockers.ability.reasons, reasons);
+        if (draft.blockers.ability.reasons.length === 0) {
+          draft.blockers.ability.isBloked = false;
+        }
       }),
     ),
     drawCards: assign(({ context }: { context: GameState }) =>
@@ -504,6 +530,7 @@ export const TurnMachine = setup({
         player.hand = [...player.hand].sort(getCardComparator(context.deck.ordering));
       }),
     ),
+
     clearTurnStateAndSwitchPlayer: assign(({ context }: { context: GameState }) => {
       const currentPlayer = context.players.find((player) => player.uid === context.turn.player)!;
       const newPlayers = [...without(context.players, currentPlayer), currentPlayer];
@@ -553,7 +580,7 @@ export const TurnMachine = setup({
         ) as AnimalCard[];
 
         const availableAnimalHabitatPairs = getAnimalHabitatPairs([
-          ...player.hand.filter((card) => card.type === "animal"),
+          ...(player.hand.filter((card) => card.type === "animal") as AnimalCard[]),
           ...stagedAnimals,
         ]).filter(
           (animalHabitatPair) =>
@@ -762,6 +789,11 @@ export const TurnMachine = setup({
       initial: "idle",
 
       states: {
+        abilityUseBlocked: {
+          on: {
+            "user.click.stage.confirm": { actions: "unstage", target: "#turn" },
+          },
+        },
         drawingSpecial: {
           initial: "awaitingConfirmation",
           entry: "stageSpecialDraw",
@@ -1096,6 +1128,11 @@ export const TurnMachine = setup({
         idle: {
           after: {
             animationDuration: [
+              {
+                target: "#turn.stagingEvent.abilityUseBlocked",
+                guard: "isAbilityUseBlocked",
+                actions: ["cancelAbility", "stageAbilityUseBlocked"],
+              },
               { target: "plussing", guard: "isPlusAbility" },
               { target: "moving", guard: "isMoveAbility" },
               { target: "refreshing", guard: "isRefreshAbility" },

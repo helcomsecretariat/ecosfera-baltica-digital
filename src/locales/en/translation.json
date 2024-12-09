@@ -116,7 +116,8 @@
     "gameWin": "Congratulations!\nYou saved the Baltic ecosystem!",
     "gameLoss": "Game Over!\nYou could not save the Baltic Ecosystem.",
     "newGame": "New game",
-    "ok": "Ok"
+    "ok": "Ok",
+    "abilityUseBlocked": "You cannot use your abilities right now."
   },
   "policies": {
     "active": "Active Policies",
@@ -129,15 +130,5 @@
   },
   "endTurnButton": {
     "endTurn": "End Turn"
-  },
-  "errors": {
-    "failedToLoadAssets": "Failed to load assets:",
-    "animationCycle": "Animation dep. graph has cycles",
-    "gameStateProvider": "useGameState must be used within a GameStateProvider"
-  },
-  "expansions": {
-    "habitatRestoration": {
-      "name": "Habitat restoration"
-    }
   }
 }

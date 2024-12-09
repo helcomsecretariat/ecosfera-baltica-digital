@@ -91,6 +91,10 @@ export interface GameState {
   config: GameConfig;
   deck: DeckConfig;
   statistics: GameStateStatistics;
+  blockers: {
+    ability: GameFeatureBlocker;
+    turn: GameFeatureBlocker;
+  };
 }
 
 export type GameStateStatistics = {
@@ -108,6 +112,7 @@ export type StageEventType =
   | "cardBuy"
   | "gameLoss"
   | "gameWin"
+  | "abilityUseBlocked"
   | ExpansionPackStageEvent;
 
 export interface GameConfig {
@@ -232,14 +237,22 @@ export type PolicyTheme =
   | "N/A";
 export type PolicyUsage = "single" | "permanent";
 
-export interface PolicyCard extends GamePieceBase {
-  type: "policy";
-  uid: PolicyUID;
-
+export interface BasePolicyCard extends GamePieceBase {
   effect: PolicyEffect;
   theme: PolicyTheme;
   usage: PolicyUsage;
 }
+
+export interface UnderwaterNoiseCard extends BasePolicyCard {
+  name: "Underwater noise";
+  state?: {
+    delayTurns: number;
+    activeTurns: number;
+  };
+}
+
+// Add other policy card types here as needed
+export type PolicyCard = UnderwaterNoiseCard | (BasePolicyCard & { name: string });
 
 export interface PlantCard extends GamePieceBase {
   type: "plant";
@@ -315,3 +328,8 @@ export interface UiState {
   cardPositions: GamePieceAppearances;
   deckPositions: GamePieceAppearances;
 }
+
+type GameFeatureBlocker = {
+  isBloked: boolean;
+  reasons: GamePiece["uid"][];
+};

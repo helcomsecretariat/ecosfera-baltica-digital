@@ -140,25 +140,26 @@ const Croupier = () => {
       {/* Policies */}
       <Policies />
       {gameConfig.useSpecialCards &&
-        gameState.stage?.eventType?.includes("policy_") &&
-        [...(gameState.stage?.effect ?? []), ...(gameState.stage?.cause ?? [])].map((cardUid) => {
-          if (find(gameState.policyMarket.funding, { uid: cardUid })) {
-            return <FundingCard key={cardUid} cardUid={cardUid} />;
-          }
+        [...(gameState.stage?.effect ?? []), ...(gameState.stage?.cause ?? [])]
+          .filter((s) => s.startsWith("policy-"))
+          .map((cardUid) => {
+            if (find(gameState.policyMarket.funding, { uid: cardUid })) {
+              return <FundingCard key={cardUid} cardUid={cardUid} />;
+            }
 
-          const policyCard =
-            find(gameState.policyMarket.acquired, { uid: cardUid }) ??
-            find(gameState.policyMarket.table, { uid: cardUid });
-          return policyCard ? (
-            <PolicyCard
-              key={cardUid}
-              card={policyCard}
-              isActive={gameState.policyMarket.active.some((policyCard) => policyCard.uid === cardUid)}
-              isOpaque={true}
-              allowActivation={false}
-            />
-          ) : null;
-        })}
+            const policyCard =
+              find(gameState.policyMarket.acquired, { uid: cardUid }) ??
+              find(gameState.policyMarket.table, { uid: cardUid });
+            return policyCard ? (
+              <PolicyCard
+                key={cardUid}
+                card={policyCard}
+                isActive={gameState.policyMarket.active.some((policyCard) => policyCard.uid === cardUid)}
+                isOpaque={true}
+                allowActivation={false}
+              />
+            ) : null;
+          })}
 
       {/* Stage */}
       <Stage key="stage" />

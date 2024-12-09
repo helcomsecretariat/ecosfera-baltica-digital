@@ -276,6 +276,10 @@ export const TurnMachineGuards = {
 
   habitatUnlocked: ({ context: { habitatMarket } }: { context: GameState }, habitatName: HabitatName) =>
     find(habitatMarket.deck, { name: habitatName })?.isAcquired ?? false,
+
+  isAbilityUseBlocked: ({ context }: { context: GameState }) => context.blockers.ability.isBloked,
+
+  isTurnBlocked: ({ context }: { context: GameState }) => context.blockers.turn.isBloked,
 };
 
 export type ContextInjectedGuardMap = {

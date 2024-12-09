@@ -152,7 +152,7 @@ export const TurnMachineGuards = {
     ) as AnimalCard[];
 
     const availableAnimalHabitatPairs = getAnimalHabitatPairs([
-      ...player.hand.filter((card) => card.type === "animal"),
+      ...(player.hand.filter((card) => card.type === "animal") as AnimalCard[]),
       ...stagedAnimals,
     ]).filter(
       (animalHabitatPair) =>
@@ -263,9 +263,9 @@ export const TurnMachineGuards = {
 
   isSinglePlayer: ({ context: { players } }: { context: GameState }) => players.length === 1,
 
-  isAbilityUseBlocked: ({ context }: { context: GameState }) => context.blockers.ability.isBloked,
+  isAbilityUseBlocked: ({ context }: { context: GameState }) => context.blockers.ability.isBlocked,
 
-  isTurnBlocked: ({ context }: { context: GameState }) => context.blockers.turn.isBloked,
+  isTurnBlocked: ({ context }: { context: GameState }) => context.blockers.turn.isBlocked,
 };
 
 export type ContextInjectedGuardMap = {

@@ -10,11 +10,11 @@ test("using plus ability when abilities are blocked", async () => {
     context: {
       blockers: {
         ability: {
-          isBloked: true,
+          isBlocked: true,
           reasons: ["policy-8"],
         },
         turn: {
-          isBloked: false,
+          isBlocked: false,
           reasons: [],
         },
       },
@@ -43,7 +43,7 @@ test("using card ability when abilities are blocked", async () => {
   const cardWithAbility = removeOne(stateBefore.plantMarket.deck, (card) => card.abilities.includes("plus"))!;
   stateBefore.players[0].hand.push(cardWithAbility);
   stateBefore.blockers.ability.reasons = ["policy-8"];
-  stateBefore.blockers.ability.isBloked = true;
+  stateBefore.blockers.ability.isBlocked = true;
 
   send({
     type: "iddqd",
@@ -71,7 +71,7 @@ test("trying to end turn when turns are blocked", async () => {
   const { send, getState } = getTestActor({ playerCount: 4 });
   const stateBefore = getState();
   const nextPlayerAfterSkip = stateBefore.players[2].uid;
-  stateBefore.blockers.turn.isBloked = true;
+  stateBefore.blockers.turn.isBlocked = true;
   stateBefore.turn.boughtPlant = true; // avoid punishment
 
   expect(stateBefore.turn.player).toBe(stateBefore.players[0].uid);

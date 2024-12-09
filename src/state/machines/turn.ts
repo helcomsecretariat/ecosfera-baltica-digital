@@ -507,7 +507,7 @@ export const TurnMachine = setup({
     ),
     blockAbilityUse: assign(({ context }: { context: GameState }, reasons: GamePiece["uid"]) =>
       produce(context, (draft) => {
-        draft.blockers.ability.isBloked = true;
+        draft.blockers.ability.isBlocked = true;
         draft.blockers.ability.reasons = [...draft.blockers.ability.reasons, reasons];
       }),
     ),
@@ -515,7 +515,7 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         draft.blockers.ability.reasons = without(draft.blockers.ability.reasons, reasons);
         if (draft.blockers.ability.reasons.length === 0) {
-          draft.blockers.ability.isBloked = false;
+          draft.blockers.ability.isBlocked = false;
         }
       }),
     ),

@@ -6,6 +6,7 @@ import PolicyCard from "./PolicyCard";
 import { Html } from "@react-three/drei";
 import FundingCard from "./FundingCard";
 import { AnimatePresence } from "framer-motion";
+import i18n from "@/i18n";
 
 const Policies = () => {
   const { state, emit, showPolicies, guards } = useGameState();
@@ -17,13 +18,13 @@ const Policies = () => {
           <planeGeometry args={[upperXBoundary - lowerXBoundary * 2, upperYBoundary - lowerYBoundary * 2, 1]} />
           <meshBasicMaterial color="#052B4E" transparent opacity={0.9} />
           <Html position={[0, 48, 1]} transform scale={7}>
-            <h1 className="font-light text-white">Active</h1>
+            <h1 className="font-light text-white">{i18n.t("policies.active")}</h1>
           </Html>
           <Html position={[0, 15, 1]} transform scale={7}>
-            <h1 className="font-light text-white">Acquired</h1>
+            <h1 className="font-light text-white">{i18n.t("policies.acquired")}</h1>
           </Html>
           <Html position={[0, -25, 1]} transform scale={7}>
-            <h1 className="font-light text-white">Funding</h1>
+            <h1 className="font-light text-white">{i18n.t("policies.funding")}</h1>
           </Html>
           {state.policyMarket.table.map((card: PolicyCardType) => (
             <PolicyCard key={card.uid} card={card} isActive={guards.isPolicyCardActive(card.name)} />

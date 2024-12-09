@@ -15,6 +15,7 @@ import * as ExcessiveFertilizerUse from "./excessive_fertilizer_use";
 import * as UpgradedWasteWaterTreatment from "./upgraded_waste_water_treatment";
 import * as ImprovedNutrientRetention from "./improved_nutrient_retention";
 import { ExpansionActionFunctionMap } from "@/lib/types";
+import i18n from "@/i18n";
 
 export const names = [
   OilSpill.cardName,
@@ -108,8 +109,8 @@ export const expansionConditionChecks = [
 ];
 
 export const expansionStageEventText = {
-  policy_specialDraw: "You drew a special card!",
-  policy_fundingIncrease: "You drew a funding card that can\ncontribute towards the implementation of a measure!",
+  policy_specialDraw: i18n.t("deck.policies.specialDraw"),
+  policy_fundingIncrease: i18n.t("deck.policies.fundingIncrease"),
   ...ClimateChange.stageEventText,
 };
 

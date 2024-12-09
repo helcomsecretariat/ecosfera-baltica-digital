@@ -12,6 +12,8 @@
   },
   "deck": {
     "policies": {
+      "specialDraw": "You drew a special card!",
+      "fundingIncrease": "You drew a funding card that can\ncontribute towards the implementation of a measure!",
       "funding": {
         "name": "Funding",
         "description": "This card must be paired with a measure card to allow the measure card to be implemented."
@@ -77,6 +79,44 @@
         "name": "Improved nutrient retention in agriculture",
         "description": "All producer cards requires one nutrient less for the rest of the game."
       }
+    }
+  },
+  "stageEventText": {
+    "congratulations": "Congratulations!",
+    "earnedHabitat_one": "You earned the {{habitatText}} habitat",
+    "earnedHabitat_other": "You earned the {{habitatText}} habitats",
+    "boughtCard": "You bought a {{cardName}}",
+    "disaster": "You did not buy anything.\nYou get a disaster card.",
+    "extinction": "Too many disasters causes an extinction.\nYou get an extinction tile.",
+    "massExtinction": "Too many disasters causes a mass extinction.\nYou get 3 extinction tiles.",
+    "elementalDisaster": "Too many elements causes a disaster.\nYou get a disaster card.",
+    "abilityRefreshed": "Your {{abilityName}} ability has been refreshed!",
+    "canRefreshAbility": "You can now refresh one of your used abilities.",
+    "gameWin": "Congratulations!\nYou saved the Baltic ecosystem!",
+    "gameLoss": "Game Over!\nYou could not save the Baltic Ecosystem.",
+    "newGame": "New game",
+    "ok": "Ok"
+  },
+  "policies": {
+    "active": "Active Policies",
+    "acquired": "Acquired Policies",
+    "funding": "Funding",
+    "activate": "Activate"
+  },
+  "blocker": {
+    "leavePageMessage": "Are you sure you want to leave this page?"
+  },
+  "endTurnButton": {
+    "endTurn": "End Turn"
+  },
+  "errors": {
+    "failedToLoadAssets": "Failed to load assets:",
+    "animationCycle": "Animation dep. graph has cycles",
+    "gameStateProvider": "useGameState must be used within a GameStateProvider"
+  },
+  "expansions": {
+    "habitatRestoration": {
+      "name": "Habitat restoration"
     }
   }
 }

@@ -3,6 +3,7 @@ import { motion } from "framer-motion-3d";
 import { lowerYBoundary, upperXBoundary } from "@/constants/gameBoard";
 import { Html } from "@react-three/drei";
 import { toVector3 } from "@/utils/3d";
+import i18n from "@/i18n";
 
 const EndTurnButton = () => {
   const { emit } = useGameState();
@@ -30,7 +31,7 @@ const EndTurnButton = () => {
           }}
           onClick={emit.playerEndTurnClick()}
         >
-          End Turn
+          {i18n.t("endTurnButton.endTurn")}
         </button>
       </Html>
     </motion.mesh>

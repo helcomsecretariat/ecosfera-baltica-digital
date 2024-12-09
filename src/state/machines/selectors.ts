@@ -54,8 +54,10 @@ export const MachineSelectors = {
       cardBuy: getCardBoughtText(first(context.stage?.effect ?? [])),
       gameWin: i18n.t("stageEventText.gameWin"),
       gameLoss: i18n.t("stageEventText.gameLoss"),
-      ...expansionStageEventText,
+      abilityUseBlocked: i18n.t("stageEventText.abilityUseBlocked"),
+      skipTurn: i18n.t("stageEventText.skipTurn"),
       default: "",
+      ...expansionStageEventText,
     };
 
     return eventText[context.stage?.eventType ?? "default"];

@@ -66,3 +66,30 @@ test("using card ability when abilities are blocked", async () => {
   expect(stateAfterConfirm.players[0].abilities.find(({ name }) => name === "plus")!.isUsed).toBe(false);
   expect(stateAfterConfirm.stage).toBeUndefined();
 });
+
+test("trying to end turn when turns are blocked", async () => {
+  const { send, getState } = getTestActor({ playerCount: 4 });
+  const stateBefore = getState();
+  const nextPlayerAfterSkip = stateBefore.players[2].uid;
+  stateBefore.blockers.turn.isBloked = true;
+  stateBefore.turn.boughtPlant = true; // avoid punishment
+
+  expect(stateBefore.turn.player).toBe(stateBefore.players[0].uid);
+
+  send({
+    type: "iddqd",
+    context: stateBefore,
+  });
+
+  send({ type: "user.click.player.endTurn" });
+
+  const stateAfter = getState();
+  expect(stateAfter.stage?.eventType).toBe("skipTurn");
+  expect(stateAfter.stage?.outcome).toBe("negative");
+
+  send({ type: "user.click.stage.confirm" });
+  send({ type: "user.click.stage.confirm" });
+
+  const stateAfterConfirm = getState();
+  expect(stateAfterConfirm.turn.player).toBe(nextPlayerAfterSkip);
+});

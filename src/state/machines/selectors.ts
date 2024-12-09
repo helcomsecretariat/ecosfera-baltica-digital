@@ -56,8 +56,9 @@ export const MachineSelectors = {
       gameLoss: i18n.t("stageEventText.gameLoss"),
       abilityUseBlocked: i18n.t("stageEventText.abilityUseBlocked"),
       skipTurn: i18n.t("stageEventText.skipTurn"),
-      default: "",
       ...expansionStageEventText,
+
+      default: "",
     };
 
     return eventText[context.stage?.eventType ?? "default"];

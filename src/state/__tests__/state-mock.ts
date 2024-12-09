@@ -112,4 +112,14 @@ export const gameState: GameState = {
     animalsBought: 0,
     plantsBought: 0,
   },
+  blockers: {
+    ability: {
+      isBlocked: false,
+      reasons: [],
+    },
+    turn: {
+      isBlocked: false,
+      reasons: [],
+    },
+  },
 };

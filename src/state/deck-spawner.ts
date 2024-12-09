@@ -81,6 +81,16 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
       refreshedAbilityUids: [],
       phase: "action",
     },
+    blockers: {
+      ability: {
+        isBloked: false,
+        reasons: [],
+      },
+      turn: {
+        isBloked: false,
+        reasons: [],
+      },
+    },
     players,
     plantMarket: prepareMarket(plants, 4, seed),
     animalMarket: prepareMarket(animals, 4, seed),

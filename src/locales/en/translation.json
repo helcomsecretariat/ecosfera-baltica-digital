@@ -82,8 +82,8 @@
       "migratoryBarrierRemoval": {
         "name": "Migratory barrier removal",
         "description": "Take one fish or bird card from the market and add it to any players hand.",
-        "targetCommandBarText": "Pick a fish or bird card from the market",
-        "destinationCommandBarText": "Pick a player's hand to move your chosen card to"
+        "pickSpeciesCommandBarText": "Pick a fish or bird card from the market",
+        "pickPlayerCommandBarText": "Pick a player's hand to move your chosen card to"
       },
       "fishingGearRegulation": {
         "name": "Fishing gear regulation",

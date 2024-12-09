@@ -26,7 +26,7 @@ export const actions = {
   [`${cardPrefix}Init`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
       draft.commandBar = {
-        text: i18n.t("deck.policies.migratoryBarrierRemoval.targetCommandBarText"),
+        text: i18n.t("deck.policies.migratoryBarrierRemoval.pickSpeciesCommandBarText"),
       };
     }),
   ),
@@ -34,7 +34,7 @@ export const actions = {
     produce(context, (draft) => {
       internalContext.target = card;
       draft.commandBar = {
-        text: i18n.t("deck.policies.migratoryBarrierRemoval.destinationCommandBarText"),
+        text: i18n.t("deck.policies.migratoryBarrierRemoval.pickPlayerCommandBarText"),
       };
     }),
   ),

@@ -129,7 +129,8 @@
       },
       "beachLitter": {
         "name": "Beach litter",
-        "description": "Skip the next player's turn. This card will be added as a litter to the drawing player's deck."
+        "description": "Skip the next player's turn. This card will be added as a litter to the drawing player's deck.",
+        "eventDescription": "Poor facilities and behaviour result in litter entering the sea. Beaches become unpleasant, affecting locals and tourists alike."
       }
     }
   },

@@ -40,3 +40,34 @@ testRandomSeed("all plant cards require one less nutrient", async (seed) => {
     expect(nutrientCountBefore === 0 || nutrientCountBefore - nutrientCountAfter === 1).toBe(true);
   });
 });
+
+testRandomSeed("card stays on table after multiple turns", (seed) => {
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    seed,
+  });
+
+  const stateBefore = getState();
+  activatePolicy({
+    policyName: "Improved nutrient retention in agriculture",
+    stateBefore,
+  });
+
+  // First turn
+  send({ type: "user.click.player.endTurn" });
+  send({ type: "user.click.stage.confirm" }); // no buy punishment
+  send({ type: "user.click.stage.confirm" }); // three disasters punishment
+
+  const stateAfterFirstTurn = getState();
+  expect(stateAfterFirstTurn.policyMarket.table).toHaveLength(1);
+  expect(stateAfterFirstTurn.policyMarket.table[0].name).toBe("Improved nutrient retention in agriculture");
+
+  // Second turn
+  send({ type: "user.click.player.endTurn" });
+  send({ type: "user.click.stage.confirm" }); // no buy punishment
+  send({ type: "user.click.stage.confirm" }); // three disasters punishment
+
+  const stateAfterSecondTurn = getState();
+  expect(stateAfterSecondTurn.policyMarket.table).toHaveLength(1);
+  expect(stateAfterSecondTurn.policyMarket.table[0].name).toBe("Improved nutrient retention in agriculture");
+});

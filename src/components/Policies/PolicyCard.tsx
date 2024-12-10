@@ -4,9 +4,10 @@ import { Html } from "@react-three/drei";
 import GameElement from "../GameElement";
 import clsx from "clsx";
 import { Button } from "../ui/button";
-import { FaInfo } from "react-icons/fa6";
 import { uiStrings } from "@/state/machines/expansion";
 import i18n from "@/i18n";
+import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { InfoIcon } from "../ui/icons";
 
 const PolicyCard = ({
   card,
@@ -38,15 +39,30 @@ const PolicyCard = ({
                 : "h-56 bg-[#555]/50",
           )}
         >
-          <h1 className="font-bold">{uiStrings[cardName].name}</h1>
+          <div className="flex items-start justify-between">
+            <h1 className="font-bold">{uiStrings[cardName].name}</h1>
+            <Popover>
+              <PopoverTrigger asChild>
+                <span className="ml-2 cursor-pointer rounded-full bg-white p-1 text-black">
+                  <InfoIcon className="h-3 w-3" />
+                </span>
+              </PopoverTrigger>
+              <PopoverContent
+                side="top"
+                sideOffset={20}
+                alignOffset={-16}
+                align="end"
+                className="w-72 max-w-xs rounded-md bg-white p-2 text-xs text-black shadow-md"
+              >
+                <p>{uiStrings[cardName].eventDescription}</p>
+              </PopoverContent>
+            </Popover>
+          </div>
           <p className="text-xs font-light">{uiStrings[cardName].description}</p>
           {!isActive && allowActivation && (
             <div className="flex w-full items-center justify-between space-x-2">
               <Button className="flex-1" onClick={onClick}>
                 {i18n.t("policies.activate")}
-              </Button>
-              <Button size="icon" variant="tertiary">
-                <FaInfo />
               </Button>
             </div>
           )}

@@ -13,6 +13,7 @@ export const uiStrings = {
   [cardName]: {
     name: i18n.t("deck.policies.excessiveFertilizerUse.name"),
     description: i18n.t("deck.policies.excessiveFertilizerUse.description"),
+    eventDescription: i18n.t("deck.policies.excessiveFertilizerUse.eventDescription"),
   },
 } as const;
 

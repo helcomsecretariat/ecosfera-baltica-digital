@@ -14,6 +14,7 @@ export const uiStrings = {
   [cardName]: {
     name: i18n.t("deck.policies.greenEnergy.name"),
     description: i18n.t("deck.policies.greenEnergy.description"),
+    eventDescription: i18n.t("deck.policies.greenEnergy.eventDescription"),
   },
 };
 

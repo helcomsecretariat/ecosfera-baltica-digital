@@ -26,6 +26,7 @@ export const uiStrings = {
   [cardName]: {
     name: i18n.t("deck.policies.improvedNutrientRetention.name"),
     description: i18n.t("deck.policies.improvedNutrientRetention.description"),
+    eventDescription: i18n.t("deck.policies.improvedNutrientRetention.eventDescription"),
   },
 } as const;
 

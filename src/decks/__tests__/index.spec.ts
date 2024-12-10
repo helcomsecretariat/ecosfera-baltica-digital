@@ -26,6 +26,11 @@ describe("Policy Cards", () => {
         const name = uiStrings[policyName as keyof typeof uiStrings]?.name;
         expect(name && name !== "", "Missing name in UI strings").toBe(true);
       });
+
+      it("has event description UI string", () => {
+        const eventDescription = uiStrings[policyName as keyof typeof uiStrings]?.eventDescription;
+        expect(eventDescription && eventDescription !== "", "Missing event description in UI strings").toBe(true);
+      });
     });
   });
 

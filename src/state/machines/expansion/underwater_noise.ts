@@ -14,6 +14,7 @@ export const uiStrings = {
   [cardName]: {
     name: i18n.t("deck.policies.underwaterNoise.name"),
     description: i18n.t("deck.policies.underwaterNoise.description"),
+    eventDescription: i18n.t("deck.policies.underwaterNoise.eventDescription"),
   },
 } as const;
 

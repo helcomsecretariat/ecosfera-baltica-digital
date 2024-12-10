@@ -16,93 +16,116 @@
       "fundingIncrease": "You drew a funding card that can\ncontribute towards the implementation of a measure!",
       "funding": {
         "name": "Funding",
-        "description": "This card must be paired with a measure card to allow the measure card to be implemented."
+        "description": "This card must be paired with a measure card to allow the measure card to be implemented.",
+        "eventDescription": "This card must be paired with a measure card to allow the measure card to be implemented."
       },
       "hazardousSubstanceRegulation": {
         "name": "Hazardous substance regulation",
-        "description": "You can pair a producer and an animal sharing the same habitat symbol to secure a habitat-tile"
+        "description": "You can pair a producer and an animal sharing the same habitat symbol to secure a habitat-tile",
+        "eventDescription": "Pre-emptive regulation of a group of hazardous substances significantly reduces their use, and their inputs to the Baltic Sea.",
+        "pickProducerCommandBarText": "Pick a producer card that shares a habitat with an animal card",
+        "pickAnimalCommandBarText": "Pick an animal card that shares a habitat with a producer card"
       },
       "wasteWaterTreatmentFailure": {
         "name": "Waste water treatment failure",
-        "description": "Every player with at least one nutrient card in their hand takes a human activity card and places it in their hand."
+        "description": "Every player with at least one nutrient card in their hand takes a human activity card and places it in their hand.",
+        "eventDescription": "Heavy rainfall causes a wastewater threatement plant to overflow, releasing nutrients into the sea."
       },
       "warmSummer": {
         "name": "Warm summer",
-        "description": "If min. one measure has been implemented when this card is lifted, all players can activate all action-tokens. If no measures have been implemented all players need to deactivate all action-token."
+        "description": "If min. one measure has been implemented when this card is lifted, all players can activate all action-tokens. If no measures have been implemented all players need to deactivate all action-token.",
+        "eventDescription": "Climate change results in a warm summer and the sea temperature increases, putting pressure on the ecosystem. To increase resilience other pressures need to be minimised. "
       },
       "climateChange": {
         "name": "Climate change",
         "description": "Each time a player gets an impact-tile an additional impact-tile is added to the impact tile puzzle.",
+        "eventDescription": "CO2 released from human activities results in changes to temperature, rainfall, windspeed and much more, putting additional pressure on the Baltic Sea ecosystem.",
         "stageEventText": "Because of climate change you get an additional extinction tile!"
       },
       "oilSpill": {
         "name": "Oil spill",
-        "description": "Discard all birds open on the table (in players hands and in the market). Cards in hands are not replaced."
+        "description": "Discard all birds open on the table (in players hands and in the market). Cards in hands are not replaced.",
+        "eventDescription": "A shipping accident causes an oil spill which reaches land, impacting a Marine Protected Area (MPA). "
       },
       "hazardousIndustrialSubstances": {
         "name": "Hazardous substances from industry",
-        "description": "Discard all producer cards on the table (in each players hands and in the market). Cards in hands are not replaced."
+        "description": "Discard all producer cards on the table (in each players hands and in the market). Cards in hands are not replaced.",
+        "eventDescription": "Releasing hazardous substances acutely affect plankton, cascading through the rest of the foodweb."
       },
       "overfishing": {
         "name": "Overfishing",
-        "description": "Discard all fish open on the table (in players hands and in the market). Cards in hands are not replaced."
+        "description": "Discard all fish open on the table (in players hands and in the market). Cards in hands are not replaced.",
+        "eventDescription": "Scientific advice on fishing is ignored, subsequently unsustainable fishing occurs. The fish populations crash, causing ecosystem imbalance and low catches in the future."
       },
       "hunting": {
         "name": "Hunting",
-        "description": "Permanently remove all mammals and birds in your hand from the game."
+        "description": "Permanently remove all mammals and birds in your hand from the game.",
+        "eventDescription": "Persistent hunting results in large numbers of long-tailed ducks being killed during migration. The species' recovery is severely impacted and the species remains listed as Endangered."
       },
       "atmosphericDeposition": {
         "name": "Atmospheric deposition of hazardous substances",
-        "description": "Remove Calanoida from the game, irrespective of where it is."
+        "description": "Remove Calanoida from the game, irrespective of where it is.",
+        "eventDescription": "Hazardous substances like dioxins and mercury travel long distances through the atmosphere, affecting areas far beyond their origin, causing e.g. mutation and acute mortality."
       },
       "habitatRestoration": {
         "name": "Habitat restoration",
-        "description": "You can remove one impact-tile from the impact tile-puzzle"
+        "description": "You can remove one impact-tile from the impact tile-puzzle",
+        "eventDescription": "Coastal habitat restoration results in vibrant wetlands and a clear increase in fish breeding success, as well as more resilient ecosystem."
       },
       "bubbleCurtains": {
         "name": "Bubble curtains",
-        "description": "All players can restore all three of their ability tokens."
+        "description": "All players can restore all three of their ability tokens.",
+        "eventDescription": "During underwater construction projects bubble curtains are used and the spread and level of underwater noise is lowered, minimising the pressure on noise sensitive species."
       },
       "nutrientUpwelling": {
         "name": "Nutrient upwelling and internal nutrient cycling",
-        "description": "All players take turns (starting from the active player) to add up to two nutrient cards to their hand, or until the market is empty."
+        "description": "All players take turns (starting from the active player) to add up to two nutrient cards to their hand, or until the market is empty.",
+        "eventDescription": "Internal cycling and upwelling of nutrients supports growth of prodcucer, positively or negaively affecting the food web."
       },
       "excessiveFertilizerUse": {
         "name": "Excessive fertiliser use",
-        "description": "Add two nutrient card to the active player's hand. If there are no more nutrient cards in the market, take a human activity card. Place all oxygen cards in all players hands back in the market."
+        "description": "Add two nutrient card to the active player's hand. If there are no more nutrient cards in the market, take a human activity card. Place all oxygen cards in all players hands back in the market.",
+        "eventDescription": "Use of too much fertiliser in agriculture results in increased amounts of nutrients entering the sea."
       },
       "upgradedWasteWaterTreatment": {
         "name": "Upgraded waste water treatment",
-        "description": "Take an additional nutrient card from the market or, if you have three nutrient cards in your hand, you can put one back in the market."
+        "description": "Take an additional nutrient card from the market or, if you have three nutrient cards in your hand, you can put one back in the market.",
+        "eventDescription": "Investment to implement the latest technology in wastewater treatment  markedly reduces the release of nutrients to the sea."
       },
       "improvedNutrientRetention": {
         "name": "Improved nutrient retention in agriculture",
-        "description": "All producer cards requires one nutrient less for the rest of the game."
+        "description": "All producer cards requires one nutrient less for the rest of the game.",
+        "eventDescription": "Utilizing the best available technologies for fertilization reduces the risk of nutrients draining from agricultural to the sea."
       },
       "migratoryBarrierRemoval": {
         "name": "Migratory barrier removal",
         "description": "Take one fish or bird card from the market and add it to any players hand.",
+        "eventDescription": "Removal of dams in rivers increases the movement and breeding success of migratory fish species.",
         "pickSpeciesCommandBarText": "Pick a fish or bird card from the market",
         "pickPlayerCommandBarText": "Pick a player's hand to move your chosen card to"
       },
       "fishingGearRegulation": {
         "name": "Fishing gear regulation",
         "description": "Add all cards in the market which have a mud symbol to any players hand.",
+        "eventDescription": "Regulation and spatial distribution of fishing effort of bottom trawling allows for benthic habitats to recover.",
         "commandBarText": "Pick a player's hand to move all the mud species to"
       },
       "recyclingAndWasteDisposal": {
         "name": "Recycling and waste disposal",
         "description": "Remove two human activity cards from the hand(s) of any player(s) and replace the cards with cards from the player(s) deck(s).",
-        "commandBarText": "Pick a disaster card to discard from any player's hand"
+        "eventDescription": "Improved waste disposal and recycling, combined with lower production of single use plastic, reduces litter levels entering the sea.",
+        "commandBarText": "Pick a disaster car tod discard from any player's hand"
       },
       "greenEnergy": {
         "name": "Green energy",
         "description": "If coastal, hard- or soft bottom habitats have already been restored when this card is lifted, add an impact tile. If none of the above habitats have been restored prior to lifting this card, choose one of these habitats to immediately restore.",
+        "eventDescription": "Green energy development at sea requires space, and the positive and/or negative effects on the ecosystem of the installations dependend directly on the quality and timelyness of the planning process.",
         "commandBarText": "Choose either the Rock or Mud habitat to unlock"
       },
       "underwaterNoise": {
         "name": "Underwater noise",
-        "description": "The next player is not allowed to use abilities."
+        "description": "The next player is not allowed to use abilities.",
+        "eventDescription": "Intense shipping traffic causes too much noise under water, making it hard for fish and harbour porpoise to find food."
       }
     }
   },

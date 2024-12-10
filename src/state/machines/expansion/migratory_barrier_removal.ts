@@ -14,6 +14,7 @@ export const uiStrings = {
   [cardName]: {
     name: i18n.t("deck.policies.migratoryBarrierRemoval.name"),
     description: i18n.t("deck.policies.migratoryBarrierRemoval.description"),
+    eventDescription: i18n.t("deck.policies.migratoryBarrierRemoval.eventDescription"),
   },
 };
 

@@ -10,7 +10,7 @@ export const cameraZoom = upperXBoundary * 1.4;
 
 // Market and player cards
 export const cardXOffset = cardWidth + 1;
-export const policyCardXOffset = policyCardWidth + 1;
+export const policyCardXOffset = policyCardWidth + 5;
 export const overlappingCardXOffset = cardXOffset / 3;
 export const cardYOffset = cardHeight + 1;
 export const marketYStart = cardYOffset;

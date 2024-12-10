@@ -27,7 +27,12 @@ const Policies = () => {
             <h1 className="font-light text-white">{i18n.t("policies.funding")}</h1>
           </Html>
           {state.policyMarket.table.map((card: PolicyCardType) => (
-            <PolicyCard key={card.uid} card={card} isActive={guards.isPolicyCardActive(card.name)} />
+            <PolicyCard
+              key={card.uid}
+              card={card}
+              isActive={guards.isPolicyCardActive(card.name)}
+              allowActivation={false}
+            />
           ))}
           {state.policyMarket.funding.map((card: PolicyCardType) => (
             <FundingCard key={card.uid} cardUid={card.uid} />

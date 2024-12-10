@@ -18,6 +18,7 @@ import * as MigratoryBarrierRemoval from "./migratory_barrier_removal";
 import * as FishingGearRegulation from "./fishing_gear_regulation";
 import * as RecyclingAndWasteDisposal from "./recycling_and_waste_disposal";
 import * as GreenEnergy from "./green_energy";
+import * as UnderwaterNoise from "./underwater_noise";
 import { ExpansionActionFunctionMap } from "@/lib/types";
 import i18n from "@/i18n";
 
@@ -42,7 +43,10 @@ export const names = [
   FishingGearRegulation.cardName,
   RecyclingAndWasteDisposal.cardName,
   GreenEnergy.cardName,
+  UnderwaterNoise.cardName,
 ] as const;
+
+export type PolicyCardName = (typeof names)[number];
 
 export const uiStrings = {
   ...OilSpill.uiStrings,
@@ -65,6 +69,7 @@ export const uiStrings = {
   ...FishingGearRegulation.uiStrings,
   ...RecyclingAndWasteDisposal.uiStrings,
   ...GreenEnergy.uiStrings,
+  ...UnderwaterNoise.uiStrings,
 };
 
 export const expansionActions = {
@@ -87,6 +92,7 @@ export const expansionActions = {
   ...FishingGearRegulation.actions,
   ...RecyclingAndWasteDisposal.actions,
   ...GreenEnergy.actions,
+  ...UnderwaterNoise.actions,
 } as ExpansionActionFunctionMap;
 
 export const expansionState = {
@@ -109,6 +115,7 @@ export const expansionState = {
   ...FishingGearRegulation.state,
   ...RecyclingAndWasteDisposal.state,
   ...GreenEnergy.state,
+  ...UnderwaterNoise.state,
 };
 
 export const expansionConditionChecks = [
@@ -130,7 +137,10 @@ export const expansionConditionChecks = [
   FishingGearRegulation.conditionCheck,
   RecyclingAndWasteDisposal.conditionCheck,
   GreenEnergy.conditionCheck,
+  UnderwaterNoise.conditionCheck,
 ];
+
+export const expansionCardsEndTurnActions = [...UnderwaterNoise.endTurnActions];
 
 export const expansionStageEventText = {
   policy_specialDraw: i18n.t("deck.policies.specialDraw"),
@@ -139,3 +149,5 @@ export const expansionStageEventText = {
 };
 
 export type ExpansionPackStageEvent = "policy_specialDraw" | "policy_fundingIncrease" | "policy_climateChange";
+
+export type ExpansionPackPolicyCard = UnderwaterNoise.CardType;

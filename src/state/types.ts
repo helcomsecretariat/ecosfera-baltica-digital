@@ -9,7 +9,7 @@ import {
   DeckConfig,
   PolicyConfig,
 } from "@/decks/schema";
-import { ExpansionPackStageEvent } from "./machines/expansion";
+import type { ExpansionPackPolicyCard, ExpansionPackStageEvent, PolicyCardName } from "./machines/expansion";
 
 // google "bradned types in TS" for explanation
 export type UID<T extends string> = `${T}-${string}` & { readonly __brand: `${T}UID` };
@@ -245,16 +245,7 @@ export interface BasePolicyCard extends GamePieceBase {
   usage: PolicyUsage;
 }
 
-export interface UnderwaterNoiseCard extends BasePolicyCard {
-  name: "Underwater noise";
-  state?: {
-    delayTurns: number;
-    activeTurns: number;
-  };
-}
-
-// Add other policy card types here as needed
-export type PolicyCard = UnderwaterNoiseCard | (BasePolicyCard & { name: string });
+export type PolicyCard = ExpansionPackPolicyCard | (BasePolicyCard & { name: PolicyCardName });
 
 export interface PlantCard extends GamePieceBase {
   type: "plant";

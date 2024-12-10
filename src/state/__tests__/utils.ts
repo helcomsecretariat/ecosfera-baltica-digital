@@ -74,6 +74,9 @@ export function getTestActor({
     const state = stateBefore ?? getState();
     const policyCard = find(state.policyMarket.deck, { name: policyName })!;
     const fundingCard = find(state.policyMarket.deck, { name: "Funding" })!;
+
+    if (!policyCard) throw new Error(`Policy card ${policyName} not found`);
+
     state.policyMarket.deck = without(state.policyMarket.deck, policyCard, fundingCard);
 
     //  setup hand

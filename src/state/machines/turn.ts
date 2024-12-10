@@ -38,7 +38,7 @@ import { calculateDurations, replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 import { toUiState } from "@/state/ui/positioner";
 import { getCardComparator } from "@/lib/utils";
-import { expansionActions, expansionConditionChecks, expansionState } from "./expansion";
+import { expansionActions, expansionCardsEndTurnActions, expansionConditionChecks, expansionState } from "./expansion";
 
 type MachineConfig = {
   animSpeed?: number;
@@ -704,9 +704,16 @@ export const TurnMachine = setup({
         },
         drawingRow: {
           after: {
-            animationDuration: "clearingTurnState",
+            animationDuration: "expansionCardStatesUpdating",
           },
           exit: "drawCards",
+        },
+        expansionCardStatesUpdating: {
+          // @ts-expect-error dunno why
+          always: {
+            target: "clearingTurnState",
+            actions: expansionCardsEndTurnActions,
+          },
         },
         clearingTurnState: {
           after: {

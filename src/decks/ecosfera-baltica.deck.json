@@ -190,6 +190,11 @@
       "effect": "dual",
       "theme": "msp",
       "usage": "single"
+    },
+    "Underwater noise": {
+      "effect": "negative",
+      "theme": "noise",
+      "usage": "single"
     }
   },
   "plants": {

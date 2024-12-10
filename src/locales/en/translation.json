@@ -12,7 +12,7 @@
   },
   "deck": {
     "policies": {
-      "specialDraw": "You drew a special card!",
+      "policyDraw": "You drew a special card!",
       "fundingIncrease": "You drew a funding card that can\ncontribute towards the implementation of a measure!",
       "funding": {
         "name": "Funding",
@@ -126,6 +126,10 @@
         "name": "Underwater noise",
         "description": "The next player is not allowed to use abilities.",
         "eventDescription": "Intense shipping traffic causes too much noise under water, making it hard for fish and harbour porpoise to find food."
+      },
+      "beachLitter": {
+        "name": "Beach litter",
+        "description": "Skip the next player's turn. This card will be added as a litter to the drawing player's deck."
       }
     }
   },

@@ -280,6 +280,9 @@ export const TurnMachineGuards = {
   isAbilityUseBlocked: ({ context }: { context: GameState }) => context.blockers.ability.isBlocked,
 
   isTurnBlocked: ({ context }: { context: GameState }) => context.blockers.turn.isBlocked,
+
+  notLitterCard: ({ context: _ }: { context: GameState }, card: Card) =>
+    !(card.type === "policy" && card.theme === "litter"),
 };
 
 export type ContextInjectedGuardMap = {

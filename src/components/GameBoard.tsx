@@ -15,10 +15,12 @@ import { MaterialProvider } from "@/components/MaterialProvider/provider";
 import { useTestControls } from "@/hooks/useTestControls";
 import Menu from "./Menu";
 import { SRGBColorSpace } from "three";
+import { useExpPackControls } from "@/hooks/useExpPackControls";
 
 export default function GameBoard() {
   useBlocker();
   useTestControls();
+  useExpPackControls();
 
   const { showGrid, gridDivisions, orbitControls, FPS } = useControls({
     showGrid: false,

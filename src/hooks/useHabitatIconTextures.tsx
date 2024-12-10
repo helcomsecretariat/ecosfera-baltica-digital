@@ -5,13 +5,13 @@ import { getAssetPath } from "@/components/utils";
 
 const useHabitatIconTextures = (): { [K in HabitatName]: Texture } => {
   return {
-    pelagic: useSRGBTexture(getAssetPath("tile", "pelagic_icon")),
-    ice: useSRGBTexture(getAssetPath("tile", "ice_icon")),
-    rivers: useSRGBTexture(getAssetPath("tile", "rivers_icon")),
-    coast: useSRGBTexture(getAssetPath("tile", "coast_icon")),
-    rock: useSRGBTexture(getAssetPath("tile", "rock_icon")),
-    mud: useSRGBTexture(getAssetPath("tile", "mud_icon")),
-    baltic: useSRGBTexture(getAssetPath("tile", "baltic_active")),
+    pelagic: useSRGBTexture(getAssetPath("habitat", "pelagic_icon")),
+    ice: useSRGBTexture(getAssetPath("habitat", "ice_icon")),
+    rivers: useSRGBTexture(getAssetPath("habitat", "rivers_icon")),
+    coast: useSRGBTexture(getAssetPath("habitat", "coast_icon")),
+    rock: useSRGBTexture(getAssetPath("habitat", "rock_icon")),
+    mud: useSRGBTexture(getAssetPath("habitat", "mud_icon")),
+    baltic: useSRGBTexture(getAssetPath("habitat", "baltic_active")),
   };
 };
 

@@ -84,7 +84,7 @@ function calcMotionData(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsD
       deltaY,
       angle,
       distance,
-      cardAppearance: currentApp,
+      cardAppearance: currentApp as GamePieceAppearance,
       startPoint,
       endPoint,
       animationType,

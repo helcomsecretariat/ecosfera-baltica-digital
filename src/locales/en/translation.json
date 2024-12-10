@@ -78,6 +78,10 @@
       "improvedNutrientRetention": {
         "name": "Improved nutrient retention in agriculture",
         "description": "All producer cards requires one nutrient less for the rest of the game."
+      },
+      "underwaterNoise": {
+        "name": "Underwater noise",
+        "description": "The next player is not allowed to use abilities."
       }
     }
   },

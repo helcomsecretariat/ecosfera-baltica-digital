@@ -170,6 +170,11 @@
       "effect": "positive",
       "theme": "eutro",
       "usage": "permanent"
+    },
+    "Underwater noise": {
+      "effect": "negative",
+      "theme": "noise",
+      "usage": "single"
     }
   },
   "plants": {

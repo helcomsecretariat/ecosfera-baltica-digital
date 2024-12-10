@@ -14,6 +14,7 @@ import * as NutrientUpwelling from "./nutrient_upwelling";
 import * as ExcessiveFertilizerUse from "./excessive_fertilizer_use";
 import * as UpgradedWasteWaterTreatment from "./upgraded_waste_water_treatment";
 import * as ImprovedNutrientRetention from "./improved_nutrient_retention";
+import * as UnderwaterNoise from "./underwater_noise";
 import { ExpansionActionFunctionMap } from "@/lib/types";
 import i18n from "@/i18n";
 
@@ -34,7 +35,10 @@ export const names = [
   ExcessiveFertilizerUse.cardName,
   UpgradedWasteWaterTreatment.cardName,
   ImprovedNutrientRetention.cardName,
+  UnderwaterNoise.cardName,
 ] as const;
+
+export type PolicyCardName = (typeof names)[number];
 
 export const uiStrings = {
   ...OilSpill.uiStrings,
@@ -53,6 +57,7 @@ export const uiStrings = {
   ...ExcessiveFertilizerUse.uiStrings,
   ...UpgradedWasteWaterTreatment.uiStrings,
   ...ImprovedNutrientRetention.uiStrings,
+  ...UnderwaterNoise.uiStrings,
 };
 
 export const expansionActions = {
@@ -71,6 +76,7 @@ export const expansionActions = {
   ...ExcessiveFertilizerUse.actions,
   ...UpgradedWasteWaterTreatment.actions,
   ...ImprovedNutrientRetention.actions,
+  ...UnderwaterNoise.actions,
 } as ExpansionActionFunctionMap;
 
 export const expansionState = {
@@ -89,6 +95,7 @@ export const expansionState = {
   ...ExcessiveFertilizerUse.state,
   ...UpgradedWasteWaterTreatment.state,
   ...ImprovedNutrientRetention.state,
+  ...UnderwaterNoise.state,
 };
 
 export const expansionConditionChecks = [
@@ -106,7 +113,10 @@ export const expansionConditionChecks = [
   ExcessiveFertilizerUse.conditionCheck,
   UpgradedWasteWaterTreatment.conditionCheck,
   ImprovedNutrientRetention.conditionCheck,
+  UnderwaterNoise.conditionCheck,
 ];
+
+export const expansionCardsEndTurnActions = [...UnderwaterNoise.endTurnActions];
 
 export const expansionStageEventText = {
   policy_specialDraw: i18n.t("deck.policies.specialDraw"),
@@ -115,3 +125,5 @@ export const expansionStageEventText = {
 };
 
 export type ExpansionPackStageEvent = "policy_specialDraw" | "policy_fundingIncrease" | "policy_climateChange";
+
+export type ExpansionPackPolicyCard = UnderwaterNoise.CardType;

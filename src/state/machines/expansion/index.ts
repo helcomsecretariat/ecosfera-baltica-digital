@@ -19,6 +19,7 @@ import * as FishingGearRegulation from "./fishing_gear_regulation";
 import * as RecyclingAndWasteDisposal from "./recycling_and_waste_disposal";
 import * as GreenEnergy from "./green_energy";
 import * as UnderwaterNoise from "./underwater_noise";
+import * as BeachLitter from "./beach_litter";
 import { ExpansionActionFunctionMap } from "@/lib/types";
 import i18n from "@/i18n";
 
@@ -44,6 +45,7 @@ export const names = [
   RecyclingAndWasteDisposal.cardName,
   GreenEnergy.cardName,
   UnderwaterNoise.cardName,
+  BeachLitter.cardName,
 ] as const;
 
 export type PolicyCardName = (typeof names)[number];
@@ -70,6 +72,7 @@ export const uiStrings = {
   ...RecyclingAndWasteDisposal.uiStrings,
   ...GreenEnergy.uiStrings,
   ...UnderwaterNoise.uiStrings,
+  ...BeachLitter.uiStrings,
 };
 
 export const expansionActions = {
@@ -93,6 +96,7 @@ export const expansionActions = {
   ...RecyclingAndWasteDisposal.actions,
   ...GreenEnergy.actions,
   ...UnderwaterNoise.actions,
+  ...BeachLitter.actions,
 } as ExpansionActionFunctionMap;
 
 export const expansionState = {
@@ -116,6 +120,7 @@ export const expansionState = {
   ...RecyclingAndWasteDisposal.state,
   ...GreenEnergy.state,
   ...UnderwaterNoise.state,
+  ...BeachLitter.state,
 };
 
 export const expansionConditionChecks = [
@@ -138,16 +143,17 @@ export const expansionConditionChecks = [
   RecyclingAndWasteDisposal.conditionCheck,
   GreenEnergy.conditionCheck,
   UnderwaterNoise.conditionCheck,
+  BeachLitter.conditionCheck,
 ];
 
-export const expansionCardsEndTurnActions = [...UnderwaterNoise.endTurnActions];
+export const expansionCardsEndTurnActions = [...UnderwaterNoise.endTurnActions, ...BeachLitter.endTurnActions];
 
 export const expansionStageEventText = {
-  policy_specialDraw: i18n.t("deck.policies.specialDraw"),
+  policy_policyDraw: i18n.t("deck.policies.policyDraw"),
   policy_fundingIncrease: i18n.t("deck.policies.fundingIncrease"),
   ...ClimateChange.stageEventText,
 };
 
-export type ExpansionPackStageEvent = "policy_specialDraw" | "policy_fundingIncrease" | "policy_climateChange";
+export type ExpansionPackStageEvent = "policy_policyDraw" | "policy_fundingIncrease" | "policy_climateChange";
 
-export type ExpansionPackPolicyCard = UnderwaterNoise.CardType;
+export type ExpansionPackPolicyCard = UnderwaterNoise.CardType | BeachLitter.CardType;

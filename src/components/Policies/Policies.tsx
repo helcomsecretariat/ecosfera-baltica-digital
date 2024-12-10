@@ -33,12 +33,7 @@ const Policies = () => {
             <FundingCard key={card.uid} cardUid={card.uid} />
           ))}
           {state.policyMarket.acquired.map((card: PolicyCardType) => (
-            <PolicyCard
-              key={card.uid}
-              card={card}
-              onClick={() => emit.acquiredPolicyCardClick(card)()}
-              isActive={false}
-            />
+            <PolicyCard key={card.uid} card={card} onClick={emit.acquiredPolicyCardClick(card)} isActive={false} />
           ))}
         </motion.mesh>
       )}

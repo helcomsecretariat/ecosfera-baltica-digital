@@ -1,4 +1,4 @@
-import type { Card } from "@/state/types";
+import type { Card, GamePiece } from "@/state/types";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 
 const pastelColors = {
@@ -41,10 +41,27 @@ export function getCardBGColor(card: Card): string {
   }
 }
 
-export function getAssetPath(type: string, name: string, prefix = deckConfig.assets_prefix): string {
-  const cardPrefix = type === "animal" || type === "plant" ? "entity" : type;
+export function getAssetPath(
+  type: GamePiece["type"] | "stage" | "tile",
+  name: GamePiece["name"],
+  prefix = deckConfig.assets_prefix,
+): string {
+  const fileNames: Record<typeof type, string> = {
+    animal: `entity_${name}`,
+    plant: `entity_${name}`,
+    element: `element_${name}`,
+    disaster: `disaster_${name}`,
+    policy: `litter`,
+    ability: `ability_${name}`,
+    stage: `stage_${name}`,
+    habitat: `tile_${name}`,
+    extinction: `tile_extinction`,
+    tile: `tile_${name}`,
+  } as const;
+
+  const fileName = fileNames[type];
   const assetPrefix = `/${prefix}/`;
-  return `${assetPrefix}${cardPrefix}_${name}.avif`.replace(/\s+/g, "_").toLowerCase();
+  return `${assetPrefix}${fileName}.avif`.replace(/\s+/g, "_").toLowerCase();
 }
 
 export function getHighlightTextureAssetPath(circular: boolean | undefined = undefined): string {

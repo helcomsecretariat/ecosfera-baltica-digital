@@ -318,7 +318,7 @@ export const TurnMachine = setup({
         };
       }),
     ),
-    stageSpecialDraw: assign(({ context }: { context: GameState }) =>
+    stagePolicyDraw: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         const policyCard = context.policyMarket.deck[0];
 
@@ -334,7 +334,7 @@ export const TurnMachine = setup({
         draft.policyMarket.deck = without(context.policyMarket.deck, policyCard);
 
         draft.stage = {
-          eventType: policyCard.effect === "implementation" ? "policy_fundingIncrease" : "policy_specialDraw",
+          eventType: policyCard.effect === "implementation" ? "policy_fundingIncrease" : "policy_policyDraw",
           cause: undefined,
           effect: [policyCard.uid],
           outcome: policyCard.effect === "positive" || policyCard.effect === "implementation" ? "positive" : "negative",
@@ -814,7 +814,7 @@ export const TurnMachine = setup({
           on: {
             "user.click.stage.confirm": {
               actions: "unstage",
-              target: "#turn.endingTurn.clearingTurnState",
+              target: "#turn.endingTurn.expansionCardStatesUpdating",
             },
           },
         },
@@ -825,7 +825,7 @@ export const TurnMachine = setup({
         },
         drawingSpecial: {
           initial: "awaitingConfirmation",
-          entry: "stageSpecialDraw",
+          entry: "stagePolicyDraw",
           states: {
             awaitingConfirmation: {
               on: {
@@ -1099,6 +1099,7 @@ export const TurnMachine = setup({
               ({ context, event }) => TurnMachineGuards.notPlayedCard({ context }, event.card.uid),
               ({ context, event }) => TurnMachineGuards.ownsCard({ context }, event.card.uid),
               ({ context, event }) => TurnMachineGuards.notDisasterCard({ context }, event.card),
+              ({ context, event }) => TurnMachineGuards.notLitterCard({ context }, event.card),
             ]),
           },
           {

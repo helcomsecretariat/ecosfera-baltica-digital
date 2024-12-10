@@ -22,7 +22,9 @@
       "hazardousSubstanceRegulation": {
         "name": "Hazardous substance regulation",
         "description": "You can pair a producer and an animal sharing the same habitat symbol to secure a habitat-tile",
-        "eventDescription": "Pre-emptive regulation of a group of hazardous substances significantly reduces their use, and their inputs to the Baltic Sea."
+        "eventDescription": "Pre-emptive regulation of a group of hazardous substances significantly reduces their use, and their inputs to the Baltic Sea.",
+        "pickProducerCommandBarText": "Pick a producer card that shares a habitat with an animal card",
+        "pickAnimalCommandBarText": "Pick an animal card that shares a habitat with a producer card"
       },
       "wasteWaterTreatmentFailure": {
         "name": "Waste water treatment failure",

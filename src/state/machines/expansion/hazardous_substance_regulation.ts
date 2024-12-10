@@ -26,7 +26,7 @@ export const actions = {
   [`${cardPrefix}Init`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
       draft.commandBar = {
-        text: "Pick a producer card that shares a habitat with an animal card",
+        text: i18n.t("deck.policies.hazardousSubstanceRegulation.pickProducerCommandBarText"),
       };
     }),
   ),
@@ -34,7 +34,7 @@ export const actions = {
     produce(context, (draft) => {
       internalContext.target = card;
       draft.commandBar = {
-        text: "Pick an animal card that shares a habitat with your chosen producer card",
+        text: i18n.t("deck.policies.hazardousSubstanceRegulation.pickAnimalCommandBarText"),
       };
     }),
   ),

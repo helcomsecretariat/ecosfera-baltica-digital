@@ -26,7 +26,7 @@ const Stage = () => {
       <AnimatePresence>
         {state.stage !== undefined && (
           <motion.group>
-            <mesh position={[0, 0, 20]}>
+            <mesh position={[0, 0, 20]} onPointerOver={(e) => e.stopPropagation()}>
               <planeGeometry args={[upperXBoundary - lowerXBoundary + 5, upperYBoundary - lowerYBoundary, 1]} />
               <motion.meshPhysicalMaterial
                 transparent

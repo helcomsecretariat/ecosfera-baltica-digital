@@ -42,7 +42,7 @@ export const actions = {
     }),
   ),
   [`${cardPrefix}RemoveDisasterCard`]: assign(({ context }: { context: GameState }) =>
-    produce(context, ({ players }) => {
+    produce(context, ({ blockers, players }) => {
       if (internalContext.target === null) return;
 
       const targetPlayer = players.find((player) =>
@@ -62,6 +62,10 @@ export const actions = {
 
       internalContext.numberOfCardsTransferred += 1;
       internalContext.target = null;
+
+      // Block policy cancellation to prevent infinite activation
+      blockers.policyCancellation.isBlocked = true;
+      blockers.policyCancellation.reasons.push(find(context.policyMarket.active, { name: cardName })!.uid);
     }),
   ),
   [`${cardPrefix}Done`]: assign(({ context }: { context: GameState }) =>
@@ -75,6 +79,8 @@ export const actions = {
         context.policyMarket.table,
         find(context.policyMarket.table, { name: cardName })!,
       );
+      draft.blockers.policyCancellation.isBlocked = false;
+      draft.blockers.policyCancellation.reasons = [];
     }),
   ),
 };

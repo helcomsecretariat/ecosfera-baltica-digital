@@ -17,6 +17,10 @@ test("using plus ability when abilities are blocked", async () => {
           isBlocked: false,
           reasons: [],
         },
+        policyCancellation: {
+          isBlocked: false,
+          reasons: [],
+        },
       },
     },
   });
@@ -92,4 +96,35 @@ test("trying to end turn when turns are blocked", async () => {
 
   const stateAfterConfirm = getState();
   expect(stateAfterConfirm.turn.player).toBe(nextPlayerAfterSkip);
+});
+
+test("trying to cancel policy when policy cancellation is blocked", async () => {
+  const { activatePolicy, send, getState } = getTestActor({ playerCount: 1, useSpecialCards: true });
+  const stateBefore = getState();
+  stateBefore.blockers.policyCancellation.isBlocked = true;
+
+  activatePolicy({ policyName: "Recycling and waste disposal", stateBefore });
+
+  const stateAfter = getState();
+  expect(stateAfter.commandBar).toBeDefined();
+
+  send({ type: "user.click.policies.cancel" });
+
+  const stateAfterCancel = getState();
+  expect(stateAfterCancel.commandBar).toBeDefined();
+});
+
+test("trying to cancel policy when policy cancellation is blocked", async () => {
+  const { activatePolicy, send, getState } = getTestActor({ playerCount: 1, useSpecialCards: true });
+  const stateBefore = getState();
+
+  activatePolicy({ policyName: "Recycling and waste disposal", stateBefore });
+
+  const stateAfter = getState();
+  expect(stateAfter.commandBar).toBeDefined();
+
+  send({ type: "user.click.policies.cancel" });
+
+  const stateAfterCancel = getState();
+  expect(stateAfterCancel.commandBar).toBeUndefined();
 });

@@ -99,7 +99,7 @@ export const gameState: GameState = {
   disasterMarket: { type: "disaster", deck: [], table: [] },
   habitatMarket: { type: "habitat", deck: [], table: [] },
   extinctMarket: { type: "extinction", deck: [], table: [] },
-  policyMarket: { type: "policy", deck: [], table: [], acquired: [], active: [], funding: [] },
+  policyMarket: { type: "policy", deck: [], table: [], acquired: [], active: [], funding: [], exhausted: [] },
   config: {
     seed: "test-seed",
     playerCount: 1,
@@ -118,6 +118,10 @@ export const gameState: GameState = {
       reasons: [],
     },
     turn: {
+      isBlocked: false,
+      reasons: [],
+    },
+    policyCancellation: {
       isBlocked: false,
       reasons: [],
     },

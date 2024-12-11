@@ -183,3 +183,34 @@ testRandomSeed("multiple disaster cards in other players' hands", async (seed) =
     expect(player.hand).toHaveLength(index === 0 ? 6 : 4);
   });
 });
+
+testRandomSeed("blocks cancel after first remove", async (seed) => {
+  const { send, getState, activatePolicy } = getTestActor({ useSpecialCards: true, playerCount: 1, seed });
+  const stateBefore = getState();
+
+  stateBefore.players[0].deck = [...stateBefore.players[0].hand, ...stateBefore.players[0].deck];
+  stateBefore.players[0].hand = [
+    ...stateBefore.players[0].deck.filter((card) => card.type !== "disaster").slice(0, 2),
+    ...stateBefore.players[0].deck.filter((card) => card.type === "disaster").slice(0, 2),
+  ];
+  stateBefore.players[0].deck = without(stateBefore.players[0].deck, ...stateBefore.players[0].hand);
+  stateBefore.players[0].deck = stateBefore.players[0].deck.filter((card) => card.type !== "disaster");
+
+  activatePolicy({
+    policyName: "Recycling and waste disposal",
+    stateBefore,
+  });
+
+  send({
+    type: "user.click.player.hand.card",
+    card: first(filter(stateBefore.players[0].hand, { type: "disaster" }))!,
+  });
+
+  let state = getState();
+  expect(state.commandBar).toBeDefined();
+
+  send({ type: "user.click.policies.cancel" });
+
+  state = getState();
+  expect(state.commandBar).toBeDefined();
+});

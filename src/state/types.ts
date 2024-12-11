@@ -94,6 +94,7 @@ export interface GameState {
   blockers: {
     ability: GameFeatureBlocker;
     turn: GameFeatureBlocker;
+    policyCancellation: GameFeatureBlocker;
   };
 }
 
@@ -210,6 +211,7 @@ export interface PolicyMarket extends Market<PolicyCard> {
   table: PolicyCard[];
   acquired: PolicyCard[];
   funding: PolicyCard[];
+  exhausted: PolicyCard[];
   active: PolicyCard[];
 }
 

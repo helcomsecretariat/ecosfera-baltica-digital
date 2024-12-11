@@ -29,6 +29,7 @@ export interface ActionEmmiters {
   stageConfirm: () => () => void;
   iddqd: (context: Partial<TurnMachineContext>) => () => void;
   acquiredPolicyCardClick: (card: PolicyCard) => () => void;
+  cancelPolicyCard: () => () => void;
 }
 
 export type ActionTesters = {
@@ -56,6 +57,7 @@ const actionToEventMap: {
   stageConfirm: () => ({ type: "user.click.stage.confirm" }),
   iddqd: (context: Partial<TurnMachineContext>) => ({ type: "iddqd", context }),
   acquiredPolicyCardClick: (card: PolicyCard) => ({ type: "user.click.policy.card.acquired", card }),
+  cancelPolicyCard: () => ({ type: "user.click.policies.cancel" }),
 } as const;
 
 export const createEmmiters = (send: (e: EventFromLogic<typeof TurnMachine>) => void): ActionEmmiters => {

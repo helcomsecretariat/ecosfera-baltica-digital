@@ -13,8 +13,8 @@ const Menu = () => {
       <button
         className="bg-blue-500 pl-6 pr-8 text-white transition-all hover:pl-8 hover:pr-10"
         style={{
-          clipPath: "polygon(0% 0%, 100% 0%, 80% 100%, 0% 100%)",
-          WebkitClipPath: "polygon(0% 0%, 100% 0%, 80% 100%, 0% 100%)",
+          clipPath: "polygon(0% 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)",
+          WebkitClipPath: "polygon(0% 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)",
           backgroundImage: "url(/ecosfera_baltica/lobby_bg.avif",
           backgroundPosition: "25% 50%",
           backgroundSize: "240%",
@@ -46,8 +46,8 @@ const Menu = () => {
               showPolicies ? "bg-[#3070b8] hover:bg-[#204B7B]" : "",
             )}
             style={{
-              clipPath: "polygon(0% 0%, 70% 0%, 100% 100%, 30% 100%)",
-              WebkitClipPath: "polygon(0% 0%, 70% 0%, 100% 100%, 30% 100%)",
+              clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+              WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
             }}
             onClick={() => setShowPolicies(!showPolicies)}
           >

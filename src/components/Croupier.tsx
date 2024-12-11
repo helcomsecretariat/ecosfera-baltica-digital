@@ -235,7 +235,7 @@ const Croupier = () => {
         ),
       )}
 
-      <EndTurnButton key="end-turn-button" />
+      {test.playerEndTurnClick() && !guards.endPhase() && <EndTurnButton key="end-turn-button" />}
     </AnimatePresence>
   );
 };

@@ -725,6 +725,9 @@ export const TurnMachine = setup({
     },
     checkingEventConditions: {
       initial: "main",
+      on: {
+        "user.click.player.endTurn": [{ target: "endingTurn" }],
+      },
       states: {
         preDraw: {
           after: {
@@ -1153,6 +1156,7 @@ export const TurnMachine = setup({
         "user.click.token": {
           target: "#turn.usingAbility.cancel",
         },
+        "user.click.player.endTurn": [{ target: "endingTurn" }],
       },
       states: {
         idle: {

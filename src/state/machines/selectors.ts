@@ -73,15 +73,14 @@ export const selectCurrentAbility = ({ context }: { context: GameState }) => con
 
 export const selectExhaustedCards = ({ context: { turn } }: { context: GameState }) => turn.exhaustedCards;
 
-export const selectNumberOfAnimalsBought = ({ context: { players } }: { context: GameState }) =>
-  players.flatMap((player) =>
-    [player.hand, player.deck, player.discard].flatMap((deck) => deck.filter((card) => card.type === "animal")),
-  ).length;
+export const selectAllPlayerCards = ({ context: { players } }: { context: GameState }) =>
+  players.flatMap((player) => [player.hand, player.deck, player.discard].flatMap((card) => card));
 
-export const selectNumberOfPlantsBought = ({ context: { players } }: { context: GameState }) =>
-  players.flatMap((player) =>
-    [player.hand, player.deck, player.discard].flatMap((deck) => deck.filter((card) => card.type === "plant")),
-  ).length;
+export const selectNumberOfAnimalsBought = ({ context }: { context: GameState }) =>
+  selectAllPlayerCards({ context }).filter((card) => card.type === "animal").length;
+
+export const selectNumberOfPlantsBought = ({ context }: { context: GameState }) =>
+  selectAllPlayerCards({ context }).filter((card) => card.type === "plant").length;
 
 export const selectNumberOfHabitatsUnlocked = ({ context: { habitatMarket } }: { context: GameState }) =>
   habitatMarket.deck.filter((habitat) => habitat.isAcquired && habitat.name !== "baltic").length;

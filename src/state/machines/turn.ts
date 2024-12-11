@@ -27,6 +27,7 @@ import {
   countBy,
   entries,
   find,
+  first,
   flatten,
   intersection,
   isEmpty,
@@ -62,6 +63,7 @@ export type TurnMachineEvent =
   | { type: "user.click.market.deck.plant" }
   | { type: "user.click.player.deck" }
   | { type: "user.click.policy.card.acquired"; card: PolicyCard }
+  | { type: "user.click.policies.cancel" }
   | { type: "internal.target.selected"; target: Card };
 
 export type TurnMachineInput = {
@@ -638,10 +640,30 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         draft.policyMarket.acquired = without(context.policyMarket.acquired, card);
         draft.policyMarket.table.push(card);
-        draft.policyMarket.funding = context.policyMarket.funding.slice(0, -1);
+        const fundingCard = context.policyMarket.funding.slice(0, 1);
+        draft.policyMarket.funding = without(context.policyMarket.funding, ...fundingCard);
+        draft.policyMarket.exhausted = concat(context.policyMarket.exhausted, fundingCard);
         draft.policyMarket.active.push(card);
       }),
     ),
+
+    cancelPolicyCard: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const activePolicyCard = first(context.policyMarket.active);
+
+        if (!activePolicyCard) {
+          return;
+        }
+
+        draft.policyMarket.active = without(context.policyMarket.active, activePolicyCard);
+        draft.policyMarket.acquired = concat(context.policyMarket.acquired, activePolicyCard);
+        const fundingCard = context.policyMarket.exhausted.slice(0, 1);
+        draft.policyMarket.exhausted = without(context.policyMarket.exhausted, ...fundingCard);
+        draft.policyMarket.funding = concat(context.policyMarket.funding, fundingCard);
+        draft.commandBar = undefined;
+      }),
+    ),
+
     ...expansionActions,
   },
   guards: {
@@ -679,6 +701,14 @@ export const TurnMachine = setup({
         type: "setContext",
         params: ({ event: { context } }) => context,
       },
+    },
+    "user.click.policies.cancel": {
+      target: "#turn.buying",
+      actions: "cancelPolicyCard",
+      guard: and([
+        not(({ context }) => TurnMachineGuards.isPolicyCancellationBlocked({ context })),
+        ({ context }) => TurnMachineGuards.isActivePolicyCardPositive({ context }),
+      ]),
     },
   },
 

@@ -1,4 +1,4 @@
-import { FaFish, FaHouse, FaTree } from "react-icons/fa6";
+import { FaFish, FaHouse, FaTree, FaXmark } from "react-icons/fa6";
 import { MdHexagon } from "react-icons/md";
 import { GiCardPickup } from "react-icons/gi";
 import { useGameState } from "@/context/game-state/hook";
@@ -6,7 +6,7 @@ import { filter } from "lodash";
 import clsx from "clsx";
 
 const Menu = () => {
-  const { state, showPolicies, setShowPolicies, gameConfig } = useGameState();
+  const { emit, guards, state, showPolicies, setShowPolicies, gameConfig } = useGameState();
 
   return (
     <div className="absolute top-0 z-[1] flex h-14 w-screen justify-between self-start">
@@ -25,19 +25,30 @@ const Menu = () => {
       </button>
       <div className="flex">
         {gameConfig.useSpecialCards && state.commandBar && (
-          <div
-            className={clsx(
-              "-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all hover:bg-[#3070b8]",
-              showPolicies ? "bg-[#3070b8] hover:bg-[#204B7B]" : "",
+          <>
+            {!guards.isPolicyCancellationBlocked() && guards.isActivePolicyCardPositive() && (
+              <button
+                className="-mr-8 flex items-center bg-red-500 pl-8 pr-10 text-white transition-all hover:bg-red-700"
+                style={{
+                  clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+                  WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+                }}
+                onClick={emit.cancelPolicyCard()}
+              >
+                <FaXmark />
+              </button>
             )}
-            style={{
-              clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
-              WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
-            }}
-            onClick={() => setShowPolicies(!showPolicies)}
-          >
-            {state.commandBar.text}
-          </div>
+            <div
+              className="-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all"
+              style={{
+                clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+                WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+              }}
+              onClick={() => setShowPolicies(!showPolicies)}
+            >
+              {state.commandBar.text}
+            </div>
+          </>
         )}
         {gameConfig.useSpecialCards && (
           <button

@@ -114,7 +114,7 @@
         "name": "Recycling and waste disposal",
         "description": "Remove two human activity cards from the hand(s) of any player(s) and replace the cards with cards from the player(s) deck(s).",
         "eventDescription": "Improved waste disposal and recycling, combined with lower production of single use plastic, reduces litter levels entering the sea.",
-        "commandBarText": "Pick a disaster car tod discard from any player's hand"
+        "commandBarText": "Pick a disaster card to discard from any player's hand"
       },
       "greenEnergy": {
         "name": "Green energy",

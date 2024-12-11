@@ -1,5 +1,5 @@
 import { AbilityTile, AnimalCard, Card, CardType, GameState, HabitatName, PlantCard } from "@/state/types";
-import { countBy, find, compact, every, intersection, isEmpty } from "lodash";
+import { countBy, find, compact, every, intersection, isEmpty, first } from "lodash";
 import { getAnimalHabitatPairs, getDuplicateElements } from "./helpers/turn";
 import { Tail } from "../../lib/types";
 
@@ -283,6 +283,11 @@ export const TurnMachineGuards = {
 
   notLitterCard: ({ context: _ }: { context: GameState }, card: Card) =>
     !(card.type === "policy" && card.theme === "litter"),
+
+  isPolicyCancellationBlocked: ({ context }: { context: GameState }) => context.blockers.policyCancellation.isBlocked,
+
+  isActivePolicyCardPositive: ({ context }: { context: GameState }) =>
+    first(context.policyMarket.active)?.effect === "positive",
 };
 
 export type ContextInjectedGuardMap = {

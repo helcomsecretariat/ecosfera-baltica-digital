@@ -90,18 +90,12 @@ export interface GameState {
   };
   config: GameConfig;
   deck: DeckConfig;
-  statistics: GameStateStatistics;
   blockers: {
     ability: GameFeatureBlocker;
     turn: GameFeatureBlocker;
     policyCancellation: GameFeatureBlocker;
   };
 }
-
-export type GameStateStatistics = {
-  animalsBought: number;
-  plantsBought: number;
-};
 
 export type StageEventType =
   | "disaster"

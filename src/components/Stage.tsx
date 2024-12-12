@@ -7,14 +7,14 @@ import { motion } from "framer-motion-3d";
 import { getAssetPath } from "./utils";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import { useSelector } from "@xstate/react";
-import { MachineSelectors } from "@/state/machines/selectors";
 import { AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { selectIsPositiveStageEvent, selectStageEventText } from "@/state/machines/selectors";
 
 const Stage = () => {
   const { emit, state, test, actorRef } = useGameState();
-  const eventText = useSelector(actorRef, MachineSelectors.stageEventText);
-  const isPositive = useSelector(actorRef, MachineSelectors.isPositiveStageEvent);
+  const eventText = useSelector(actorRef, selectStageEventText);
+  const isPositive = useSelector(actorRef, selectIsPositiveStageEvent);
   const positiveTextureImageUrl = getAssetPath("stage", "positive");
   const negativeTextureImageUrl = getAssetPath("stage", "negative");
   const positiveTexture = useSRGBTexture(positiveTextureImageUrl);

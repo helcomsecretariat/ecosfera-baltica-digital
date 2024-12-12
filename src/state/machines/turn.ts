@@ -131,7 +131,6 @@ export const TurnMachine = setup({
           const drawnCard = draft.plantMarket.deck.shift()!;
           draft.plantMarket.table = replaceItem(card, drawnCard, draft.plantMarket.table);
           draft.turn.boughtPlant = true;
-          draft.statistics.plantsBought += 1;
         }
 
         if (card.type === "animal") {
@@ -150,7 +149,6 @@ export const TurnMachine = setup({
           const drawnCard = draft.animalMarket.deck.shift()!;
           draft.animalMarket.table = replaceItem(card, drawnCard, draft.animalMarket.table);
           draft.turn.boughtAnimal = true;
-          draft.statistics.animalsBought += 1;
         }
 
         draft.turn.playedCards = without(draft.turn.playedCards, ...draft.turn.exhaustedCards);

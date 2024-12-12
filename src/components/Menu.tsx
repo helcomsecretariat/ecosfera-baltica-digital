@@ -2,11 +2,19 @@ import { FaFish, FaHouse, FaTree, FaXmark } from "react-icons/fa6";
 import { MdHexagon } from "react-icons/md";
 import { GiCardPickup } from "react-icons/gi";
 import { useGameState } from "@/context/game-state/hook";
-import { filter } from "lodash";
 import clsx from "clsx";
+import { useSelector } from "@xstate/react";
+import {
+  selectNumberOfAnimalsBought,
+  selectNumberOfHabitatsUnlocked,
+  selectNumberOfPlantsBought,
+} from "@/state/machines/selectors";
 
 const Menu = () => {
-  const { emit, guards, state, showPolicies, setShowPolicies, gameConfig } = useGameState();
+  const { emit, guards, state, showPolicies, setShowPolicies, gameConfig, actorRef } = useGameState();
+  const numberOfAnimalsBought = useSelector(actorRef, selectNumberOfAnimalsBought);
+  const numberOfPlantsBought = useSelector(actorRef, selectNumberOfPlantsBought);
+  const numberOfHabitatsUnlocked = useSelector(actorRef, selectNumberOfHabitatsUnlocked);
 
   return (
     <div className="absolute top-0 z-[1] flex h-14 w-screen justify-between self-start">
@@ -77,21 +85,16 @@ const Menu = () => {
         >
           <div className="flex items-center space-x-2 text-xl">
             <FaTree className="h-6 w-6 text-green-500" />
-            <span>{state.statistics.plantsBought}</span>
+            <span>{numberOfPlantsBought}</span>
           </div>
           <div className="flex items-center space-x-2 text-xl">
             <FaFish className="h-6 w-6 text-orange-500" />
-            <span>{state.statistics.animalsBought}</span>
+            <span>{numberOfAnimalsBought}</span>
           </div>
           <div className="flex items-center space-x-2 text-xl">
             <MdHexagon className="h-6 w-6 text-blue-500" />
             <span>
-              {
-                filter(
-                  state.habitatMarket.deck,
-                  (habitatTile) => habitatTile.name !== "baltic" && habitatTile.isAcquired,
-                ).length
-              }
+              {numberOfHabitatsUnlocked}
               /6
             </span>
           </div>

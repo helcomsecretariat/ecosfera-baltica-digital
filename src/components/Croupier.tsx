@@ -12,20 +12,20 @@ import CardComponent from "@/components/utils/CardWithProvider";
 import AbilityToken from "@/components/utils/AbilityTokenWithProvider";
 import Tile from "@/components/utils/TileWithProvider";
 import { useSelector } from "@xstate/react";
-import { MachineSelectors } from "@/state/machines/selectors";
 import EndTurnButton from "./ui/endTurnButton";
 import Policies from "./Policies/Policies";
 import PolicyCard from "./Policies/PolicyCard";
 import FundingCard from "./Policies/FundingCard";
+import { selectCurrentAbility, selectExhaustedCards } from "@/state/machines/selectors";
 
 const Croupier = () => {
   const { state: gameState, uiState, actorRef, snap, gameConfig } = useGameState();
   const { emit, test, hasTag, guards } = useGameState();
-  const exhaustedCards = useSelector(actorRef, MachineSelectors.exhaustedCards);
+  const exhaustedCards = useSelector(actorRef, selectExhaustedCards);
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
-  const currentAbility = useSelector(actorRef, MachineSelectors.currentAbility);
+  const currentAbility = useSelector(actorRef, selectCurrentAbility);
 
   return (
     <AnimatePresence>

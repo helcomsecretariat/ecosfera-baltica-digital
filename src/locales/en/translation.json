@@ -29,7 +29,7 @@
       "wasteWaterTreatmentFailure": {
         "name": "Waste water treatment failure",
         "description": "Every player with at least one nutrient card in their hand takes a human activity card and places it in their hand.",
-        "eventDescription": "Heavy rainfall causes a wastewater threatement plant to overflow, releasing nutrients into the sea."
+        "eventDescription": "Heavy rainfall causes a wastewater treatment plant to overflow, releasing nutrients into the sea."
       },
       "warmSummer": {
         "name": "Warm summer",
@@ -39,7 +39,7 @@
       "climateChange": {
         "name": "Climate change",
         "description": "Each time a player gets an impact-tile an additional impact-tile is added to the impact tile puzzle.",
-        "eventDescription": "CO2 released from human activities results in changes to temperature, rainfall, windspeed and much more, putting additional pressure on the Baltic Sea ecosystem.",
+        "eventDescription": "CO2 released from human activities results in changes to temperature, rainfall, wind speed and much more, putting additional pressure on the Baltic Sea ecosystem.",
         "stageEventText": "Because of climate change you get an additional extinction tile!"
       },
       "oilSpill": {
@@ -50,7 +50,7 @@
       "hazardousIndustrialSubstances": {
         "name": "Hazardous substances from industry",
         "description": "Discard all producer cards on the table (in each players hands and in the market). Cards in hands are not replaced.",
-        "eventDescription": "Releasing hazardous substances acutely affect plankton, cascading through the rest of the foodweb."
+        "eventDescription": "Releasing hazardous substances acutely affect plankton, cascading through the rest of the food web."
       },
       "overfishing": {
         "name": "Overfishing",
@@ -80,7 +80,7 @@
       "nutrientUpwelling": {
         "name": "Nutrient upwelling and internal nutrient cycling",
         "description": "All players take turns (starting from the active player) to add up to two nutrient cards to their hand, or until the market is empty.",
-        "eventDescription": "Internal cycling and upwelling of nutrients supports growth of prodcucer, positively or negaively affecting the food web."
+        "eventDescription": "Internal cycling and upwelling of nutrients supports growth of producer, positively or negatively affecting the food web."
       },
       "excessiveFertilizerUse": {
         "name": "Excessive fertiliser use",

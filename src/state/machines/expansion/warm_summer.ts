@@ -21,7 +21,7 @@ export const actions = {
   [`${cardPrefix}Action`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
       // Check if at least one measure has been implemented
-      const positiveEffect = context.policyMarket.table.some((policyCard) => policyCard.effect === "positive");
+      const positiveEffect = context.policyMarket.exhausted.length > 0;
 
       draft.players.forEach((player) => {
         player.abilities = player.abilities.map((ability) => {

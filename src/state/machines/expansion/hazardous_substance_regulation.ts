@@ -113,6 +113,7 @@ export const state: {
             },
             guard: and([
               ({ context, event }) => TurnMachineGuards.isPlantCard({ context }, event.card),
+              ({ context, event }) => TurnMachineGuards.ownsCard({ context }, event.card.uid),
               ({ context, event }) => TurnMachineGuards.hasSharedHabitatInHand({ context }, event.card as PlantCard),
             ]),
           },
@@ -128,6 +129,7 @@ export const state: {
             },
             guard: and([
               ({ context, event }) => TurnMachineGuards.isAnimalCard({ context }, event.card),
+              ({ context, event }) => TurnMachineGuards.ownsCard({ context }, event.card.uid),
               ({ context, event }) =>
                 TurnMachineGuards.hasSharedHabitat(
                   { context },

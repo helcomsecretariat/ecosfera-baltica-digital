@@ -14,6 +14,7 @@ const FundingCard = ({ cardUid }: { cardUid: CardOrTileUID }) => {
           <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.05]} />
           <meshBasicMaterial attach="material-0" map={texture} />
           <meshBasicMaterial attach="material-1" />
+          <meshBasicMaterial attach="material-2" />
         </mesh>
       </GameElement>
     </>

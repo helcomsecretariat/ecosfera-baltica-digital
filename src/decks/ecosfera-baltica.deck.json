@@ -269,7 +269,7 @@
       "abilities": ["refresh"],
       "flora_type": "benthic microalgae"
     },
-    "Pilayella littoralis": {
+    "Pylaiella littoralis": {
       "elements": ["sun", "nutrients", "nutrients", "temperature"],
       "habitats": ["ice", "rock"],
       "abilities": ["plus"],

@@ -44,14 +44,14 @@ const Deck = ({
         {isHighlighted && (
           <mesh>
             <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, 1.5, 0.01]} />
-            <meshBasicMaterial transparent={true} attach="material-0" map={highlightTexture} />
-            <meshBasicMaterial transparent={true} opacity={0} attach="material-1" />
+            <meshBasicMaterial transparent={true} map={highlightTexture} />
           </mesh>
         )}
         <mesh>
           <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, deckDepth]} />
           <meshBasicMaterial attach="material-0" map={texture} color={isDimmed ? "#999" : "white"} />
-          <meshBasicMaterial attach="material-1" />
+          <meshBasicMaterial attach="material-1" map={texture} color={isDimmed ? "#999" : "white"} />
+          <meshBasicMaterial attach="material-2" color={isDimmed ? "#999" : "white"} />
         </mesh>
         <mesh position={textPosition}>
           <circleGeometry args={[1.5, 16]} />

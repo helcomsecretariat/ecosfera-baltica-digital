@@ -42,7 +42,7 @@ export function getCardBGColor(card: Card): string {
 }
 
 export function getAssetPath(
-  type: GamePiece["type"] | "stage" | "tile",
+  type: GamePiece["type"] | "stage" | "tile" | "element_icon",
   name: GamePiece["name"],
   prefix = deckConfig.assets_prefix,
 ): string {
@@ -50,6 +50,7 @@ export function getAssetPath(
     animal: `entity_${name}`,
     plant: `entity_${name}`,
     element: `element_${name}`,
+    element_icon: `element_icon_${name}`,
     disaster: `disaster_${name}`,
     policy: `litter`,
     ability: `ability_${name}`,

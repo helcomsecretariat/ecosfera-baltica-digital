@@ -156,7 +156,8 @@ const Croupier = () => {
                 card={policyCard}
                 isActive={gameState.policyMarket.active.some((policyCard) => policyCard.uid === cardUid)}
                 isOpaque={true}
-                allowActivation={false}
+                allowActivation={test.acquiredPolicyCardClick(policyCard)}
+                onClick={emit.acquiredPolicyCardClick(policyCard)}
               />
             ) : null;
           })}

@@ -131,6 +131,13 @@
         "name": "Beach litter",
         "description": "Skip the next player's turn. This card will be added as a litter to the drawing player's deck.",
         "eventDescription": "Poor facilities and behaviour result in litter entering the sea. Beaches become unpleasant, affecting locals and tourists alike."
+      },
+      "strictProtection": {
+        "name": "Strict protection",
+        "description": "Species cannot be discarded as a result of an action card.",
+        "eventDescription": "Strict protection measures in Marine Protected Area (MPAs) leads to a boost in species abundances. Letting them spread also outside of the MPA.",
+        "stageEventText": "Species discard prevented due to strict protection!",
+        "protectionActivationText": "You drew a special card! You can block its effects with strict protection."
       }
     }
   },

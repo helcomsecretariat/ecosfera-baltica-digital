@@ -49,6 +49,9 @@ export function isExtinctionUID(uid: string): uid is ExtinctionUID {
 export function isPlayerUID(uid: string): uid is PlayerUID {
   return uid.startsWith("player-");
 }
+export function isPolicyUID(uid: string): uid is PolicyUID {
+  return uid.startsWith("policy-");
+}
 
 export interface GameState {
   turn: {
@@ -231,6 +234,7 @@ export type PolicyTheme =
   | "fishing"
   | "litter"
   | "msp"
+  | "protect"
   | "N/A";
 export type PolicyUsage = "single" | "permanent";
 

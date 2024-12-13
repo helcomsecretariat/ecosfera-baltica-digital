@@ -5,6 +5,7 @@ import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObje
 import { TurnMachineGuards } from "../guards";
 import { concat, filter, find, without } from "lodash";
 import i18n from "@/i18n";
+import * as StrictProtection from "./strict_protection";
 
 export const cardPrefix = "overfishing";
 export const cardName = "Overfishing";
@@ -60,8 +61,18 @@ export const state: {
 } = {
   [cardPrefix]: {
     tags: ["policy", cardPrefix],
-    initial: "discardMarketFish",
+    initial: "checkingProtection",
     states: {
+      checkingProtection: {
+        always: [
+          {
+            target: `#turn.${StrictProtection.cardPrefix}.stageProtection`,
+            actions: `${cardPrefix}Done`,
+            guard: { type: "isPolicyCardActive", params: StrictProtection.cardName },
+          },
+          { target: "discardMarketFish" },
+        ],
+      },
       discardMarketFish: {
         entry: [`${cardPrefix}DiscardMarketFish`],
         after: {

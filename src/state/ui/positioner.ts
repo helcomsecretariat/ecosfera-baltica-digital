@@ -20,6 +20,7 @@ import {
   PlayerUID,
   PolicyCard,
   CardOrTileUID,
+  isPolicyUID,
 } from "../types";
 import {
   abilityOffset,
@@ -206,6 +207,7 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
   effect?.forEach((uid, index) => {
     const isTile = isHabitatUID(uid) || isExtinctionUID(uid);
     const isHabitatTile = isHabitatUID(uid);
+    const isPolicyCard = isPolicyUID(uid);
     const useTileCoordinates = isTile && effect.length > 2;
     const tileTransform = isHabitatTile
       ? habitatSpecificTransforms[find(gameState.habitatMarket.deck, { uid })!.name]
@@ -217,7 +219,8 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
           ? (tileTransform?.position?.x ?? zeroPosition.x)
           : effect.length === 1
             ? 0
-            : -(6 * (effect.length - 1)) / 2 + index * 6,
+            : -((isPolicyCard ? policyCardXOffset : 6) * (effect.length - 1)) / 2 +
+              index * (isPolicyCard ? policyCardXOffset : 6),
         y: useTileCoordinates
           ? (tileTransform?.position?.y ?? zeroPosition.y)
           : cause.length === 0

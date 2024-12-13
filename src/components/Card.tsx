@@ -99,7 +99,7 @@ const Card = ({
       ) as ElementName[];
   }, [card]);
 
-  const namePaddingBottom = elementsSorted.length > 0 ? ELEMENT_ICON_SIZE + paddingBottom * 2 : paddingBottom;
+  const namePaddingBottom = elementsSorted.length > 0 ? ELEMENT_ICON_SIZE + paddingBottom * 4 : paddingBottom;
 
   return (
     gamePieceAppearance && (

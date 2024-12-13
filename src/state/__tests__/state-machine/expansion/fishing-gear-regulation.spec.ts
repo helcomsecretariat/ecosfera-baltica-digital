@@ -6,15 +6,16 @@ testRandomSeed("moving mud species to self", async (seed) => {
   const { send, getState, activatePolicy } = getTestActor({ useSpecialCards: true, playerCount: 2, seed });
   const stateBefore = getState();
 
-  const mudAnimals = filter([...stateBefore.animalMarket.table, ...stateBefore.animalMarket.deck], (card) =>
-    card.habitats.includes("mud"),
-  ).slice(0, 4);
+  stateBefore.plantMarket.deck = concat(stateBefore.plantMarket.deck, stateBefore.plantMarket.table);
+  stateBefore.plantMarket.table = [];
+  stateBefore.animalMarket.deck = concat(stateBefore.animalMarket.deck, stateBefore.animalMarket.table);
+  stateBefore.animalMarket.table = [];
+
+  const mudAnimals = filter(stateBefore.animalMarket.deck, (card) => card.habitats.includes("mud")).slice(0, 4);
   stateBefore.animalMarket.table = mudAnimals;
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, ...mudAnimals);
 
-  const mudPlants = filter([...stateBefore.plantMarket.table, ...stateBefore.plantMarket.deck], (card) =>
-    card.habitats.includes("mud"),
-  ).slice(0, 4);
+  const mudPlants = filter(stateBefore.plantMarket.deck, (card) => card.habitats.includes("mud")).slice(0, 4);
   stateBefore.plantMarket.table = mudPlants;
   stateBefore.plantMarket.deck = without(stateBefore.plantMarket.deck, ...mudPlants);
 
@@ -40,15 +41,16 @@ testRandomSeed("moving mud species to other player", async (seed) => {
   const { send, getState, activatePolicy } = getTestActor({ useSpecialCards: true, playerCount: 2, seed });
   const stateBefore = getState();
 
-  const mudAnimals = filter([...stateBefore.animalMarket.table, ...stateBefore.animalMarket.deck], (card) =>
-    card.habitats.includes("mud"),
-  ).slice(0, 4);
+  stateBefore.plantMarket.deck = concat(stateBefore.plantMarket.deck, stateBefore.plantMarket.table);
+  stateBefore.plantMarket.table = [];
+  stateBefore.animalMarket.deck = concat(stateBefore.animalMarket.deck, stateBefore.animalMarket.table);
+  stateBefore.animalMarket.table = [];
+
+  const mudAnimals = filter(stateBefore.animalMarket.deck, (card) => card.habitats.includes("mud")).slice(0, 4);
   stateBefore.animalMarket.table = mudAnimals;
   stateBefore.animalMarket.deck = without(stateBefore.animalMarket.deck, ...mudAnimals);
 
-  const mudPlants = filter([...stateBefore.plantMarket.table, ...stateBefore.plantMarket.deck], (card) =>
-    card.habitats.includes("mud"),
-  ).slice(0, 4);
+  const mudPlants = filter(stateBefore.plantMarket.deck, (card) => card.habitats.includes("mud")).slice(0, 4);
   stateBefore.plantMarket.table = mudPlants;
   stateBefore.plantMarket.deck = without(stateBefore.plantMarket.deck, ...mudPlants);
 

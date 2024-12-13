@@ -2,7 +2,6 @@ import { getAssetPath } from "@/components/utils";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import { AbilityName } from "@/state/types";
 import { Texture } from "three";
-import { useMemo } from "react";
 
 const useAbilityTextures = (): {
   fullSize: { [K in AbilityName]: Texture };
@@ -15,31 +14,29 @@ const useAbilityTextures = (): {
     special: useSRGBTexture(getAssetPath("ability", "special")),
   };
 
-  return useMemo(() => {
-    const fullSize = {
-      plus: textures.plus,
-      refresh: textures.refresh,
-      move: textures.move,
-      special: textures.special,
-    };
+  const fullSize = {
+    plus: textures.plus,
+    refresh: textures.refresh,
+    move: textures.move,
+    special: textures.special,
+  };
 
-    const zoomedIn = {
-      plus: textures.plus.clone(),
-      refresh: textures.refresh.clone(),
-      move: textures.move.clone(),
-      special: textures.special.clone(),
-    };
+  const zoomedIn = {
+    plus: textures.plus.clone(),
+    refresh: textures.refresh.clone(),
+    move: textures.move.clone(),
+    special: textures.special.clone(),
+  };
 
-    Object.keys(zoomedIn).forEach((key) => {
-      zoomedIn[key as AbilityName].repeat.set(0.9, 0.9);
-      zoomedIn[key as AbilityName].center.set(0.5, 0.5);
-    });
+  Object.keys(zoomedIn).forEach((key) => {
+    zoomedIn[key as AbilityName].repeat.set(0.9, 0.9);
+    zoomedIn[key as AbilityName].center.set(0.5, 0.5);
+  });
 
-    return {
-      fullSize,
-      zoomedIn,
-    };
-  }, [textures.plus, textures.refresh, textures.move, textures.special]);
+  return {
+    fullSize,
+    zoomedIn,
+  };
 };
 
 export default useAbilityTextures;

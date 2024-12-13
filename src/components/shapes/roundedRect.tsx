@@ -25,6 +25,7 @@ class RoundedRectGeometry extends ExtrudeGeometry {
       curveSegments: 6,
       UVGenerator: {
         generateTopUV: function (_geometry, vertices, indexA, indexB, indexC) {
+          // fixing UV mapping for top/back faces
           const a_x = vertices[indexA * 3];
           const a_y = vertices[indexA * 3 + 1];
           const b_x = vertices[indexB * 3];
@@ -39,6 +40,7 @@ class RoundedRectGeometry extends ExtrudeGeometry {
           ];
         },
         generateSideWallUV: function (_geometry, _vertices, _indexA, _indexB, _indexC, _indexD) {
+          // fixing UV mapping for side walls
           return [new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1)];
         },
       },
@@ -53,6 +55,7 @@ class RoundedRectGeometry extends ExtrudeGeometry {
     const backIndices = [];
     const sideIndices = [];
 
+    // === ↓ ensuring there are 3 groups: front, back, and side ↓ ===
     // Group faces based on their normals
     for (let i = 0; i < positionAttr.count; i += 3) {
       const normalZ = normalAttr.getZ(i);

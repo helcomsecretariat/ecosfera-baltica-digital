@@ -1,4 +1,4 @@
-import { cardHeight, cardWidth } from "../constants/card";
+import { cardHeight, cardWidth, cardRadius } from "../constants/card";
 import GameElement from "./GameElement";
 import { Card, GamePieceAppearance } from "@/state/types";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
@@ -43,12 +43,12 @@ const Deck = ({
       >
         {isHighlighted && (
           <mesh>
-            <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, 1.5, 0.01]} />
+            <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, cardRadius, 0.01]} />
             <meshBasicMaterial transparent={true} map={highlightTexture} />
           </mesh>
         )}
         <mesh>
-          <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, deckDepth]} />
+          <RoundedRectangleGeometry args={[cardWidth, cardHeight, cardRadius, deckDepth]} />
           <meshBasicMaterial attach="material-0" map={texture} color={isDimmed ? "#999" : "white"} />
           <meshBasicMaterial attach="material-1" map={texture} color={isDimmed ? "#999" : "white"} />
           <meshBasicMaterial attach="material-2" color={isDimmed ? "#999" : "white"} />

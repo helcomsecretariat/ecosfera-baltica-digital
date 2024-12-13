@@ -1,7 +1,6 @@
 import { getAssetPath } from "@/components/utils";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import { Texture } from "three";
-import { useMemo } from "react";
 
 export type ElementName = "sun" | "temperature" | "nutrients" | "salinity" | "oxygen";
 
@@ -16,15 +15,13 @@ const useElementIconTextures = (): {
     oxygen: useSRGBTexture(getAssetPath("element_icon", "oxygen")),
   };
 
-  return useMemo(() => {
-    return {
-      sun: textures.sun,
-      temperature: textures.temperature,
-      nutrients: textures.nutrients,
-      salinity: textures.salinity,
-      oxygen: textures.oxygen,
-    };
-  }, [textures.sun, textures.temperature, textures.nutrients, textures.salinity, textures.oxygen]);
+  return {
+    sun: textures.sun,
+    temperature: textures.temperature,
+    nutrients: textures.nutrients,
+    salinity: textures.salinity,
+    oxygen: textures.oxygen,
+  };
 };
 
 export default useElementIconTextures;

@@ -1,5 +1,5 @@
 import type { Card as CardType, GamePieceAppearance } from "@/state/types";
-import { cardHeight, cardWidth, coordScale } from "../constants/card";
+import { cardHeight, cardRadius, cardWidth, coordScale } from "../constants/card";
 import GameElement from "./GameElement";
 import { useTexture } from "@react-three/drei";
 import { getAssetPath, getHighlightTextureAssetPath } from "@/components/utils";
@@ -31,7 +31,6 @@ const HABITAT_CONTAINER_PADDING = 3 / coordScale;
 const ABILITY_ICON_SIZE = HABITAT_ICON_SIZE + HABITAT_CONTAINER_PADDING * 2;
 const ABILITY_ICON_SPACING = 3 / coordScale;
 const ELEMENTS_BACKGROUND_HEIGHT = 18 / coordScale;
-const CARD_RADIUS = 6 / coordScale;
 
 const Z_INDEX = {
   CARD_BASE: 0,
@@ -113,7 +112,7 @@ const Card = ({
         withFloatAnimation={withFloatAnimation}
       >
         <mesh>
-          <RoundedRectangleGeometry args={[cardWidth, cardHeight, CARD_RADIUS, 0]} />
+          <RoundedRectangleGeometry args={[cardWidth, cardHeight, cardRadius, 0]} />
           <RelevantMaterial attach="material-0" map={texture} side={FrontSide} />
           <RelevantMaterial attach="material-1" map={backTexture} side={FrontSide} />
           <RelevantMaterial attach="material-2" color={"white"} side={FrontSide} />
@@ -121,7 +120,7 @@ const Card = ({
 
         {isHighlighted && (
           <mesh>
-            <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, CARD_RADIUS, 0.01]} />
+            <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, cardRadius, 0.01]} />
             <meshBasicMaterial transparent attach="material-0" map={highlightTexture} />
             <meshBasicMaterial transparent opacity={0} attach="material-1" />
             <meshBasicMaterial transparent opacity={0} attach="material-2" />
@@ -224,18 +223,18 @@ const Card = ({
         {hasElements && (
           <>
             <mesh position={[0, -cardHeight * 0.5 + ELEMENTS_BACKGROUND_HEIGHT / 2, Z_INDEX.ELEMENTS_BACKGROUND]}>
-              <RoundedRectangleGeometry args={[cardWidth, ELEMENTS_BACKGROUND_HEIGHT, CARD_RADIUS, 0]} />
+              <RoundedRectangleGeometry args={[cardWidth, ELEMENTS_BACKGROUND_HEIGHT, cardRadius, 0]} />
               <RelevantMaterial color="white" side={DoubleSide} />
             </mesh>
 
             <mesh
               position={[
                 0,
-                -cardHeight * 0.5 + ELEMENTS_BACKGROUND_HEIGHT / 2 + CARD_RADIUS,
+                -cardHeight * 0.5 + ELEMENTS_BACKGROUND_HEIGHT / 2 + cardRadius,
                 Z_INDEX.ELEMENTS_BACKGROUND,
               ]}
             >
-              <planeGeometry args={[cardWidth, CARD_RADIUS]} />
+              <planeGeometry args={[cardWidth, cardRadius]} />
               <RelevantMaterial color="white" side={DoubleSide} />
             </mesh>
           </>
@@ -278,7 +277,7 @@ const Card = ({
         {/* Dimmed Overlay */}
         {useDimmed && isDimmed && (
           <mesh position={[0, 0, Z_INDEX.DIMMED_OVERLAY]}>
-            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, CARD_RADIUS, 0.2]} />
+            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, cardRadius, 0.2]} />
             <RelevantMaterial color="black" transparent opacity={options?.dimLevel ?? 0.8} />
           </mesh>
         )}

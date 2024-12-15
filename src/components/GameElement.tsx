@@ -37,6 +37,7 @@ const GameElement = ({
   const [isPresent, safeToRemove] = usePresence();
   const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   if (!appearance) {
     // rare case. Happend during testing/development
@@ -67,12 +68,21 @@ const GameElement = ({
   );
 
   useFrame(({ clock }) => {
-    const time = clock.getElapsedTime();
+    const currentTime = clock.getElapsedTime();
+
+    // Initialize start time when floating animation begins
+    if (withFloatAnimation && startTimeRef.current === null) {
+      startTimeRef.current = currentTime;
+    } else if (!withFloatAnimation) {
+      startTimeRef.current = null;
+    }
+
+    const time = startTimeRef.current ? currentTime - startTimeRef.current : 0;
     const waveSpeed = 0.6;
     const waveAmplitude = 3.2;
     const maxRotationY = Math.PI / 12;
     const maxRotationZ = Math.PI / 64;
-    const phaseOffset = (appearance.position?.x ?? 0) * 0.1;
+    const phaseOffset = 0;
     const rotation = appearance.rotation || appearance.initialRotation;
     const position = appearance.position || appearance.initialPosition;
 

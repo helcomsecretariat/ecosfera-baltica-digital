@@ -1,5 +1,6 @@
+import { getAssetPath } from "@/components/utils";
 import { DeckConfig } from "@/decks/schema";
-import { Card } from "@/state/types";
+import { Card, HabitatName, AbilityName } from "@/state/types";
 import { clsx, type ClassValue } from "clsx";
 import { ListIterateeCustom } from "lodash";
 import { findIndex } from "lodash-es";
@@ -178,3 +179,33 @@ export function removeOne<T>(array: T[], predicate: ListIterateeCustom<T, boolea
   }
   return undefined;
 }
+
+export const getHabitatIconTextures = () =>
+  ({
+    pelagic: getAssetPath("habitat", "pelagic_icon"),
+    ice: getAssetPath("habitat", "ice_icon"),
+    rivers: getAssetPath("habitat", "rivers_icon"),
+    coast: getAssetPath("habitat", "coast_icon"),
+    rock: getAssetPath("habitat", "rock_icon"),
+    mud: getAssetPath("habitat", "mud_icon"),
+    baltic: getAssetPath("habitat", "baltic_active"),
+  }) as Record<HabitatName, string>;
+
+export type ElementName = "sun" | "temperature" | "nutrients" | "salinity" | "oxygen";
+
+export const getElementIconTextures = () =>
+  ({
+    sun: getAssetPath("element_icon", "sun"),
+    temperature: getAssetPath("element_icon", "temperature"),
+    nutrients: getAssetPath("element_icon", "nutrients"),
+    salinity: getAssetPath("element_icon", "salinity"),
+    oxygen: getAssetPath("element_icon", "oxygen"),
+  }) as Record<ElementName, string>;
+
+export const getAbilityIconTextures = () =>
+  ({
+    plus: getAssetPath("ability", "plus"),
+    refresh: getAssetPath("ability", "refresh"),
+    move: getAssetPath("ability", "move"),
+    special: getAssetPath("ability", "special"),
+  }) as Record<AbilityName, string>;

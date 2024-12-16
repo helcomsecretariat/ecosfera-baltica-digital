@@ -108,7 +108,6 @@ testRandomSeed("protection activation allowed before oil spill", async (seed) =>
     policyName: "Oil spill",
     stateBefore,
     specialCardSource: "plants",
-    autoConfirmStage: false,
   });
 
   let stateAfter = getState();
@@ -140,7 +139,6 @@ testRandomSeed("protection activation allowed before hazardous industrial substa
     policyName: "Hazardous substances from industry",
     stateBefore,
     specialCardSource: "plants",
-    autoConfirmStage: false,
   });
 
   let stateAfter = getState();
@@ -177,7 +175,6 @@ testRandomSeed("protection activation allowed before overfishing", async (seed) 
     policyName: "Overfishing",
     stateBefore,
     specialCardSource: "plants",
-    autoConfirmStage: false,
   });
 
   let stateAfter = getState();
@@ -189,4 +186,38 @@ testRandomSeed("protection activation allowed before overfishing", async (seed) 
 
   stateAfter = getState();
   expect(stateAfter.animalMarket.table.every((animalCard) => stateBefore.animalMarket.table.includes(animalCard)));
+});
+
+testRandomSeed("declining protection activation", async (seed) => {
+  const { activatePolicy, getState, send } = getTestActor({
+    useSpecialCards: true,
+    seed,
+  });
+  const stateBefore = getState();
+
+  const marketDeckBird = removeOne(stateBefore.animalMarket.deck, { faunaType: "bird" })!;
+  stateBefore.animalMarket.table = [
+    ...filter(stateBefore.animalMarket.deck, (card) => card.faunaType !== "bird").slice(0, 3),
+    marketDeckBird,
+  ];
+  const strictProtectionCard = removeOne(stateBefore.policyMarket.deck, (card) => card.name === "Strict protection")!;
+  const fundingCard = removeOne(stateBefore.policyMarket.deck, (card) => card.name === "Funding")!;
+  stateBefore.policyMarket.acquired.push(strictProtectionCard);
+  stateBefore.policyMarket.funding.push(fundingCard);
+
+  activatePolicy({
+    policyName: "Oil spill",
+    stateBefore,
+    specialCardSource: "plants",
+  });
+
+  let stateAfter = getState();
+  expect(stateAfter.stage?.eventType).toBe("policy_allowProtectionActivation");
+  send({
+    type: "user.click.stage.confirm",
+  });
+
+  stateAfter = getState();
+  expect(stateAfter.animalMarket.deck).toContain(marketDeckBird);
+  expect(stateAfter.animalMarket.table).not.toContain(marketDeckBird);
 });

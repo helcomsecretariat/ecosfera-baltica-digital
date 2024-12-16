@@ -6,6 +6,7 @@ import { TurnMachineGuards } from "../guards";
 import { concat, filter, find, without } from "lodash";
 import i18n from "@/i18n";
 import * as StrictProtection from "./strict_protection";
+import * as Shared from "./shared";
 
 export const cardPrefix = "overfishing";
 export const cardName = "Overfishing";
@@ -41,6 +42,7 @@ export const actions = {
   ),
   [`${cardPrefix}Done`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
+      draft.stage = undefined;
       draft.policyMarket.active = without(
         context.policyMarket.active,
         find(context.policyMarket.active, { name: cardName })!,
@@ -54,7 +56,7 @@ export const actions = {
 };
 
 export type GuardParams = ToParameterizedObject<typeof TurnMachineGuards>;
-export type ActionParams = ToParameterizedObject<typeof actions>;
+export type ActionParams = ToParameterizedObject<typeof actions & typeof Shared.actions>;
 
 export const state: {
   [cardPrefix]: ExpansionStateNodeConfig<ActionParams, GuardParams>;
@@ -66,12 +68,33 @@ export const state: {
       checkingProtection: {
         always: [
           {
+            target: "activatingProtection",
+            guard: "canActivateProtection",
+          },
+          {
             target: `#turn.${StrictProtection.cardPrefix}.stageProtection`,
             actions: `${cardPrefix}Done`,
             guard: { type: "isPolicyCardActive", params: StrictProtection.cardName },
           },
           { target: "discardMarketFish" },
         ],
+      },
+      activatingProtection: {
+        entry: {
+          type: `${Shared.prefix}StageProtectionActivation`,
+          params: ({ context }) => context.policyMarket.active.find((card) => card.name === cardName)!,
+        },
+        on: {
+          "user.click.stage.confirm": { target: "discardMarketFish", actions: `${Shared.prefix}Unstage` },
+          "user.click.policy.card.acquired": {
+            target: "checkingProtection",
+            actions: {
+              type: `${Shared.prefix}UnlockPolicyCard`,
+              params: ({ context }) =>
+                context.policyMarket.acquired.find((card) => card.name === StrictProtection.cardName)!,
+            },
+          },
+        },
       },
       discardMarketFish: {
         entry: [`${cardPrefix}DiscardMarketFish`],

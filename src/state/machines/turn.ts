@@ -40,10 +40,6 @@ import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "
 import { toUiState } from "@/state/ui/positioner";
 import { getCardComparator } from "@/lib/utils";
 import { expansionActions, expansionCardsEndTurnActions, expansionConditionChecks, expansionState } from "./expansion";
-import * as StrictProtection from "./expansion/strict_protection";
-import * as OilSpill from "./expansion/oil_spill";
-import * as HazardousIndustrialSubstances from "./expansion/hazardous_industrial_substances";
-import * as Overfishing from "./expansion/overfishing";
 
 type MachineConfig = {
   animSpeed?: number;
@@ -335,26 +331,12 @@ export const TurnMachine = setup({
           draft.policyMarket.active.push(policyCard);
         }
 
-        const strictProtectionCard = context.policyMarket.acquired.find(
-          (card) => card.name === StrictProtection.cardName,
-        );
-
-        const allowProtection =
-          strictProtectionCard &&
-          draft.policyMarket.funding.length > 0 &&
-          [OilSpill.cardName, HazardousIndustrialSubstances.cardName, Overfishing.cardName].includes(policyCard.name);
-
         draft.policyMarket.deck = without(context.policyMarket.deck, policyCard);
 
         draft.stage = {
-          eventType:
-            policyCard.effect === "implementation"
-              ? "policy_fundingIncrease"
-              : allowProtection
-                ? "policy_allowProtectionActivation"
-                : "policy_policyDraw",
+          eventType: policyCard.effect === "implementation" ? "policy_fundingIncrease" : "policy_policyDraw",
           cause: undefined,
-          effect: allowProtection ? [policyCard.uid, strictProtectionCard.uid] : [policyCard.uid],
+          effect: [policyCard.uid],
           outcome: policyCard.effect === "positive" || policyCard.effect === "implementation" ? "positive" : "negative",
         };
       }),
@@ -879,11 +861,6 @@ export const TurnMachine = setup({
             awaitingConfirmation: {
               on: {
                 "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
-                "user.click.policy.card.acquired": {
-                  target: "transitioning",
-                  actions: [{ type: "unlockPolicyCard", params: ({ event }) => event.card }, "unstage"],
-                  guard: "hasSufficientFunding",
-                },
               },
             },
             transitioning: {

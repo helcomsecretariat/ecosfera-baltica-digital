@@ -21,6 +21,7 @@ import * as GreenEnergy from "./green_energy";
 import * as UnderwaterNoise from "./underwater_noise";
 import * as BeachLitter from "./beach_litter";
 import * as StrictProtection from "./strict_protection";
+import * as Shared from "./shared";
 import { ExpansionActionFunctionMap } from "@/lib/types";
 import i18n from "@/i18n";
 
@@ -101,6 +102,7 @@ export const expansionActions = {
   ...UnderwaterNoise.actions,
   ...BeachLitter.actions,
   ...StrictProtection.actions,
+  ...Shared.actions,
 } as ExpansionActionFunctionMap;
 
 export const expansionState = {

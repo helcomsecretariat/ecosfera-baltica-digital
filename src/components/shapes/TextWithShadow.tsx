@@ -26,14 +26,14 @@ const TextWithShadow = ({
     <Text
       {...{
         ...props,
-        strokeColor,
         strokeWidth,
+        strokeColor,
         depthOffset,
         outlineBlur,
         outlineColor,
         outlineOpacity,
       }}
-      material={getRelevantMaterial()}
+      material={getRelevantMaterial({ toneMapped: false })}
       font={fontPath}
     >
       {children}

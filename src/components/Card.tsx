@@ -1,8 +1,7 @@
 import type { Card as CardType, GamePieceAppearance } from "@/state/types";
 import { cardHeight, cardRadius, cardWidth, coordScale } from "../constants/card";
 import GameElement from "./GameElement";
-import { useTexture } from "@react-three/drei";
-import { getAssetPath, getHighlightTextureAssetPath } from "@/components/utils";
+import { getAssetPath } from "@/components/utils";
 import { useMemo } from "react";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
@@ -32,9 +31,12 @@ const ABILITY_ICON_SIZE = HABITAT_ICON_SIZE + HABITAT_CONTAINER_PADDING * 2;
 const ABILITY_ICON_SPACING = 3 / coordScale;
 const ELEMENTS_BACKGROUND_HEIGHT = 18 / coordScale;
 
+const HIGHLIGHT_BORDER_WIDTH = 5 / coordScale;
+const HIGHLIGHT_BORDER_COLOR = "#3b82f6";
+
 const Z_INDEX = {
   CARD_BASE: 0,
-  HIGHLIGHT: 0.05,
+  HIGHLIGHT_BORDER: -0.2,
   HABITAT_BACKGROUND: 0.1,
   HABITAT_ICONS: 0.15,
   ABILITY_ICONS: 0.1,
@@ -42,7 +44,7 @@ const Z_INDEX = {
   ELEMENTS_BACKGROUND: 0.1,
   ELEMENT_ICONS: 0.15,
   UID: 0.35,
-  DIMMED_OVERLAY: 0.4,
+  DIMMED_OVERLAY: 0.18,
 };
 
 export type CardOptions = {
@@ -74,7 +76,6 @@ const Card = ({
   const cardIMGURL = getAssetPath(type, name);
   const texture = useSRGBTexture(cardIMGURL);
   const backTexture = useSRGBTexture("/ecosfera_baltica/back.avif");
-  const highlightTexture = useTexture(getHighlightTextureAssetPath());
   const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: true } });
   const isPlantOrAnimal = card.type === "plant" || card.type === "animal";
   const habitatIconTextures = useHabitatIconTextures();
@@ -119,9 +120,16 @@ const Card = ({
         </mesh>
 
         {isHighlighted && (
-          <mesh>
-            <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, cardRadius, 0.01]} />
-            <meshBasicMaterial transparent attach="material-0" map={highlightTexture} />
+          <mesh position={[0, 0, Z_INDEX.HIGHLIGHT_BORDER]}>
+            <RoundedRectangleGeometry
+              args={[
+                cardWidth + HIGHLIGHT_BORDER_WIDTH,
+                cardHeight + HIGHLIGHT_BORDER_WIDTH,
+                cardRadius + HIGHLIGHT_BORDER_WIDTH / 2,
+                0,
+              ]}
+            />
+            <meshBasicMaterial transparent attach="material-0" color={HIGHLIGHT_BORDER_COLOR} />
             <meshBasicMaterial transparent opacity={0} attach="material-1" />
             <meshBasicMaterial transparent opacity={0} attach="material-2" />
           </mesh>
@@ -204,15 +212,17 @@ const Card = ({
         {/* Name Label */}
         {["plant", "animal"].includes(type) && (
           <TextWithShadow
-            position={[-cardWidth * 0.5 + paddingLeft, -cardHeight * 0.5 + namePaddingBottom, Z_INDEX.NAME_LABEL]}
+            position={[0, -cardHeight * 0.5 + namePaddingBottom, Z_INDEX.NAME_LABEL]}
             fontStyle="italic"
-            strokeColor="white"
-            outlineColor="#222222"
-            outlineBlur="15%"
+            strokeColor="#ffffff"
+            outlineOffsetX={1 / coordScale}
+            outlineOffsetY={1 / coordScale}
+            outlineColor="#000"
+            outlineBlur={3 / coordScale}
             fontSize={1.9}
             overflowWrap="break-word"
-            maxWidth={cardWidth * 0.9}
-            anchorX="left"
+            maxWidth={cardWidth - paddingLeft - paddingRight}
+            anchorX="center"
             anchorY="bottom"
             textAlign="center"
           >
@@ -277,7 +287,7 @@ const Card = ({
         {/* Dimmed Overlay */}
         {useDimmed && isDimmed && (
           <mesh position={[0, 0, Z_INDEX.DIMMED_OVERLAY]}>
-            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, cardRadius, 0.2]} />
+            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, cardRadius, 0]} />
             <RelevantMaterial color="black" transparent opacity={options?.dimLevel ?? 0.8} />
           </mesh>
         )}

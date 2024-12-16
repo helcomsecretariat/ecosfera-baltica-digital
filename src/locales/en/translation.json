@@ -136,7 +136,7 @@
         "name": "Strict protection",
         "description": "Species cannot be discarded as a result of an action card.",
         "eventDescription": "Strict protection measures in Marine Protected Area (MPAs) leads to a boost in species abundances. Letting them spread also outside of the MPA.",
-        "stageEventText": "Protection measures saved species",
+        "stageEventText": "Protection measures prevented the discarding of species",
         "protectionActivationText": "You have the opportunity to block effects with strict protection."
       }
     }

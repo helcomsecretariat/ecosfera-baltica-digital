@@ -68,9 +68,15 @@ export function getTestActor({
     policyName: (typeof names)[number];
     stateBefore?: TurnMachineContext;
     specialCardSource?: "animals" | "plants";
+    autoConfirmStage?: boolean;
   }
 
-  const activatePolicy = ({ policyName, stateBefore, specialCardSource }: ActivatePolicyConfig) => {
+  const activatePolicy = ({
+    policyName,
+    stateBefore,
+    specialCardSource,
+    autoConfirmStage = true,
+  }: ActivatePolicyConfig) => {
     const state = stateBefore ?? getState();
     const policyCard = find(state.policyMarket.deck, { name: policyName })!;
     const fundingCard = find(state.policyMarket.deck, { name: "Funding" })!;
@@ -118,7 +124,7 @@ export function getTestActor({
         card: card as AnimalCard | PlantCard,
         abilityName: "special",
       });
-      send({ type: "user.click.stage.confirm" });
+      if (autoConfirmStage) send({ type: "user.click.stage.confirm" });
     }
 
     if (policyCard.effect === "positive") {
@@ -126,7 +132,7 @@ export function getTestActor({
         type: "user.click.policy.card.acquired",
         card: policyCard,
       });
-      send({ type: "user.click.stage.confirm" });
+      if (autoConfirmStage) send({ type: "user.click.stage.confirm" });
     }
   };
 

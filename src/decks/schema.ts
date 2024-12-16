@@ -58,6 +58,7 @@ const policyThemeSchema = z.enum([
   "fishing",
   "litter",
   "msp",
+  "protect",
   "N/A",
 ]);
 const policyUsageSchema = z.enum(["single", "permanent"]);

@@ -20,6 +20,8 @@ import * as RecyclingAndWasteDisposal from "./recycling_and_waste_disposal";
 import * as GreenEnergy from "./green_energy";
 import * as UnderwaterNoise from "./underwater_noise";
 import * as BeachLitter from "./beach_litter";
+import * as StrictProtection from "./strict_protection";
+import * as Shared from "./shared";
 import { ExpansionActionFunctionMap } from "@/lib/types";
 import i18n from "@/i18n";
 
@@ -46,6 +48,7 @@ export const names = [
   GreenEnergy.cardName,
   UnderwaterNoise.cardName,
   BeachLitter.cardName,
+  StrictProtection.cardName,
 ] as const;
 
 export type PolicyCardName = (typeof names)[number];
@@ -73,6 +76,7 @@ export const uiStrings = {
   ...GreenEnergy.uiStrings,
   ...UnderwaterNoise.uiStrings,
   ...BeachLitter.uiStrings,
+  ...StrictProtection.uiStrings,
 };
 
 export const expansionActions = {
@@ -97,6 +101,8 @@ export const expansionActions = {
   ...GreenEnergy.actions,
   ...UnderwaterNoise.actions,
   ...BeachLitter.actions,
+  ...StrictProtection.actions,
+  ...Shared.actions,
 } as ExpansionActionFunctionMap;
 
 export const expansionState = {
@@ -121,6 +127,7 @@ export const expansionState = {
   ...GreenEnergy.state,
   ...UnderwaterNoise.state,
   ...BeachLitter.state,
+  ...StrictProtection.state,
 };
 
 export const expansionConditionChecks = [
@@ -152,8 +159,14 @@ export const expansionStageEventText = {
   policy_policyDraw: i18n.t("deck.policies.policyDraw"),
   policy_fundingIncrease: i18n.t("deck.policies.fundingIncrease"),
   ...ClimateChange.stageEventText,
+  ...StrictProtection.stageEventText,
 };
 
-export type ExpansionPackStageEvent = "policy_policyDraw" | "policy_fundingIncrease" | "policy_climateChange";
+export type ExpansionPackStageEvent =
+  | "policy_policyDraw"
+  | "policy_fundingIncrease"
+  | "policy_climateChange"
+  | "policy_strictProtection"
+  | "policy_allowProtectionActivation";
 
 export type ExpansionPackPolicyCard = UnderwaterNoise.CardType | BeachLitter.CardType;

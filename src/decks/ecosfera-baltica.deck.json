@@ -200,6 +200,11 @@
       "effect": "negative",
       "theme": "litter",
       "usage": "single"
+    },
+    "Strict protection": {
+      "effect": "positive",
+      "theme": "protect",
+      "usage": "permanent"
     }
   },
   "plants": {

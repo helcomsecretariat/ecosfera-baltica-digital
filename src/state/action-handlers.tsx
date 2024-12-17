@@ -14,22 +14,25 @@ import { mapValues } from "lodash-es";
 import { EventFromLogic } from "xstate";
 import { ContextInjectedGuardMap, TurnMachineGuards } from "./machines/guards";
 
+// Type to make it clear that these functions return functions that need to be called
+type EmitterFunction<T extends readonly unknown[]> = (...args: T) => () => void;
+
 export interface ActionEmmiters {
-  playerCardClick: (card: Card) => () => void;
-  playerDeckClick: () => () => void;
-  playerEndTurnClick: () => () => void;
-  habitatTileClick: (name: HabitatName) => () => void;
-  marketElementClick: (name: ElementCard["name"]) => () => void;
-  borrowedElementClick: (card: ElementCard) => () => void;
-  marketCardClick: (card: PlantCard | AnimalCard) => () => void;
-  tokenClick: (token: AbilityTile) => () => void;
-  cardTokenClick: (card: AnimalCard | PlantCard, abilityName: AbilityName) => () => void;
-  animalDeckClick: () => () => void;
-  plantDeckClick: () => () => void;
-  stageConfirm: () => () => void;
-  iddqd: (context: Partial<TurnMachineContext>) => () => void;
-  acquiredPolicyCardClick: (card: PolicyCard) => () => void;
-  cancelPolicyCard: () => () => void;
+  playerCardClick: EmitterFunction<[card: Card]>;
+  playerDeckClick: EmitterFunction<[]>;
+  playerEndTurnClick: EmitterFunction<[]>;
+  habitatTileClick: EmitterFunction<[name: HabitatName]>;
+  marketElementClick: EmitterFunction<[name: ElementCard["name"]]>;
+  borrowedElementClick: EmitterFunction<[card: ElementCard]>;
+  marketCardClick: EmitterFunction<[card: PlantCard | AnimalCard]>;
+  tokenClick: EmitterFunction<[token: AbilityTile]>;
+  cardTokenClick: EmitterFunction<[card: AnimalCard | PlantCard, abilityName: AbilityName]>;
+  animalDeckClick: EmitterFunction<[]>;
+  plantDeckClick: EmitterFunction<[]>;
+  stageConfirm: EmitterFunction<[]>;
+  iddqd: EmitterFunction<[context: Partial<TurnMachineContext>]>;
+  acquiredPolicyCardClick: EmitterFunction<[card: PolicyCard]>;
+  cancelPolicyCard: EmitterFunction<[]>;
 }
 
 export type ActionTesters = {

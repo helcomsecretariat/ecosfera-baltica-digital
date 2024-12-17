@@ -738,12 +738,12 @@ export const TurnMachine = setup({
         },
         expansionCardStatesUpdating: {
           after: {
-          // @ts-expect-error dunno why
+            // @ts-expect-error dunno why
             animationDuration: {
-            target: "clearingTurnState",
-            actions: expansionCardsEndTurnActions,
+              target: "clearingTurnState",
+              actions: expansionCardsEndTurnActions,
+            },
           },
-        },
         },
         clearingTurnState: {
           after: {
@@ -760,80 +760,76 @@ export const TurnMachine = setup({
       },
       states: {
         preDraw: {
-          after: {
-            animationDuration: [
-              {
-                target: "#turn.stagingEvent.noBuyDisaster",
-                guard: and([
-                  "getsDidNotBuyDisaster",
-                  ({ context }) => TurnMachineGuards.checkNotDone({ context }, "noBuyCheck"),
-                ]),
-              },
-              {
-                target: "main",
-              },
-            ],
-          },
+          always: [
+            {
+              target: "#turn.stagingEvent.noBuyDisaster",
+              guard: and([
+                "getsDidNotBuyDisaster",
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "noBuyCheck"),
+              ]),
+            },
+            {
+              target: "main",
+            },
+          ],
         },
 
         main: {
-          after: {
-            animationDuration: [
-              {
-                target: "#turn.stagingEvent.gameWon",
-                guard: "gameWon",
-              },
-              {
-                target: "#turn.stagingEvent.gameLost",
-                guard: "gameLost",
-              },
-              {
-                target: "#turn.stagingEvent.skipTurn",
-                guard: "isTurnBlocked",
-                actions: "stageSkipTurn",
-              },
-              {
-                target: "#turn.stagingEvent.massExtinction",
-                guard: and([
-                  "getsMassExtinction",
-                  ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
-                ]),
-              },
-              {
-                target: "#turn.stagingEvent.extinction",
-                guard: and([
-                  "getsExtinction",
-                  ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
-                ]),
-              },
-              {
-                target: "#turn.stagingEvent.elementalDisaster",
-                guard: and([
-                  "getsElementalDisaster",
-                  ({ context }) => TurnMachineGuards.checkNotDone({ context }, "elementalDisasterCheck"),
-                ]),
-              },
-              {
-                target: "#turn.stagingEvent.abilityRefresh",
-                guard: "canRefreshAbility",
-              },
-              {
-                target: "#turn.stagingEvent.habitatUnlock",
-                guard: "canUnlockHabitats",
-              },
-              {
-                target: "#turn.endingTurn.discardingRow",
-                guard: "endPhase",
-              },
-              // @ts-expect-error dunno why
-              ...expansionConditionChecks,
-              // @ts-expect-error dunno why
-              {
-                target: "#turn.buying",
-                guard: "actionPhase",
-              },
-            ],
-          },
+          always: [
+            {
+              target: "#turn.stagingEvent.gameWon",
+              guard: "gameWon",
+            },
+            {
+              target: "#turn.stagingEvent.gameLost",
+              guard: "gameLost",
+            },
+            {
+              target: "#turn.stagingEvent.skipTurn",
+              guard: "isTurnBlocked",
+              actions: "stageSkipTurn",
+            },
+            {
+              target: "#turn.stagingEvent.massExtinction",
+              guard: and([
+                "getsMassExtinction",
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
+              ]),
+            },
+            {
+              target: "#turn.stagingEvent.extinction",
+              guard: and([
+                "getsExtinction",
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
+              ]),
+            },
+            {
+              target: "#turn.stagingEvent.elementalDisaster",
+              guard: and([
+                "getsElementalDisaster",
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "elementalDisasterCheck"),
+              ]),
+            },
+            {
+              target: "#turn.stagingEvent.abilityRefresh",
+              guard: "canRefreshAbility",
+            },
+            {
+              target: "#turn.stagingEvent.habitatUnlock",
+              guard: "canUnlockHabitats",
+            },
+            {
+              target: "#turn.endingTurn.discardingRow",
+              guard: "endPhase",
+            },
+            // @ts-expect-error dunno why
+            ...expansionConditionChecks,
+            // @ts-expect-error dunno why
+            {
+              target: "#turn.buying",
+              guard: "actionPhase",
+            },
+          ],
         },
       },
     },

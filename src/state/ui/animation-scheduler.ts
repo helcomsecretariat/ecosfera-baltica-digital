@@ -327,4 +327,5 @@ export function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoor
   return updatedCards;
 }
 
-const log = (...args: unknown[]) => console.log(...args);
+// const log = (...args: unknown[]) => console.log(...args)
+const log = (..._: unknown[]) => void 0;

@@ -153,7 +153,7 @@ export const TurnMachineGuards = {
 
     const availableAnimalHabitatPairs = getAnimalHabitatPairs([
       ...(player.hand.filter((card) => card.type === "animal") as AnimalCard[]),
-      ...stagedAnimals,
+      ...stagedAnimals, // this guard invoked both during stage and during 'main checks'
     ]).filter(
       (animalHabitatPair) =>
         !context.turn.uidsUsedForAbilityRefresh.some((uid) =>

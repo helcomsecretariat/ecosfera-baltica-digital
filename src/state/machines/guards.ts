@@ -289,12 +289,9 @@ export const TurnMachineGuards = {
   isActivePolicyCardPositive: ({ context }: { context: GameState }) =>
     first(context.policyMarket.active)?.effect === "positive",
 
-  canActivateProtection: ({ context }: { context: GameState }) => {
-    return (
-      context.policyMarket.acquired.some((card) => card.name === "Strict protection") &&
-      context.policyMarket.funding.length > 0
-    );
-  },
+  canActivateProtection: ({ context }: { context: GameState }) =>
+    context.policyMarket.acquired.some((card) => card.name === "Strict protection") &&
+    context.policyMarket.funding.length > 0,
 };
 
 export type ContextInjectedGuardMap = {

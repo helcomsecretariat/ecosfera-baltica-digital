@@ -7,6 +7,7 @@ import { TurnMachineGuards } from "../guards";
 import i18n from "@/i18n";
 import { and } from "xstate";
 import { shuffle } from "@/state/utils";
+import * as Shared from "./shared";
 
 export const cardPrefix = "recyclingAndWasteDisposal";
 export const cardName = "Recycling and waste disposal";
@@ -68,25 +69,10 @@ export const actions = {
       blockers.policyCancellation.reasons.push(find(context.policyMarket.active, { name: cardName })!.uid);
     }),
   ),
-  [`${cardPrefix}Done`]: assign(({ context }: { context: GameState }) =>
-    produce(context, (draft) => {
-      draft.stage = undefined;
-      draft.policyMarket.active = without(
-        context.policyMarket.active,
-        find(context.policyMarket.active, { name: cardName })!,
-      );
-      draft.policyMarket.table = without(
-        context.policyMarket.table,
-        find(context.policyMarket.table, { name: cardName })!,
-      );
-      draft.blockers.policyCancellation.isBlocked = false;
-      draft.blockers.policyCancellation.reasons = [];
-    }),
-  ),
 };
 
 export type GuardParams = ToParameterizedObject<typeof TurnMachineGuards>;
-export type ActionParams = ToParameterizedObject<typeof actions>;
+export type ActionParams = ToParameterizedObject<typeof actions & typeof Shared.actions>;
 
 export const state: {
   [cardPrefix]: ExpansionStateNodeConfig<ActionParams, GuardParams>;
@@ -128,7 +114,10 @@ export const state: {
         },
       },
       done: {
-        entry: [`${cardPrefix}Done`],
+        entry: {
+          type: `${Shared.prefix}Exhaust`,
+          params: ({ context }) => find(context.policyMarket.active, { name: cardName })!,
+        },
         always: {
           target: "#turn",
         },

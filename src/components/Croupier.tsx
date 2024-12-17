@@ -149,7 +149,8 @@ const Croupier = () => {
 
             const policyCard =
               find(gameState.policyMarket.acquired, { uid: cardUid }) ??
-              find(gameState.policyMarket.table, { uid: cardUid });
+              find(gameState.policyMarket.table, { uid: cardUid }) ??
+              find(gameState.policyMarket.exhausted, { uid: cardUid });
             return policyCard ? (
               <PolicyCard
                 key={cardUid}

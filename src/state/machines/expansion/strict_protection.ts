@@ -4,6 +4,7 @@ import { ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import i18n from "@/i18n";
 import { assign } from "@/state/machines/assign";
+import { first } from "lodash";
 
 export const cardPrefix = "strictProtection";
 export const cardName = "Strict protection";
@@ -34,8 +35,11 @@ export const actions = {
       draft.stage = {
         eventType: "policy_strictProtection",
         outcome: "positive",
-        cause: [(context.policyMarket.table.find((card) => card.name === cardName) as BasePolicyCard)?.uid],
-        effect: undefined,
+        cause: undefined,
+        effect: [
+          first(context.policyMarket.exhausted.filter((card) => card.name !== "Funding").slice(-1))!.uid,
+          (context.policyMarket.active.find((card) => card.name === cardName) as BasePolicyCard)?.uid,
+        ],
       };
     }),
   ),

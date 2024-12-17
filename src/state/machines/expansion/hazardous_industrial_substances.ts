@@ -38,18 +38,6 @@ export const actions = {
       });
     }),
   ),
-  [`${cardPrefix}Done`]: assign(({ context }: { context: GameState }) =>
-    produce(context, (draft) => {
-      draft.policyMarket.active = without(
-        context.policyMarket.active,
-        find(context.policyMarket.active, { name: cardName })!,
-      );
-      draft.policyMarket.table = without(
-        context.policyMarket.table,
-        find(context.policyMarket.table, { name: cardName })!,
-      );
-    }),
-  ),
 };
 
 export type GuardParams = ToParameterizedObject<typeof TurnMachineGuards>;
@@ -70,7 +58,10 @@ export const state: {
           },
           {
             target: `#turn.${StrictProtection.cardPrefix}.stageProtection`,
-            actions: `${cardPrefix}Done`,
+            actions: {
+              type: `${Shared.prefix}Exhaust`,
+              params: ({ context }) => find(context.policyMarket.active, { name: cardName })!,
+            },
             guard: { type: "isPolicyCardActive", params: StrictProtection.cardName },
           },
           { target: "discardMarketPlants" },
@@ -106,7 +97,10 @@ export const state: {
         },
       },
       done: {
-        entry: [`${cardPrefix}Done`],
+        entry: {
+          type: `${Shared.prefix}Exhaust`,
+          params: ({ context }) => find(context.policyMarket.active, { name: cardName })!,
+        },
         always: {
           target: "#turn",
         },

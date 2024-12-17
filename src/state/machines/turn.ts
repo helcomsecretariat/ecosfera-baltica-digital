@@ -737,11 +737,13 @@ export const TurnMachine = setup({
           exit: "drawCards",
         },
         expansionCardStatesUpdating: {
+          after: {
           // @ts-expect-error dunno why
-          always: {
+            animationDuration: {
             target: "clearingTurnState",
             actions: expansionCardsEndTurnActions,
           },
+        },
         },
         clearingTurnState: {
           after: {

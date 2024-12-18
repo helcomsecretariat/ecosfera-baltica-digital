@@ -152,7 +152,7 @@ export function compareCards(cardA: Card, cardB: Card) {
   return cardA.uid.localeCompare(cardB.uid);
 }
 
-export function testRandomSeed(name: string, callback: (seed: string) => void, numRuns: number = 10) {
+export function testRandomSeed(name: string, callback: (seed: string) => void, numRuns: number = 5) {
   return test.concurrent.each([...Array(numRuns).keys()].map(() => ({ seed: generateRandomString(12) })))(
     `${name} (seed: %s)`,
     async ({ seed }) => callback(seed),

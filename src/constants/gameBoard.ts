@@ -64,7 +64,6 @@ export const habitatTransforms = (baseX: number, baseY: number): { [K in Habitat
     mud: transforms[3],
     rivers: transforms[4],
     coast: transforms[5],
-    baltic: transforms[6],
   };
 };
 

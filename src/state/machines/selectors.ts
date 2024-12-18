@@ -83,4 +83,4 @@ export const selectNumberOfPlantsBought = ({ context }: { context: GameState }) 
   selectAllPlayerCards({ context }).filter((card) => card.type === "plant").length;
 
 export const selectNumberOfHabitatsUnlocked = ({ context: { habitatMarket } }: { context: GameState }) =>
-  habitatMarket.deck.filter((habitat) => habitat.isAcquired && habitat.name !== "baltic").length;
+  habitatMarket.deck.filter((habitat) => habitat.isAcquired).length;

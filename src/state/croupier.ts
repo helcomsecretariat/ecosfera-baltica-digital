@@ -108,7 +108,7 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "habitat",
-      isAcquired: name === "baltic" ? true : false,
+      isAcquired: false,
       uid: createUID("habitat", this.nextUid()),
     }));
   }

@@ -140,7 +140,7 @@ export interface AbilityTile extends GamePieceBase {
   name: AbilityName;
 }
 
-export type HabitatName = "coast" | "ice" | "rivers" | "pelagic" | "mud" | "rock" | "baltic";
+export type HabitatName = "coast" | "ice" | "rivers" | "pelagic" | "mud" | "rock";
 export interface HabitatTile extends GamePieceBase {
   type: "habitat";
   isAcquired: boolean;

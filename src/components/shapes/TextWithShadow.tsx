@@ -13,7 +13,7 @@ const TextWithShadow = ({
   outlineBlur = "10%",
   font,
   fontStyle = "normal",
-  depthOffset = -100,
+  depthOffset = -10,
   ...props
 }: TextWithShadowProps) => {
   const { getRelevantMaterial } = useRelevantMaterial();

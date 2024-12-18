@@ -1,5 +1,5 @@
 import type { Card as CardType, GamePieceAppearance } from "@/state/types";
-import { cardHeight, cardRadius, cardWidth, coordScale } from "../constants/card";
+import { CARD_Z_INDEX, cardHeight, cardRadius, cardWidth, coordScale } from "../constants/card";
 import GameElement from "./GameElement";
 import { getAssetPath } from "@/components/utils";
 import { useMemo } from "react";
@@ -33,19 +33,6 @@ const ELEMENTS_BACKGROUND_HEIGHT = 18 / coordScale;
 
 const HIGHLIGHT_BORDER_WIDTH = 5 / coordScale;
 const HIGHLIGHT_BORDER_COLOR = "#3b82f6";
-
-const Z_INDEX = {
-  CARD_BASE: 0,
-  HIGHLIGHT_BORDER: -0.2,
-  HABITAT_BACKGROUND: 0.1,
-  HABITAT_ICONS: 0.15,
-  ABILITY_ICONS: 0.1,
-  NAME_LABEL: 0.1,
-  ELEMENTS_BACKGROUND: 0.1,
-  ELEMENT_ICONS: 0.15,
-  UID: 0.35,
-  DIMMED_OVERLAY: 0.18,
-};
 
 export type CardOptions = {
   showAbilityButtons?: boolean;
@@ -120,7 +107,7 @@ const Card = ({
         </mesh>
 
         {isHighlighted && (
-          <mesh position={[0, 0, Z_INDEX.HIGHLIGHT_BORDER]}>
+          <mesh position={[0, 0, CARD_Z_INDEX.HIGHLIGHT_BORDER]}>
             <RoundedRectangleGeometry
               args={[
                 cardWidth + HIGHLIGHT_BORDER_WIDTH,
@@ -148,7 +135,7 @@ const Card = ({
                     HABITAT_CONTAINER_PADDING * 2) /
                     2,
                 cardHeight * 0.5 - paddingTop - HABITAT_CONTAINER_PADDING - HABITAT_ICON_SIZE / 2,
-                Z_INDEX.HABITAT_BACKGROUND,
+                CARD_Z_INDEX.HABITAT_BACKGROUND,
               ]}
             >
               <RoundedRectangleGeometry
@@ -175,7 +162,7 @@ const Card = ({
                     HABITAT_ICON_SIZE / 2 +
                     index * (HABITAT_ICON_SIZE + HABITAT_SPACING),
                   cardHeight * 0.5 - paddingTop - HABITAT_CONTAINER_PADDING - HABITAT_ICON_SIZE / 2,
-                  Z_INDEX.HABITAT_ICONS,
+                  CARD_Z_INDEX.HABITAT_ICONS,
                 ]}
               >
                 <planeGeometry args={[HABITAT_ICON_SIZE, HABITAT_ICON_SIZE]} />
@@ -197,7 +184,7 @@ const Card = ({
                   ABILITY_ICON_SIZE / 2 -
                   index * (ABILITY_ICON_SIZE + ABILITY_ICON_SPACING) -
                   (hasMoreThanThreeHabitats ? ABILITY_ICON_SIZE + ABILITY_ICON_SPACING : 0),
-                Z_INDEX.ABILITY_ICONS,
+                CARD_Z_INDEX.ABILITY_ICONS,
               ]}
             >
               <circleGeometry args={[ABILITY_ICON_SIZE / 2, 32]} />
@@ -212,7 +199,7 @@ const Card = ({
         {/* Name Label */}
         {["plant", "animal"].includes(type) && (
           <TextWithShadow
-            position={[0, -cardHeight * 0.5 + namePaddingBottom, Z_INDEX.NAME_LABEL]}
+            position={[0, -cardHeight * 0.5 + namePaddingBottom, CARD_Z_INDEX.NAME_LABEL]}
             fontStyle="italic"
             strokeColor="#ffffff"
             outlineOffsetX={1 / coordScale}
@@ -232,7 +219,7 @@ const Card = ({
 
         {hasElements && (
           <>
-            <mesh position={[0, -cardHeight * 0.5 + ELEMENTS_BACKGROUND_HEIGHT / 2, Z_INDEX.ELEMENTS_BACKGROUND]}>
+            <mesh position={[0, -cardHeight * 0.5 + ELEMENTS_BACKGROUND_HEIGHT / 2, CARD_Z_INDEX.ELEMENTS_BACKGROUND]}>
               <RoundedRectangleGeometry args={[cardWidth, ELEMENTS_BACKGROUND_HEIGHT, cardRadius, 0]} />
               <RelevantMaterial color="white" side={DoubleSide} />
             </mesh>
@@ -241,7 +228,7 @@ const Card = ({
               position={[
                 0,
                 -cardHeight * 0.5 + ELEMENTS_BACKGROUND_HEIGHT / 2 + cardRadius,
-                Z_INDEX.ELEMENTS_BACKGROUND,
+                CARD_Z_INDEX.ELEMENTS_BACKGROUND,
               ]}
             >
               <planeGeometry args={[cardWidth, cardRadius]} />
@@ -261,7 +248,7 @@ const Card = ({
                 (cardWidth - paddingLeft - paddingRight - elementsSorted.length * ELEMENT_ICON_SIZE) / 2 +
                 index * ELEMENT_ICON_SIZE,
               -cardHeight * 0.5 + paddingBottom + ELEMENT_ICON_SIZE / 2,
-              Z_INDEX.ELEMENT_ICONS,
+              CARD_Z_INDEX.ELEMENT_ICONS,
             ]}
           >
             <planeGeometry args={[ELEMENT_ICON_SIZE, ELEMENT_ICON_SIZE]} />
@@ -271,7 +258,7 @@ const Card = ({
         {/* UID */}
         {isShowUID && (
           <TextWithShadow
-            position={[0, 0, Z_INDEX.UID]}
+            position={[0, 0, CARD_Z_INDEX.UID]}
             strokeColor="white"
             outlineColor="#222222"
             outlineBlur={0.8}
@@ -286,7 +273,7 @@ const Card = ({
         )}
         {/* Dimmed Overlay */}
         {useDimmed && isDimmed && (
-          <mesh position={[0, 0, Z_INDEX.DIMMED_OVERLAY]}>
+          <mesh position={[0, 0, CARD_Z_INDEX.DIMMED_OVERLAY]}>
             <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, cardRadius, 0]} />
             <RelevantMaterial color="black" transparent opacity={options?.dimLevel ?? 0.8} />
           </mesh>

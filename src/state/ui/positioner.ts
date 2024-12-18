@@ -42,7 +42,7 @@ import {
   tileGridTransforms,
   habitatTransforms,
 } from "@/constants/gameBoard";
-import { cardHeight, cardWidth } from "@/constants/card";
+import { cardDepth, cardHeight, cardWidth } from "@/constants/card";
 import { TurnMachineGuards } from "../machines/guards";
 import { deckAnimationTimings } from "@/constants/animation";
 import { calcDelays } from "@/state/ui/animation-scheduler";
@@ -668,7 +668,7 @@ const getPlayerCardOffset = (
   const cardOffset = canOverlap ? overlappingCardXOffset : cardXOffset;
   const inPlayOffset = inPlay ? (playerIndex === 0 || playerIndex === 3 ? 4 : -4) : 0;
   const exhaustedOffset = exhausted ? -cardHeight / 2 : 0;
-  const z = previousPosition.z + (exhausted ? 0.35 : 0.1);
+  const z = previousPosition.z + (exhausted ? cardDepth : 0.1);
 
   switch (playerIndex) {
     case 0:

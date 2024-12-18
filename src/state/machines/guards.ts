@@ -210,9 +210,7 @@ export const TurnMachineGuards = {
   },
 
   gameWon: ({ context: { habitatMarket } }: { context: GameState }) => {
-    return habitatMarket.deck
-      .filter((habitatTile) => habitatTile.name !== "baltic")
-      .every((habitatTile) => habitatTile.isAcquired);
+    return habitatMarket.deck.every((habitatTile) => habitatTile.isAcquired);
   },
 
   stageCardsUsedForAbilityRefresh: ({ context: { turn, stage } }: { context: GameState }) =>

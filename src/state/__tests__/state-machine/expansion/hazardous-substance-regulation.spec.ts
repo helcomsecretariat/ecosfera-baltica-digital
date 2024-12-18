@@ -38,8 +38,7 @@ testRandomSeed("having shared animal and plant in hand unlocks habitat", async (
       .filter((habitatTile) => habitatTile.isAcquired)
       .every(
         (habitatTile) =>
-          habitatTile.name === "baltic" ||
-          (plantCard.habitats.includes(habitatTile.name) && animalCard.habitats.includes(habitatTile.name)),
+          plantCard.habitats.includes(habitatTile.name) && animalCard.habitats.includes(habitatTile.name),
       ),
   );
 });
@@ -115,9 +114,7 @@ testRandomSeed("cant select animal that doesn't share habitat", async (seed) => 
 
   const state = getState();
   expect(state.commandBar).toBeDefined();
-  expect(
-    state.habitatMarket.deck.every((habitatTile) => habitatTile.name === "baltic" || !habitatTile.isAcquired),
-  ).toBe(true);
+  expect(state.habitatMarket.deck.every((habitatTile) => !habitatTile.isAcquired)).toBe(true);
 });
 
 testRandomSeed("cant select plant card in other player's hand", async (seed) => {
@@ -156,9 +153,7 @@ testRandomSeed("cant select plant card in other player's hand", async (seed) => 
 
   const state = getState();
   expect(state.commandBar?.text).toBe(i18n.t("deck.policies.hazardousSubstanceRegulation.pickProducerCommandBarText"));
-  expect(
-    state.habitatMarket.deck.every((habitatTile) => habitatTile.name === "baltic" || !habitatTile.isAcquired),
-  ).toBe(true);
+  expect(state.habitatMarket.deck.every((habitatTile) => !habitatTile.isAcquired)).toBe(true);
 });
 
 testRandomSeed("cant select plant card in market", async (seed) => {
@@ -192,9 +187,7 @@ testRandomSeed("cant select plant card in market", async (seed) => {
 
   const state = getState();
   expect(state.commandBar?.text).toBe(i18n.t("deck.policies.hazardousSubstanceRegulation.pickProducerCommandBarText"));
-  expect(
-    state.habitatMarket.deck.every((habitatTile) => habitatTile.name === "baltic" || !habitatTile.isAcquired),
-  ).toBe(true);
+  expect(state.habitatMarket.deck.every((habitatTile) => !habitatTile.isAcquired)).toBe(true);
 });
 
 testRandomSeed("cant select animal card in other player's hand", async (seed) => {
@@ -226,9 +219,7 @@ testRandomSeed("cant select animal card in other player's hand", async (seed) =>
 
   const state = getState();
   expect(state.commandBar?.text).toBe(i18n.t("deck.policies.hazardousSubstanceRegulation.pickAnimalCommandBarText"));
-  expect(
-    state.habitatMarket.deck.every((habitatTile) => habitatTile.name === "baltic" || !habitatTile.isAcquired),
-  ).toBe(true);
+  expect(state.habitatMarket.deck.every((habitatTile) => !habitatTile.isAcquired)).toBe(true);
 });
 
 testRandomSeed("cant select animal cards in market", async (seed) => {
@@ -264,7 +255,5 @@ testRandomSeed("cant select animal cards in market", async (seed) => {
 
   const state = getState();
   expect(state.commandBar?.text).toBe(i18n.t("deck.policies.hazardousSubstanceRegulation.pickAnimalCommandBarText"));
-  expect(
-    state.habitatMarket.deck.every((habitatTile) => habitatTile.name === "baltic" || !habitatTile.isAcquired),
-  ).toBe(true);
+  expect(state.habitatMarket.deck.every((habitatTile) => !habitatTile.isAcquired)).toBe(true);
 });

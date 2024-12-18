@@ -17,6 +17,8 @@ import Policies from "./Policies/Policies";
 import PolicyCard from "./Policies/PolicyCard";
 import FundingCard from "./Policies/FundingCard";
 import { selectCurrentAbility, selectExhaustedCards } from "@/state/machines/selectors";
+import CenterTile from "@/components/CenterTile";
+import { extinctionTileYStart, habitatTileYStart } from "@/constants/gameBoard";
 
 const Croupier = () => {
   const { state: gameState, uiState, actorRef, snap, gameConfig } = useGameState();
@@ -167,6 +169,7 @@ const Croupier = () => {
       <Stage key="stage" />
 
       {/* Extinction tiles */}
+      <CenterTile key="extinction-center-tile" texturePathSuffix="extinction" yStart={extinctionTileYStart} />
       {[...gameState.extinctMarket.deck, ...gameState.extinctMarket.table].map((extinctionTile) => (
         <Tile
           key={extinctionTile.uid}
@@ -181,6 +184,7 @@ const Croupier = () => {
       ))}
 
       {/* Habitat tiles */}
+      <CenterTile key="habitat-center-tile" texturePathSuffix="baltic_active" yStart={habitatTileYStart} />
       {gameState.habitatMarket.deck.map((habitatTile) => (
         <Tile
           key={habitatTile.uid}

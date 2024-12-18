@@ -11,7 +11,6 @@ const useHabitatIconTextures = (): { [K in HabitatName]: Texture } => {
     coast: useSRGBTexture(getAssetPath("habitat", "coast_icon")),
     rock: useSRGBTexture(getAssetPath("habitat", "rock_icon")),
     mud: useSRGBTexture(getAssetPath("habitat", "mud_icon")),
-    baltic: useSRGBTexture(getAssetPath("habitat", "baltic_active")),
   };
 };
 

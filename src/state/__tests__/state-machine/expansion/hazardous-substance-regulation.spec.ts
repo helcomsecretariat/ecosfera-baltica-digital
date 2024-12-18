@@ -78,8 +78,7 @@ testRandomSeed("unlocking habitat draws policy card", async (seed) => {
       .filter((habitatTile) => habitatTile.isAcquired)
       .every(
         (habitatTile) =>
-          habitatTile.name === "baltic" ||
-          (plantCard.habitats.includes(habitatTile.name) && animalCard.habitats.includes(habitatTile.name)),
+          plantCard.habitats.includes(habitatTile.name) && animalCard.habitats.includes(habitatTile.name),
       ),
   );
   expect(["policy_automaticPolicyDrawHabitat", "policy_automaticFundingIncreaseHabitat"]).toContain(

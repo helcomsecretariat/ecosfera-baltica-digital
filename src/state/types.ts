@@ -68,6 +68,7 @@ export interface GameState {
     boughtAnimal: boolean;
     boughtPlant: boolean;
     unlockedHabitat: boolean;
+    unlockedHabitats: HabitatUID[];
     uidsUsedForAbilityRefresh: AnimalUID[];
     refreshedAbilityUids: AbilityUID[];
     automaticEventChecks?: string[];

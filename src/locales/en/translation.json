@@ -12,10 +12,20 @@
   },
   "deck": {
     "policies": {
-      "policyDraw": "You drew a special card!",
-      "automaticPolicyDrawExtinction": "\nThis card was automatically drawn after an extinction event.",
-      "automaticPolicyDrawHabitat": "\nThis card was automatically drawn after unlocking a habitat.",
-      "fundingIncrease": "You drew a funding card that can\ncontribute towards the implementation of a measure!",
+      "drawMessage": {
+        "implementation": "You drew a funding card that can\ncontribute towards the implementation of a measure!",
+        "negative": "You drew a special card!",
+        "dual": "You drew a special card!",
+        "positive": "You drew a special measure card!",
+        "positiveExtra": {
+          "hasFunding": "You can implement it by spending one of your Funding cards.",
+          "noFunding": "You can activate it once you have a Funding card."
+        },
+        "automaticDraw": {
+          "habitat": "This card was automatically drawn after unlocking a habitat.",
+          "extinction": "This card was automatically drawn after an extinction event."
+        }
+      },
       "funding": {
         "name": "Funding",
         "description": "This card must be paired with a measure card to allow the measure card to be implemented.",

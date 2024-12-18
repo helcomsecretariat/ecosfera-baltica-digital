@@ -24,6 +24,7 @@ import * as StrictProtection from "./strict_protection";
 import * as Shared from "./shared";
 import { ExpansionActionFunctionMap } from "@/lib/types";
 import i18n from "@/i18n";
+import { PolicyEffect } from "@/state/types";
 
 export const names = [
   OilSpill.cardName,
@@ -155,30 +156,89 @@ export const expansionConditionChecks = [
 
 export const expansionCardsEndTurnActions = [...UnderwaterNoise.endTurnActions, ...BeachLitter.endTurnActions];
 
-export const expansionStageEventText = {
-  policy_policyDraw: i18n.t("deck.policies.policyDraw"),
-  policy_automaticPolicyDrawExtinction:
-    i18n.t("deck.policies.policyDraw") + i18n.t("deck.policies.automaticPolicyDrawExtinction"),
-  policy_automaticPolicyDrawHabitat:
-    i18n.t("deck.policies.policyDraw") + i18n.t("deck.policies.automaticPolicyDrawHabitat"),
-  policy_automaticFundingIncreaseExtinction:
-    i18n.t("deck.policies.fundingIncrease") + i18n.t("deck.policies.automaticPolicyDrawExtinction"),
-  policy_automaticFundingIncreaseHabitat:
-    i18n.t("deck.policies.fundingIncrease") + i18n.t("deck.policies.automaticPolicyDrawHabitat"),
-  policy_fundingIncrease: i18n.t("deck.policies.fundingIncrease"),
-  ...ClimateChange.stageEventText,
-  ...StrictProtection.stageEventText,
+// Helper functions to construct policy messages
+const t = i18n.t;
+const msg = {
+  base: {
+    implementation: t("deck.policies.drawMessage.implementation"),
+    negative: t("deck.policies.drawMessage.negative"),
+    dual: t("deck.policies.drawMessage.dual"),
+    positive: t("deck.policies.drawMessage.positive"),
+  },
+  automaticDraw: {
+    habitat: t("deck.policies.drawMessage.automaticDraw.habitat"),
+    extinction: t("deck.policies.drawMessage.automaticDraw.extinction"),
+  },
+  positiveExtra: {
+    hasFunding: t("deck.policies.drawMessage.positiveExtra.hasFunding"),
+    noFunding: t("deck.policies.drawMessage.positiveExtra.noFunding"),
+  },
 };
 
+type PolicyDrawStageEvent =
+  | `policy_policyDraw${Capitalize<Exclude<PolicyEffect, "positive">>}`
+  | `policy_policyAutoDrawHabitat${Capitalize<Exclude<PolicyEffect, "positive">>}`
+  | `policy_policyAutoDrawExtinction${Capitalize<Exclude<PolicyEffect, "positive">>}`
+  | "policy_policyDrawPositiveHasFunding"
+  | "policy_policyDrawPositiveNoFunding"
+  | "policy_policyAutoDrawHabitatPositiveHasFunding"
+  | "policy_policyAutoDrawHabitatPositiveNoFunding"
+  | "policy_policyAutoDrawExtinctionPositiveHasFunding"
+  | "policy_policyAutoDrawExtinctionPositiveNoFunding";
 export type ExpansionPackStageEvent =
-  | "policy_policyDraw"
-  | "policy_automaticPolicyDrawExtinction"
-  | "policy_automaticPolicyDrawHabitat"
-  | "policy_automaticFundingIncreaseExtinction"
-  | "policy_automaticFundingIncreaseHabitat"
-  | "policy_fundingIncrease"
+  | PolicyDrawStageEvent
   | "policy_climateChange"
   | "policy_strictProtection"
   | "policy_allowProtectionActivation";
+
+const join = (...messages: string[]) => messages.join("\n");
+export const expansionStageEventText: Record<ExpansionPackStageEvent, string> = {
+  // Basic policy draws
+  policy_policyDrawImplementation: msg.base.implementation,
+  policy_policyDrawNegative: msg.base.negative,
+  policy_policyDrawDual: msg.base.dual,
+
+  // Habitat automatic draws
+  policy_policyAutoDrawHabitatImplementation: join(msg.base.implementation, msg.automaticDraw.habitat),
+  policy_policyAutoDrawHabitatNegative: join(msg.base.negative, msg.automaticDraw.habitat),
+  policy_policyAutoDrawHabitatDual: join(msg.base.dual, msg.automaticDraw.habitat),
+
+  // Extinction automatic draws
+  policy_policyAutoDrawExtinctionImplementation: join(msg.base.implementation, msg.automaticDraw.extinction),
+  policy_policyAutoDrawExtinctionNegative: join(msg.base.negative, msg.automaticDraw.extinction),
+  policy_policyAutoDrawExtinctionDual: join(msg.base.dual, msg.automaticDraw.extinction),
+
+  // Positive draws with funding states
+  policy_policyDrawPositiveHasFunding: join(msg.base.positive, msg.positiveExtra.hasFunding),
+  policy_policyDrawPositiveNoFunding: join(msg.base.positive, msg.positiveExtra.noFunding),
+
+  // Habitat positive draws with funding states
+  policy_policyAutoDrawHabitatPositiveHasFunding: join(
+    msg.base.positive,
+    msg.automaticDraw.habitat,
+    msg.positiveExtra.hasFunding,
+  ),
+  policy_policyAutoDrawHabitatPositiveNoFunding: join(
+    msg.base.positive,
+    msg.automaticDraw.habitat,
+    msg.positiveExtra.noFunding,
+  ),
+
+  // Extinction positive draws with funding states
+  policy_policyAutoDrawExtinctionPositiveHasFunding: join(
+    msg.base.positive,
+    msg.automaticDraw.extinction,
+    msg.positiveExtra.hasFunding,
+  ),
+  policy_policyAutoDrawExtinctionPositiveNoFunding: join(
+    msg.base.positive,
+    msg.automaticDraw.extinction,
+    msg.positiveExtra.noFunding,
+  ),
+
+  // Additional stage events from other modules
+  ...ClimateChange.stageEventText,
+  ...StrictProtection.stageEventText,
+};
 
 export type ExpansionPackPolicyCard = UnderwaterNoise.CardType | BeachLitter.CardType;

@@ -113,7 +113,7 @@ export const TimeMachine = () => {
     if (loadState && loadState !== "---") {
       const snapStr = localStorage.getItem(loadState);
       if (snapStr) {
-        const loadedSnap = JSON.parse(snapStr);
+        const loadedSnap = JSON.parse(snapStr) as SnapshotFrom<typeof TurnMachine>;
 
         emit.iddqd(loadedSnap.context)();
 

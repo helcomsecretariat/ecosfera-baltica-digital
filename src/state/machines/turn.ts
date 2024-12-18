@@ -3,7 +3,6 @@ import {
   AbilityTile,
   AbilityUID,
   AnimalCard,
-  HabitatTile,
   Card,
   ElementCard,
   GameConfig,
@@ -38,7 +37,7 @@ import {
 import { calculateDurations, replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 import { toUiState } from "@/state/ui/positioner";
-import { getCardComparator } from "@/lib/utils";
+import { capitalize, getCardComparator } from "@/lib/utils";
 import { expansionActions, expansionCardsEndTurnActions, expansionConditionChecks, expansionState } from "./expansion";
 
 type MachineConfig = {
@@ -153,24 +152,6 @@ export const TurnMachine = setup({
 
         draft.turn.playedCards = without(draft.turn.playedCards, ...draft.turn.exhaustedCards);
         player.hand.push(card);
-      }),
-    ),
-    buyHabitat: assign(({ context }: { context: GameState }, tile: HabitatTile) =>
-      produce(context, (draft) => {
-        const { turn, players, habitatMarket } = draft;
-        const { playedCards, player } = turn;
-
-        const playedAnimals =
-          (find(players, { uid: player })
-            ?.hand.filter(({ uid }) => playedCards.includes(uid))
-            .filter(({ type }) => type === "animal") as AnimalCard[]) ?? [];
-
-        const toBeExhaustedAnimals = playedAnimals.filter(({ habitats }) => habitats.includes(tile.name)).slice(0, 2);
-
-        turn.playedCards = without(turn.playedCards, ...toBeExhaustedAnimals.map(({ uid }) => uid));
-        turn.unlockedHabitat = true;
-
-        find(habitatMarket.deck, { name: tile.name })!.isAcquired = true;
       }),
     ),
     drawOneCard: assign(({ context }) =>
@@ -332,21 +313,24 @@ export const TurnMachine = setup({
         }
 
         draft.policyMarket.deck = without(context.policyMarket.deck, policyCard);
+        const cardEffect = policyCard.effect;
+        const hasFunding = TurnMachineGuards.hasSufficientFunding({ context });
+        const isMeasureCard = cardEffect === "positive";
+        const isHabitatAutoDraw = draft.turn.automaticPolicyDraw?.cause === "habitat";
+        const isExtinctionAutoDraw = draft.turn.automaticPolicyDraw?.cause === "extinction";
+
+        const base = "policy_policy";
+        const cause = isHabitatAutoDraw ? "AutoDrawHabitat" : isExtinctionAutoDraw ? "AutoDrawExtinction" : "Draw";
+        const effect = isMeasureCard
+          ? (`Positive${hasFunding ? "HasFunding" : "NoFunding"}` as const)
+          : capitalize(cardEffect);
+        const eventType = `${base}${cause}${effect}` as const;
+
+        const causeUids = isHabitatAutoDraw ? draft.turn.unlockedHabitats : undefined;
 
         draft.stage = {
-          eventType:
-            policyCard.effect === "implementation"
-              ? context.turn.automaticPolicyDraw?.cause === "habitat"
-                ? "policy_automaticFundingIncreaseHabitat"
-                : context.turn.automaticPolicyDraw?.cause === "extinction"
-                  ? "policy_automaticFundingIncreaseExtinction"
-                  : "policy_fundingIncrease"
-              : context.turn.automaticPolicyDraw?.cause === "habitat"
-                ? "policy_automaticPolicyDrawHabitat"
-                : context.turn.automaticPolicyDraw?.cause === "extinction"
-                  ? "policy_automaticPolicyDrawExtinction"
-                  : "policy_policyDraw",
-          cause: undefined,
+          eventType,
+          cause: causeUids,
           effect: [policyCard.uid],
           outcome: policyCard.effect === "positive" || policyCard.effect === "implementation" ? "positive" : "negative",
         };
@@ -410,7 +394,8 @@ export const TurnMachine = setup({
         });
         draft.turn.unlockedHabitat = true;
         draft.turn.playedCards = without(context.turn.playedCards, ...map(playedAnimals, "uid"));
-        draft.turn.exhaustedCards = concat(draft.turn.exhaustedCards, ...map(playedAnimals, "uid"));
+        draft.turn.exhaustedCards = [...draft.turn.exhaustedCards, ...map(playedAnimals, "uid")];
+        draft.turn.unlockedHabitats = sharedHabitats.map(({ uid }) => uid);
 
         draft.stage = {
           eventType: "habitatUnlock",
@@ -576,6 +561,7 @@ export const TurnMachine = setup({
           boughtAnimal: false,
           boughtPlant: false,
           unlockedHabitat: false,
+          unlockedHabitats: [],
           uidsUsedForAbilityRefresh: [],
           refreshedAbilityUids: [],
           selectedAbilityCard: undefined,
@@ -669,10 +655,11 @@ export const TurnMachine = setup({
       }),
     ),
 
-    setAutomaticPolicyDraw: assign(({ context }: { context: GameState }, cause: "habitat" | "extinction") =>
-      produce(context, ({ turn }) => {
-        turn.automaticPolicyDraw = TurnMachineGuards.isExpansionActive({ context }) ? { cause } : undefined;
-      }),
+    setAutomaticPolicyDraw: assign(
+      ({ context }: { context: GameState }, cause: NonNullable<GameState["turn"]["automaticPolicyDraw"]>["cause"]) =>
+        produce(context, ({ turn }) => {
+          turn.automaticPolicyDraw = TurnMachineGuards.isExpansionActive({ context }) ? { cause } : undefined;
+        }),
     ),
 
     ...expansionActions,
@@ -871,18 +858,13 @@ export const TurnMachine = setup({
           },
         },
         drawingPolicy: {
-          initial: "awaitingConfirmation",
           entry: "stagePolicyDraw",
-          states: {
-            awaitingConfirmation: {
-              on: {
-                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
-              },
-            },
-            transitioning: {
-              after: {
-                animationDuration: [{ target: "#turn.usingAbility.done" }],
-              },
+          on: {
+            "user.click.stage.confirm": { actions: "unstage", target: "#turn.usingAbility.done" },
+            "user.click.policy.card.acquired": {
+              target: "#turn.usingAbility.done",
+              actions: [{ type: "unlockPolicyCard", params: ({ event }) => event.card }, { type: "unstage" }],
+              guard: "hasSufficientFunding",
             },
           },
         },

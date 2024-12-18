@@ -214,7 +214,6 @@ export const TurnMachineGuards = {
   },
 
   stageCardsUsedForAbilityRefresh: ({ context: { turn, stage } }: { context: GameState }) =>
-    //@ts-expect-error uid type mismatch doesnt matter
     stage?.cause?.every((uid) => turn.uidsUsedForAbilityRefresh.includes(uid)) ?? false,
 
   isOnStage: ({ context: { stage } }: { context: GameState }, card: Card) => {
@@ -294,7 +293,7 @@ export const TurnMachineGuards = {
   isExpansionActive: ({ context }: { context: GameState }) => context.config.useSpecialCards,
 
   shouldAutomaticallyDrawPolicy: ({ context }: { context: GameState }) =>
-    context.turn.automaticPolicyDraw !== undefined,
+    context.config.useSpecialCards && context.turn.automaticPolicyDraw !== undefined,
 };
 
 export type ContextInjectedGuardMap = {

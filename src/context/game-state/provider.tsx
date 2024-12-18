@@ -38,6 +38,11 @@ export const GameStateProvider = ({
       animSpeed,
     },
   });
+
+  if (snap.error) {
+    throw snap.error;
+  }
+
   const emit = useMemo(() => createEmmiters(send), [send]);
   const test = useMemo(() => createTesters(snap.can.bind(snap)), [snap]);
   const hasTag = useMemo(() => snap.hasTag.bind(snap), [snap]);

@@ -81,9 +81,7 @@ testRandomSeed("unlocking habitat draws policy card", async (seed) => {
           plantCard.habitats.includes(habitatTile.name) && animalCard.habitats.includes(habitatTile.name),
       ),
   );
-  expect(["policy_automaticPolicyDrawHabitat", "policy_automaticFundingIncreaseHabitat"]).toContain(
-    state.stage?.eventType,
-  );
+  expect(state.stage?.eventType).toMatch(/^policy_policyAutoDraw/);
 });
 
 testRandomSeed("cant select animal that doesn't share habitat", async (seed) => {

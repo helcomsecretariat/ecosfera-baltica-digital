@@ -88,6 +88,7 @@ export const gameState: GameState = {
     boughtAnimal: false,
     boughtPlant: false,
     unlockedHabitat: false,
+    unlockedHabitats: [],
     uidsUsedForAbilityRefresh: [],
     refreshedAbilityUids: [],
     phase: "action",

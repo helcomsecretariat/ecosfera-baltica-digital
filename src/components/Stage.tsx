@@ -43,22 +43,24 @@ const Stage = () => {
       </AnimatePresence>
       {state.stage !== undefined && (
         <Html wrapperClass="top-10" position={[0, -2.5 * cardHeight, 0]} transform scale={8}>
-          <h1 className="mb-8 whitespace-pre-wrap text-center text-xl text-white">{eventText}</h1>
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (state.stage?.terminationEvent) {
-                window.location.reload();
-                return;
-              }
-              emit.stageConfirm()();
-            }}
-            disabled={!test.stageConfirm()}
-            variant="default"
-            className="w-full"
-          >
-            {state.stage.terminationEvent ? t("stageEventText.newGame") : t("stageEventText.ok")}
-          </Button>
+          <div className="flex flex-col items-center justify-center">
+            <h1 className="mb-8 whitespace-pre-wrap text-center text-xl text-white">{eventText}</h1>
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (state.stage?.terminationEvent) {
+                  window.location.reload();
+                  return;
+                }
+                emit.stageConfirm()();
+              }}
+              disabled={!test.stageConfirm()}
+              variant="default"
+              className="w-auto bg-[#0087BE] px-12 text-white hover:bg-[#0087BE]/80"
+            >
+              {state.stage.terminationEvent ? t("stageEventText.newGame") : t("stageEventText.ok")}
+            </Button>
+          </div>
         </Html>
       )}
     </>

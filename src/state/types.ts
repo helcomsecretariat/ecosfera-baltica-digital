@@ -72,6 +72,9 @@ export interface GameState {
     refreshedAbilityUids: AbilityUID[];
     automaticEventChecks?: string[];
     phase: "draw" | "end" | "action";
+    automaticPolicyDraw?: {
+      cause: "habitat" | "extinction";
+    };
   };
   players: PlayerState[];
   plantMarket: Market<PlantCard>;

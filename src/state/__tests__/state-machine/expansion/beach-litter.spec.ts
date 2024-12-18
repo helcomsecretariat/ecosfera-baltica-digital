@@ -1,5 +1,6 @@
 import { test, expect } from "vitest";
 import { getTestActor } from "@/state/__tests__/utils";
+import { cloneDeep } from "lodash";
 
 test("does not block turn for the current turn", async () => {
   const { activatePolicy, getState } = getTestActor({
@@ -21,10 +22,11 @@ test("blocks next player's turn", () => {
     useSpecialCards: true,
   });
 
+  const stateBefore = getState();
+  stateBefore.turn.boughtPlant = true;
+
   activatePolicy({ policyName: "Beach litter" });
   send({ type: "user.click.player.endTurn" });
-  send({ type: "user.click.stage.confirm" }); // no buy punishment
-  send({ type: "user.click.stage.confirm" }); // three disasters punishment
 
   const state = getState();
   const beachLitterCard = state.policyMarket.active.find((c) => c.name === "Beach litter")!;
@@ -38,15 +40,23 @@ test("moves card to active player's deck after single active turn", async () => 
     useSpecialCards: true,
   });
 
-  activatePolicy({ policyName: "Beach litter" });
+  const stateBefore = getState();
+  stateBefore.turn.boughtPlant = true;
+
+  activatePolicy({ policyName: "Beach litter", stateBefore });
 
   send({ type: "user.click.player.endTurn" });
-  send({ type: "user.click.stage.confirm" }); // no buy punishment
-  send({ type: "user.click.stage.confirm" }); // three disasters punishment
+
+  const stateAfterFirstTurn = cloneDeep(getState());
+  stateAfterFirstTurn.turn.boughtPlant = true;
+
+  send({
+    type: "iddqd",
+    context: stateAfterFirstTurn,
+  });
 
   send({ type: "user.click.player.endTurn" });
-  send({ type: "user.click.stage.confirm" }); // no buy punishment
-  send({ type: "user.click.stage.confirm" }); // three disasters punishment
+  send({ type: "user.click.stage.confirm" });
 
   const stateAfterTwoTurns = getState();
   const activePlayer = stateAfterTwoTurns.players.find((p) => p.uid === stateAfterTwoTurns.turn.player)!;

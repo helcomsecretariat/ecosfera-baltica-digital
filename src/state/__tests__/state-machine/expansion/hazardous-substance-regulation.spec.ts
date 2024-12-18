@@ -44,6 +44,50 @@ testRandomSeed("having shared animal and plant in hand unlocks habitat", async (
   );
 });
 
+testRandomSeed("unlocking habitat draws policy card", async (seed) => {
+  const { send, getState, activatePolicy } = getTestActor({
+    useSpecialCards: true,
+    playerCount: 1,
+    seed,
+  });
+  const stateBefore = getState();
+
+  stateBefore.plantMarket.deck = concat(stateBefore.plantMarket.deck, stateBefore.plantMarket.table);
+  stateBefore.plantMarket.table = [];
+  stateBefore.animalMarket.deck = concat(stateBefore.animalMarket.deck, stateBefore.animalMarket.table);
+  stateBefore.animalMarket.table = [];
+
+  const plantCard = removeOne(stateBefore.plantMarket.deck, (card) => card.habitats.includes("pelagic"))!;
+  const animalCard = removeOne(stateBefore.animalMarket.deck, (card) => card.habitats.includes("pelagic"))!;
+
+  stateBefore.players[0].hand.push(plantCard);
+  stateBefore.players[0].hand.push(animalCard);
+
+  activatePolicy({
+    policyName: "Hazardous substance regulation",
+    stateBefore,
+    specialCardSource: "plants",
+  });
+  send({ type: "user.click.player.hand.card", card: plantCard });
+  send({ type: "user.click.player.hand.card", card: animalCard });
+  send({ type: "user.click.stage.confirm" });
+
+  const state = getState();
+  expect(state.commandBar).toBeUndefined();
+  expect(
+    state.habitatMarket.deck
+      .filter((habitatTile) => habitatTile.isAcquired)
+      .every(
+        (habitatTile) =>
+          habitatTile.name === "baltic" ||
+          (plantCard.habitats.includes(habitatTile.name) && animalCard.habitats.includes(habitatTile.name)),
+      ),
+  );
+  expect(["policy_automaticPolicyDrawHabitat", "policy_automaticFundingIncreaseHabitat"]).toContain(
+    state.stage?.eventType,
+  );
+});
+
 testRandomSeed("cant select animal that doesn't share habitat", async (seed) => {
   const { send, getState, activatePolicy } = getTestActor({ useSpecialCards: true, playerCount: 1, seed });
   const stateBefore = getState();

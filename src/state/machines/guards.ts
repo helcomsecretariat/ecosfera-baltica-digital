@@ -292,6 +292,11 @@ export const TurnMachineGuards = {
   canActivateProtection: ({ context }: { context: GameState }) =>
     context.policyMarket.acquired.some((card) => card.name === "Strict protection") &&
     context.policyMarket.funding.length > 0,
+
+  isExpansionActive: ({ context }: { context: GameState }) => context.config.useSpecialCards,
+
+  shouldAutomaticallyDrawPolicy: ({ context }: { context: GameState }) =>
+    context.turn.automaticPolicyDraw !== undefined,
 };
 
 export type ContextInjectedGuardMap = {

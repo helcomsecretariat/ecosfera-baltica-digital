@@ -13,6 +13,8 @@
   "deck": {
     "policies": {
       "policyDraw": "You drew a special card!",
+      "automaticPolicyDrawExtinction": "\nThis card was automatically drawn after an extinction event.",
+      "automaticPolicyDrawHabitat": "\nThis card was automatically drawn after unlocking a habitat.",
       "fundingIncrease": "You drew a funding card that can\ncontribute towards the implementation of a measure!",
       "funding": {
         "name": "Funding",

@@ -91,6 +91,7 @@ export const gameState: GameState = {
     uidsUsedForAbilityRefresh: [],
     refreshedAbilityUids: [],
     phase: "action",
+    automaticPolicyDraw: undefined,
   },
   players: [player],
   plantMarket: { type: "plant", deck: [], table: [] },

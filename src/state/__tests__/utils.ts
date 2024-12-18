@@ -4,7 +4,7 @@ import { createActor, EventFromLogic } from "xstate";
 import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import { DeckConfig } from "@/decks/schema";
 import { Card, AnimalCard, PlantCard } from "@/state/types";
-import { find, filter, without } from "lodash";
+import { find, filter, without, cloneDeep } from "lodash";
 import { names } from "@/state/machines/expansion";
 import { generateRandomString, removeOne } from "@/lib/utils";
 
@@ -84,6 +84,7 @@ export function getTestActor({
     if (!policyCard) throw new Error(`Policy card ${policyName} not found`);
 
     state.policyMarket.deck = without(state.policyMarket.deck, policyCard, fundingCard);
+    const originalPolicyMarketDeck = cloneDeep(state.policyMarket.deck);
 
     //  setup hand
     const specialCardsInHand = filter(state.players[0].hand, (card: PlantCard | AnimalCard) =>
@@ -106,7 +107,8 @@ export function getTestActor({
     state.players[0].hand = [...state.players[0].hand, ...cardsToAdd];
 
     // set up policy market
-    state.policyMarket.deck = policyCard.effect === "positive" ? [fundingCard, policyCard] : [policyCard];
+    const targetedPolicyMarketDeck = policyCard.effect === "positive" ? [fundingCard, policyCard] : [policyCard];
+    state.policyMarket.deck = [...targetedPolicyMarketDeck, ...originalPolicyMarketDeck];
 
     send({
       type: "iddqd",

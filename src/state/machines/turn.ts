@@ -334,11 +334,23 @@ export const TurnMachine = setup({
         draft.policyMarket.deck = without(context.policyMarket.deck, policyCard);
 
         draft.stage = {
-          eventType: policyCard.effect === "implementation" ? "policy_fundingIncrease" : "policy_policyDraw",
+          eventType:
+            policyCard.effect === "implementation"
+              ? context.turn.automaticPolicyDraw?.cause === "habitat"
+                ? "policy_automaticFundingIncreaseHabitat"
+                : context.turn.automaticPolicyDraw?.cause === "extinction"
+                  ? "policy_automaticFundingIncreaseExtinction"
+                  : "policy_fundingIncrease"
+              : context.turn.automaticPolicyDraw?.cause === "habitat"
+                ? "policy_automaticPolicyDrawHabitat"
+                : context.turn.automaticPolicyDraw?.cause === "extinction"
+                  ? "policy_automaticPolicyDrawExtinction"
+                  : "policy_policyDraw",
           cause: undefined,
           effect: [policyCard.uid],
           outcome: policyCard.effect === "positive" || policyCard.effect === "implementation" ? "positive" : "negative",
         };
+        draft.turn.automaticPolicyDraw = undefined;
       }),
     ),
     stageGameWin: assign(({ context }: { context: GameState }) =>
@@ -440,10 +452,7 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player })!;
         const disasterCards = player?.hand.filter((card) => card.type === "disaster");
-        const extinctionTiles = context.extinctMarket.deck.slice(
-          0,
-          TurnMachineGuards.isPolicyCardActive({ context }, "Climate change") ? 2 : 1,
-        );
+        const extinctionTiles = context.extinctMarket.deck.slice(0, 1);
 
         // TODO: Figure out what to do when extinction deck is empty
         if (isEmpty(extinctionTiles)) return;
@@ -463,10 +472,7 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player })!;
         const disasterCards = player?.hand.filter((card) => card.type === "disaster");
-        const extinctionTiles = context.extinctMarket.deck.slice(
-          0,
-          TurnMachineGuards.isPolicyCardActive({ context }, "Climate change") ? 4 : 3,
-        );
+        const extinctionTiles = context.extinctMarket.deck.slice(0, 3);
 
         // TODO: Figure out what to do when extinction deck is empty
         if (extinctionTiles.length === 0) return;
@@ -575,6 +581,7 @@ export const TurnMachine = setup({
           selectedAbilityCard: undefined,
           automaticEventChecks: [],
           phase: "action" as const,
+          automaticPolicyDraw: undefined,
         },
       };
     }),
@@ -659,6 +666,12 @@ export const TurnMachine = setup({
         draft.policyMarket.exhausted = without(context.policyMarket.exhausted, ...fundingCard);
         draft.policyMarket.funding = concat(context.policyMarket.funding, fundingCard);
         draft.commandBar = undefined;
+      }),
+    ),
+
+    setAutomaticPolicyDraw: assign(({ context }: { context: GameState }, cause: "habitat" | "extinction") =>
+      produce(context, ({ turn }) => {
+        turn.automaticPolicyDraw = TurnMachineGuards.isExpansionActive({ context }) ? { cause } : undefined;
       }),
     ),
 
@@ -785,6 +798,10 @@ export const TurnMachine = setup({
               guard: "gameLost",
             },
             {
+              target: "#turn.stagingEvent.drawingPolicy",
+              guard: "shouldAutomaticallyDrawPolicy",
+            },
+            {
               target: "#turn.stagingEvent.skipTurn",
               guard: "isTurnBlocked",
               actions: "stageSkipTurn",
@@ -818,12 +835,13 @@ export const TurnMachine = setup({
               target: "#turn.stagingEvent.habitatUnlock",
               guard: "canUnlockHabitats",
             },
+            // @ts-expect-error dunno why
+            ...expansionConditionChecks,
+            // @ts-expect-error dunno why
             {
               target: "#turn.endingTurn.discardingRow",
               guard: "endPhase",
             },
-            // @ts-expect-error dunno why
-            ...expansionConditionChecks,
             // @ts-expect-error dunno why
             {
               target: "#turn.buying",
@@ -852,7 +870,7 @@ export const TurnMachine = setup({
             "user.click.stage.confirm": { actions: "unstage", target: "#turn" },
           },
         },
-        drawingSpecial: {
+        drawingPolicy: {
           initial: "awaitingConfirmation",
           entry: "stagePolicyDraw",
           states: {
@@ -863,7 +881,7 @@ export const TurnMachine = setup({
             },
             transitioning: {
               after: {
-                animationDuration: { target: "#turn.usingAbility.done" },
+                animationDuration: [{ target: "#turn.usingAbility.done" }],
               },
             },
           },
@@ -927,7 +945,7 @@ export const TurnMachine = setup({
         },
         habitatUnlock: {
           initial: "awaitingConfirmation",
-          entry: "stageHabitatUnlock",
+          entry: ["stageHabitatUnlock", { type: "setAutomaticPolicyDraw", params: "habitat" }],
           states: {
             awaitingConfirmation: {
               on: {
@@ -1010,7 +1028,7 @@ export const TurnMachine = setup({
         },
         extinction: {
           initial: "awaitingConfirmation",
-          entry: "stageExtinction",
+          entry: ["stageExtinction", { type: "setAutomaticPolicyDraw", params: "extinction" }],
           states: {
             awaitingConfirmation: {
               on: {
@@ -1025,7 +1043,7 @@ export const TurnMachine = setup({
               after: {
                 animationDuration: [
                   { target: "#turn.climateChange", guard: { type: "isPolicyCardActive", params: "Climate change" } },
-                  { target: "#turn.endingTurn.discardingRow" },
+                  { target: "#turn.endingTurn" },
                 ],
               },
             },
@@ -1033,7 +1051,7 @@ export const TurnMachine = setup({
         },
         massExtinction: {
           initial: "awaitingConfirmation",
-          entry: "stageMassExtinction",
+          entry: ["stageMassExtinction", { type: "setAutomaticPolicyDraw", params: "extinction" }],
           states: {
             awaitingConfirmation: {
               on: {
@@ -1291,7 +1309,7 @@ export const TurnMachine = setup({
         },
         usingSpecial: {
           after: {
-            animationDuration: "#turn.stagingEvent.drawingSpecial",
+            animationDuration: "#turn.stagingEvent.drawingPolicy",
           },
         },
         done: {

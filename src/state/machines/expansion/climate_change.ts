@@ -66,7 +66,7 @@ export const state: {
       done: {
         on: {
           "user.click.stage.confirm": {
-            target: "#turn.endingTurn.discardingRow",
+            target: "#turn.endingTurn",
             actions: [`${cardPrefix}Done`],
           },
         },

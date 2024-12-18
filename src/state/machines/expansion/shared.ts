@@ -3,6 +3,7 @@ import { GameState, PolicyCard } from "@/state/types";
 import { produce } from "immer";
 import * as StrictProtection from "./strict_protection";
 import { concat, find, without } from "lodash";
+import { TurnMachineGuards } from "@/state/machines/guards";
 
 export const prefix = "expansionShared";
 
@@ -53,6 +54,12 @@ export const actions = {
         find(context.policyMarket.table, { name: card.name })!,
       );
       draft.policyMarket.exhausted.push(card);
+    }),
+  ),
+
+  [`${prefix}SetAutomaticPolicyDraw`]: assign(({ context }: { context: GameState }, cause: "habitat" | "extinction") =>
+    produce(context, ({ turn }) => {
+      turn.automaticPolicyDraw = TurnMachineGuards.isExpansionActive({ context }) ? { cause } : undefined;
     }),
   ),
 };

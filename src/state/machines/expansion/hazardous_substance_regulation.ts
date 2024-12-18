@@ -129,7 +129,7 @@ export const state: {
         },
       },
       action: {
-        entry: [`${cardPrefix}Action`],
+        entry: [`${cardPrefix}Action`, { type: `${Shared.prefix}SetAutomaticPolicyDraw`, params: "habitat" }],
         after: {
           animationDuration: "done",
         },

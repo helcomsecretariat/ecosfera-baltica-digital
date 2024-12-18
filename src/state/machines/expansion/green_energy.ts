@@ -70,14 +70,21 @@ export const state: {
         ],
       },
       addingExtinctionTile: {
-        entry: `${cardPrefix}AddExtinctionTile`,
-        always: "done",
+        entry: [
+          `${cardPrefix}AddExtinctionTile`,
+          { type: `${Shared.prefix}SetAutomaticPolicyDraw`, params: "extinction" },
+        ],
+        always: "#turn",
+        exit: {
+          type: `${Shared.prefix}Exhaust`,
+          params: ({ context }) => find(context.policyMarket.active, { name: cardName })!,
+        },
       },
       pickingTarget: {
-        entry: `${cardPrefix}InitCommandBar`,
+        entry: [`${cardPrefix}InitCommandBar`, { type: `${Shared.prefix}SetAutomaticPolicyDraw`, params: "habitat" }],
         on: {
           "user.click.market.deck.habitat": {
-            target: "done",
+            target: "#turn",
             actions: {
               type: `${cardPrefix}UnlockHabitat`,
               params: ({ event }) => event.name,
@@ -89,14 +96,9 @@ export const state: {
             ]),
           },
         },
-      },
-      done: {
-        entry: {
+        exit: {
           type: `${Shared.prefix}Exhaust`,
           params: ({ context }) => find(context.policyMarket.active, { name: cardName })!,
-        },
-        always: {
-          target: "#turn",
         },
       },
     },

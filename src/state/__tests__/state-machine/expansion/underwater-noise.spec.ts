@@ -1,5 +1,6 @@
 import { test, expect } from "vitest";
 import { getTestActor } from "@/state/__tests__/utils";
+import { cloneDeep } from "lodash";
 test("does not block abilities for the current turn", async () => {
   const { activatePolicy, getState } = getTestActor({
     useSpecialCards: true,
@@ -20,10 +21,11 @@ test("blocks abilities for the next turn", () => {
     useSpecialCards: true,
   });
 
-  activatePolicy({ policyName: "Underwater noise" });
+  const stateBefore = getState();
+  stateBefore.turn.boughtPlant = true;
+
+  activatePolicy({ policyName: "Underwater noise", stateBefore });
   send({ type: "user.click.player.endTurn" });
-  send({ type: "user.click.stage.confirm" }); // no buy punishment
-  send({ type: "user.click.stage.confirm" }); // three disasters punishment
 
   const state = getState();
   const underwaterNoiseCard = state.policyMarket.active.find((c) => c.name === "Underwater noise")!;
@@ -37,15 +39,22 @@ test("removes card after single active turn", async () => {
     useSpecialCards: true,
   });
 
-  activatePolicy({ policyName: "Underwater noise" });
+  const stateBefore = getState();
+  stateBefore.turn.boughtPlant = true;
+
+  activatePolicy({ policyName: "Underwater noise", stateBefore });
 
   send({ type: "user.click.player.endTurn" });
-  send({ type: "user.click.stage.confirm" }); // no buy punishment
-  send({ type: "user.click.stage.confirm" }); // three disasters punishment
+
+  const stateAfterFirstTurn = cloneDeep(getState());
+  stateAfterFirstTurn.turn.boughtPlant = true;
+
+  send({
+    type: "iddqd",
+    context: stateAfterFirstTurn,
+  });
 
   send({ type: "user.click.player.endTurn" });
-  send({ type: "user.click.stage.confirm" }); // no buy punishment
-  send({ type: "user.click.stage.confirm" }); // three disasters punishment
 
   const stateAfterTwoTurns = getState();
   const underwaterNoiseCard = stateAfterTwoTurns.policyMarket.active.find((c) => c.name === "Underwater noise")!;

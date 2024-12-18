@@ -6,7 +6,7 @@ import { HabitatName } from "@/state/types";
 test.each<{ habitatName: HabitatName }>([{ habitatName: "mud" }, { habitatName: "rock" }, { habitatName: "coast" }])(
   "%s habitat acquired causes extinction",
   async ({ habitatName }) => {
-    const { getState, activatePolicy } = getTestActor({ useSpecialCards: true, playerCount: 1 });
+    const { send, getState, activatePolicy } = getTestActor({ useSpecialCards: true, playerCount: 1 });
     const stateBefore = getState();
 
     const mudHabitat = stateBefore.habitatMarket.deck.find((habitatTile) => habitatTile.name === habitatName)!;
@@ -16,6 +16,8 @@ test.each<{ habitatName: HabitatName }>([{ habitatName: "mud" }, { habitatName: 
       policyName: "Green energy",
       stateBefore,
     });
+
+    send({ type: "user.click.stage.confirm" });
 
     const state = getState();
     expect(state.commandBar).toBeUndefined();
@@ -38,6 +40,27 @@ test.each<{ habitatName: HabitatName }>([{ habitatName: "mud" }, { habitatName: 
     const state = getState();
     expect(state.commandBar).toBeUndefined();
     expect(find(state.habitatMarket.deck, { name: habitatName })?.isAcquired).toBe(true);
+  },
+);
+
+test.each<{ habitatName: HabitatName }>([{ habitatName: "mud" }, { habitatName: "rock" }, { habitatName: "coast" }])(
+  "unlocking %s habitat draws policy card",
+  async ({ habitatName }) => {
+    const { send, getState, activatePolicy } = getTestActor({ useSpecialCards: true, playerCount: 1 });
+    const stateBefore = getState();
+
+    activatePolicy({
+      policyName: "Green energy",
+      stateBefore,
+    });
+    send({ type: "user.click.market.deck.habitat", name: habitatName });
+
+    const state = getState();
+    expect(state.commandBar).toBeUndefined();
+    expect(find(state.habitatMarket.deck, { name: habitatName })?.isAcquired).toBe(true);
+    expect(["policy_automaticPolicyDrawHabitat", "policy_automaticFundingIncreaseHabitat"]).toContain(
+      state.stage?.eventType,
+    );
   },
 );
 

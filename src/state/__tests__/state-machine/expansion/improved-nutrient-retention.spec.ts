@@ -48,6 +48,9 @@ testRandomSeed("card stays on table after multiple turns", (seed) => {
   });
 
   const stateBefore = getState();
+
+  stateBefore.turn.boughtPlant = true;
+
   activatePolicy({
     policyName: "Improved nutrient retention in agriculture",
     stateBefore,
@@ -55,17 +58,14 @@ testRandomSeed("card stays on table after multiple turns", (seed) => {
 
   // First turn
   send({ type: "user.click.player.endTurn" });
-  send({ type: "user.click.stage.confirm" }); // no buy punishment
-  send({ type: "user.click.stage.confirm" }); // three disasters punishment
 
   const stateAfterFirstTurn = getState();
   expect(stateAfterFirstTurn.policyMarket.table).toHaveLength(1);
   expect(stateAfterFirstTurn.policyMarket.table[0].name).toBe("Improved nutrient retention in agriculture");
+  stateAfterFirstTurn.turn.boughtPlant = true;
 
   // Second turn
   send({ type: "user.click.player.endTurn" });
-  send({ type: "user.click.stage.confirm" }); // no buy punishment
-  send({ type: "user.click.stage.confirm" }); // three disasters punishment
 
   const stateAfterSecondTurn = getState();
   expect(stateAfterSecondTurn.policyMarket.table).toHaveLength(1);

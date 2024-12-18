@@ -157,6 +157,14 @@ export const expansionCardsEndTurnActions = [...UnderwaterNoise.endTurnActions, 
 
 export const expansionStageEventText = {
   policy_policyDraw: i18n.t("deck.policies.policyDraw"),
+  policy_automaticPolicyDrawExtinction:
+    i18n.t("deck.policies.policyDraw") + i18n.t("deck.policies.automaticPolicyDrawExtinction"),
+  policy_automaticPolicyDrawHabitat:
+    i18n.t("deck.policies.policyDraw") + i18n.t("deck.policies.automaticPolicyDrawHabitat"),
+  policy_automaticFundingIncreaseExtinction:
+    i18n.t("deck.policies.fundingIncrease") + i18n.t("deck.policies.automaticPolicyDrawExtinction"),
+  policy_automaticFundingIncreaseHabitat:
+    i18n.t("deck.policies.fundingIncrease") + i18n.t("deck.policies.automaticPolicyDrawHabitat"),
   policy_fundingIncrease: i18n.t("deck.policies.fundingIncrease"),
   ...ClimateChange.stageEventText,
   ...StrictProtection.stageEventText,
@@ -164,6 +172,10 @@ export const expansionStageEventText = {
 
 export type ExpansionPackStageEvent =
   | "policy_policyDraw"
+  | "policy_automaticPolicyDrawExtinction"
+  | "policy_automaticPolicyDrawHabitat"
+  | "policy_automaticFundingIncreaseExtinction"
+  | "policy_automaticFundingIncreaseHabitat"
   | "policy_fundingIncrease"
   | "policy_climateChange"
   | "policy_strictProtection"

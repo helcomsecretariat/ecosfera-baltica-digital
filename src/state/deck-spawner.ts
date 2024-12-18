@@ -80,6 +80,7 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
       uidsUsedForAbilityRefresh: [],
       refreshedAbilityUids: [],
       phase: "action",
+      automaticPolicyDraw: undefined,
     },
     blockers: {
       ability: {

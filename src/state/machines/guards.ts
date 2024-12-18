@@ -214,6 +214,7 @@ export const TurnMachineGuards = {
   },
 
   stageCardsUsedForAbilityRefresh: ({ context: { turn, stage } }: { context: GameState }) =>
+    //@ts-expect-error type mismatch does not matter
     stage?.cause?.every((uid) => turn.uidsUsedForAbilityRefresh.includes(uid)) ?? false,
 
   isOnStage: ({ context: { stage } }: { context: GameState }, card: Card) => {

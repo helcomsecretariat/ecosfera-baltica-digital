@@ -77,6 +77,7 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
       boughtAnimal: false,
       boughtPlant: false,
       unlockedHabitat: false,
+      unlockedHabitats: [],
       uidsUsedForAbilityRefresh: [],
       refreshedAbilityUids: [],
       phase: "action",

@@ -58,9 +58,8 @@ test.each<{ habitatName: HabitatName }>([{ habitatName: "mud" }, { habitatName: 
     const state = getState();
     expect(state.commandBar).toBeUndefined();
     expect(find(state.habitatMarket.deck, { name: habitatName })?.isAcquired).toBe(true);
-    expect(["policy_automaticPolicyDrawHabitat", "policy_automaticFundingIncreaseHabitat"]).toContain(
-      state.stage?.eventType,
-    );
+
+    expect(state.stage?.eventType).toMatch(/^policy_policyAutoDraw/);
   },
 );
 

@@ -251,9 +251,7 @@ test("unlocking habitat should open policy card when expansion is active", () =>
 
   const stateAfter = getState();
   expect(stateAfter.habitatMarket.deck.find((habitatTile) => habitatTile.name === "rock")?.isAcquired).toBe(true);
-  expect(["policy_automaticPolicyDrawHabitat", "policy_automaticFundingIncreaseHabitat"]).toContain(
-    stateAfter.stage?.eventType,
-  );
+  expect(stateAfter.stage?.eventType).toMatch(/^policy_policyAutoDraw/);
 });
 
 test("unlocking habitat should not open policy card when expansion is inactive", () => {

@@ -169,7 +169,7 @@ const Croupier = () => {
       <Stage key="stage" />
 
       {/* Extinction tiles */}
-      <CenterTile key="extinction-center-tile" texturePathSuffix="extinction" yStart={extinctionTileYStart} />
+      <CenterTile key="extinction-center-tile" yStart={extinctionTileYStart} tileType="extinction" />
       {[...gameState.extinctMarket.deck, ...gameState.extinctMarket.table].map((extinctionTile) => (
         <Tile
           key={extinctionTile.uid}
@@ -184,7 +184,7 @@ const Croupier = () => {
       ))}
 
       {/* Habitat tiles */}
-      <CenterTile key="habitat-center-tile" texturePathSuffix="baltic_active" yStart={habitatTileYStart} />
+      <CenterTile key="habitat-center-tile" yStart={habitatTileYStart} tileType="habitat" />
       {gameState.habitatMarket.deck.map((habitatTile) => (
         <Tile
           key={habitatTile.uid}

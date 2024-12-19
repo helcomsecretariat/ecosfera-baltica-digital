@@ -9,7 +9,7 @@ import { AnimatePresence } from "framer-motion";
 import i18n from "@/i18n";
 
 const Policies = () => {
-  const { state, emit, showPolicies, setShowPolicies, guards } = useGameState();
+  const { state, emit, test, showPolicies, setShowPolicies, guards } = useGameState();
 
   return (
     <AnimatePresence>
@@ -49,7 +49,13 @@ const Policies = () => {
             <FundingCard key={card.uid} cardUid={card.uid} />
           ))}
           {state.policyMarket.acquired.map((card: PolicyCardType) => (
-            <PolicyCard key={card.uid} card={card} onClick={emit.acquiredPolicyCardClick(card)} isActive={false} />
+            <PolicyCard
+              key={card.uid}
+              card={card}
+              onClick={emit.acquiredPolicyCardClick(card)}
+              isActive={false}
+              allowActivation={test.acquiredPolicyCardClick(card)}
+            />
           ))}
         </motion.mesh>
       )}

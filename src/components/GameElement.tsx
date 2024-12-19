@@ -4,7 +4,7 @@ import { GamePiece, GamePieceAppearance } from "@/state/types";
 import { MeshProps, ThreeEvent, useFrame } from "@react-three/fiber";
 import { useGameState } from "@/context/game-state/hook";
 import { usePresence } from "framer-motion";
-import { useAnimControls } from "@/hooks/useAnimationControls";
+import { ANIM_CONFIG, useAnimControls } from "@/hooks/useAnimationControls";
 import { calculateDurations } from "@/state/utils";
 import { voidSpaceAppearance } from "@/constants/animation";
 
@@ -37,9 +37,9 @@ const GameElement = ({
   const [isPresent, safeToRemove] = usePresence();
   const { animSpeed, ease } = useAnimControls();
   const ref = useRef<MeshProps>(null);
+  const floatAnimStartTimeRef = useRef<number | null>(null);
 
   if (!appearance) {
-    // rare case. Happend during testing/development
     console.error("No appearance found for", cardUID);
     appearance = voidSpaceAppearance;
   }
@@ -67,21 +67,32 @@ const GameElement = ({
   );
 
   useFrame(({ clock }) => {
-    const time = clock.getElapsedTime();
+    const currentTime = clock.getElapsedTime();
+
+    // Initialize start time when floating animation begins
+    if (withFloatAnimation && floatAnimStartTimeRef.current === null) {
+      floatAnimStartTimeRef.current = currentTime;
+    } else if (!withFloatAnimation) {
+      floatAnimStartTimeRef.current = null;
+    }
+
+    const time = floatAnimStartTimeRef.current
+      ? (currentTime - floatAnimStartTimeRef.current) * (animSpeed / ANIM_CONFIG.initialValue)
+      : 0;
+
     const waveSpeed = 0.6;
     const waveAmplitude = 3.2;
     const maxRotationY = Math.PI / 12;
     const maxRotationZ = Math.PI / 64;
-    const phaseOffset = (appearance.position?.x ?? 0) * 0.1;
     const rotation = appearance.rotation || appearance.initialRotation;
     const position = appearance.position || appearance.initialPosition;
 
     if (withFloatAnimation && ref.current && ref.current.position && ref.current.rotation) {
-      const rotationY = Math.cos(time * waveSpeed + phaseOffset) * maxRotationY;
-      const rotationZ = Math.sin(time * waveSpeed + phaseOffset) * maxRotationZ;
+      const rotationY = Math.sin(time * waveSpeed) * maxRotationY;
+      const rotationZ = Math.sin(time * (waveSpeed * 1.3)) * maxRotationZ;
 
       // @ts-expect-error dunno why
-      ref.current.position.z = position.z + Math.sin(time * waveSpeed + phaseOffset) * waveAmplitude;
+      ref.current.position.z = position.z + Math.sin(time * waveSpeed) * waveAmplitude;
       // @ts-expect-error dunno why
       ref.current.rotation.y = rotation.y + rotationY;
       // @ts-expect-error dunno why
@@ -96,8 +107,6 @@ const GameElement = ({
       position-z={zCoord}
       transition={{
         ease,
-
-        // dedicated "z" and "rotateY" config to get "lift -> move -> flip -> put down" animation order
         duration: mainDuration,
         delay: mainDelay,
         rotateY: {
@@ -109,8 +118,6 @@ const GameElement = ({
           duration: zDuration,
           times: [0, 0.1, 0.3, 1],
         },
-
-        // no matter the delay we need instant reaction to hover
         scale: {
           delay: 0,
         },

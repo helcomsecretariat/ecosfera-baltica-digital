@@ -62,7 +62,7 @@ const Card = ({
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
   const texture = useSRGBTexture(cardIMGURL);
-  const backTexture = useSRGBTexture("/ecosfera_baltica/back.avif");
+  const backTexture = useSRGBTexture("/ecosfera_baltica/card_back.avif");
   const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: true } });
   const isPlantOrAnimal = card.type === "plant" || card.type === "animal";
   const habitatIconTextures = useHabitatIconTextures();

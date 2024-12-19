@@ -5,7 +5,7 @@ import { RoundedRectangleGeometry } from "../shapes/roundedRect";
 import { CardOrTileUID } from "@/state/types";
 
 const FundingCard = ({ cardUid }: { cardUid: CardOrTileUID }) => {
-  const texture = useSRGBTexture("/ecosfera_baltica/back.avif");
+  const texture = useSRGBTexture("/ecosfera_baltica/card_back.avif");
 
   return (
     <>

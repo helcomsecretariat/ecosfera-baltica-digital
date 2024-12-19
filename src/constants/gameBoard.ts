@@ -26,32 +26,32 @@ export const habitatTileYStart = marketYStart - cardHeight * 1.4;
 export const hexagonTileXOffset = 10;
 export const hexagonTileYOffset = 11;
 
-export const tileGridTransforms = (baseX: number, baseY: number): GamePieceTransform[] => {
+export const tileGridTransforms = (baseX: number, baseY: number, baseZ: number = 0): GamePieceTransform[] => {
   const spacingMultiplier = 1.4;
   const rotation = { x: -Math.PI / 2, y: Math.PI / 2, z: 0 };
   return [
-    { position: { x: baseX, y: baseY, z: 0 }, rotation },
+    { position: { x: baseX, y: baseY, z: baseZ }, rotation },
     {
-      position: { x: baseX - tileSize * spacingMultiplier, y: baseY - tileSize * 0.6 * spacingMultiplier, z: 0 },
+      position: { x: baseX - tileSize * spacingMultiplier, y: baseY - tileSize * 0.6 * spacingMultiplier, z: baseZ },
       rotation,
     },
     {
-      position: { x: baseX + tileSize * spacingMultiplier, y: baseY - tileSize * 0.6 * spacingMultiplier, z: 0 },
+      position: { x: baseX + tileSize * spacingMultiplier, y: baseY - tileSize * 0.6 * spacingMultiplier, z: baseZ },
       rotation,
     },
     {
-      position: { x: baseX - tileSize * spacingMultiplier, y: baseY - tileSize * 1.76 * spacingMultiplier, z: 0 },
+      position: { x: baseX - tileSize * spacingMultiplier, y: baseY - tileSize * 1.76 * spacingMultiplier, z: baseZ },
       rotation,
     },
     {
-      position: { x: baseX, y: baseY - tileSize * 2.35 * spacingMultiplier, z: 0 },
+      position: { x: baseX, y: baseY - tileSize * 2.35 * spacingMultiplier, z: baseZ },
       rotation,
     },
     {
-      position: { x: baseX + tileSize * spacingMultiplier, y: baseY - tileSize * 1.76 * spacingMultiplier, z: 0 },
+      position: { x: baseX + tileSize * spacingMultiplier, y: baseY - tileSize * 1.76 * spacingMultiplier, z: baseZ },
       rotation,
     },
-    { position: { x: baseX, y: baseY - tileSize * 1.65, z: 0 }, rotation },
+    { position: { x: baseX, y: baseY - tileSize * 1.65, z: baseZ }, rotation },
   ];
 };
 

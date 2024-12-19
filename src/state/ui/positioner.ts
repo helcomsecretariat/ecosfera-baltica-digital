@@ -266,14 +266,14 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
   });
 
   // Position effect cards/tiles
-  const transforms = tileGridTransforms(0, isEmpty(cause) ? 0 + tileSize : 20);
-  const habitatSpecificTransforms = habitatTransforms(0, isEmpty(cause) ? 5 + tileSize : 20);
+  const transforms = tileGridTransforms(0, isEmpty(cause) ? 5 + tileSize : 25);
+  const habitatSpecificTransforms = habitatTransforms(0, isEmpty(cause) ? 5 + tileSize : 25);
 
   effect?.forEach((uid, index) => {
     const isTile = isHabitatUID(uid) || isExtinctionUID(uid);
     const isHabitatTile = isHabitatUID(uid);
     const isPolicyCard = isPolicyUID(uid);
-    const useTileCoordinates = isTile && effect.length > 2;
+    const useTileCoordinates = isTile && effect.length === 6;
     const tileTransform = isHabitatTile
       ? habitatSpecificTransforms[find(gameState.habitatMarket.deck, { uid })?.name as HabitatName]
       : transforms[index];
@@ -291,7 +291,7 @@ export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict =
           : cause.length === 0
             ? 0
             : cardHeight - 5,
-        z: 75,
+        z: 75 + (isTile && !useTileCoordinates ? index * 2 : 0),
       },
       rotation: isTile ? (tileTransform?.rotation ?? zeroRotation) : zeroRotation,
       initialPosition: disasterDeckPosition,

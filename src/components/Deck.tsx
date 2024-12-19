@@ -9,7 +9,7 @@ import { getHighlightTextureAssetPath } from "./utils";
 
 const Deck = ({
   gamePieceAppearance,
-  texturePath = "/ecosfera_baltica/back.avif",
+  texturePath = "/ecosfera_baltica/card_back.avif",
   onClick,
   cards,
   isDimmed = false,

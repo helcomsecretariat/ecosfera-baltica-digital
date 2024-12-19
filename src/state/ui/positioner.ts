@@ -551,7 +551,7 @@ export const positionPlayerDecks = (gameState: GameState): GamePieceCoordsDict =
       rotation: {
         x: 0,
         y: 0,
-        z: playerIndex * Math.PI,
+        z: playerIndex * (Math.PI / 2),
       },
     };
     return acc;

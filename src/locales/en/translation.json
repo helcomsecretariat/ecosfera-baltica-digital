@@ -182,5 +182,17 @@
   },
   "endTurnButton": {
     "endTurn": "End Turn"
+  },
+  "abilities": {
+    "commandBar": {
+      "move": {
+        "pickCard": "Pick a card from your hand to move",
+        "pickDestination": "Pick a destination to move your chosen card to",
+        "pickDestinationSinglePlayer": "Pick a destination to move your chosen card to, picking your own deck will make the card available for use in your next turn."
+      },
+      "refresh": {
+        "pickMarket": "Pick a market to refresh"
+      }
+    }
   }
 }

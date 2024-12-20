@@ -1,5 +1,13 @@
 import type { Card as CardType, GamePieceAppearance } from "@/state/types";
-import { CARD_Z_INDEX, cardHeight, cardRadius, cardWidth, coordScale } from "../constants/card";
+import {
+  CARD_Z_INDEX,
+  cardHeight,
+  cardRadius,
+  cardWidth,
+  coordScale,
+  HIGHLIGHT_BORDER_COLOR,
+  HIGHLIGHT_BORDER_WIDTH,
+} from "../constants/card";
 import GameElement from "./GameElement";
 import { getAssetPath } from "@/components/utils";
 import { useMemo } from "react";
@@ -30,9 +38,6 @@ const HABITAT_CONTAINER_PADDING = 3 / coordScale;
 const ABILITY_ICON_SIZE = HABITAT_ICON_SIZE + HABITAT_CONTAINER_PADDING * 2;
 const ABILITY_ICON_SPACING = 3 / coordScale;
 const ELEMENTS_BACKGROUND_HEIGHT = 18 / coordScale;
-
-const HIGHLIGHT_BORDER_WIDTH = 5 / coordScale;
-const HIGHLIGHT_BORDER_COLOR = "#3b82f6";
 
 export type CardOptions = {
   showAbilityButtons?: boolean;

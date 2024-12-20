@@ -4,7 +4,7 @@ import { globSync } from "glob";
 import { describe, expect, test } from "vitest";
 
 describe("Public Folder Size Tests", () => {
-  const decksDir = path.resolve(__dirname, "src/decks");
+  const decksDir = path.resolve(__dirname, "src", "decks");
   const publicDir = path.resolve(__dirname, "public");
 
   const jsonFiles = globSync(`${decksDir}/*.deck.json`);

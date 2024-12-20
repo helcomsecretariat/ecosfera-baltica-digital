@@ -2,6 +2,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import sharp from "sharp";
 import { ensureDir, remove } from "fs-extra";
+import { execSync } from "child_process";
 
 const imgRegexp = /\.(webp|png|jpg|jpeg|svg)$/i;
 const bgImageRegexp = /lobby_bg\.|game_bg\.|stage_/i;
@@ -89,6 +90,14 @@ async function processDir(inputDir, outputDir, subDir) {
   const manifestPath = path.join(outputSubDir, "manifest.json");
   await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
   console.log(`Manifest written to: ${manifestPath}`);
+
+  // Run Prettier on the manifest file
+  try {
+    execSync(`npx prettier --write ${manifestPath}`);
+    console.log(`Prettier formatting applied to: ${manifestPath}`);
+  } catch (error) {
+    console.warn(`Warning: Failed to run Prettier on manifest file: ${error.message}`);
+  }
 }
 
 const inputDirectory = process.argv[2];

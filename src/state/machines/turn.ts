@@ -129,8 +129,12 @@ export const TurnMachine = setup({
             turn.borrowedElement = undefined;
           }
 
-          const drawnCard = draft.plantMarket.deck.shift()!;
-          draft.plantMarket.table = replaceItem(card, drawnCard, draft.plantMarket.table);
+          const drawnCard = draft.plantMarket.deck.shift();
+          if (drawnCard !== undefined) {
+            draft.plantMarket.table = replaceItem(card, drawnCard, draft.plantMarket.table);
+          } else {
+            draft.plantMarket.table = without(context.plantMarket.table, card);
+          }
           draft.turn.boughtPlant = true;
         }
 
@@ -147,8 +151,13 @@ export const TurnMachine = setup({
             .slice(0, 2);
 
           draft.turn.exhaustedCards.push(...toBeExhaustedPlants.map(({ uid }) => uid));
-          const drawnCard = draft.animalMarket.deck.shift()!;
-          draft.animalMarket.table = replaceItem(card, drawnCard, draft.animalMarket.table);
+
+          const drawnCard = draft.animalMarket.deck.shift();
+          if (drawnCard !== undefined) {
+            draft.animalMarket.table = replaceItem(card, drawnCard, draft.animalMarket.table);
+          } else {
+            draft.animalMarket.table = without(context.animalMarket.table, card);
+          }
           draft.turn.boughtAnimal = true;
         }
 

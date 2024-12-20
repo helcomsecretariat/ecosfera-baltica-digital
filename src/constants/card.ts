@@ -20,3 +20,6 @@ export const CARD_Z_INDEX = {
 };
 
 export const cardDepth = Math.max(...Object.values(CARD_Z_INDEX));
+
+export const HIGHLIGHT_BORDER_WIDTH = 5 / coordScale;
+export const HIGHLIGHT_BORDER_COLOR = "#3b82f6";

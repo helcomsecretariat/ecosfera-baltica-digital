@@ -38,13 +38,14 @@ const PolicyCard = ({
                 ? "bg-[#4f346e]"
                 : "h-56 bg-[#555]/50",
           )}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-start justify-between">
             <h1 className="font-bold">{uiStrings[cardName].name}</h1>
             <Popover>
-              <PopoverTrigger asChild>
+              <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
                 <span className="ml-2 cursor-pointer rounded-full bg-white p-1 text-black">
-                  <InfoIcon className="h-3 w-3" />
+                  <InfoIcon className="h-[14px] w-[14px]" />
                 </span>
               </PopoverTrigger>
               <PopoverContent

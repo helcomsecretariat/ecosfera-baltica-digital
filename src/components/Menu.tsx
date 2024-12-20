@@ -32,9 +32,10 @@ const Menu = () => {
         <FaHouse className="h-6 w-6" />
       </button>
       <div className="flex">
-        {gameConfig.useSpecialCards && !guards.isPolicyCancellationBlocked() && guards.isActivePolicyCardPositive() && (
-          <CancelButton onClick={emit.cancelPolicyCard()} />
-        )}
+        {gameConfig.useSpecialCards &&
+          state.commandBar &&
+          !guards.isPolicyCancellationBlocked() &&
+          guards.isActivePolicyCardPositive() && <CancelButton onClick={emit.cancelPolicyCard()} />}
         {state.commandBar && test.cancelAbility() && <CancelButton onClick={emit.cancelAbility()} />}
         {state.commandBar && (
           <div

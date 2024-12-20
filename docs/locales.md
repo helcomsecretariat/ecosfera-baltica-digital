@@ -45,7 +45,9 @@ src/
 
 3. **Verify Consistency**
    ```bash
-   npm test
+   npm run test        # Run tests in watch mode
+   npm run test:once   # Run tests once
+   npm run checks      # Run all checks including locale tests
    ```
    This runs automated tests to ensure:
    - All languages have the same keys
@@ -70,7 +72,7 @@ src/
 
 4. Run tests to verify consistency
    ```bash
-   npm test
+   npm run test:once
    ```
 
 For language codes (fi/en/en-US/...), refer to the [i18next language codes documentation](https://www.i18next.com/overview/configuration-options#languages-namespaces-resources).

@@ -1,6 +1,7 @@
 interface Resources {
   "translation": {
     "lobby": {
+      "language": "Language",
       "player": "Player {{number}}",
       "addPlayer": "Add player",
       "difficulty": "Difficulty",

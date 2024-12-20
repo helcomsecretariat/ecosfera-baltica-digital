@@ -1,5 +1,6 @@
 {
   "lobby": {
+    "language": "Kieli",
     "player": "Pelaaja {{number}}",
     "addPlayer": "Lisää pelaaja",
     "difficulty": "Vaikeustaso",

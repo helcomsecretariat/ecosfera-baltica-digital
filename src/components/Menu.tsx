@@ -11,7 +11,7 @@ import {
 } from "@/state/machines/selectors";
 
 const Menu = () => {
-  const { emit, guards, state, showPolicies, setShowPolicies, gameConfig, actorRef } = useGameState();
+  const { emit, guards, state, showPolicies, setShowPolicies, gameConfig, actorRef, test } = useGameState();
   const numberOfAnimalsBought = useSelector(actorRef, selectNumberOfAnimalsBought);
   const numberOfPlantsBought = useSelector(actorRef, selectNumberOfPlantsBought);
   const numberOfHabitatsUnlocked = useSelector(actorRef, selectNumberOfHabitatsUnlocked);
@@ -32,31 +32,21 @@ const Menu = () => {
         <FaHouse className="h-6 w-6" />
       </button>
       <div className="flex">
-        {gameConfig.useSpecialCards && state.commandBar && (
-          <>
-            {!guards.isPolicyCancellationBlocked() && guards.isActivePolicyCardPositive() && (
-              <button
-                className="-mr-8 flex items-center bg-red-500 pl-8 pr-10 text-white transition-all hover:bg-red-700"
-                style={{
-                  clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
-                  WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
-                }}
-                onClick={emit.cancelPolicyCard()}
-              >
-                <FaXmark />
-              </button>
-            )}
-            <div
-              className="-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all"
-              style={{
-                clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
-                WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
-              }}
-              onClick={() => setShowPolicies(!showPolicies)}
-            >
-              {state.commandBar.text}
-            </div>
-          </>
+        {gameConfig.useSpecialCards && !guards.isPolicyCancellationBlocked() && guards.isActivePolicyCardPositive() && (
+          <CancelButton onClick={emit.cancelPolicyCard()} />
+        )}
+        {state.commandBar && test.cancelAbility() && <CancelButton onClick={emit.cancelAbility()} />}
+        {state.commandBar && (
+          <div
+            className="-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all"
+            style={{
+              clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+              WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+            }}
+            onClick={() => setShowPolicies(!showPolicies)}
+          >
+            {state.commandBar.text}
+          </div>
         )}
         {gameConfig.useSpecialCards && (
           <button
@@ -105,3 +95,18 @@ const Menu = () => {
 };
 
 export default Menu;
+
+const CancelButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <button
+      className="-mr-8 flex items-center bg-red-500 pl-8 pr-10 text-white transition-all hover:bg-red-700"
+      style={{
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+        WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+      }}
+      onClick={onClick}
+    >
+      <FaXmark />
+    </button>
+  );
+};

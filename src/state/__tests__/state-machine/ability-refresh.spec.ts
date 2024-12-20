@@ -1,5 +1,6 @@
 import { test, expect } from "vitest";
 import { compareCards, getTestActor } from "@/state/__tests__/utils";
+import i18n from "@/i18n";
 
 test("refreshing market won't create new cards", async () => {
   const { send, getState } = getTestActor();
@@ -11,9 +12,12 @@ test("refreshing market won't create new cards", async () => {
   const allCardsBefore = [...deckBefore, ...tableBefore].sort(compareCards);
 
   send({ type: "user.click.token", token });
+  let stateAfter = getState();
+  expect(stateAfter.commandBar?.text).toBe(i18n.t("abilities.commandBar.refresh.pickMarket"));
+
   send({ type: "user.click.market.deck.plant" });
 
-  const stateAfter = getState();
+  stateAfter = getState();
   const deckAfter = stateAfter.plantMarket.deck;
   const tableAfter = stateAfter.plantMarket.table;
   const allCardsAfter = [...deckAfter, ...tableAfter].sort(compareCards);
@@ -47,9 +51,12 @@ test("refreshing market with few cards left", async () => {
   const allCardsBefore = [...deckBefore, ...tableBefore].sort(compareCards);
 
   send({ type: "user.click.token", token });
+  let stateAfter = getState();
+  expect(stateAfter.commandBar?.text).toBe(i18n.t("abilities.commandBar.refresh.pickMarket"));
+
   send({ type: "user.click.market.deck.animal" });
 
-  const stateAfter = getState();
+  stateAfter = getState();
   const deckAfter = stateAfter.animalMarket.deck;
   const tableAfter = stateAfter.animalMarket.table;
   const allCardsAfter = [...deckAfter, ...tableAfter].sort(compareCards);

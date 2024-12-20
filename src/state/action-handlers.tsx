@@ -33,6 +33,7 @@ export interface ActionEmmiters {
   iddqd: EmitterFunction<[context: Partial<TurnMachineContext>]>;
   acquiredPolicyCardClick: EmitterFunction<[card: PolicyCard]>;
   cancelPolicyCard: EmitterFunction<[]>;
+  cancelAbility: EmitterFunction<[]>;
 }
 
 export type ActionTesters = {
@@ -61,6 +62,7 @@ const actionToEventMap: {
   iddqd: (context: Partial<TurnMachineContext>) => ({ type: "iddqd", context }),
   acquiredPolicyCardClick: (card: PolicyCard) => ({ type: "user.click.policy.card.acquired", card }),
   cancelPolicyCard: () => ({ type: "user.click.policies.cancel" }),
+  cancelAbility: () => ({ type: "user.click.ability.cancel" }),
 } as const;
 
 export const createEmmiters = (send: (e: EventFromLogic<typeof TurnMachine>) => void): ActionEmmiters => {

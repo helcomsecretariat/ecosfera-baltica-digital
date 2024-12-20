@@ -39,6 +39,7 @@ import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "
 import { toUiState } from "@/state/ui/positioner";
 import { capitalize, getCardComparator } from "@/lib/utils";
 import { expansionActions, expansionCardsEndTurnActions, expansionConditionChecks, expansionState } from "./expansion";
+import i18n from "@/i18n";
 
 type MachineConfig = {
   animSpeed?: number;
@@ -63,6 +64,7 @@ export type TurnMachineEvent =
   | { type: "user.click.player.deck" }
   | { type: "user.click.policy.card.acquired"; card: PolicyCard }
   | { type: "user.click.policies.cancel" }
+  | { type: "user.click.ability.cancel" }
   | { type: "internal.target.selected"; target: Card };
 
 export type TurnMachineInput = {
@@ -662,6 +664,19 @@ export const TurnMachine = setup({
         }),
     ),
 
+    setCommandBar: assign(({ context }: { context: GameState }, text: string | undefined) =>
+      produce(context, (draft) => {
+        if (text === undefined) {
+          draft.commandBar = undefined;
+          return;
+        }
+
+        draft.commandBar = {
+          text,
+        };
+      }),
+    ),
+
     ...expansionActions,
   },
   guards: {
@@ -1183,6 +1198,7 @@ export const TurnMachine = setup({
           target: "#turn.usingAbility.cancel",
         },
         "user.click.player.endTurn": [{ target: "endingTurn" }],
+        "user.click.ability.cancel": [{ target: "#turn.usingAbility.cancel" }],
       },
       states: {
         idle: {
@@ -1217,6 +1233,7 @@ export const TurnMachine = setup({
         },
         moving: {
           initial: "pickingTarget",
+          entry: { type: "setCommandBar", params: i18n.t("abilities.commandBar.move.pickCard") },
           states: {
             pickingTarget: {
               on: {
@@ -1235,49 +1252,74 @@ export const TurnMachine = setup({
               },
             },
             pickingDestination: {
-              on: {
-                "user.click.player.deck": {
-                  target: "#turn.usingAbility.done",
-                  guard: "isSinglePlayer",
-                  actions: {
-                    type: "cardToPlayerSupply",
-                    params: ({ context }) => context.turn.currentAbility!.targetCard!,
+              initial: "settingCommandBar",
+              states: {
+                settingCommandBar: {
+                  always: [
+                    {
+                      target: "waitingForAction",
+                      actions: {
+                        type: "setCommandBar",
+                        params: i18n.t("abilities.commandBar.move.pickDestinationSinglePlayer"),
+                      },
+                      guard: "isSinglePlayer",
+                    },
+                    {
+                      target: "waitingForAction",
+                      actions: {
+                        type: "setCommandBar",
+                        params: i18n.t("abilities.commandBar.move.pickDestination"),
+                      },
+                    },
+                  ],
+                },
+                waitingForAction: {
+                  on: {
+                    "user.click.player.deck": {
+                      target: "#turn.usingAbility.done",
+                      guard: "isSinglePlayer",
+                      actions: {
+                        type: "cardToPlayerSupply",
+                        params: ({ context }) => context.turn.currentAbility!.targetCard!,
+                      },
+                    },
+                    "user.click.player.hand.card": {
+                      target: "#turn.usingAbility.done",
+                      guard: not(({ context, event }) => TurnMachineGuards.cardFromRow({ context }, event.card)),
+                      actions: { type: "cardToPlayerHand", params: ({ event }) => event.card },
+                    },
+                    "user.click.market.deck.animal": {
+                      target: "#turn.usingAbility.done",
+                      actions: { type: "cardToAnimalDeck" },
+                      guard: {
+                        type: "abilityTargetCardTypeIs",
+                        params: "animal",
+                      },
+                    },
+                    "user.click.market.deck.plant": {
+                      target: "#turn.usingAbility.done",
+                      actions: { type: "cardToPlantDeck" },
+                      guard: {
+                        type: "abilityTargetCardTypeIs",
+                        params: "plant",
+                      },
+                    },
+                    "user.click.market.deck.element": {
+                      target: "#turn.usingAbility.done",
+                      actions: { type: "cardToElementDeck" },
+                      guard: and([
+                        ({ context }) => TurnMachineGuards.abilityTargetCardTypeIs({ context }, "element"),
+                        ({ context, event }) => TurnMachineGuards.abilityTargetCardNameIs({ context }, event.name),
+                      ]),
+                    },
                   },
-                },
-                "user.click.player.hand.card": {
-                  target: "#turn.usingAbility.done",
-                  guard: not(({ context, event }) => TurnMachineGuards.cardFromRow({ context }, event.card)),
-                  actions: { type: "cardToPlayerHand", params: ({ event }) => event.card },
-                },
-                "user.click.market.deck.animal": {
-                  target: "#turn.usingAbility.done",
-                  actions: { type: "cardToAnimalDeck" },
-                  guard: {
-                    type: "abilityTargetCardTypeIs",
-                    params: "animal",
-                  },
-                },
-                "user.click.market.deck.plant": {
-                  target: "#turn.usingAbility.done",
-                  actions: { type: "cardToPlantDeck" },
-                  guard: {
-                    type: "abilityTargetCardTypeIs",
-                    params: "plant",
-                  },
-                },
-                "user.click.market.deck.element": {
-                  target: "#turn.usingAbility.done",
-                  actions: { type: "cardToElementDeck" },
-                  guard: and([
-                    ({ context }) => TurnMachineGuards.abilityTargetCardTypeIs({ context }, "element"),
-                    ({ context, event }) => TurnMachineGuards.abilityTargetCardNameIs({ context }, event.name),
-                  ]),
                 },
               },
             },
           },
         },
         refreshing: {
+          entry: { type: "setCommandBar", params: i18n.t("abilities.commandBar.refresh.pickMarket") },
           on: {
             "user.click.market.deck.animal": {
               target: "#turn.usingAbility.done",
@@ -1298,7 +1340,7 @@ export const TurnMachine = setup({
           after: {
             animationDuration: {
               target: "#turn",
-              actions: "markAbilityAsUsed",
+              actions: ["markAbilityAsUsed", { type: "setCommandBar", params: undefined }],
             },
           },
         },
@@ -1306,7 +1348,7 @@ export const TurnMachine = setup({
           after: {
             animationDuration: {
               target: "#turn",
-              actions: "cancelAbility",
+              actions: ["cancelAbility", { type: "setCommandBar", params: undefined }],
             },
           },
         },

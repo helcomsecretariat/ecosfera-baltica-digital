@@ -1,6 +1,6 @@
 import { test, expect } from "vitest";
 import { getTestActor } from "@/state/__tests__/utils";
-import { without } from "lodash";
+import { remove, without } from "lodash";
 
 test("stage game win when all habitats are acquired", async () => {
   const { send, getState } = getTestActor();
@@ -233,4 +233,40 @@ test("punish next player for 4 disaster cards at turn start", async () => {
   send({ type: "user.click.stage.confirm" });
   expect(getState().extinctMarket.table.length).toBe(3);
   expect(getState().players[0].uid).toBe(stateBefore.players[0].uid);
+});
+
+test("unlocking habitat should open policy card when expansion is active", () => {
+  const { getState, send } = getTestActor({
+    useSpecialCards: true,
+  });
+  const stateBefore = getState();
+
+  const animalsWithSharedHabitat = remove(stateBefore.animalMarket.deck, (card) => card.habitats.includes("rock"));
+  stateBefore.players[0].hand = [...animalsWithSharedHabitat];
+
+  send({ type: "user.click.player.hand.card", card: animalsWithSharedHabitat[0] });
+  send({ type: "user.click.player.hand.card", card: animalsWithSharedHabitat[1] });
+
+  send({ type: "user.click.stage.confirm" });
+
+  const stateAfter = getState();
+  expect(stateAfter.habitatMarket.deck.find((habitatTile) => habitatTile.name === "rock")?.isAcquired).toBe(true);
+  expect(stateAfter.stage?.eventType).toMatch(/^policy_policyAutoDraw/);
+});
+
+test("unlocking habitat should not open policy card when expansion is inactive", () => {
+  const { getState, send } = getTestActor();
+  const stateBefore = getState();
+
+  const animalsWithSharedHabitat = remove(stateBefore.animalMarket.deck, (card) => card.habitats.includes("rock"));
+  stateBefore.players[0].hand = [...animalsWithSharedHabitat];
+
+  send({ type: "user.click.player.hand.card", card: animalsWithSharedHabitat[0] });
+  send({ type: "user.click.player.hand.card", card: animalsWithSharedHabitat[1] });
+
+  send({ type: "user.click.stage.confirm" });
+
+  const stateAfter = getState();
+  expect(stateAfter.habitatMarket.deck.find((habitatTile) => habitatTile.name === "rock")?.isAcquired).toBe(true);
+  expect(stateAfter.stage).toBeUndefined();
 });

@@ -1,16 +1,16 @@
 import { AnimalCard, PlantCard } from "@/state/types";
 import { useGameState } from "@/context/game-state/hook";
 import { useSelector } from "@xstate/react";
-import { MachineSelectors } from "@/state/machines/selectors";
 import { find } from "lodash";
 import { cardHeight, cardWidth } from "@/constants/card";
 import { motion } from "framer-motion-3d";
 import useAbilityTextures from "@/hooks/useAbilityTextures";
+import { selectCurrentAbility, selectUsedAbilities } from "@/state/machines/selectors";
 
 const CardAbilityTokens = ({ card }: { card: AnimalCard | PlantCard }) => {
   const { emit, actorRef } = useGameState();
-  const usedAbilities = useSelector(actorRef, MachineSelectors.usedAbilities);
-  const currentAbility = useSelector(actorRef, MachineSelectors.currentAbility);
+  const usedAbilities = useSelector(actorRef, selectUsedAbilities);
+  const currentAbility = useSelector(actorRef, selectCurrentAbility);
 
   const abilityTextures = useAbilityTextures().fullSize;
 

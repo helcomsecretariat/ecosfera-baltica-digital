@@ -1,11 +1,12 @@
-import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { expect } from "vitest";
+import { getTestActor, testRandomSeed } from "@/state/__tests__/utils";
 import { filter } from "lodash";
 
-test("distributes two elements in singplayer", async () => {
+testRandomSeed("distributes two elements in singplayer", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 1,
+    seed,
   });
   const stateBefore = getState();
 
@@ -29,10 +30,11 @@ test("distributes two elements in singplayer", async () => {
   expect(filter(state.players[0].hand, { name: "nutrients" })).toHaveLength(2);
 });
 
-test("partially distributes elements in singplayer", async () => {
+testRandomSeed("partially distributes elements in singplayer", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 1,
+    seed,
   });
   const stateBefore = getState();
 
@@ -61,11 +63,12 @@ test("partially distributes elements in singplayer", async () => {
   expect(filter(state.elementMarket.deck, { name: "nutrients" })).toHaveLength(0);
 });
 
-test("distributes two elements in multiplayer", async () => {
+testRandomSeed("distributes two elements in multiplayer", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
     difficulty: 1,
+    seed,
   });
   const stateBefore = getState();
 
@@ -91,10 +94,11 @@ test("distributes two elements in multiplayer", async () => {
   expect(state.players.every((player) => filter(player.hand, { name: "nutrients" }).length === 2)).toBe(true);
 });
 
-test("partially distributes elements in multiplayer", async () => {
+testRandomSeed("partially distributes elements in multiplayer", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
+    seed,
   });
   const stateBefore = getState();
 
@@ -124,10 +128,11 @@ test("partially distributes elements in multiplayer", async () => {
   expect(state.players.every((player) => filter(player.hand, { name: "nutrients" }).length === 1)).toBe(true);
 });
 
-test("no distribution with empty deck", async () => {
+testRandomSeed("no distribution with empty deck", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
     playerCount: 4,
+    seed,
   });
   const stateBefore = getState();
 

@@ -84,7 +84,7 @@ function calcMotionData(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoordsD
       deltaY,
       angle,
       distance,
-      cardAppearance: currentApp,
+      cardAppearance: currentApp as GamePieceAppearance,
       startPoint,
       endPoint,
       animationType,
@@ -327,4 +327,5 @@ export function calcDelays(cards: GamePieceCoordsDict, cardsPrev?: GamePieceCoor
   return updatedCards;
 }
 
-const log = (...args: unknown[]) => console.log(...args);
+// const log = (...args: unknown[]) => console.log(...args)
+const log = (..._: unknown[]) => void 0;

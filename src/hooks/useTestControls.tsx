@@ -1,4 +1,5 @@
 import { useGameState } from "@/context/game-state/hook";
+import { TurnMachine } from "@/state/machines/turn";
 import { button, useControls } from "leva";
 import { SnapshotFrom } from "xstate";
 
@@ -15,7 +16,7 @@ export const useTestControls = () => {
     ["State from clipboard"]: button(async () => {
       try {
         const clipboard = await navigator.clipboard.readText();
-        const snap = JSON.parse(clipboard);
+        const snap = JSON.parse(clipboard) as SnapshotFrom<typeof TurnMachine>;
         const ctx = snap.context ?? snap; // some data sniffing
 
         // machine will calculate ui and state from context

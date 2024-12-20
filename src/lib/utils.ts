@@ -178,3 +178,8 @@ export function removeOne<T>(array: T[], predicate: ListIterateeCustom<T, boolea
   }
   return undefined;
 }
+
+export const capitalize = <T extends string>(str: T): Capitalize<T> => {
+  if (!str) return str as Capitalize<T>;
+  return (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<T>;
+};

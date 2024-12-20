@@ -1,14 +1,12 @@
 import { useEffect } from "react";
+import i18n from "@/i18n";
 
 type UseBlockerOptions = {
   when?: boolean;
   message?: string;
 };
 
-export function useBlocker({
-  when = true,
-  message = "Are you sure you want to leave this page?",
-}: UseBlockerOptions = {}) {
+export function useBlocker({ when = true, message = i18n.t("blocker.leavePageMessage") }: UseBlockerOptions = {}) {
   useEffect(() => {
     if (!when) return;
 

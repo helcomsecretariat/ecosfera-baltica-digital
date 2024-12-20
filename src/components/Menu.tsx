@@ -1,20 +1,28 @@
-import { FaFish, FaHouse, FaTree } from "react-icons/fa6";
+import { FaFish, FaHouse, FaTree, FaXmark } from "react-icons/fa6";
 import { MdHexagon } from "react-icons/md";
 import { GiCardPickup } from "react-icons/gi";
 import { useGameState } from "@/context/game-state/hook";
-import { filter } from "lodash";
 import clsx from "clsx";
+import { useSelector } from "@xstate/react";
+import {
+  selectNumberOfAnimalsBought,
+  selectNumberOfHabitatsUnlocked,
+  selectNumberOfPlantsBought,
+} from "@/state/machines/selectors";
 
 const Menu = () => {
-  const { state, showPolicies, setShowPolicies, gameConfig } = useGameState();
+  const { emit, guards, state, showPolicies, setShowPolicies, gameConfig, actorRef, test } = useGameState();
+  const numberOfAnimalsBought = useSelector(actorRef, selectNumberOfAnimalsBought);
+  const numberOfPlantsBought = useSelector(actorRef, selectNumberOfPlantsBought);
+  const numberOfHabitatsUnlocked = useSelector(actorRef, selectNumberOfHabitatsUnlocked);
 
   return (
     <div className="absolute top-0 z-[1] flex h-14 w-screen justify-between self-start">
       <button
         className="bg-blue-500 pl-6 pr-8 text-white transition-all hover:pl-8 hover:pr-10"
         style={{
-          clipPath: "polygon(0% 0%, 100% 0%, 80% 100%, 0% 100%)",
-          WebkitClipPath: "polygon(0% 0%, 100% 0%, 80% 100%, 0% 100%)",
+          clipPath: "polygon(0% 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)",
+          WebkitClipPath: "polygon(0% 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)",
           backgroundImage: "url(/ecosfera_baltica/lobby_bg.avif",
           backgroundPosition: "25% 50%",
           backgroundSize: "240%",
@@ -24,12 +32,13 @@ const Menu = () => {
         <FaHouse className="h-6 w-6" />
       </button>
       <div className="flex">
-        {gameConfig.useSpecialCards && state.commandBar && (
+        {gameConfig.useSpecialCards && !guards.isPolicyCancellationBlocked() && guards.isActivePolicyCardPositive() && (
+          <CancelButton onClick={emit.cancelPolicyCard()} />
+        )}
+        {state.commandBar && test.cancelAbility() && <CancelButton onClick={emit.cancelAbility()} />}
+        {state.commandBar && (
           <div
-            className={clsx(
-              "-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all hover:bg-[#3070b8]",
-              showPolicies ? "bg-[#3070b8] hover:bg-[#204B7B]" : "",
-            )}
+            className="-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all"
             style={{
               clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
               WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
@@ -46,8 +55,8 @@ const Menu = () => {
               showPolicies ? "bg-[#3070b8] hover:bg-[#204B7B]" : "",
             )}
             style={{
-              clipPath: "polygon(0% 0%, 70% 0%, 100% 100%, 30% 100%)",
-              WebkitClipPath: "polygon(0% 0%, 70% 0%, 100% 100%, 30% 100%)",
+              clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+              WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
             }}
             onClick={() => setShowPolicies(!showPolicies)}
           >
@@ -66,21 +75,16 @@ const Menu = () => {
         >
           <div className="flex items-center space-x-2 text-xl">
             <FaTree className="h-6 w-6 text-green-500" />
-            <span>{state.statistics.plantsBought}</span>
+            <span>{numberOfPlantsBought}</span>
           </div>
           <div className="flex items-center space-x-2 text-xl">
             <FaFish className="h-6 w-6 text-orange-500" />
-            <span>{state.statistics.animalsBought}</span>
+            <span>{numberOfAnimalsBought}</span>
           </div>
           <div className="flex items-center space-x-2 text-xl">
             <MdHexagon className="h-6 w-6 text-blue-500" />
             <span>
-              {
-                filter(
-                  state.habitatMarket.deck,
-                  (habitatTile) => habitatTile.name !== "baltic" && habitatTile.isAcquired,
-                ).length
-              }
+              {numberOfHabitatsUnlocked}
               /6
             </span>
           </div>
@@ -91,3 +95,18 @@ const Menu = () => {
 };
 
 export default Menu;
+
+const CancelButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <button
+      className="-mr-8 flex items-center bg-red-500 pl-8 pr-10 text-white transition-all hover:bg-red-700"
+      style={{
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+        WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
+      }}
+      onClick={onClick}
+    >
+      <FaXmark />
+    </button>
+  );
+};

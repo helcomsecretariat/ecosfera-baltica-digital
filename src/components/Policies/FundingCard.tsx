@@ -5,7 +5,7 @@ import { RoundedRectangleGeometry } from "../shapes/roundedRect";
 import { CardOrTileUID } from "@/state/types";
 
 const FundingCard = ({ cardUid }: { cardUid: CardOrTileUID }) => {
-  const texture = useSRGBTexture("/ecosfera_baltica/back.avif");
+  const texture = useSRGBTexture("/ecosfera_baltica/card_back.avif");
 
   return (
     <>
@@ -14,6 +14,7 @@ const FundingCard = ({ cardUid }: { cardUid: CardOrTileUID }) => {
           <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, 0.05]} />
           <meshBasicMaterial attach="material-0" map={texture} />
           <meshBasicMaterial attach="material-1" />
+          <meshBasicMaterial attach="material-2" />
         </mesh>
       </GameElement>
     </>

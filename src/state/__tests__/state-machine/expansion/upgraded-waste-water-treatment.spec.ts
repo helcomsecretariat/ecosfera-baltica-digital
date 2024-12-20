@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { getTestActor } from "@/state/__tests__/utils";
+import { getTestActor, testRandomSeed } from "@/state/__tests__/utils";
 import { filter } from "lodash";
 
 // Test skipped for now because it conflicts with the conditions for elemental disaster
@@ -31,9 +31,10 @@ test.skip("nutrient to market when player has 3 nutrients", async () => {
   expect(playerNutrientsAfter - playerNutrientsBefore).toBe(-1);
 });
 
-test("player gets additional nutrient", async () => {
+testRandomSeed("player gets additional nutrient", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
 
@@ -60,9 +61,10 @@ test("player gets additional nutrient", async () => {
   expect(playerNutrientsAfter - playerNutrientsBefore).toBe(1);
 });
 
-test("player gets no additional nutrient when deck is empty", async () => {
+testRandomSeed("player gets no additional nutrient when deck is empty", async (seed) => {
   const { activatePolicy, getState, send } = getTestActor({
     useSpecialCards: true,
+    seed,
   });
   const stateBefore = getState();
 

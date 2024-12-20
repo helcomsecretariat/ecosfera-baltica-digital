@@ -12,20 +12,22 @@ import CardComponent from "@/components/utils/CardWithProvider";
 import AbilityToken from "@/components/utils/AbilityTokenWithProvider";
 import Tile from "@/components/utils/TileWithProvider";
 import { useSelector } from "@xstate/react";
-import { MachineSelectors } from "@/state/machines/selectors";
 import EndTurnButton from "./ui/endTurnButton";
 import Policies from "./Policies/Policies";
 import PolicyCard from "./Policies/PolicyCard";
 import FundingCard from "./Policies/FundingCard";
+import { selectCurrentAbility, selectExhaustedCards } from "@/state/machines/selectors";
+import CenterTile from "@/components/CenterTile";
+import { extinctionTileYStart, habitatTileYStart } from "@/constants/gameBoard";
 
 const Croupier = () => {
   const { state: gameState, uiState, actorRef, snap, gameConfig } = useGameState();
   const { emit, test, hasTag, guards } = useGameState();
-  const exhaustedCards = useSelector(actorRef, MachineSelectors.exhaustedCards);
+  const exhaustedCards = useSelector(actorRef, selectExhaustedCards);
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
-  const currentAbility = useSelector(actorRef, MachineSelectors.currentAbility);
+  const currentAbility = useSelector(actorRef, selectCurrentAbility);
 
   return (
     <AnimatePresence>
@@ -140,30 +142,34 @@ const Croupier = () => {
       {/* Policies */}
       <Policies />
       {gameConfig.useSpecialCards &&
-        gameState.stage?.eventType?.includes("policy_") &&
-        [...(gameState.stage?.effect ?? []), ...(gameState.stage?.cause ?? [])].map((cardUid) => {
-          if (find(gameState.policyMarket.funding, { uid: cardUid })) {
-            return <FundingCard key={cardUid} cardUid={cardUid} />;
-          }
+        [...(gameState.stage?.effect ?? []), ...(gameState.stage?.cause ?? [])]
+          .filter((s) => s.startsWith("policy-"))
+          .map((cardUid) => {
+            if (find(gameState.policyMarket.funding, { uid: cardUid })) {
+              return <FundingCard key={cardUid} cardUid={cardUid} />;
+            }
 
-          const policyCard =
-            find(gameState.policyMarket.acquired, { uid: cardUid }) ??
-            find(gameState.policyMarket.table, { uid: cardUid });
-          return policyCard ? (
-            <PolicyCard
-              key={cardUid}
-              card={policyCard}
-              isActive={gameState.policyMarket.active.some((policyCard) => policyCard.uid === cardUid)}
-              isOpaque={true}
-              allowActivation={false}
-            />
-          ) : null;
-        })}
+            const policyCard =
+              find(gameState.policyMarket.acquired, { uid: cardUid }) ??
+              find(gameState.policyMarket.table, { uid: cardUid }) ??
+              find(gameState.policyMarket.exhausted, { uid: cardUid });
+            return policyCard ? (
+              <PolicyCard
+                key={cardUid}
+                card={policyCard}
+                isActive={gameState.policyMarket.active.some((policyCard) => policyCard.uid === cardUid)}
+                isOpaque={true}
+                allowActivation={test.acquiredPolicyCardClick(policyCard)}
+                onClick={emit.acquiredPolicyCardClick(policyCard)}
+              />
+            ) : null;
+          })}
 
       {/* Stage */}
       <Stage key="stage" />
 
       {/* Extinction tiles */}
+      <CenterTile key="extinction-center-tile" yStart={extinctionTileYStart} tileType="extinction" />
       {[...gameState.extinctMarket.deck, ...gameState.extinctMarket.table].map((extinctionTile) => (
         <Tile
           key={extinctionTile.uid}
@@ -178,6 +184,7 @@ const Croupier = () => {
       ))}
 
       {/* Habitat tiles */}
+      <CenterTile key="habitat-center-tile" yStart={habitatTileYStart} tileType="habitat" />
       {gameState.habitatMarket.deck.map((habitatTile) => (
         <Tile
           key={habitatTile.uid}
@@ -189,6 +196,7 @@ const Croupier = () => {
             gameState.stage?.effect?.includes(habitatTile.uid) && gameState.stage.eventType !== "gameWin"
           }
           isAcquired={habitatTile.isAcquired}
+          onClick={emit.habitatTileClick(habitatTile.name)}
         />
       ))}
 
@@ -233,7 +241,7 @@ const Croupier = () => {
         ),
       )}
 
-      <EndTurnButton key="end-turn-button" />
+      {test.playerEndTurnClick() && !guards.endPhase() && <EndTurnButton key="end-turn-button" />}
     </AnimatePresence>
   );
 };

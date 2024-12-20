@@ -5,6 +5,7 @@ import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObje
 import { TurnMachineGuards } from "../guards";
 import { filter, find, without } from "lodash";
 import i18n from "@/i18n";
+import * as Shared from "./shared";
 
 export const cardPrefix = "hunting";
 export const cardName = "Hunting";
@@ -13,6 +14,7 @@ export const uiStrings = {
   [cardName]: {
     name: i18n.t("deck.policies.hunting.name"),
     description: i18n.t("deck.policies.hunting.description"),
+    eventDescription: i18n.t("deck.policies.hunting.eventDescription"),
   },
 } as const;
 
@@ -25,22 +27,10 @@ export const actions = {
       player.hand = without(player.hand, ...[...handBirds, ...handMammals]);
     }),
   ),
-  [`${cardPrefix}Done`]: assign(({ context }: { context: GameState }) =>
-    produce(context, (draft) => {
-      draft.policyMarket.active = without(
-        context.policyMarket.active,
-        find(context.policyMarket.active, { name: cardName })!,
-      );
-      draft.policyMarket.table = without(
-        context.policyMarket.table,
-        find(context.policyMarket.table, { name: cardName })!,
-      );
-    }),
-  ),
 };
 
 export type GuardParams = ToParameterizedObject<typeof TurnMachineGuards>;
-export type ActionParams = ToParameterizedObject<typeof actions>;
+export type ActionParams = ToParameterizedObject<typeof actions & typeof Shared.actions>;
 
 export const state: {
   [cardPrefix]: ExpansionStateNodeConfig<ActionParams, GuardParams>;
@@ -56,7 +46,10 @@ export const state: {
         },
       },
       done: {
-        entry: [`${cardPrefix}Done`],
+        entry: {
+          type: `${Shared.prefix}Exhaust`,
+          params: ({ context }) => find(context.policyMarket.active, { name: cardName })!,
+        },
         always: {
           target: "#turn",
         },

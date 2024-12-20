@@ -21,6 +21,7 @@ import {
   PolicyCard,
 } from "./types";
 import { createUID, mapFaunaType } from "@/state/utils";
+import { PolicyCardName } from "@/state/machines/expansion";
 
 export class Croupier {
   private uid = 0;
@@ -61,8 +62,7 @@ export class Croupier {
 
   spawnPolicyCards(name: string, config: PolicyConfig): PolicyCard[] {
     return Array.from(Array(config.count ?? 1), () => ({
-      // Funding cards have # to make name unique
-      name: name.split("#")[0].trim(),
+      name: name as PolicyCardName,
       type: "policy",
       effect: config.effect,
       theme: config.theme,
@@ -108,7 +108,7 @@ export class Croupier {
     return Array.from(Array(config.count ?? 1), () => ({
       name,
       type: "habitat",
-      isAcquired: name === "baltic" ? true : false,
+      isAcquired: false,
       uid: createUID("habitat", this.nextUid()),
     }));
   }

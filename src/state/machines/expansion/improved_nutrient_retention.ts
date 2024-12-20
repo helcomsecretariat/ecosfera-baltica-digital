@@ -3,8 +3,9 @@ import { produce } from "immer";
 import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
-import { filter, find, findIndex, without } from "lodash";
+import { filter, findIndex } from "lodash";
 import i18n from "@/i18n";
+import { and } from "xstate";
 
 const removeNutrientsFromPlantCards = (cards: PlantCard[]): PlantCard[] => {
   return cards.map((card) => {
@@ -26,6 +27,7 @@ export const uiStrings = {
   [cardName]: {
     name: i18n.t("deck.policies.improvedNutrientRetention.name"),
     description: i18n.t("deck.policies.improvedNutrientRetention.description"),
+    eventDescription: i18n.t("deck.policies.improvedNutrientRetention.eventDescription"),
   },
 } as const;
 
@@ -58,16 +60,10 @@ export const actions = {
       });
     }),
   ),
-  [`${cardPrefix}Done`]: assign(({ context }: { context: GameState }) =>
+
+  [`${cardPrefix}Deactivate`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
-      draft.policyMarket.active = without(
-        context.policyMarket.active,
-        find(context.policyMarket.active, { name: cardName })!,
-      );
-      draft.policyMarket.table = without(
-        context.policyMarket.table,
-        find(context.policyMarket.table, { name: cardName })!,
-      );
+      draft.policyMarket.active = draft.policyMarket.active.filter((c) => c.name !== cardName);
     }),
   ),
 };
@@ -80,28 +76,17 @@ export const state: {
 } = {
   [cardPrefix]: {
     tags: ["policy", cardPrefix],
-    initial: "reducePlantNutrientRequirement",
-    states: {
-      reducePlantNutrientRequirement: {
-        entry: [`${cardPrefix}ReducePlantNutrientRequirement`],
-        after: {
-          animationDuration: "done",
-        },
-      },
-      done: {
-        entry: [`${cardPrefix}Done`],
-        always: {
-          target: "#turn",
-        },
-      },
-    },
+    entry: [`${cardPrefix}ReducePlantNutrientRequirement`, `${cardPrefix}Deactivate`],
+    always: "#turn",
   },
 };
 
 export const conditionCheck: ExpansionConditionConfig<ActionParams, GuardParams> = {
   target: `#turn.${cardPrefix}`,
-  guard: {
-    type: "isPolicyCardActive",
-    params: cardName,
-  },
+  guard: and([
+    {
+      type: "isPolicyCardActive",
+      params: cardName,
+    },
+  ]),
 };

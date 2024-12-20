@@ -1,11 +1,13 @@
 import { AnimalCard, GameState, PlantCard } from "@/state/types";
 import { produce } from "immer";
-import { filter, find, first, intersection, map, without } from "lodash";
+import { filter, find, first, intersection, map } from "lodash";
 import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { and } from "xstate";
 import i18n from "@/i18n";
+import * as Shared from "./shared";
+
 export const cardPrefix = "hazardousSubstanceRegulation";
 export const cardName = "Hazardous substance regulation";
 
@@ -13,6 +15,7 @@ export const uiStrings = {
   [cardName]: {
     name: i18n.t("deck.policies.hazardousSubstanceRegulation.name"),
     description: i18n.t("deck.policies.hazardousSubstanceRegulation.description"),
+    eventDescription: i18n.t("deck.policies.hazardousSubstanceRegulation.eventDescription"),
   },
 };
 
@@ -25,7 +28,7 @@ export const actions = {
   [`${cardPrefix}Init`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
       draft.commandBar = {
-        text: "Pick a producer card that shares a habitat with an animal card",
+        text: i18n.t("deck.policies.hazardousSubstanceRegulation.pickProducerCommandBarText"),
       };
     }),
   ),
@@ -33,7 +36,7 @@ export const actions = {
     produce(context, (draft) => {
       internalContext.target = card;
       draft.commandBar = {
-        text: "Pick an animal card that shares a habitat with your chosen producer card",
+        text: i18n.t("deck.policies.hazardousSubstanceRegulation.pickAnimalCommandBarText"),
       };
     }),
   ),
@@ -76,23 +79,10 @@ export const actions = {
       };
     }),
   ),
-  [`${cardPrefix}Done`]: assign(({ context }: { context: GameState }) =>
-    produce(context, (draft) => {
-      draft.stage = undefined;
-      draft.policyMarket.active = without(
-        context.policyMarket.active,
-        find(context.policyMarket.active, { name: cardName })!,
-      );
-      draft.policyMarket.table = without(
-        context.policyMarket.table,
-        find(context.policyMarket.table, { name: cardName })!,
-      );
-    }),
-  ),
 };
 
 export type GuardParams = ToParameterizedObject<typeof TurnMachineGuards>;
-export type ActionParams = ToParameterizedObject<typeof actions>;
+export type ActionParams = ToParameterizedObject<typeof actions & typeof Shared.actions>;
 
 export const state: {
   [cardPrefix]: ExpansionStateNodeConfig<ActionParams, GuardParams>;
@@ -112,6 +102,7 @@ export const state: {
             },
             guard: and([
               ({ context, event }) => TurnMachineGuards.isPlantCard({ context }, event.card),
+              ({ context, event }) => TurnMachineGuards.ownsCard({ context }, event.card.uid),
               ({ context, event }) => TurnMachineGuards.hasSharedHabitatInHand({ context }, event.card as PlantCard),
             ]),
           },
@@ -127,6 +118,7 @@ export const state: {
             },
             guard: and([
               ({ context, event }) => TurnMachineGuards.isAnimalCard({ context }, event.card),
+              ({ context, event }) => TurnMachineGuards.ownsCard({ context }, event.card.uid),
               ({ context, event }) =>
                 TurnMachineGuards.hasSharedHabitat(
                   { context },
@@ -137,7 +129,7 @@ export const state: {
         },
       },
       action: {
-        entry: [`${cardPrefix}Action`],
+        entry: [`${cardPrefix}Action`, { type: `${Shared.prefix}SetAutomaticPolicyDraw`, params: "habitat" }],
         after: {
           animationDuration: "done",
         },
@@ -146,7 +138,10 @@ export const state: {
         on: {
           "user.click.stage.confirm": {
             target: "#turn",
-            actions: [`${cardPrefix}Done`],
+            actions: {
+              type: `${Shared.prefix}Exhaust`,
+              params: ({ context }) => find(context.policyMarket.active, { name: cardName })!,
+            },
           },
         },
       },

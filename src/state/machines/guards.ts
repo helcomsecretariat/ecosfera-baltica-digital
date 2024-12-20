@@ -1,5 +1,5 @@
-import { AbilityTile, AnimalCard, Card, CardType, GameState, PlantCard } from "@/state/types";
-import { countBy, find, compact, every, intersection, isEmpty } from "lodash";
+import { AbilityTile, AnimalCard, Card, CardType, GameState, HabitatName, PlantCard } from "@/state/types";
+import { countBy, find, compact, every, intersection, isEmpty, first } from "lodash";
 import { getAnimalHabitatPairs, getDuplicateElements } from "./helpers/turn";
 import { Tail } from "../../lib/types";
 
@@ -152,8 +152,8 @@ export const TurnMachineGuards = {
     ) as AnimalCard[];
 
     const availableAnimalHabitatPairs = getAnimalHabitatPairs([
-      ...player.hand.filter((card) => card.type === "animal"),
-      ...stagedAnimals,
+      ...(player.hand.filter((card) => card.type === "animal") as AnimalCard[]),
+      ...stagedAnimals, // this guard invoked both during stage and during 'main checks'
     ]).filter(
       (animalHabitatPair) =>
         !context.turn.uidsUsedForAbilityRefresh.some((uid) =>
@@ -210,13 +210,11 @@ export const TurnMachineGuards = {
   },
 
   gameWon: ({ context: { habitatMarket } }: { context: GameState }) => {
-    return habitatMarket.deck
-      .filter((habitatTile) => habitatTile.name !== "baltic")
-      .every((habitatTile) => habitatTile.isAcquired);
+    return habitatMarket.deck.every((habitatTile) => habitatTile.isAcquired);
   },
 
   stageCardsUsedForAbilityRefresh: ({ context: { turn, stage } }: { context: GameState }) =>
-    //@ts-expect-error uid type mismatch doesnt matter
+    //@ts-expect-error type mismatch does not matter
     stage?.cause?.every((uid) => turn.uidsUsedForAbilityRefresh.includes(uid)) ?? false,
 
   isOnStage: ({ context: { stage } }: { context: GameState }, card: Card) => {
@@ -243,6 +241,14 @@ export const TurnMachineGuards = {
 
   isAnimalCard: ({ context: _ }: { context: GameState }, card: Card) => card.type === "animal",
 
+  isDisasterCard: ({ context: _ }: { context: GameState }, card: Card) => card.type === "disaster",
+
+  isBirdCard: ({ context: _ }: { context: GameState }, card: Card) =>
+    card.type === "animal" && card.faunaType === "bird",
+
+  isFishCard: ({ context: _ }: { context: GameState }, card: Card) =>
+    card.type === "animal" && card.faunaType === "fish",
+
   hasSharedHabitatInHand: ({ context }: { context: GameState }, card: PlantCard) => {
     const player = find(context.players, { uid: context.turn.player })!;
 
@@ -262,6 +268,33 @@ export const TurnMachineGuards = {
     context.policyMarket.active.some((policyCard) => policyCard.name === policyCardName),
 
   isSinglePlayer: ({ context: { players } }: { context: GameState }) => players.length === 1,
+
+  playerHasDisasterCardInHand: ({ context: { players } }: { context: GameState }) =>
+    players.some((player) => player.hand.some((card) => card.type === "disaster")),
+
+  habitatUnlocked: ({ context: { habitatMarket } }: { context: GameState }, habitatName: HabitatName) =>
+    find(habitatMarket.deck, { name: habitatName })?.isAcquired ?? false,
+
+  isAbilityUseBlocked: ({ context }: { context: GameState }) => context.blockers.ability.isBlocked,
+
+  isTurnBlocked: ({ context }: { context: GameState }) => context.blockers.turn.isBlocked,
+
+  notLitterCard: ({ context: _ }: { context: GameState }, card: Card) =>
+    !(card.type === "policy" && card.theme === "litter"),
+
+  isPolicyCancellationBlocked: ({ context }: { context: GameState }) => context.blockers.policyCancellation.isBlocked,
+
+  isActivePolicyCardPositive: ({ context }: { context: GameState }) =>
+    first(context.policyMarket.active)?.effect === "positive",
+
+  canActivateProtection: ({ context }: { context: GameState }) =>
+    context.policyMarket.acquired.some((card) => card.name === "Strict protection") &&
+    context.policyMarket.funding.length > 0,
+
+  isExpansionActive: ({ context }: { context: GameState }) => context.config.useSpecialCards,
+
+  shouldAutomaticallyDrawPolicy: ({ context }: { context: GameState }) =>
+    context.config.useSpecialCards && context.turn.automaticPolicyDraw !== undefined,
 };
 
 export type ContextInjectedGuardMap = {

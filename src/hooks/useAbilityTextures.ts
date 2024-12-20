@@ -29,7 +29,7 @@ const useAbilityTextures = (): {
   };
 
   Object.keys(zoomedIn).forEach((key) => {
-    zoomedIn[key as AbilityName].repeat.set(0.8, 0.8);
+    zoomedIn[key as AbilityName].repeat.set(0.9, 0.9);
     zoomedIn[key as AbilityName].center.set(0.5, 0.5);
   });
 

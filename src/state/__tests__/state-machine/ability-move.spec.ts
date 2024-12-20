@@ -1,6 +1,7 @@
 import { test, expect } from "vitest";
 import { getTestActor } from "@/state/__tests__/utils";
 import { without } from "lodash";
+import i18n from "@/i18n";
 
 test("moving to other player", async () => {
   const { send, getState } = getTestActor();
@@ -13,10 +14,12 @@ test("moving to other player", async () => {
   let state = getState();
   expect(state.turn.currentAbility?.piece.uid).toBe(moveToken.uid);
   expect(state.turn.currentAbility?.name).toBe("move");
+  expect(state.commandBar?.text).toBe(i18n.t("abilities.commandBar.move.pickCard"));
 
   send({ type: "user.click.player.hand.card", card: cardToMove });
   state = getState();
   expect(state.turn.currentAbility?.targetCard?.uid).toBe(cardToMove.uid);
+  expect(state.commandBar?.text).toBe(i18n.t("abilities.commandBar.move.pickDestination"));
 
   send({ type: "user.click.player.hand.card", card: targetPlayerCard });
   state = getState();
@@ -34,10 +37,12 @@ test("moving back to market", async () => {
   send({ type: "user.click.token", token: moveToken });
   let state = getState();
   expect(state.turn.currentAbility?.piece.uid).toBe(moveToken.uid);
+  expect(state.commandBar?.text).toBe(i18n.t("abilities.commandBar.move.pickCard"));
 
   send({ type: "user.click.player.hand.card", card: elementCard });
   state = getState();
   expect(state.turn.currentAbility?.targetCard?.uid).toBe(elementCard.uid);
+  expect(state.commandBar?.text).toBe(i18n.t("abilities.commandBar.move.pickDestination"));
 
   send({ type: "user.click.market.deck.element", name: elementCard.name });
   state = getState();
@@ -102,8 +107,12 @@ test("move card to supply in single player", async () => {
   send({ type: "user.click.token", token: moveToken });
   state = getState();
   expect(state.turn.currentAbility?.piece.uid).toBe(moveToken.uid);
+  expect(state.commandBar?.text).toBe(i18n.t("abilities.commandBar.move.pickCard"));
 
   send({ type: "user.click.player.hand.card", card: cardToMove });
+  state = getState();
+  expect(state.commandBar?.text).toBe(i18n.t("abilities.commandBar.move.pickDestinationSinglePlayer"));
+
   send({ type: "user.click.player.deck" });
   state = getState();
   expect(state.players[0].deck[0]).toBe(cardToMove);
@@ -122,11 +131,13 @@ test("moving to other player's hand", async () => {
   let state = getState();
   expect(state.turn.currentAbility?.piece.uid).toBe(moveToken.uid);
   expect(state.turn.currentAbility?.name).toBe("move");
+  expect(state.commandBar?.text).toBe(i18n.t("abilities.commandBar.move.pickCard"));
 
   send({ type: "user.click.player.hand.card", card: cardToMove });
   expect(can({ type: "user.click.player.deck" })).toBe(false);
   state = getState();
   expect(state.turn.currentAbility?.targetCard?.uid).toBe(cardToMove.uid);
+  expect(state.commandBar?.text).toBe(i18n.t("abilities.commandBar.move.pickDestination"));
 
   const targetPlayerCard = targetPlayer.hand[0];
   send({ type: "user.click.player.hand.card", card: targetPlayerCard });

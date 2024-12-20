@@ -8,25 +8,32 @@ import {
   GameState,
   AbilityName,
   PolicyCard,
+  HabitatName,
 } from "@/state/types";
 import { mapValues } from "lodash-es";
 import { EventFromLogic } from "xstate";
 import { ContextInjectedGuardMap, TurnMachineGuards } from "./machines/guards";
 
+// Type to make it clear that these functions return functions that need to be called
+type EmitterFunction<T extends readonly unknown[]> = (...args: T) => () => void;
+
 export interface ActionEmmiters {
-  playerCardClick: (card: Card) => () => void;
-  playerDeckClick: () => () => void;
-  playerEndTurnClick: () => () => void;
-  marketElementClick: (name: ElementCard["name"]) => () => void;
-  borrowedElementClick: (card: ElementCard) => () => void;
-  marketCardClick: (card: PlantCard | AnimalCard) => () => void;
-  tokenClick: (token: AbilityTile) => () => void;
-  cardTokenClick: (card: AnimalCard | PlantCard, abilityName: AbilityName) => () => void;
-  animalDeckClick: () => () => void;
-  plantDeckClick: () => () => void;
-  stageConfirm: () => () => void;
-  iddqd: (context: Partial<TurnMachineContext>) => () => void;
-  acquiredPolicyCardClick: (card: PolicyCard) => () => void;
+  playerCardClick: EmitterFunction<[card: Card]>;
+  playerDeckClick: EmitterFunction<[]>;
+  playerEndTurnClick: EmitterFunction<[]>;
+  habitatTileClick: EmitterFunction<[name: HabitatName]>;
+  marketElementClick: EmitterFunction<[name: ElementCard["name"]]>;
+  borrowedElementClick: EmitterFunction<[card: ElementCard]>;
+  marketCardClick: EmitterFunction<[card: PlantCard | AnimalCard]>;
+  tokenClick: EmitterFunction<[token: AbilityTile]>;
+  cardTokenClick: EmitterFunction<[card: AnimalCard | PlantCard, abilityName: AbilityName]>;
+  animalDeckClick: EmitterFunction<[]>;
+  plantDeckClick: EmitterFunction<[]>;
+  stageConfirm: EmitterFunction<[]>;
+  iddqd: EmitterFunction<[context: Partial<TurnMachineContext>]>;
+  acquiredPolicyCardClick: EmitterFunction<[card: PolicyCard]>;
+  cancelPolicyCard: EmitterFunction<[]>;
+  cancelAbility: EmitterFunction<[]>;
 }
 
 export type ActionTesters = {
@@ -39,6 +46,7 @@ const actionToEventMap: {
   playerCardClick: (card: Card) => ({ type: "user.click.player.hand.card", card }),
   playerDeckClick: () => ({ type: "user.click.player.deck" }),
   playerEndTurnClick: () => ({ type: "user.click.player.endTurn" }),
+  habitatTileClick: (name: HabitatName) => ({ type: "user.click.market.deck.habitat", name }),
   marketElementClick: (name: ElementCard["name"]) => ({ type: "user.click.market.deck.element", name }),
   borrowedElementClick: (card: ElementCard) => ({ type: "user.click.market.borrowed.card.element", card }),
   marketCardClick: (card: PlantCard | AnimalCard) => ({ type: "user.click.market.table.card", card }),
@@ -53,6 +61,8 @@ const actionToEventMap: {
   stageConfirm: () => ({ type: "user.click.stage.confirm" }),
   iddqd: (context: Partial<TurnMachineContext>) => ({ type: "iddqd", context }),
   acquiredPolicyCardClick: (card: PolicyCard) => ({ type: "user.click.policy.card.acquired", card }),
+  cancelPolicyCard: () => ({ type: "user.click.policies.cancel" }),
+  cancelAbility: () => ({ type: "user.click.ability.cancel" }),
 } as const;
 
 export const createEmmiters = (send: (e: EventFromLogic<typeof TurnMachine>) => void): ActionEmmiters => {

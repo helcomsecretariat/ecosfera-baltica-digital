@@ -1,4 +1,4 @@
-import { cardHeight, cardWidth } from "../constants/card";
+import { cardHeight, cardWidth, cardRadius } from "../constants/card";
 import GameElement from "./GameElement";
 import { Card, GamePieceAppearance } from "@/state/types";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
@@ -9,7 +9,7 @@ import { getHighlightTextureAssetPath } from "./utils";
 
 const Deck = ({
   gamePieceAppearance,
-  texturePath = "/ecosfera_baltica/back.avif",
+  texturePath = "/ecosfera_baltica/card_back.avif",
   onClick,
   cards,
   isDimmed = false,
@@ -43,15 +43,15 @@ const Deck = ({
       >
         {isHighlighted && (
           <mesh>
-            <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, 1.5, 0.01]} />
-            <meshBasicMaterial transparent={true} attach="material-0" map={highlightTexture} />
-            <meshBasicMaterial transparent={true} opacity={0} attach="material-1" />
+            <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, cardRadius, 0.01]} />
+            <meshBasicMaterial transparent={true} map={highlightTexture} />
           </mesh>
         )}
         <mesh>
-          <RoundedRectangleGeometry args={[cardWidth, cardHeight, 1.5, deckDepth]} />
+          <RoundedRectangleGeometry args={[cardWidth, cardHeight, cardRadius, deckDepth]} />
           <meshBasicMaterial attach="material-0" map={texture} color={isDimmed ? "#999" : "white"} />
-          <meshBasicMaterial attach="material-1" />
+          <meshBasicMaterial attach="material-1" map={texture} color={isDimmed ? "#999" : "white"} />
+          <meshBasicMaterial attach="material-2" color={isDimmed ? "#999" : "white"} />
         </mesh>
         <mesh position={textPosition}>
           <circleGeometry args={[1.5, 16]} />

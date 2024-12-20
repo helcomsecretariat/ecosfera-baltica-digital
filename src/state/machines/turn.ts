@@ -3,7 +3,6 @@ import {
   AbilityTile,
   AbilityUID,
   AnimalCard,
-  HabitatTile,
   Card,
   ElementCard,
   GameConfig,
@@ -13,6 +12,8 @@ import {
   AbilityName,
   isAbilityUID,
   PolicyCard,
+  HabitatName,
+  GamePiece,
 } from "@/state/types";
 import { assign } from "@/state/machines/assign";
 import { DeckConfig } from "@/decks/schema";
@@ -25,6 +26,7 @@ import {
   countBy,
   entries,
   find,
+  first,
   flatten,
   intersection,
   isEmpty,
@@ -35,8 +37,9 @@ import {
 import { calculateDurations, replaceItem, shuffle } from "@/state/utils";
 import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
 import { toUiState } from "@/state/ui/positioner";
-import { getCardComparator } from "@/lib/utils";
-import { expansionActions, expansionConditionChecks, expansionState } from "./expansion";
+import { capitalize, getCardComparator } from "@/lib/utils";
+import { expansionActions, expansionCardsEndTurnActions, expansionConditionChecks, expansionState } from "./expansion";
+import i18n from "@/i18n";
 
 type MachineConfig = {
   animSpeed?: number;
@@ -49,6 +52,7 @@ export type TurnMachineEvent =
   | { type: "user.click.player.endTurn" }
   | { type: "user.click.token"; token: AbilityTile }
   | { type: "user.click.player.hand.card"; card: Card }
+  | { type: "user.click.market.deck.habitat"; name: HabitatName }
   | { type: "user.click.market.deck.element"; name: ElementCard["name"] }
   | { type: "user.click.market.borrowed.card.element"; card: ElementCard }
   | { type: "user.click.market.table.card"; card: PlantCard | AnimalCard }
@@ -59,6 +63,8 @@ export type TurnMachineEvent =
   | { type: "user.click.market.deck.plant" }
   | { type: "user.click.player.deck" }
   | { type: "user.click.policy.card.acquired"; card: PolicyCard }
+  | { type: "user.click.policies.cancel" }
+  | { type: "user.click.ability.cancel" }
   | { type: "internal.target.selected"; target: Card };
 
 export type TurnMachineInput = {
@@ -126,7 +132,6 @@ export const TurnMachine = setup({
           const drawnCard = draft.plantMarket.deck.shift()!;
           draft.plantMarket.table = replaceItem(card, drawnCard, draft.plantMarket.table);
           draft.turn.boughtPlant = true;
-          draft.statistics.plantsBought += 1;
         }
 
         if (card.type === "animal") {
@@ -145,29 +150,10 @@ export const TurnMachine = setup({
           const drawnCard = draft.animalMarket.deck.shift()!;
           draft.animalMarket.table = replaceItem(card, drawnCard, draft.animalMarket.table);
           draft.turn.boughtAnimal = true;
-          draft.statistics.animalsBought += 1;
         }
 
         draft.turn.playedCards = without(draft.turn.playedCards, ...draft.turn.exhaustedCards);
         player.hand.push(card);
-      }),
-    ),
-    buyHabitat: assign(({ context }: { context: GameState }, tile: HabitatTile) =>
-      produce(context, (draft) => {
-        const { turn, players, habitatMarket } = draft;
-        const { playedCards, player } = turn;
-
-        const playedAnimals =
-          (find(players, { uid: player })
-            ?.hand.filter(({ uid }) => playedCards.includes(uid))
-            .filter(({ type }) => type === "animal") as AnimalCard[]) ?? [];
-
-        const toBeExhaustedAnimals = playedAnimals.filter(({ habitats }) => habitats.includes(tile.name)).slice(0, 2);
-
-        turn.playedCards = without(turn.playedCards, ...toBeExhaustedAnimals.map(({ uid }) => uid));
-        turn.unlockedHabitat = true;
-
-        find(habitatMarket.deck, { name: tile.name })!.isAcquired = true;
       }),
     ),
     drawOneCard: assign(({ context }) =>
@@ -315,7 +301,7 @@ export const TurnMachine = setup({
         };
       }),
     ),
-    stageSpecialDraw: assign(({ context }: { context: GameState }) =>
+    stagePolicyDraw: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         const policyCard = context.policyMarket.deck[0];
 
@@ -329,13 +315,28 @@ export const TurnMachine = setup({
         }
 
         draft.policyMarket.deck = without(context.policyMarket.deck, policyCard);
+        const cardEffect = policyCard.effect;
+        const hasFunding = TurnMachineGuards.hasSufficientFunding({ context });
+        const isMeasureCard = cardEffect === "positive";
+        const isHabitatAutoDraw = draft.turn.automaticPolicyDraw?.cause === "habitat";
+        const isExtinctionAutoDraw = draft.turn.automaticPolicyDraw?.cause === "extinction";
+
+        const base = "policy_policy";
+        const cause = isHabitatAutoDraw ? "AutoDrawHabitat" : isExtinctionAutoDraw ? "AutoDrawExtinction" : "Draw";
+        const effect = isMeasureCard
+          ? (`Positive${hasFunding ? "HasFunding" : "NoFunding"}` as const)
+          : capitalize(cardEffect);
+        const eventType = `${base}${cause}${effect}` as const;
+
+        const causeUids = isHabitatAutoDraw ? draft.turn.unlockedHabitats : undefined;
 
         draft.stage = {
-          eventType: policyCard.effect === "implementation" ? "policy_fundingIncrease" : "policy_specialDraw",
-          cause: undefined,
+          eventType,
+          cause: causeUids,
           effect: [policyCard.uid],
           outcome: policyCard.effect === "positive" || policyCard.effect === "implementation" ? "positive" : "negative",
         };
+        draft.turn.automaticPolicyDraw = undefined;
       }),
     ),
     stageGameWin: assign(({ context }: { context: GameState }) =>
@@ -395,7 +396,8 @@ export const TurnMachine = setup({
         });
         draft.turn.unlockedHabitat = true;
         draft.turn.playedCards = without(context.turn.playedCards, ...map(playedAnimals, "uid"));
-        draft.turn.exhaustedCards = concat(draft.turn.exhaustedCards, ...map(playedAnimals, "uid"));
+        draft.turn.exhaustedCards = [...draft.turn.exhaustedCards, ...map(playedAnimals, "uid")];
+        draft.turn.unlockedHabitats = sharedHabitats.map(({ uid }) => uid);
 
         draft.stage = {
           eventType: "habitatUnlock",
@@ -414,7 +416,7 @@ export const TurnMachine = setup({
         ) as AnimalCard[];
 
         const availableAnimalHabitatPairs = getAnimalHabitatPairs([
-          ...player.hand.filter((card) => card.type === "animal"),
+          ...(player.hand.filter((card) => card.type === "animal") as AnimalCard[]),
           ...stagedAnimals,
         ]).filter(
           (animalHabitatPair) =>
@@ -437,10 +439,7 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player })!;
         const disasterCards = player?.hand.filter((card) => card.type === "disaster");
-        const extinctionTiles = context.extinctMarket.deck.slice(
-          0,
-          TurnMachineGuards.isPolicyCardActive({ context }, "Climate change") ? 2 : 1,
-        );
+        const extinctionTiles = context.extinctMarket.deck.slice(0, 1);
 
         // TODO: Figure out what to do when extinction deck is empty
         if (isEmpty(extinctionTiles)) return;
@@ -460,10 +459,7 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         const player = find(draft.players, { uid: draft.turn.player })!;
         const disasterCards = player?.hand.filter((card) => card.type === "disaster");
-        const extinctionTiles = context.extinctMarket.deck.slice(
-          0,
-          TurnMachineGuards.isPolicyCardActive({ context }, "Climate change") ? 4 : 3,
-        );
+        const extinctionTiles = context.extinctMarket.deck.slice(0, 3);
 
         // TODO: Figure out what to do when extinction deck is empty
         if (extinctionTiles.length === 0) return;
@@ -479,9 +475,43 @@ export const TurnMachine = setup({
         };
       }),
     ),
+    stageAbilityUseBlocked: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.stage = {
+          eventType: "abilityUseBlocked",
+          cause: context.blockers.ability.reasons,
+          effect: undefined,
+          outcome: "negative",
+        };
+      }),
+    ),
+    stageSkipTurn: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.stage = {
+          eventType: "skipTurn",
+          cause: context.blockers.turn.reasons,
+          effect: undefined,
+          outcome: "negative",
+        };
+      }),
+    ),
     unstage: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
         draft.stage = undefined;
+      }),
+    ),
+    blockAbilityUse: assign(({ context }: { context: GameState }, reasons: GamePiece["uid"]) =>
+      produce(context, (draft) => {
+        draft.blockers.ability.isBlocked = true;
+        draft.blockers.ability.reasons = [...draft.blockers.ability.reasons, reasons];
+      }),
+    ),
+    unblockAbilityUse: assign(({ context }: { context: GameState }, reasons: GamePiece["uid"]) =>
+      produce(context, (draft) => {
+        draft.blockers.ability.reasons = without(draft.blockers.ability.reasons, reasons);
+        if (draft.blockers.ability.reasons.length === 0) {
+          draft.blockers.ability.isBlocked = false;
+        }
       }),
     ),
     drawCards: assign(({ context }: { context: GameState }) =>
@@ -502,6 +532,7 @@ export const TurnMachine = setup({
         player.hand = [...player.hand].sort(getCardComparator(context.deck.ordering));
       }),
     ),
+
     clearTurnStateAndSwitchPlayer: assign(({ context }: { context: GameState }) => {
       const currentPlayer = context.players.find((player) => player.uid === context.turn.player)!;
       const newPlayers = [...without(context.players, currentPlayer), currentPlayer];
@@ -532,11 +563,13 @@ export const TurnMachine = setup({
           boughtAnimal: false,
           boughtPlant: false,
           unlockedHabitat: false,
+          unlockedHabitats: [],
           uidsUsedForAbilityRefresh: [],
           refreshedAbilityUids: [],
           selectedAbilityCard: undefined,
           automaticEventChecks: [],
           phase: "action" as const,
+          automaticPolicyDraw: undefined,
         },
       };
     }),
@@ -551,7 +584,7 @@ export const TurnMachine = setup({
         ) as AnimalCard[];
 
         const availableAnimalHabitatPairs = getAnimalHabitatPairs([
-          ...player.hand.filter((card) => card.type === "animal"),
+          ...(player.hand.filter((card) => card.type === "animal") as AnimalCard[]),
           ...stagedAnimals,
         ]).filter(
           (animalHabitatPair) =>
@@ -600,10 +633,50 @@ export const TurnMachine = setup({
       produce(context, (draft) => {
         draft.policyMarket.acquired = without(context.policyMarket.acquired, card);
         draft.policyMarket.table.push(card);
-        draft.policyMarket.funding = context.policyMarket.funding.slice(0, -1);
+        const fundingCard = context.policyMarket.funding.slice(0, 1);
+        draft.policyMarket.funding = without(context.policyMarket.funding, ...fundingCard);
+        draft.policyMarket.exhausted = concat(context.policyMarket.exhausted, fundingCard);
         draft.policyMarket.active.push(card);
       }),
     ),
+
+    cancelPolicyCard: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        const activePolicyCard = first(context.policyMarket.active);
+
+        if (!activePolicyCard) {
+          return;
+        }
+
+        draft.policyMarket.active = without(context.policyMarket.active, activePolicyCard);
+        draft.policyMarket.acquired = concat(context.policyMarket.acquired, activePolicyCard);
+        const fundingCard = context.policyMarket.exhausted.slice(0, 1);
+        draft.policyMarket.exhausted = without(context.policyMarket.exhausted, ...fundingCard);
+        draft.policyMarket.funding = concat(context.policyMarket.funding, fundingCard);
+        draft.commandBar = undefined;
+      }),
+    ),
+
+    setAutomaticPolicyDraw: assign(
+      ({ context }: { context: GameState }, cause: NonNullable<GameState["turn"]["automaticPolicyDraw"]>["cause"]) =>
+        produce(context, ({ turn }) => {
+          turn.automaticPolicyDraw = TurnMachineGuards.isExpansionActive({ context }) ? { cause } : undefined;
+        }),
+    ),
+
+    setCommandBar: assign(({ context }: { context: GameState }, text: string | undefined) =>
+      produce(context, (draft) => {
+        if (text === undefined) {
+          draft.commandBar = undefined;
+          return;
+        }
+
+        draft.commandBar = {
+          text,
+        };
+      }),
+    ),
+
     ...expansionActions,
   },
   guards: {
@@ -642,6 +715,14 @@ export const TurnMachine = setup({
         params: ({ event: { context } }) => context,
       },
     },
+    "user.click.policies.cancel": {
+      target: "#turn.buying",
+      actions: "cancelPolicyCard",
+      guard: and([
+        not(({ context }) => TurnMachineGuards.isPolicyCancellationBlocked({ context })),
+        ({ context }) => TurnMachineGuards.isActivePolicyCardPositive({ context }),
+      ]),
+    },
   },
 
   states: {
@@ -666,9 +747,18 @@ export const TurnMachine = setup({
         },
         drawingRow: {
           after: {
-            animationDuration: "clearingTurnState",
+            animationDuration: "expansionCardStatesUpdating",
           },
           exit: "drawCards",
+        },
+        expansionCardStatesUpdating: {
+          after: {
+            // @ts-expect-error dunno why
+            animationDuration: {
+              target: "clearingTurnState",
+              actions: expansionCardsEndTurnActions,
+            },
+          },
         },
         clearingTurnState: {
           after: {
@@ -680,77 +770,86 @@ export const TurnMachine = setup({
     },
     checkingEventConditions: {
       initial: "main",
+      on: {
+        "user.click.player.endTurn": [{ target: "endingTurn" }],
+      },
       states: {
         preDraw: {
-          after: {
-            animationDuration: [
-              {
-                target: "#turn.stagingEvent.noBuyDisaster",
-                guard: and([
-                  "getsDidNotBuyDisaster",
-                  ({ context }) => TurnMachineGuards.checkNotDone({ context }, "noBuyCheck"),
-                ]),
-              },
-              {
-                target: "main",
-              },
-            ],
-          },
+          always: [
+            {
+              target: "#turn.stagingEvent.noBuyDisaster",
+              guard: and([
+                "getsDidNotBuyDisaster",
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "noBuyCheck"),
+              ]),
+            },
+            {
+              target: "main",
+            },
+          ],
         },
 
         main: {
-          after: {
-            animationDuration: [
-              {
-                target: "#turn.stagingEvent.gameWon",
-                guard: "gameWon",
-              },
-              {
-                target: "#turn.stagingEvent.gameLost",
-                guard: "gameLost",
-              },
-              {
-                target: "#turn.stagingEvent.massExtinction",
-                guard: and([
-                  "getsMassExtinction",
-                  ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
-                ]),
-              },
-              {
-                target: "#turn.stagingEvent.extinction",
-                guard: and([
-                  "getsExtinction",
-                  ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
-                ]),
-              },
-              {
-                target: "#turn.stagingEvent.elementalDisaster",
-                guard: and([
-                  "getsElementalDisaster",
-                  ({ context }) => TurnMachineGuards.checkNotDone({ context }, "elementalDisasterCheck"),
-                ]),
-              },
-              {
-                target: "#turn.stagingEvent.abilityRefresh",
-                guard: "canRefreshAbility",
-              },
-              {
-                target: "#turn.stagingEvent.habitatUnlock",
-                guard: "canUnlockHabitats",
-              },
-              {
-                target: "#turn.endingTurn.discardingRow",
-                guard: "endPhase",
-              },
-              // @ts-expect-error dunno why
-              ...expansionConditionChecks,
-              // @ts-expect-error dunno why
-              {
-                target: "#turn.buying",
-                guard: "actionPhase",
-              },
-            ],
-          },
+          always: [
+            {
+              target: "#turn.stagingEvent.gameWon",
+              guard: "gameWon",
+            },
+            {
+              target: "#turn.stagingEvent.gameLost",
+              guard: "gameLost",
+            },
+            {
+              target: "#turn.stagingEvent.drawingPolicy",
+              guard: "shouldAutomaticallyDrawPolicy",
+            },
+            {
+              target: "#turn.stagingEvent.skipTurn",
+              guard: "isTurnBlocked",
+              actions: "stageSkipTurn",
+            },
+            {
+              target: "#turn.stagingEvent.massExtinction",
+              guard: and([
+                "getsMassExtinction",
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
+              ]),
+            },
+            {
+              target: "#turn.stagingEvent.extinction",
+              guard: and([
+                "getsExtinction",
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "extinctionCheck"),
+              ]),
+            },
+            {
+              target: "#turn.stagingEvent.elementalDisaster",
+              guard: and([
+                "getsElementalDisaster",
+                ({ context }) => TurnMachineGuards.checkNotDone({ context }, "elementalDisasterCheck"),
+              ]),
+            },
+            {
+              target: "#turn.stagingEvent.abilityRefresh",
+              guard: "canRefreshAbility",
+            },
+            {
+              target: "#turn.stagingEvent.habitatUnlock",
+              guard: "canUnlockHabitats",
+            },
+            // @ts-expect-error dunno why
+            ...expansionConditionChecks,
+            // @ts-expect-error dunno why
+            {
+              target: "#turn.endingTurn.discardingRow",
+              guard: "endPhase",
+            },
+            // @ts-expect-error dunno why
+            {
+              target: "#turn.buying",
+              guard: "actionPhase",
+            },
+          ],
         },
       },
     },
@@ -760,19 +859,27 @@ export const TurnMachine = setup({
       initial: "idle",
 
       states: {
-        drawingSpecial: {
-          initial: "awaitingConfirmation",
-          entry: "stageSpecialDraw",
-          states: {
-            awaitingConfirmation: {
-              on: {
-                "user.click.stage.confirm": { actions: "unstage", target: "transitioning" },
-              },
+        skipTurn: {
+          on: {
+            "user.click.stage.confirm": {
+              actions: "unstage",
+              target: "#turn.endingTurn.expansionCardStatesUpdating",
             },
-            transitioning: {
-              after: {
-                animationDuration: { target: "#turn.usingAbility.done" },
-              },
+          },
+        },
+        abilityUseBlocked: {
+          on: {
+            "user.click.stage.confirm": { actions: "unstage", target: "#turn" },
+          },
+        },
+        drawingPolicy: {
+          entry: "stagePolicyDraw",
+          on: {
+            "user.click.stage.confirm": { actions: "unstage", target: "#turn.usingAbility.done" },
+            "user.click.policy.card.acquired": {
+              target: "#turn.usingAbility.done",
+              actions: [{ type: "unlockPolicyCard", params: ({ event }) => event.card }, { type: "unstage" }],
+              guard: "hasSufficientFunding",
             },
           },
         },
@@ -835,7 +942,7 @@ export const TurnMachine = setup({
         },
         habitatUnlock: {
           initial: "awaitingConfirmation",
-          entry: "stageHabitatUnlock",
+          entry: ["stageHabitatUnlock", { type: "setAutomaticPolicyDraw", params: "habitat" }],
           states: {
             awaitingConfirmation: {
               on: {
@@ -918,7 +1025,7 @@ export const TurnMachine = setup({
         },
         extinction: {
           initial: "awaitingConfirmation",
-          entry: "stageExtinction",
+          entry: ["stageExtinction", { type: "setAutomaticPolicyDraw", params: "extinction" }],
           states: {
             awaitingConfirmation: {
               on: {
@@ -933,7 +1040,7 @@ export const TurnMachine = setup({
               after: {
                 animationDuration: [
                   { target: "#turn.climateChange", guard: { type: "isPolicyCardActive", params: "Climate change" } },
-                  { target: "#turn.endingTurn.discardingRow" },
+                  { target: "#turn.endingTurn" },
                 ],
               },
             },
@@ -941,7 +1048,7 @@ export const TurnMachine = setup({
         },
         massExtinction: {
           initial: "awaitingConfirmation",
-          entry: "stageMassExtinction",
+          entry: ["stageMassExtinction", { type: "setAutomaticPolicyDraw", params: "extinction" }],
           states: {
             awaitingConfirmation: {
               on: {
@@ -1036,6 +1143,7 @@ export const TurnMachine = setup({
               ({ context, event }) => TurnMachineGuards.notPlayedCard({ context }, event.card.uid),
               ({ context, event }) => TurnMachineGuards.ownsCard({ context }, event.card.uid),
               ({ context, event }) => TurnMachineGuards.notDisasterCard({ context }, event.card),
+              ({ context, event }) => TurnMachineGuards.notLitterCard({ context }, event.card),
             ]),
           },
           {
@@ -1089,11 +1197,18 @@ export const TurnMachine = setup({
         "user.click.token": {
           target: "#turn.usingAbility.cancel",
         },
+        "user.click.player.endTurn": [{ target: "endingTurn" }],
+        "user.click.ability.cancel": [{ target: "#turn.usingAbility.cancel" }],
       },
       states: {
         idle: {
           after: {
             animationDuration: [
+              {
+                target: "#turn.stagingEvent.abilityUseBlocked",
+                guard: "isAbilityUseBlocked",
+                actions: ["cancelAbility", "stageAbilityUseBlocked"],
+              },
               { target: "plussing", guard: "isPlusAbility" },
               { target: "moving", guard: "isMoveAbility" },
               { target: "refreshing", guard: "isRefreshAbility" },
@@ -1118,6 +1233,7 @@ export const TurnMachine = setup({
         },
         moving: {
           initial: "pickingTarget",
+          entry: { type: "setCommandBar", params: i18n.t("abilities.commandBar.move.pickCard") },
           states: {
             pickingTarget: {
               on: {
@@ -1136,49 +1252,74 @@ export const TurnMachine = setup({
               },
             },
             pickingDestination: {
-              on: {
-                "user.click.player.deck": {
-                  target: "#turn.usingAbility.done",
-                  guard: "isSinglePlayer",
-                  actions: {
-                    type: "cardToPlayerSupply",
-                    params: ({ context }) => context.turn.currentAbility!.targetCard!,
+              initial: "settingCommandBar",
+              states: {
+                settingCommandBar: {
+                  always: [
+                    {
+                      target: "waitingForAction",
+                      actions: {
+                        type: "setCommandBar",
+                        params: i18n.t("abilities.commandBar.move.pickDestinationSinglePlayer"),
+                      },
+                      guard: "isSinglePlayer",
+                    },
+                    {
+                      target: "waitingForAction",
+                      actions: {
+                        type: "setCommandBar",
+                        params: i18n.t("abilities.commandBar.move.pickDestination"),
+                      },
+                    },
+                  ],
+                },
+                waitingForAction: {
+                  on: {
+                    "user.click.player.deck": {
+                      target: "#turn.usingAbility.done",
+                      guard: "isSinglePlayer",
+                      actions: {
+                        type: "cardToPlayerSupply",
+                        params: ({ context }) => context.turn.currentAbility!.targetCard!,
+                      },
+                    },
+                    "user.click.player.hand.card": {
+                      target: "#turn.usingAbility.done",
+                      guard: not(({ context, event }) => TurnMachineGuards.cardFromRow({ context }, event.card)),
+                      actions: { type: "cardToPlayerHand", params: ({ event }) => event.card },
+                    },
+                    "user.click.market.deck.animal": {
+                      target: "#turn.usingAbility.done",
+                      actions: { type: "cardToAnimalDeck" },
+                      guard: {
+                        type: "abilityTargetCardTypeIs",
+                        params: "animal",
+                      },
+                    },
+                    "user.click.market.deck.plant": {
+                      target: "#turn.usingAbility.done",
+                      actions: { type: "cardToPlantDeck" },
+                      guard: {
+                        type: "abilityTargetCardTypeIs",
+                        params: "plant",
+                      },
+                    },
+                    "user.click.market.deck.element": {
+                      target: "#turn.usingAbility.done",
+                      actions: { type: "cardToElementDeck" },
+                      guard: and([
+                        ({ context }) => TurnMachineGuards.abilityTargetCardTypeIs({ context }, "element"),
+                        ({ context, event }) => TurnMachineGuards.abilityTargetCardNameIs({ context }, event.name),
+                      ]),
+                    },
                   },
-                },
-                "user.click.player.hand.card": {
-                  target: "#turn.usingAbility.done",
-                  guard: not(({ context, event }) => TurnMachineGuards.cardFromRow({ context }, event.card)),
-                  actions: { type: "cardToPlayerHand", params: ({ event }) => event.card },
-                },
-                "user.click.market.deck.animal": {
-                  target: "#turn.usingAbility.done",
-                  actions: { type: "cardToAnimalDeck" },
-                  guard: {
-                    type: "abilityTargetCardTypeIs",
-                    params: "animal",
-                  },
-                },
-                "user.click.market.deck.plant": {
-                  target: "#turn.usingAbility.done",
-                  actions: { type: "cardToPlantDeck" },
-                  guard: {
-                    type: "abilityTargetCardTypeIs",
-                    params: "plant",
-                  },
-                },
-                "user.click.market.deck.element": {
-                  target: "#turn.usingAbility.done",
-                  actions: { type: "cardToElementDeck" },
-                  guard: and([
-                    ({ context }) => TurnMachineGuards.abilityTargetCardTypeIs({ context }, "element"),
-                    ({ context, event }) => TurnMachineGuards.abilityTargetCardNameIs({ context }, event.name),
-                  ]),
                 },
               },
             },
           },
         },
         refreshing: {
+          entry: { type: "setCommandBar", params: i18n.t("abilities.commandBar.refresh.pickMarket") },
           on: {
             "user.click.market.deck.animal": {
               target: "#turn.usingAbility.done",
@@ -1192,14 +1333,14 @@ export const TurnMachine = setup({
         },
         usingSpecial: {
           after: {
-            animationDuration: "#turn.stagingEvent.drawingSpecial",
+            animationDuration: "#turn.stagingEvent.drawingPolicy",
           },
         },
         done: {
           after: {
             animationDuration: {
               target: "#turn",
-              actions: "markAbilityAsUsed",
+              actions: ["markAbilityAsUsed", { type: "setCommandBar", params: undefined }],
             },
           },
         },
@@ -1207,7 +1348,7 @@ export const TurnMachine = setup({
           after: {
             animationDuration: {
               target: "#turn",
-              actions: "cancelAbility",
+              actions: ["cancelAbility", { type: "setCommandBar", params: undefined }],
             },
           },
         },

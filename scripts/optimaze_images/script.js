@@ -2,8 +2,26 @@ import { promises as fs } from "fs";
 import path from "path";
 import sharp from "sharp";
 import { ensureDir, remove } from "fs-extra";
+import { execSync } from "child_process";
 
 const imgRegexp = /\.(webp|png|jpg|jpeg|svg)$/i;
+const bgImageRegexp = /lobby_bg\.|game_bg\.|stage_/i;
+
+const FILE_QUALITY = {
+  [bgImageRegexp]: {
+    quality: 80,
+    effort: 9,
+  },
+  default: {
+    quality: 65,
+    effort: 6,
+  },
+};
+
+const FILE_RESOLUTION = {
+  [bgImageRegexp]: [2400],
+  default: [600],
+};
 
 async function getDirs(inputDir) {
   const entries = await fs.readdir(inputDir, { withFileTypes: true });
@@ -24,6 +42,30 @@ async function getImageFiles(dir) {
   return imageFiles;
 }
 
+async function processImage(inputPath, outputPath) {
+  let processor = sharp(inputPath).toColorspace("srgb");
+
+  // Find matching configuration or use default
+  const qualityConfig =
+    Object.entries(FILE_QUALITY).find(
+      ([pattern]) => pattern === "default" || new RegExp(pattern).test(inputPath),
+    )?.[1] || FILE_QUALITY.default;
+
+  const [maxSize] =
+    Object.entries(FILE_RESOLUTION).find(
+      ([pattern]) => pattern === "default" || new RegExp(pattern).test(inputPath),
+    )?.[1] || FILE_RESOLUTION.default;
+
+  processor = processor.resize(maxSize, maxSize, {
+    fit: "inside",
+    withoutEnlargement: true,
+  });
+
+  processor = processor.avif(qualityConfig);
+
+  await processor.toFile(outputPath);
+}
+
 async function processDir(inputDir, outputDir, subDir) {
   const inputSubDir = path.join(inputDir, subDir);
   const outputSubDir = path.join(outputDir, subDir);
@@ -38,8 +80,8 @@ async function processDir(inputDir, outputDir, subDir) {
   for (const filePath of imageFiles) {
     const relativePath = path.relative(inputSubDir, filePath);
     const outputFilePath = path.join(outputSubDir, relativePath).replace(imgRegexp, ".avif");
-    await sharp(filePath).toColorspace("srgb").toFormat("avif").toFile(outputFilePath);
 
+    await processImage(filePath, outputFilePath);
     manifest.push(path.basename(outputFilePath));
 
     console.log(`Converted: ${filePath} → ${outputFilePath}`);
@@ -48,6 +90,14 @@ async function processDir(inputDir, outputDir, subDir) {
   const manifestPath = path.join(outputSubDir, "manifest.json");
   await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
   console.log(`Manifest written to: ${manifestPath}`);
+
+  // Run Prettier on the manifest file
+  try {
+    execSync(`npx prettier --write ${manifestPath}`);
+    console.log(`Prettier formatting applied to: ${manifestPath}`);
+  } catch (error) {
+    console.warn(`Warning: Failed to run Prettier on manifest file: ${error.message}`);
+  }
 }
 
 const inputDirectory = process.argv[2];

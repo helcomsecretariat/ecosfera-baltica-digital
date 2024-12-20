@@ -9,7 +9,7 @@ import {
   DeckConfig,
   PolicyConfig,
 } from "@/decks/schema";
-import { ExpansionPackStageEvent } from "./machines/expansion";
+import type { ExpansionPackPolicyCard, ExpansionPackStageEvent, PolicyCardName } from "./machines/expansion";
 
 // google "bradned types in TS" for explanation
 export type UID<T extends string> = `${T}-${string}` & { readonly __brand: `${T}UID` };
@@ -49,6 +49,9 @@ export function isExtinctionUID(uid: string): uid is ExtinctionUID {
 export function isPlayerUID(uid: string): uid is PlayerUID {
   return uid.startsWith("player-");
 }
+export function isPolicyUID(uid: string): uid is PolicyUID {
+  return uid.startsWith("policy-");
+}
 
 export interface GameState {
   turn: {
@@ -65,10 +68,14 @@ export interface GameState {
     boughtAnimal: boolean;
     boughtPlant: boolean;
     unlockedHabitat: boolean;
+    unlockedHabitats: HabitatUID[];
     uidsUsedForAbilityRefresh: AnimalUID[];
     refreshedAbilityUids: AbilityUID[];
     automaticEventChecks?: string[];
     phase: "draw" | "end" | "action";
+    automaticPolicyDraw?: {
+      cause: "habitat" | "extinction";
+    };
   };
   players: PlayerState[];
   plantMarket: Market<PlantCard>;
@@ -90,13 +97,12 @@ export interface GameState {
   };
   config: GameConfig;
   deck: DeckConfig;
-  statistics: GameStateStatistics;
+  blockers: {
+    ability: GameFeatureBlocker;
+    turn: GameFeatureBlocker;
+    policyCancellation: GameFeatureBlocker;
+  };
 }
-
-export type GameStateStatistics = {
-  animalsBought: number;
-  plantsBought: number;
-};
 
 export type StageEventType =
   | "disaster"
@@ -108,6 +114,8 @@ export type StageEventType =
   | "cardBuy"
   | "gameLoss"
   | "gameWin"
+  | "abilityUseBlocked"
+  | "skipTurn"
   | ExpansionPackStageEvent;
 
 export interface GameConfig {
@@ -136,7 +144,7 @@ export interface AbilityTile extends GamePieceBase {
   name: AbilityName;
 }
 
-export type HabitatName = "coast" | "ice" | "rivers" | "pelagic" | "mud" | "rock" | "baltic";
+export type HabitatName = "coast" | "ice" | "rivers" | "pelagic" | "mud" | "rock";
 export interface HabitatTile extends GamePieceBase {
   type: "habitat";
   isAcquired: boolean;
@@ -204,6 +212,7 @@ export interface PolicyMarket extends Market<PolicyCard> {
   table: PolicyCard[];
   acquired: PolicyCard[];
   funding: PolicyCard[];
+  exhausted: PolicyCard[];
   active: PolicyCard[];
 }
 
@@ -219,17 +228,28 @@ export interface AnimalCard extends GamePieceBase {
 }
 
 export type PolicyEffect = "positive" | "negative" | "dual" | "implementation";
-export type PolicyTheme = "hazard" | "eutro" | "climateChange" | "extractionOfSpecies" | "restore" | "noise" | "N/A";
+export type PolicyTheme =
+  | "hazard"
+  | "eutro"
+  | "climateChange"
+  | "extractionOfSpecies"
+  | "restore"
+  | "noise"
+  | "fishing"
+  | "litter"
+  | "msp"
+  | "protect"
+  | "N/A";
 export type PolicyUsage = "single" | "permanent";
 
-export interface PolicyCard extends GamePieceBase {
+export interface BasePolicyCard extends GamePieceBase {
   type: "policy";
-  uid: PolicyUID;
-
   effect: PolicyEffect;
   theme: PolicyTheme;
   usage: PolicyUsage;
 }
+
+export type PolicyCard = ExpansionPackPolicyCard | (BasePolicyCard & { name: PolicyCardName });
 
 export interface PlantCard extends GamePieceBase {
   type: "plant";
@@ -305,3 +325,8 @@ export interface UiState {
   cardPositions: GamePieceAppearances;
   deckPositions: GamePieceAppearances;
 }
+
+type GameFeatureBlocker = {
+  isBlocked: boolean;
+  reasons: GamePiece["uid"][];
+};

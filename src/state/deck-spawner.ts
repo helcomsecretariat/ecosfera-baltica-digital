@@ -77,9 +77,25 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
       boughtAnimal: false,
       boughtPlant: false,
       unlockedHabitat: false,
+      unlockedHabitats: [],
       uidsUsedForAbilityRefresh: [],
       refreshedAbilityUids: [],
       phase: "action",
+      automaticPolicyDraw: undefined,
+    },
+    blockers: {
+      ability: {
+        isBlocked: false,
+        reasons: [],
+      },
+      turn: {
+        isBlocked: false,
+        reasons: [],
+      },
+      policyCancellation: {
+        isBlocked: false,
+        reasons: [],
+      },
     },
     players,
     plantMarket: prepareMarket(plants, 4, seed),
@@ -88,13 +104,9 @@ export function spawnDeck(deckConfig: DeckConfig, gameConfig: GameConfig): GameS
     extinctMarket: prepareMarket(extinctions, 0, seed),
     habitatMarket: prepareMarket(habitats, 0, seed),
     disasterMarket: prepareMarket(disasters, 0, seed),
-    policyMarket: { ...prepareMarket(policies, 0, seed), acquired: [], funding: [], active: [] },
+    policyMarket: { ...prepareMarket(policies, 0, seed), acquired: [], funding: [], active: [], exhausted: [] },
     stage: undefined,
     config: gameConfig,
     deck: deckConfig,
-    statistics: {
-      animalsBought: 0,
-      plantsBought: 0,
-    },
   };
 }

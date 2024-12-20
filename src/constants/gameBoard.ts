@@ -10,7 +10,7 @@ export const cameraZoom = upperXBoundary * 1.4;
 
 // Market and player cards
 export const cardXOffset = cardWidth + 1;
-export const policyCardXOffset = policyCardWidth + 1;
+export const policyCardXOffset = policyCardWidth + 5;
 export const overlappingCardXOffset = cardXOffset / 3;
 export const cardYOffset = cardHeight + 1;
 export const marketYStart = cardYOffset;
@@ -26,32 +26,32 @@ export const habitatTileYStart = marketYStart - cardHeight * 1.4;
 export const hexagonTileXOffset = 10;
 export const hexagonTileYOffset = 11;
 
-export const tileGridTransforms = (baseX: number, baseY: number): GamePieceTransform[] => {
+export const tileGridTransforms = (baseX: number, baseY: number, baseZ: number = 0): GamePieceTransform[] => {
   const spacingMultiplier = 1.4;
   const rotation = { x: -Math.PI / 2, y: Math.PI / 2, z: 0 };
   return [
-    { position: { x: baseX, y: baseY, z: 0 }, rotation },
+    { position: { x: baseX, y: baseY, z: baseZ }, rotation },
     {
-      position: { x: baseX - tileSize * spacingMultiplier, y: baseY - tileSize * 0.6 * spacingMultiplier, z: 0 },
+      position: { x: baseX - tileSize * spacingMultiplier, y: baseY - tileSize * 0.6 * spacingMultiplier, z: baseZ },
       rotation,
     },
     {
-      position: { x: baseX + tileSize * spacingMultiplier, y: baseY - tileSize * 0.6 * spacingMultiplier, z: 0 },
+      position: { x: baseX + tileSize * spacingMultiplier, y: baseY - tileSize * 0.6 * spacingMultiplier, z: baseZ },
       rotation,
     },
     {
-      position: { x: baseX - tileSize * spacingMultiplier, y: baseY - tileSize * 1.76 * spacingMultiplier, z: 0 },
+      position: { x: baseX - tileSize * spacingMultiplier, y: baseY - tileSize * 1.76 * spacingMultiplier, z: baseZ },
       rotation,
     },
     {
-      position: { x: baseX, y: baseY - tileSize * 2.35 * spacingMultiplier, z: 0 },
+      position: { x: baseX, y: baseY - tileSize * 2.35 * spacingMultiplier, z: baseZ },
       rotation,
     },
     {
-      position: { x: baseX + tileSize * spacingMultiplier, y: baseY - tileSize * 1.76 * spacingMultiplier, z: 0 },
+      position: { x: baseX + tileSize * spacingMultiplier, y: baseY - tileSize * 1.76 * spacingMultiplier, z: baseZ },
       rotation,
     },
-    { position: { x: baseX, y: baseY - tileSize * 1.65, z: 0 }, rotation },
+    { position: { x: baseX, y: baseY - tileSize * 1.65, z: baseZ }, rotation },
   ];
 };
 
@@ -64,7 +64,6 @@ export const habitatTransforms = (baseX: number, baseY: number): { [K in Habitat
     mud: transforms[3],
     rivers: transforms[4],
     coast: transforms[5],
-    baltic: transforms[6],
   };
 };
 

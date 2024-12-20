@@ -73,8 +73,7 @@
     "pelagic": {},
     "rivers": {},
     "mud": {},
-    "rock": {},
-    "baltic": {}
+    "rock": {}
   },
   "extinctions": {
     "extinction": {
@@ -170,6 +169,41 @@
       "effect": "positive",
       "theme": "eutro",
       "usage": "permanent"
+    },
+    "Migratory barrier removal": {
+      "effect": "positive",
+      "theme": "restore",
+      "usage": "single"
+    },
+    "Fishing gear regulation": {
+      "effect": "positive",
+      "theme": "fishing",
+      "usage": "single"
+    },
+    "Recycling and waste disposal": {
+      "effect": "positive",
+      "theme": "litter",
+      "usage": "single"
+    },
+    "Green energy": {
+      "effect": "dual",
+      "theme": "msp",
+      "usage": "single"
+    },
+    "Underwater noise": {
+      "effect": "negative",
+      "theme": "noise",
+      "usage": "single"
+    },
+    "Beach litter": {
+      "effect": "negative",
+      "theme": "litter",
+      "usage": "single"
+    },
+    "Strict protection": {
+      "effect": "positive",
+      "theme": "protect",
+      "usage": "permanent"
     }
   },
   "plants": {
@@ -239,7 +273,7 @@
       "abilities": ["refresh"],
       "flora_type": "benthic microalgae"
     },
-    "Pilayella littoralis": {
+    "Pylaiella littoralis": {
       "elements": ["sun", "nutrients", "nutrients", "temperature"],
       "habitats": ["ice", "rock"],
       "abilities": ["plus"],

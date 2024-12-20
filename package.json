@@ -7,7 +7,7 @@
     "preinstall": "node -v | grep '^v20\\.' || { echo '\\033[1;31mPlease use Node.js version 20.x\\033[0m'; exit 1; }",
     "dev": "npx check-dependencies --scope-list devDependencies && vite",
     "build": "tsc -b && vite build",
-    "checks": "npm-run-all -p lint typecheck test:once format-check",
+    "checks": "npm-run-all -p lint typecheck format-check test:once",
     "test": "vitest",
     "test:once": "vitest run",
     "lint": "eslint .",

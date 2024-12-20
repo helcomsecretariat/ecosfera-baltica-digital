@@ -2,69 +2,85 @@ import { CardOrTileUID, GameState, HabitatUID, isHabitatUID } from "../types";
 import { find, first, last } from "lodash";
 import { TurnMachineGuards } from "./guards";
 import { expansionStageEventText } from "./expansion";
+import i18n from "@/i18n";
 
-export const MachineSelectors = {
-  selectPlayer: ({ context }: { context: GameState }) => find(context.players, { uid: context.turn.player })!,
+export const selectPlayer = ({ context }: { context: GameState }) =>
+  find(context.players, { uid: context.turn.player })!;
 
-  stageEventText: ({ context }: { context: GameState }) => {
-    const player = MachineSelectors.selectPlayer({ context });
-    const canRefresh = TurnMachineGuards.canRefreshAbility({ context });
+export const selectStageEventText = ({ context }: { context: GameState }) => {
+  const player = selectPlayer({ context });
+  const canRefresh = TurnMachineGuards.canRefreshAbility({ context });
 
-    const getHabitatUnlockText = (uids: CardOrTileUID[]) => {
-      const unlockedHabitats = uids
-        .filter((uid) => isHabitatUID(uid))
-        .map((uid: HabitatUID) => find(context.habitatMarket.deck, { uid })?.name);
+  const getHabitatUnlockText = (uids: CardOrTileUID[]) => {
+    const unlockedHabitats = uids
+      .filter((uid) => isHabitatUID(uid))
+      .map((uid: HabitatUID) => find(context.habitatMarket.deck, { uid })?.name);
 
-      const habitatCount = unlockedHabitats.length;
+    const habitatCount = unlockedHabitats.length;
 
-      if (habitatCount === 0) return "";
-      const habitatText =
-        habitatCount === 1
-          ? unlockedHabitats[0]
-          : `${unlockedHabitats.slice(0, -1).join(", ")} and ${unlockedHabitats[habitatCount - 1]}`;
+    if (habitatCount === 0) return "";
+    const habitatText =
+      habitatCount === 1
+        ? unlockedHabitats[0]
+        : `${unlockedHabitats.slice(0, -1).join(", ")} and ${unlockedHabitats[habitatCount - 1]}`;
 
-      return `Congratulations!\nYou earned the ${habitatText} ${habitatCount > 1 ? "habitats" : "habitat"}`;
-    };
+    return (
+      i18n.t("stageEventText.congratulations") +
+      "\n" +
+      i18n.t("stageEventText.earnedHabitat", { habitatText, count: habitatCount })
+    );
+  };
 
-    const getCardBoughtText = (uid: CardOrTileUID | undefined) => {
-      if (!uid) {
-        return "";
-      }
+  const getCardBoughtText = (uid: CardOrTileUID | undefined) => {
+    if (!uid) {
+      return "";
+    }
 
-      const cardName = find(player.hand, { uid })?.name;
+    const cardName = find(player.hand, { uid })?.name;
 
-      return `Congratulations!\nYou bought a ${cardName}`;
-    };
+    return i18n.t("stageEventText.congratulations") + "\n" + i18n.t("stageEventText.boughtCard", { cardName });
+  };
 
-    const lastRefreshedAbility = find(player.abilities, { uid: last(context.turn.refreshedAbilityUids) });
-    const eventText = {
-      disaster: "You did not buy anything.\nYou get a disaster card.",
-      extinction: "Too many disasters causes an extinction.\nYou get an extinction tile.",
-      massExtinction: "Too many disasters causes a mass extinction.\nYou get 3 extinction tiles.",
-      elementalDisaster: "Too many elements causes a disaster.\nYou get a disaster card.",
-      abilityRefresh: !canRefresh
-        ? `Your ${lastRefreshedAbility?.name ?? ""} ability has been refreshed!`
-        : "You can now refresh one of your used abilities.",
-      habitatUnlock: getHabitatUnlockText(context.stage?.effect ?? []),
-      cardBuy: getCardBoughtText(first(context.stage?.effect ?? [])),
-      gameWin: "Congratulations!\nYou saved the Baltic ecosystem!",
-      gameLoss: "Game Over!\nYou could not save the Baltic Ecosystem.",
-      ...expansionStageEventText,
-      default: "",
-    };
+  const lastRefreshedAbility = find(player.abilities, { uid: last(context.turn.refreshedAbilityUids) });
+  const eventText = {
+    disaster: i18n.t("stageEventText.disaster"),
+    extinction: i18n.t("stageEventText.extinction"),
+    massExtinction: i18n.t("stageEventText.massExtinction"),
+    elementalDisaster: i18n.t("stageEventText.elementalDisaster"),
+    abilityRefresh: !canRefresh
+      ? i18n.t("stageEventText.abilityRefreshed", { abilityName: lastRefreshedAbility?.name ?? "" })
+      : i18n.t("stageEventText.canRefreshAbility"),
+    habitatUnlock: getHabitatUnlockText(context.stage?.effect ?? []),
+    cardBuy: getCardBoughtText(first(context.stage?.effect ?? [])),
+    gameWin: i18n.t("stageEventText.gameWin"),
+    gameLoss: i18n.t("stageEventText.gameLoss"),
+    abilityUseBlocked: i18n.t("stageEventText.abilityUseBlocked"),
+    skipTurn: i18n.t("stageEventText.skipTurn"),
+    ...expansionStageEventText,
 
-    return eventText[context.stage?.eventType ?? "default"];
-  },
+    default: "",
+  };
 
-  isPositiveStageEvent: ({ context }: { context: GameState }) => context.stage?.outcome === "positive",
-
-  usedAbilities: ({ context }: { context: GameState }) => {
-    return context.turn.usedAbilities;
-  },
-
-  currentAbility: ({ context }: { context: GameState }) => {
-    return context.turn.currentAbility;
-  },
-
-  exhaustedCards: ({ context: { turn } }: { context: GameState }) => turn.exhaustedCards,
+  return eventText[context.stage?.eventType ?? "default"];
 };
+
+export const selectIsPositiveStageEvent = ({ context }: { context: GameState }) =>
+  context.stage?.outcome === "positive";
+
+export const selectUsedAbilities = ({ context }: { context: GameState }) => context.turn.usedAbilities;
+
+export const selectCurrentAbility = ({ context }: { context: GameState }) => context.turn.currentAbility;
+
+export const selectExhaustedCards = ({ context: { turn } }: { context: GameState }) => turn.exhaustedCards;
+
+export const selectAllPlayerCards = ({ context: { players } }: { context: GameState }) =>
+  players.flatMap((player) => [player.hand, player.deck, player.discard].flatMap((card) => card));
+
+export const selectNumberOfAnimalsBought = ({ context }: { context: GameState }) =>
+  selectAllPlayerCards({ context }).filter((card) => card.type === "animal").length;
+
+export const selectNumberOfPlantsBought = ({ context }: { context: GameState }) =>
+  selectAllPlayerCards({ context }).filter((card) => card.type === "plant").length;
+
+export const selectNumberOfHabitatsUnlocked = ({ context: { habitatMarket } }: { context: GameState }) =>
+  habitatMarket.deck.filter((habitat) => habitat.isAcquired).length;

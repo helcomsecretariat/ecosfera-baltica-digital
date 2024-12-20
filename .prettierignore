@@ -1,0 +1,25 @@
+# Binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.webp
+*.avif
+*.svg
+
+# Build output
+dist
+build
+
+# Dependencies
+node_modules
+
+# Package files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Other
+.DS_Store 
+src/@types/locale.d.ts

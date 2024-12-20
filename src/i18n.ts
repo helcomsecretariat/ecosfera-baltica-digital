@@ -1,13 +1,59 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
+import Backend from "i18next-http-backend";
+
+const getBaseLanguage = (language: string) => language.split("-")[0];
+
+const loadLocale = async (language: string) => {
+  try {
+    // Try loading the exact language variant first
+    const translations = await import(`@/locales/${language}/translation.json`);
+    return translations.default;
+  } catch {
+    // If the specific variant fails and it's a variant (e.g., en-GB), try the base language (e.g., en)
+    if (language.includes("-")) {
+      const baseLanguage = getBaseLanguage(language);
+      try {
+        const translations = await import(`@/locales/${baseLanguage}/translation.json`);
+        console.info(`Using ${baseLanguage} translations for ${language}`);
+        return translations.default;
+      } catch {
+        console.info(`Neither ${language} nor ${baseLanguage} translations found, using fallback`);
+        return null;
+      }
+    }
+    console.info(`Translation file for ${language} not found, using fallback`);
+    return null;
+  }
+};
 
 i18n
+  .use(Backend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: {},
     fallbackLng: "en",
+    backend: {
+      loadPath: "{{lng}}",
+      request: async (
+        _options: unknown,
+        url: string,
+        _payload: unknown,
+        callback: (error: unknown, data: unknown) => void,
+      ) => {
+        try {
+          const lng = url;
+          const data = await loadLocale(lng);
+          callback(null, {
+            status: 200,
+            data,
+          });
+        } catch (e) {
+          callback(e, null);
+        }
+      },
+    },
     detection: {
       order: ["navigator"],
       caches: ["localStorage"],
@@ -16,28 +62,5 @@ i18n
       escapeValue: false,
     },
   });
-
-const loadLocale = async (language: string) => {
-  try {
-    const translations = await import(`@/locales/${language}/translation.json`);
-    i18n.addResourceBundle(language, "translation", translations.default);
-  } catch (error) {
-    console.error(`Failed to load ${language} translations:`, error);
-  }
-};
-
-// Load initial language
-const currentLang = i18n.language || "en";
-loadLocale(currentLang);
-
-// Load fallback language if different from current
-if (currentLang !== "en") {
-  loadLocale("en");
-}
-
-// Handle language changes
-i18n.on("languageChanged", (lng) => {
-  loadLocale(lng);
-});
 
 export default i18n;

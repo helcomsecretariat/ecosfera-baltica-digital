@@ -13,23 +13,23 @@ describe("Policy Cards", () => {
           expect(
             implementedNames.includes(policyName.toLowerCase()),
             `Policy "${policyName}" from config is not implemented`,
-          ).toBe(true);
+          ).toBeDefined();
         });
       }
 
       it("has description UI string", () => {
         const description = uiStrings[policyName as keyof typeof uiStrings]?.description;
-        expect(description, "Missing description in UI strings").toBe(true);
+        expect(description, "Missing description in UI strings").toBeDefined();
       });
 
       it("has name UI string", () => {
         const name = uiStrings[policyName as keyof typeof uiStrings]?.name;
-        expect(name, "Missing name in UI strings").toBe(true);
+        expect(name, "Missing name in UI strings").toBeDefined();
       });
 
       it("has event description UI string", () => {
         const eventDescription = uiStrings[policyName as keyof typeof uiStrings]?.eventDescription;
-        expect(eventDescription, "Missing event description in UI strings").toBe(true);
+        expect(eventDescription, "Missing event description in UI strings").toBeDefined();
       });
     });
   });

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { generateRandomName, generateRandomString } from "@/lib/utils";
+import { generateRandomName, generateRandomString, cn } from "@/lib/utils";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover";
 import { InfoIcon } from "@/components/ui/icons";
@@ -19,7 +19,7 @@ interface LobbyScreenProps {
 }
 
 const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n, ready } = useTranslation();
   const searchParams = new URLSearchParams(window.location.search);
   const urlSeed = searchParams.get("seed") ?? generateRandomString(8);
 
@@ -32,6 +32,17 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
   const seedInputRef = useRef<HTMLInputElement>(null);
 
   const existingNames = new Set<string>();
+
+  const [isChangingLang, setIsChangingLang] = useState(false);
+
+  const handleLanguageChange = useCallback(
+    async (langCode: string) => {
+      setIsChangingLang(true);
+      await i18n.changeLanguage(langCode);
+      setIsChangingLang(false);
+    },
+    [i18n],
+  );
 
   useEffect(() => {
     // Generate unique player names when the number of players changes.
@@ -88,8 +99,12 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
               <Button
                 key={lang.code}
                 variant={i18n.language.startsWith(lang.code) ? "secondary" : "tertiary"}
-                onClick={() => i18n.changeLanguage(lang.code)}
-                className="flex min-w-[80px] items-center justify-center gap-2"
+                onClick={() => handleLanguageChange(lang.code)}
+                disabled={isChangingLang || !ready}
+                className={cn(
+                  "flex min-w-[80px] items-center justify-center gap-2",
+                  isChangingLang && "animate-pulse-opacity [&]:cursor-wait",
+                )}
               >
                 <span className="text-lg">{lang.flag}</span>
                 {lang.name}

@@ -74,10 +74,15 @@ export default {
             height: "0",
           },
         },
+        "pulse-opacity": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-opacity": "pulse-opacity 1.5s ease-in-out infinite",
       },
     },
   },

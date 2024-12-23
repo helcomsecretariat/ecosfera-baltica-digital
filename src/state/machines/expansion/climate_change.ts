@@ -4,7 +4,7 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { filter, map, without } from "lodash";
-import i18n from "@/i18n";
+import i18n, { TranslationKey } from "@/i18n";
 
 export const cardPrefix = "climateChange";
 export const cardName = "Climate change";
@@ -18,8 +18,9 @@ export const uiStrings = {
   },
 } as const;
 
-export const stageEventText = {
-  policy_climateChange: uiStrings[cardName].stageEventText,
+export type StageEvent = "policy_climateChange";
+export const stageEventTextKeys: Record<StageEvent, TranslationKey> = {
+  policy_climateChange: "deck.policies.climateChange.stageEventText",
 };
 
 export const actions = {

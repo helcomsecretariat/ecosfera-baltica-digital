@@ -5,7 +5,7 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { and } from "xstate";
-import i18n from "@/i18n";
+import i18n, { TranslationKey } from "@/i18n";
 import * as Shared from "./shared";
 
 export const cardPrefix = "hazardousSubstanceRegulation";
@@ -13,11 +13,13 @@ export const cardName = "Hazardous substance regulation";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.hazardousSubstanceRegulation.name"),
-    description: i18n.t("deck.policies.hazardousSubstanceRegulation.description"),
-    eventDescription: i18n.t("deck.policies.hazardousSubstanceRegulation.eventDescription"),
-  },
-};
+    name: "deck.policies.hazardousSubstanceRegulation.name" as const,
+    description: "deck.policies.hazardousSubstanceRegulation.description" as const,
+    eventDescription: "deck.policies.hazardousSubstanceRegulation.eventDescription" as const,
+    commandBarPickProducer: "deck.policies.hazardousSubstanceRegulation.pickProducerCommandBarText" as const,
+    commandBarPickConsumer: "deck.policies.hazardousSubstanceRegulation.pickAnimalCommandBarText" as const,
+  } as Record<string, TranslationKey>,
+} as const;
 
 const internalContext: { target: PlantCard | null; destination: AnimalCard | null } = {
   target: null,
@@ -28,7 +30,7 @@ export const actions = {
   [`${cardPrefix}Init`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
       draft.commandBar = {
-        text: i18n.t("deck.policies.hazardousSubstanceRegulation.pickProducerCommandBarText"),
+        text: i18n.t(uiStrings[cardName].commandBarPickProducer),
       };
     }),
   ),
@@ -36,7 +38,7 @@ export const actions = {
     produce(context, (draft) => {
       internalContext.target = card;
       draft.commandBar = {
-        text: i18n.t("deck.policies.hazardousSubstanceRegulation.pickAnimalCommandBarText"),
+        text: i18n.t(uiStrings[cardName].commandBarPickConsumer),
       };
     }),
   ),

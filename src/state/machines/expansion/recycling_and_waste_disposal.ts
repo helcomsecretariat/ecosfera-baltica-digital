@@ -4,7 +4,7 @@ import { concat, find, without } from "lodash";
 import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
-import i18n from "@/i18n";
+import i18n, { TranslationKey } from "@/i18n";
 import { and } from "xstate";
 import { shuffle } from "@/state/utils";
 import * as Shared from "./shared";
@@ -14,11 +14,12 @@ export const cardName = "Recycling and waste disposal";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.recyclingAndWasteDisposal.name"),
-    description: i18n.t("deck.policies.recyclingAndWasteDisposal.description"),
-    eventDescription: i18n.t("deck.policies.recyclingAndWasteDisposal.eventDescription"),
-  },
-};
+    name: "deck.policies.recyclingAndWasteDisposal.name" as const,
+    description: "deck.policies.recyclingAndWasteDisposal.description" as const,
+    eventDescription: "deck.policies.recyclingAndWasteDisposal.eventDescription" as const,
+    commandBar: "deck.policies.recyclingAndWasteDisposal.commandBarText" as const,
+  } as Record<string, TranslationKey>,
+} as const;
 
 const internalContext: { target: DisasterCard | null; numberOfCardsTransferred: number } = {
   numberOfCardsTransferred: 0,
@@ -32,7 +33,7 @@ export const actions = {
   [`${cardPrefix}InitCommandBar`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
       draft.commandBar = {
-        text: i18n.t("deck.policies.recyclingAndWasteDisposal.commandBarText"),
+        text: i18n.t(uiStrings[cardName].commandBar),
       };
     }),
   ),

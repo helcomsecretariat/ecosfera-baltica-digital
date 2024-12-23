@@ -4,19 +4,19 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { concat, filter, find, without } from "lodash";
-import i18n from "@/i18n";
 import * as StrictProtection from "./strict_protection";
 import * as Shared from "./shared";
+import { TranslationKey } from "@/i18n";
 
 export const cardPrefix = "oilSpill";
 export const cardName = "Oil spill";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.oilSpill.name"),
-    description: i18n.t("deck.policies.oilSpill.description"),
-    eventDescription: i18n.t("deck.policies.oilSpill.eventDescription"),
-  },
+    name: "deck.policies.oilSpill.name" as const,
+    description: "deck.policies.oilSpill.description" as const,
+    eventDescription: "deck.policies.oilSpill.eventDescription" as const,
+  } as Record<string, TranslationKey>,
 } as const;
 
 export const actions = {

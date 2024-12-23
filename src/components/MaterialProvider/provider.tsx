@@ -27,9 +27,7 @@ type MaterialContextType = {
 export const MaterialContext = createContext<MaterialContextType | undefined>(undefined);
 
 export const MaterialProvider = ({ isGlossy, children }: { isGlossy: boolean; children: ReactNode }) => {
-  const lightProps = isGlossy
-    ? ({ metalness: 0.8, roughness: 0.4, castShadow: true, recieveShadow: true } as Partial<MeshStandardMaterial>)
-    : {};
+  const lightProps = isGlossy ? ({ metalness: 0.8, roughness: 0.4 } as Partial<MeshStandardMaterial>) : {};
 
   const getRelevantMaterial = useMemo(
     () =>

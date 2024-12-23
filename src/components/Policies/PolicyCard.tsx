@@ -5,9 +5,9 @@ import GameElement from "../GameElement";
 import clsx from "clsx";
 import { Button } from "../ui/button";
 import { uiStrings } from "@/state/machines/expansion";
-import i18n from "@/i18n";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { InfoIcon } from "../ui/icons";
+import { useTranslation } from "react-i18next";
 
 const PolicyCard = ({
   card,
@@ -23,6 +23,7 @@ const PolicyCard = ({
   isOpaque?: boolean;
 }) => {
   const cardName = card.name as keyof typeof uiStrings;
+  const { t } = useTranslation();
 
   return (
     <GameElement width={cardWidth} height={cardHeight} key={card.uid} cardUID={card.uid}>
@@ -41,7 +42,7 @@ const PolicyCard = ({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-start justify-between">
-            <h1 className="font-bold">{uiStrings[cardName].name}</h1>
+            <h1 className="font-bold">{t(uiStrings[cardName].name)}</h1>
             <Popover>
               <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
                 <span className="ml-2 cursor-pointer rounded-full bg-white p-1 text-black">
@@ -55,15 +56,15 @@ const PolicyCard = ({
                 align="end"
                 className="w-72 max-w-xs rounded-md bg-white p-2 text-xs text-black shadow-md"
               >
-                <p>{uiStrings[cardName].eventDescription}</p>
+                <p>{t(uiStrings[cardName].eventDescription)}</p>
               </PopoverContent>
             </Popover>
           </div>
-          <p className="text-xs font-light">{uiStrings[cardName].description}</p>
+          <p className="text-xs font-light">{t(uiStrings[cardName].description)}</p>
           {!isActive && allowActivation && (
             <div className="flex w-full items-center justify-between space-x-2">
               <Button className="flex-1" onClick={onClick}>
-                {i18n.t("policies.activate")}
+                {t("policies.activate")}
               </Button>
             </div>
           )}

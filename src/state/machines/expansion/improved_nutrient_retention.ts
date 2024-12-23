@@ -4,7 +4,7 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { filter, findIndex } from "lodash";
-import i18n from "@/i18n";
+import { TranslationKey } from "@/i18n";
 import { and } from "xstate";
 
 const removeNutrientsFromPlantCards = (cards: PlantCard[]): PlantCard[] => {
@@ -25,10 +25,10 @@ export const cardName = "Improved nutrient retention in agriculture";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.improvedNutrientRetention.name"),
-    description: i18n.t("deck.policies.improvedNutrientRetention.description"),
-    eventDescription: i18n.t("deck.policies.improvedNutrientRetention.eventDescription"),
-  },
+    name: "deck.policies.improvedNutrientRetention.name" as const,
+    description: "deck.policies.improvedNutrientRetention.description" as const,
+    eventDescription: "deck.policies.improvedNutrientRetention.eventDescription" as const,
+  } as Record<string, TranslationKey>,
 } as const;
 
 export const actions = {

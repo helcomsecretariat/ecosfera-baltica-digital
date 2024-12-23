@@ -4,7 +4,7 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { find } from "lodash-es";
-import i18n from "@/i18n";
+import { TranslationKey } from "@/i18n";
 import { and, or } from "xstate";
 
 export const cardPrefix = "beachLitter";
@@ -12,10 +12,10 @@ export const cardName = "Beach litter" as const;
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.beachLitter.name"),
-    description: i18n.t("deck.policies.beachLitter.description"),
-    eventDescription: i18n.t("deck.policies.beachLitter.eventDescription"),
-  },
+    name: "deck.policies.beachLitter.name" as const,
+    description: "deck.policies.beachLitter.description" as const,
+    eventDescription: "deck.policies.beachLitter.eventDescription" as const,
+  } as Record<string, TranslationKey>,
 } as const;
 
 export interface CardType extends BasePolicyCard {

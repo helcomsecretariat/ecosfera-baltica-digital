@@ -4,7 +4,7 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { find } from "lodash";
-import i18n from "@/i18n";
+import { TranslationKey } from "@/i18n";
 import * as Shared from "./shared";
 
 export const cardPrefix = "bubbleCurtains";
@@ -12,10 +12,10 @@ export const cardName = "Bubble curtains";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.bubbleCurtains.name"),
-    description: i18n.t("deck.policies.bubbleCurtains.description"),
-    eventDescription: i18n.t("deck.policies.bubbleCurtains.eventDescription"),
-  },
+    name: "deck.policies.bubbleCurtains.name" as const,
+    description: "deck.policies.bubbleCurtains.description" as const,
+    eventDescription: "deck.policies.bubbleCurtains.eventDescription" as const,
+  } as Record<string, TranslationKey>,
 } as const;
 
 export const actions = {

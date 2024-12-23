@@ -1227,7 +1227,7 @@ export const TurnMachine = setup({
         },
         moving: {
           initial: "pickingTarget",
-          entry: { type: "setCommandBar", params: i18n.t("abilities.commandBar.move.pickCard") },
+          entry: { type: "setCommandBar", params: () => i18n.t("abilities.commandBar.move.pickCard") },
           states: {
             pickingTarget: {
               on: {
@@ -1254,7 +1254,7 @@ export const TurnMachine = setup({
                       target: "waitingForAction",
                       actions: {
                         type: "setCommandBar",
-                        params: i18n.t("abilities.commandBar.move.pickDestinationSinglePlayer"),
+                        params: () => i18n.t("abilities.commandBar.move.pickDestinationSinglePlayer"),
                       },
                       guard: "isSinglePlayer",
                     },
@@ -1262,7 +1262,7 @@ export const TurnMachine = setup({
                       target: "waitingForAction",
                       actions: {
                         type: "setCommandBar",
-                        params: i18n.t("abilities.commandBar.move.pickDestination"),
+                        params: () => i18n.t("abilities.commandBar.move.pickDestination"),
                       },
                     },
                   ],
@@ -1313,7 +1313,7 @@ export const TurnMachine = setup({
           },
         },
         refreshing: {
-          entry: { type: "setCommandBar", params: i18n.t("abilities.commandBar.refresh.pickMarket") },
+          entry: { type: "setCommandBar", params: () => i18n.t("abilities.commandBar.refresh.pickMarket") },
           on: {
             "user.click.market.deck.animal": {
               target: "#turn.usingAbility.done",

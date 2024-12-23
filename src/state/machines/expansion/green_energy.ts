@@ -5,7 +5,7 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { or } from "xstate";
-import i18n from "@/i18n";
+import i18n, { TranslationKey } from "@/i18n";
 import * as Shared from "./shared";
 
 export const cardPrefix = "greenEnergy";
@@ -13,17 +13,18 @@ export const cardName = "Green energy";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.greenEnergy.name"),
-    description: i18n.t("deck.policies.greenEnergy.description"),
-    eventDescription: i18n.t("deck.policies.greenEnergy.eventDescription"),
-  },
-};
+    name: "deck.policies.greenEnergy.name" as const,
+    description: "deck.policies.greenEnergy.description" as const,
+    eventDescription: "deck.policies.greenEnergy.eventDescription" as const,
+    commandBar: "deck.policies.greenEnergy.commandBarText" as const,
+  } as Record<string, TranslationKey>,
+} as const;
 
 export const actions = {
   [`${cardPrefix}InitCommandBar`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
       draft.commandBar = {
-        text: i18n.t("deck.policies.greenEnergy.commandBarText"),
+        text: i18n.t(uiStrings[cardName].commandBar),
       };
     }),
   ),

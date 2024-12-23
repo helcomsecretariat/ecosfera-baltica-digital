@@ -4,7 +4,7 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { concat, filter, find, without } from "lodash";
-import i18n from "@/i18n";
+import { TranslationKey } from "@/i18n";
 import * as Shared from "./shared";
 
 export const cardPrefix = "excessiveFertilizerUse";
@@ -12,10 +12,10 @@ export const cardName = "Excessive fertiliser use";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.excessiveFertilizerUse.name"),
-    description: i18n.t("deck.policies.excessiveFertilizerUse.description"),
-    eventDescription: i18n.t("deck.policies.excessiveFertilizerUse.eventDescription"),
-  },
+    name: "deck.policies.excessiveFertilizerUse.name" as const,
+    description: "deck.policies.excessiveFertilizerUse.description" as const,
+    eventDescription: "deck.policies.excessiveFertilizerUse.eventDescription" as const,
+  } as Record<string, TranslationKey>,
 } as const;
 
 export const actions = {

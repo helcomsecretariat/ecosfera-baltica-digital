@@ -1,4 +1,4 @@
-import i18n from "i18next";
+import i18n, { Resources } from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import Backend from "i18next-http-backend";
@@ -61,6 +61,35 @@ i18n
     interpolation: {
       escapeValue: false,
     },
+    debug: true,
   });
+
+export type TranslationKey = RecursiveKeyOf<Resources["translation"]>;
+
+export type TranslatedString = RecursiveValueOf<Resources["translation"]>;
+
+// Utility type to get all nested key paths
+type RecursiveKeyOf<T> = T extends object
+  ? {
+      [K in keyof T]: K extends string
+        ? T[K] extends string
+          ? K
+          : T[K] extends object
+            ? `${K}.${RecursiveKeyOf<T[K]>}`
+            : never
+        : never;
+    }[keyof T]
+  : never;
+
+// Utility type to get all string values
+type RecursiveValueOf<T> = T extends object
+  ? T extends { [key: string]: infer U }
+    ? U extends string
+      ? U
+      : RecursiveValueOf<U>
+    : never
+  : T extends string
+    ? T
+    : never;
 
 export default i18n;

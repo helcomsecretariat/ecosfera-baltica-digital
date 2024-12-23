@@ -2,7 +2,7 @@ import { BasePolicyCard, GameState } from "@/state/types";
 import { produce } from "immer";
 import { ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
-import i18n from "@/i18n";
+import i18n, { TranslationKey } from "@/i18n";
 import { assign } from "@/state/machines/assign";
 import { first } from "lodash";
 
@@ -14,12 +14,13 @@ export const uiStrings = {
     name: i18n.t("deck.policies.strictProtection.name"),
     description: i18n.t("deck.policies.strictProtection.description"),
     eventDescription: i18n.t("deck.policies.strictProtection.eventDescription"),
-    stageEventText: i18n.t("deck.policies.strictProtection.stageEventText"),
-    protectionActivationText: i18n.t("deck.policies.strictProtection.protectionActivationText"),
+    stageEventText: "deck.policies.strictProtection.stageEventText" as const,
+    protectionActivationText: "deck.policies.strictProtection.protectionActivationText" as const,
   },
 };
 
-export const stageEventText = {
+export type StageEvent = "policy_strictProtection" | "policy_allowProtectionActivation";
+export const stageEventTextKeys: Record<StageEvent, TranslationKey> = {
   policy_strictProtection: uiStrings[cardName].stageEventText,
   policy_allowProtectionActivation: uiStrings[cardName].protectionActivationText,
 };

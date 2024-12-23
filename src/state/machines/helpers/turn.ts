@@ -33,6 +33,30 @@ export const getSharedHabitats = (animalCards: AnimalCard[]): string[] => {
     .map(([key]) => key);
 };
 
+export const getPlayedAnimalsForHabitatUnlock = ({ context }: { context: GameState }) => {
+  const player = find(context.players, { uid: context.turn.player })!;
+  const playedAnimals = player.hand
+    .filter(({ uid }) => context.turn.playedCards.includes(uid))
+    .filter(({ type }) => type === "animal") as AnimalCard[];
+
+  // Select only the first two played animals that share a habitat
+  const animalHabitatPairs = playedAnimals.reduce((acc, animal) => {
+    if (acc.length === 2) return acc;
+
+    const matchingAnimal = playedAnimals.find((otherAnimal) => {
+      if (otherAnimal === animal) return false;
+      const sharedHabitats = intersection(otherAnimal.habitats, animal.habitats);
+      return sharedHabitats.some(
+        (habitat) => !context.habitatMarket.deck.find((tile) => tile.name === habitat && tile.isAcquired),
+      );
+    });
+
+    return matchingAnimal && acc.length < 2 ? [matchingAnimal, animal] : acc;
+  }, [] as AnimalCard[]);
+
+  return animalHabitatPairs;
+};
+
 export const getDuplicateElements = (gameState: GameState, numberOfDuplicates: number) => {
   const player = find(gameState.players, { uid: gameState.turn.player });
   const elementCounts: { [key: string]: number } = {};

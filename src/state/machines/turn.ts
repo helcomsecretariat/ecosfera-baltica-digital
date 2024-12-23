@@ -20,22 +20,14 @@ import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
 import { TurnMachineGuards } from "@/state/machines/guards";
-import {
-  compact,
-  concat,
-  countBy,
-  entries,
-  find,
-  first,
-  flatten,
-  intersection,
-  isEmpty,
-  map,
-  reject,
-  without,
-} from "lodash-es";
+import { compact, concat, countBy, entries, find, first, intersection, isEmpty, map, reject, without } from "lodash-es";
 import { calculateDurations, replaceItem, shuffle } from "@/state/utils";
-import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
+import {
+  getAnimalHabitatPairs,
+  getDuplicateElements,
+  getPlayedAnimalsForHabitatUnlock,
+  getSharedHabitats,
+} from "./helpers/turn";
 import { toUiState } from "@/state/ui/positioner";
 import { capitalize, getCardComparator } from "@/lib/utils";
 import { expansionActions, expansionCardsEndTurnActions, expansionConditionChecks, expansionState } from "./expansion";
@@ -337,12 +329,12 @@ export const TurnMachine = setup({
           : capitalize(cardEffect);
         const eventType = `${base}${cause}${effect}` as const;
 
-        const causeUids = isHabitatAutoDraw ? draft.turn.unlockedHabitats : undefined;
+        const effectUids = isHabitatAutoDraw ? draft.turn.unlockedHabitats : undefined;
 
         draft.stage = {
           eventType,
-          cause: causeUids,
-          effect: [policyCard.uid],
+          effect: effectUids,
+          cause: [policyCard.uid],
           outcome: policyCard.effect === "positive" || policyCard.effect === "implementation" ? "positive" : "negative",
         };
         draft.turn.automaticPolicyDraw = undefined;
@@ -382,19 +374,12 @@ export const TurnMachine = setup({
     ),
     stageHabitatUnlock: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
-        const player = find(draft.players, { uid: draft.turn.player })!;
-
-        const playedAnimals =
-          (player.hand
-            .filter(({ uid }) => context.turn.playedCards.includes(uid))
-            .filter(({ type }) => type === "animal") as AnimalCard[]) ?? [];
-
-        const animalHabitatPairs = getAnimalHabitatPairs(playedAnimals);
+        const playedAnimals = getPlayedAnimalsForHabitatUnlock({ context });
         const sharedHabitats = context.habitatMarket.deck.filter(
           (marketHabitat) => !marketHabitat.isAcquired && getSharedHabitats(playedAnimals).includes(marketHabitat.name),
         );
 
-        if (animalHabitatPairs.length === 0) return;
+        if (sharedHabitats.length === 0) return;
 
         draft.habitatMarket.deck = context.habitatMarket.deck.map((habitatTile) => {
           return {
@@ -410,7 +395,7 @@ export const TurnMachine = setup({
 
         draft.stage = {
           eventType: "habitatUnlock",
-          cause: map(flatten(animalHabitatPairs), "uid"),
+          cause: map(playedAnimals, "uid"),
           effect: map(sharedHabitats, "uid"),
           outcome: "positive",
         };

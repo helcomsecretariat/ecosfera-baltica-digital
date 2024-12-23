@@ -4,7 +4,7 @@ import { find, map, without } from "lodash";
 import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
-import i18n from "@/i18n";
+import { TranslationKey } from "@/i18n";
 import * as Shared from "./shared";
 
 export const cardPrefix = "wasteWaterTreatmentFailure";
@@ -12,10 +12,10 @@ export const cardName = "Waste water treatment failure";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.wasteWaterTreatmentFailure.name"),
-    description: i18n.t("deck.policies.wasteWaterTreatmentFailure.description"),
-    eventDescription: i18n.t("deck.policies.wasteWaterTreatmentFailure.eventDescription"),
-  },
+    name: "deck.policies.wasteWaterTreatmentFailure.name" as const,
+    description: "deck.policies.wasteWaterTreatmentFailure.description" as const,
+    eventDescription: "deck.policies.wasteWaterTreatmentFailure.eventDescription" as const,
+  } as Record<string, TranslationKey>,
 } as const;
 
 export const actions = {

@@ -4,7 +4,7 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { filter, find, without } from "lodash";
-import i18n from "@/i18n";
+import { TranslationKey } from "@/i18n";
 import * as Shared from "./shared";
 
 export const cardPrefix = "hunting";
@@ -12,10 +12,10 @@ export const cardName = "Hunting";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.hunting.name"),
-    description: i18n.t("deck.policies.hunting.description"),
-    eventDescription: i18n.t("deck.policies.hunting.eventDescription"),
-  },
+    name: "deck.policies.hunting.name" as const,
+    description: "deck.policies.hunting.description" as const,
+    eventDescription: "deck.policies.hunting.eventDescription" as const,
+  } as Record<string, TranslationKey>,
 } as const;
 
 export const actions = {

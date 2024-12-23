@@ -4,7 +4,7 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { concat, find, without } from "lodash";
-import i18n from "@/i18n";
+import { TranslationKey } from "@/i18n";
 import * as Shared from "./shared";
 
 export const cardPrefix = "atmosphericDeposition";
@@ -12,10 +12,10 @@ export const cardName = "Atmospheric deposition of hazardous substances";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.atmosphericDeposition.name"),
-    description: i18n.t("deck.policies.atmosphericDeposition.description"),
-    eventDescription: i18n.t("deck.policies.atmosphericDeposition.eventDescription"),
-  },
+    name: "deck.policies.atmosphericDeposition.name" as const,
+    description: "deck.policies.atmosphericDeposition.description" as const,
+    eventDescription: "deck.policies.atmosphericDeposition.eventDescription" as const,
+  } as Record<string, TranslationKey>,
 } as const;
 
 export const actions = {

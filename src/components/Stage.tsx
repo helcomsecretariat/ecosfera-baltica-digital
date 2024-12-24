@@ -52,7 +52,7 @@ const Stage = () => {
                   emit.stageShowCards()();
                 }}
                 variant="default"
-                className="w-auto bg-white px-12 text-gray-900 hover:bg-white/80"
+                className="w-32 bg-white px-12 text-gray-900 hover:bg-white/80"
               >
                 {t("buttons.showCards")}
               </Button>
@@ -67,7 +67,7 @@ const Stage = () => {
                 }}
                 disabled={!test.stageConfirm()}
                 variant="default"
-                className="w-auto bg-[#0087BE] px-12 text-white hover:bg-[#0087BE]/80"
+                className="w-32 bg-[#0087BE] px-12 text-white hover:bg-[#0087BE]/80"
               >
                 {state.stage.terminationEvent ? t("buttons.newGame") : t("buttons.ok")}
               </Button>

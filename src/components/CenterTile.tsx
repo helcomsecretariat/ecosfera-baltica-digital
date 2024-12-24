@@ -14,8 +14,8 @@ const CenterTile = withMaterialProvider(
     const texture = useSRGBTexture(tileImageUrl);
 
     const showOnStage =
-      (state.stage?.eventType === "gameLoss" && tileType === "extinction") ||
-      (state.stage?.eventType === "gameWin" && tileType === "habitat");
+      (state.stage?.eventType === "gameLoss" && tileType === "extinction" && !state.stage.hidden) ||
+      (state.stage?.eventType === "gameWin" && tileType === "habitat" && !state.stage.hidden);
     const transform = tileGridTransforms(
       showOnStage ? 0 : hexagonTileXStart,
       showOnStage ? 5 + tileSize : yStart,

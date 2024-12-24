@@ -1,6 +1,7 @@
 import { DeckConfig } from "@/decks/schema";
 import { Card } from "@/state/types";
 import { clsx, type ClassValue } from "clsx";
+import { t } from "i18next";
 import { ListIterateeCustom } from "lodash";
 import { findIndex } from "lodash-es";
 import { twMerge } from "tailwind-merge";
@@ -20,106 +21,9 @@ export function generateRandomString(length: number): string {
 }
 
 export function generateRandomName(existingNames: Set<string>): string {
-  const adjectives = [
-    "Swift",
-    "Brave",
-    "Fierce",
-    "Mighty",
-    "Clever",
-    "Bold",
-    "Calm",
-    "Quick",
-    "Shy",
-    "Noble",
-    "Sly",
-    "Wise",
-    "Wild",
-    "Bright",
-    "Gentle",
-    "Sharp",
-    "Quiet",
-    "Soft",
-    "Cool",
-    "Daring",
-    "Silent",
-    "Cold",
-    "Deep",
-    "Blue",
-    "Free",
-    "Pale",
-    "Dark",
-    "Gold",
-  ];
-
-  const animalsAndPlants = [
-    "🦊Fox",
-    "🦅Hawk",
-    "🐺Wolf",
-    "🐻Bear",
-    "🐱Lynx",
-    "🦉Owl",
-    "🦌Elk",
-    "🦭Seal",
-    "🐸Frog",
-    "🐦Crow",
-    "🦇Bat",
-    "🦡Mole",
-    "🦎Newt",
-    "🐟Perch",
-    "🐟Cod",
-    "🐰Hare",
-    "🦢Swan",
-    "🦐Shrimp",
-    "🦪Mussel",
-    "🐟Trout",
-    "🐦Heron",
-    "🦀Crab",
-    "🐦Lark",
-    "🌿Fern",
-    "🌱Moss",
-    "🌲Birch",
-    "🌾Reed",
-    "🐠Sprat",
-    "🐟Salmon",
-    "🐭Vole",
-    "🌲Pine",
-    "🐟Bream",
-    "🦀Limpet",
-    "🦦Otter",
-    "🪸Kelp",
-    "🌿Algae",
-    "🐟Dace",
-  ];
-
-  const nouns = [
-    "🌊Wave",
-    "🌊Tide",
-    "🌪 Storm",
-    "🐚Shell",
-    "🪨Rock",
-    "🏖 Sand",
-    "🪨Stone",
-    "🌫 Fog",
-    "🌊Drift",
-    "🪸Reef",
-    "🌊Cove",
-    "🪺Nest",
-    "🍃Leaf",
-    "🌸Bloom",
-    "🌱Root",
-    "🌿Weed",
-    "🌿Spire",
-    "🌲Bark",
-    "🌿Twig",
-    "🌊Fjord",
-    "❄️Sleet",
-    "❄️Frost",
-    "✨Glow",
-    "💨Wind",
-    "🌊Bay",
-    "❄️Ice",
-    "🧂Salt",
-  ];
+  const adjectives = Object.values(t("playerNames.adjectives", { returnObjects: true }));
+  const animalsAndPlants = Object.values(t("playerNames.plantsAndAnimals", { returnObjects: true }));
+  const nouns = Object.values(t("playerNames.nouns", { returnObjects: true }));
 
   let name: string;
 

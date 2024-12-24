@@ -31,8 +31,6 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
   const nameInputRefs = useRef<HTMLInputElement[]>([]);
   const seedInputRef = useRef<HTMLInputElement>(null);
 
-  const existingNames = new Set<string>();
-
   const [isChangingLang, setIsChangingLang] = useState(false);
 
   const handleLanguageChange = (langCode: string) => {
@@ -45,10 +43,15 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
     // Generate unique player names when the number of players changes.
     const newPlayerNames = Array.from(
       { length: playerCount },
-      (_, index) => playerNames[index] || generateRandomName(existingNames),
+      (_, index) => playerNames[index] || generateRandomName(new Set(playerNames)),
     );
     setPlayerNames(newPlayerNames);
   }, [playerCount]);
+
+  useEffect(() => {
+    const newPlayerNames = Array.from({ length: playerCount }, () => generateRandomName(new Set()));
+    setPlayerNames(newPlayerNames);
+  }, [i18n.language]);
 
   const handlePlayerNameChange = (index: number, name: string) => {
     const newPlayerNames = [...playerNames];
@@ -127,7 +130,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
                     id={`playerName_${key}`}
                     className="w-auto rounded-none border-0 border-transparent border-white bg-transparent text-end text-inherit focus-visible:border-b-[1px] focus-visible:ring-0 focus-visible:ring-offset-0"
                     ref={(ref) => (nameInputRefs.current[key] = ref!)}
-                    value={playerNames[key]}
+                    value={playerNames[key] ?? ""}
                     onChange={(e) => handlePlayerNameChange(key, e.target.value)}
                   />
                   <Button size="icon" variant="tertiary" onClick={() => nameInputRefs.current[key].focus()}>

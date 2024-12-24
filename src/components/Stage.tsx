@@ -42,9 +42,9 @@ const Stage = () => {
         )}
       </AnimatePresence>
       {state.stage !== undefined && !state.stage.hidden && (
-        <Html wrapperClass="top-10" position={[0, -2.5 * cardHeight, 0]} transform scale={8}>
+        <Html wrapperClass="top-10" position={[0, -2.3 * cardHeight, 0]} transform scale={8}>
           <div className="flex flex-col items-center justify-center">
-            <h1 className="mb-8 whitespace-pre-wrap text-center text-xl text-white">{eventText}</h1>
+            <h1 className="mb-4 whitespace-pre-wrap text-center text-xl text-white">{eventText}</h1>
             <div className="flex items-center gap-2">
               <Button
                 onClick={(e) => {

@@ -896,7 +896,9 @@ export const TurnMachine = setup({
           },
         },
         drawingPolicy: {
-          entry: "stagePolicyDraw",
+          after: {
+            animationDuration: { actions: "stagePolicyDraw" },
+          },
           on: {
             "user.click.stage.confirm": { actions: "unstage", target: "#turn.usingAbility.done" },
             "user.click.policy.card.acquired": {
@@ -965,7 +967,7 @@ export const TurnMachine = setup({
         },
         habitatUnlock: {
           initial: "awaitingConfirmation",
-          entry: ["stageHabitatUnlock", { type: "setAutomaticPolicyDraw", params: "habitat" }],
+          entry: [{ type: "setAutomaticPolicyDraw", params: "habitat" }, "stageHabitatUnlock"],
           states: {
             awaitingConfirmation: {
               on: {
@@ -1048,7 +1050,7 @@ export const TurnMachine = setup({
         },
         extinction: {
           initial: "awaitingConfirmation",
-          entry: ["stageExtinction", { type: "setAutomaticPolicyDraw", params: "extinction" }],
+          entry: [{ type: "setAutomaticPolicyDraw", params: "extinction" }, "stageExtinction"],
           states: {
             awaitingConfirmation: {
               on: {
@@ -1071,7 +1073,7 @@ export const TurnMachine = setup({
         },
         massExtinction: {
           initial: "awaitingConfirmation",
-          entry: ["stageMassExtinction", { type: "setAutomaticPolicyDraw", params: "extinction" }],
+          entry: [{ type: "setAutomaticPolicyDraw", params: "extinction" }, "stageMassExtinction"],
           states: {
             awaitingConfirmation: {
               on: {

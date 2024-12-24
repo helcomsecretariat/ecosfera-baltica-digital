@@ -32,6 +32,7 @@ import { toUiState } from "@/state/ui/positioner";
 import { capitalize, getCardComparator } from "@/lib/utils";
 import { expansionActions, expansionCardsEndTurnActions, expansionConditionChecks, expansionState } from "./expansion";
 import i18n from "@/i18n";
+import { t } from "i18next";
 
 type MachineConfig = {
   animSpeed?: number;
@@ -679,7 +680,7 @@ export const TurnMachine = setup({
 
         draft.stage.hidden = true;
         draft.commandBar = {
-          text: "Click here to go back to the event",
+          text: t("commandBar.backToStageEvent"),
         };
       }),
     ),

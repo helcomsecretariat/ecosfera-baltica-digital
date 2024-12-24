@@ -54,7 +54,7 @@ const Stage = () => {
                 variant="default"
                 className="w-auto bg-white px-12 text-gray-900 hover:bg-white/80"
               >
-                Show cards{" "}
+                {t("buttons.showCards")}
               </Button>
               <Button
                 onClick={(e) => {
@@ -69,7 +69,7 @@ const Stage = () => {
                 variant="default"
                 className="w-auto bg-[#0087BE] px-12 text-white hover:bg-[#0087BE]/80"
               >
-                {state.stage.terminationEvent ? t("stageEventText.newGame") : t("stageEventText.ok")}
+                {state.stage.terminationEvent ? t("buttons.newGame") : t("buttons.ok")}
               </Button>
             </div>
           </div>

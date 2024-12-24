@@ -51,6 +51,8 @@ export type TurnMachineEvent =
   | { type: "iddqd"; context: Partial<TurnMachineContext> }
   | { type: "user.click.player.hand.card.token"; card: AnimalCard | PlantCard; abilityName: AbilityName }
   | { type: "user.click.stage.confirm" }
+  | { type: "user.click.stage.showCards" }
+  | { type: "user.click.stage.hideCards" }
   | { type: "user.click.market.deck.animal" }
   | { type: "user.click.market.deck.plant" }
   | { type: "user.click.player.deck" }
@@ -671,6 +673,26 @@ export const TurnMachine = setup({
       }),
     ),
 
+    stageShowCards: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        if (!draft.stage) return;
+
+        draft.stage.hidden = true;
+        draft.commandBar = {
+          text: "Click here to go back to the event",
+        };
+      }),
+    ),
+
+    stageHideCards: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        if (!draft.stage) return;
+
+        draft.stage.hidden = undefined;
+        draft.commandBar = undefined;
+      }),
+    ),
+
     ...expansionActions,
   },
   guards: {
@@ -716,6 +738,12 @@ export const TurnMachine = setup({
         not(({ context }) => TurnMachineGuards.isPolicyCancellationBlocked({ context })),
         ({ context }) => TurnMachineGuards.isActivePolicyCardPositive({ context }),
       ]),
+    },
+    "user.click.stage.showCards": {
+      actions: "stageShowCards",
+    },
+    "user.click.stage.hideCards": {
+      actions: "stageHideCards",
     },
   },
 

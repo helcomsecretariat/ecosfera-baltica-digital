@@ -197,6 +197,7 @@ export const discardPositions = (gameState: GameState): Coordinate[] => {
 };
 
 export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict => {
+  if (gameState.stage?.hidden) return {};
   const cause = gameState.stage?.cause || [];
   const effect = gameState.stage?.effect;
   const pieceCoordinates: GamePieceCoordsDict = {};

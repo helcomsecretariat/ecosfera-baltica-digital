@@ -239,7 +239,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
         </Accordion>
         {/* Start Game Button */}
         <div className="flex w-full justify-center pt-12">
-          <ImageButton onClick={handleStartGame}>{t("lobby.playButton")}</ImageButton>
+          <ImageButton onClick={handleStartGame}>{t("buttons.play")}</ImageButton>
         </div>
       </section>
     </div>

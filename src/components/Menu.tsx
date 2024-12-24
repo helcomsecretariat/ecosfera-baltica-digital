@@ -39,17 +39,24 @@ const Menu = () => {
         {state.commandBar && test.cancelAbility() && <CancelButton onClick={emit.cancelAbility()} />}
         {state.commandBar && (
           <div
-            className="-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all"
+            className={clsx(
+              "-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all",
+              state.stage?.hidden ? "cursor-pointer hover:bg-[#0087BE]/80" : "",
+            )}
             style={{
               clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
               WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
             }}
-            onClick={() => setShowPolicies(!showPolicies)}
+            onClick={() => {
+              if (state.stage?.hidden) {
+                emit.stageHideCards()();
+              }
+            }}
           >
             {state.commandBar.text}
           </div>
         )}
-        {gameConfig.useSpecialCards && (
+        {gameConfig.useSpecialCards && state.stage === undefined && (
           <button
             className={clsx(
               "-mr-6 bg-[#204B7B] pl-10 pr-8 text-white transition-all hover:bg-[#3070b8]",

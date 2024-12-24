@@ -9,8 +9,7 @@ interface Resources {
       "advancedOptions": "Advanced Options",
       "useExpansionPack": "Use expansion pack",
       "seed": "Seed",
-      "seedInfo": "The seed ensures a consistent game deck shuffle. Using the same seed will result in the same deck order each time.",
-      "playButton": "Play!"
+      "seedInfo": "The seed ensures a consistent game deck shuffle. Using the same seed will result in the same deck order each time."
     },
     "deck": {
       "policies": {
@@ -168,8 +167,6 @@ interface Resources {
       "canRefreshAbility": "You can now refresh one of your used abilities.",
       "gameWin": "Congratulations!\nYou saved the Baltic ecosystem!",
       "gameLoss": "Game Over!\nYou could not save the Baltic Ecosystem.",
-      "newGame": "New game",
-      "ok": "Ok",
       "abilityUseBlocked": "You cannot use your abilities right now.",
       "skipTurn": "You will have to wait for the next turn."
     },
@@ -182,8 +179,12 @@ interface Resources {
     "blocker": {
       "leavePageMessage": "Are you sure you want to leave this page?"
     },
-    "endTurnButton": {
-      "endTurn": "End Turn"
+    "buttons": {
+      "showCards": "Show cards",
+      "endTurn": "End Turn",
+      "newGame": "New game",
+      "ok": "Ok",
+      "play": "Play!"
     },
     "abilities": {
       "commandBar": {
@@ -196,6 +197,9 @@ interface Resources {
           "pickMarket": "Pick a market to refresh"
         }
       }
+    },
+    "commandBar": {
+      "backToStageEvent": "Click here to go back to the event"
     }
   }
 }

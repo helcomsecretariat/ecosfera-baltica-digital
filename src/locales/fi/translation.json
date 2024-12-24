@@ -8,8 +8,7 @@
     "advancedOptions": "Lisäasetukset",
     "useExpansionPack": "Käytä laajennuspakkausta",
     "seed": "Siemen",
-    "seedInfo": "Siemen varmistaa johdonmukaisen pakan sekoituksen. Saman siemenen käyttäminen johtaa samaan korttijärjestykseen joka kerta.",
-    "playButton": "Pelaa!"
+    "seedInfo": "Siemen varmistaa johdonmukaisen pakan sekoituksen. Saman siemenen käyttäminen johtaa samaan korttijärjestykseen joka kerta."
   },
   "deck": {
     "policies": {
@@ -167,8 +166,6 @@
     "canRefreshAbility": "Voit nyt palauttaa yhden käytetyistä kyvyistäsi.",
     "gameWin": "Onnittelut!\nPelastit Itämeren ekosysteemin!",
     "gameLoss": "Peli ohi!\nEt pystynyt pelastamaan Itämeren ekosysteemiä.",
-    "newGame": "Uusi peli",
-    "ok": "Ok",
     "abilityUseBlocked": "Et voi käyttää kykyjäsi juuri nyt.",
     "skipTurn": "Sinun täytyy odottaa seuraavaa vuoroa."
   },
@@ -181,8 +178,12 @@
   "blocker": {
     "leavePageMessage": "Haluatko varmasti poistua tältä sivulta?"
   },
-  "endTurnButton": {
-    "endTurn": "Lopeta vuoro"
+  "buttons": {
+    "showCards": "Näytä kortit",
+    "endTurn": "Lopeta vuoro",
+    "newGame": "Uusi peli",
+    "ok": "Ok",
+    "play": "Pelaa!"
   },
   "abilities": {
     "commandBar": {
@@ -195,5 +196,8 @@
         "pickMarket": "Valitse uudistettavat markkinat"
       }
     }
+  },
+  "commandBar": {
+    "backToStageEvent": "Klikkaa tästä palataksesi tapahtumaan."
   }
 }

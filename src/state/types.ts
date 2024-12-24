@@ -91,6 +91,7 @@ export interface GameState {
     cause: CardOrTileUID[] | undefined;
     effect: CardOrTileUID[] | undefined;
     outcome: "positive" | "negative";
+    hidden?: boolean;
   };
   commandBar?: {
     text: string;

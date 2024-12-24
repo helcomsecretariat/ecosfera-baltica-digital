@@ -142,6 +142,7 @@ const Croupier = () => {
       {/* Policies */}
       <Policies />
       {gameConfig.useSpecialCards &&
+        !gameState.stage?.hidden &&
         [...(gameState.stage?.effect ?? []), ...(gameState.stage?.cause ?? [])]
           .filter((s) => s.startsWith("policy-"))
           .map((cardUid) => {

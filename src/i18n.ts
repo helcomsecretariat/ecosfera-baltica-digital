@@ -17,7 +17,6 @@ const loadLocale = async (language: string) => {
       const baseLanguage = getBaseLanguage(language);
       try {
         const translations = await import(`@/locales/${baseLanguage}/translation.json`);
-        console.info(`Using ${baseLanguage} translations for ${language}`);
         return translations.default;
       } catch {
         console.info(`Neither ${language} nor ${baseLanguage} translations found, using fallback`);

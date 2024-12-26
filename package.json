@@ -7,7 +7,7 @@
     "preinstall": "node -v | grep '^v20\\.' || { echo '\\033[1;31mPlease use Node.js version 20.x\\033[0m'; exit 1; }",
     "dev": "npx check-dependencies --scope-list devDependencies && vite",
     "build": "tsc -b && vite build",
-    "checks": "npm-run-all -p lint typecheck format-check test:once",
+    "checks": "npm-run-all -p lint typecheck format-check test:once check-translations",
     "test": "vitest",
     "test:once": "vitest run",
     "lint": "eslint .",
@@ -18,7 +18,8 @@
     "format": "npx prettier --write ./",
     "format-check": "npx prettier -c ./",
     "preview": "vite preview",
-    "update-locale-typings": "npx i18next-resources-for-ts interface -i ./src/locales/en -o ./src/@types/locale.d.ts"
+    "update-locale-typings": "npx i18next-resources-for-ts interface -i ./src/locales/en -o ./src/@types/locale.d.ts",
+    "check-translations": "npx i18n-unused display-unused | GREP_COLORS='ms=01;31' grep --color=always -E 'Total unused translations count: [1-9][0-9]*|$' || exit 1"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.1",
@@ -74,6 +75,7 @@
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
     "globals": "^15.9.0",
+    "i18n-unused": "^0.17.0",
     "i18next-resources-for-ts": "^1.5.0",
     "lodash": "^4.17.21",
     "npm-run-all": "^4.1.5",

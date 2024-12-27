@@ -22,6 +22,7 @@ import useHabitatIconTextures from "@/hooks/useHabitatIconTextures";
 import useAbilityTextures from "@/hooks/useAbilityTextures";
 import { DoubleSide, FrontSide } from "three";
 import useElementIconTextures, { ElementName } from "@/hooks/useElementIconTextures";
+import { useDebugMode, isDebugging } from "@/hooks/useDebugMode";
 
 const PADDING_MAP: Record<CardType["type"], [number, number, number, number]> = {
   animal: [6, 6, 8, 6].map((n) => n / coordScale) as [number, number, number, number],
@@ -54,7 +55,7 @@ export type CardProps = {
   withFloatAnimation?: boolean;
 };
 
-const Card = ({
+export default function Card({
   card,
   gamePieceAppearance,
   onClick,
@@ -62,13 +63,23 @@ const Card = ({
   isHighlighted = false,
   isDimmed = false,
   withFloatAnimation = false,
-}: CardProps) => {
+}: CardProps) {
   const { state } = useGameState();
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
   const texture = useSRGBTexture(cardIMGURL);
   const backTexture = useSRGBTexture("/ecosfera_baltica/card_back.avif");
-  const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: true } });
+  const isDebugMode = useDebugMode();
+  const debugControls = useControls(
+    {
+      isShowUID: { value: false },
+      useDimmed: { value: true },
+    },
+    { disabled: !isDebugging },
+  );
+
+  const isShowUID = isDebugMode && debugControls.isShowUID;
+  const useDimmed = debugControls.useDimmed;
   const isPlantOrAnimal = card.type === "plant" || card.type === "animal";
   const habitatIconTextures = useHabitatIconTextures();
   const [paddingTop, paddingRight, paddingBottom, paddingLeft] = PADDING_MAP[card.type];
@@ -286,6 +297,4 @@ const Card = ({
       </GameElement>
     )
   );
-};
-
-export default Card;
+}

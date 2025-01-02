@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { selectIsPositiveStageEvent, selectStageEventText } from "@/state/machines/selectors";
 
 const Stage = () => {
-  const { emit, state, test, actorRef } = useGameState();
+  const { emit, state, test, actorRef, guards } = useGameState();
   const eventText = useSelector(actorRef, selectStageEventText);
   const isPositive = useSelector(actorRef, selectIsPositiveStageEvent);
   const positiveTextureImageUrl = getAssetPath("stage", "positive");
@@ -46,16 +46,18 @@ const Stage = () => {
           <div className="flex flex-col items-center justify-center">
             <h1 className="mb-4 whitespace-pre-wrap text-center text-xl text-white">{eventText}</h1>
             <div className="flex items-center gap-2">
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  emit.stageShowCards()();
-                }}
-                variant="default"
-                className="w-32 bg-white px-12 text-gray-900 hover:bg-white/80"
-              >
-                {t("buttons.showCards")}
-              </Button>
+              {guards.allowStageShowCards() && (
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    emit.stageShowCards()();
+                  }}
+                  variant="default"
+                  className="w-32 bg-white px-12 text-gray-900 hover:bg-white/80"
+                >
+                  {t("buttons.showCards")}
+                </Button>
+              )}
               <Button
                 onClick={(e) => {
                   e.stopPropagation();

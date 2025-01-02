@@ -1,4 +1,13 @@
-import { AbilityTile, AnimalCard, Card, CardType, GameState, HabitatName, PlantCard } from "@/state/types";
+import {
+  AbilityTile,
+  AnimalCard,
+  Card,
+  CardType,
+  GameState,
+  HabitatName,
+  isExpansionStageEvent,
+  PlantCard,
+} from "@/state/types";
 import { countBy, find, compact, every, isEmpty, first } from "lodash";
 import { getAnimalHabitatPairs, getDuplicateElements, getPlayedAnimalsForHabitatUnlock } from "./helpers/turn";
 import { Tail } from "../../lib/types";
@@ -277,6 +286,10 @@ export const TurnMachineGuards = {
 
   shouldAutomaticallyDrawPolicy: ({ context }: { context: GameState }) =>
     context.config.useSpecialCards && context.turn.automaticPolicyDraw !== undefined,
+
+  allowStageShowCards: ({ context }: { context: GameState }) =>
+    context.stage !== undefined &&
+    (context.stage.eventType === "abilityRefresh" || isExpansionStageEvent(context.stage.eventType)),
 };
 
 export type ContextInjectedGuardMap = {

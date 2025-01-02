@@ -604,9 +604,10 @@ export const TurnMachine = setup({
         turn.automaticEventChecks?.push(checkName);
       }),
     ),
-    setEndOfTurnPhase: assign(({ context }: { context: GameState }) =>
-      produce(context, ({ turn }) => {
-        turn.phase = "end";
+    prepareEndTurn: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.turn.phase = "end";
+        draft.commandBar = undefined;
       }),
     ),
     setAbilityTargetCard: assign(({ context }: { context: GameState }, card: Card) =>
@@ -754,7 +755,7 @@ export const TurnMachine = setup({
       history: "deep",
     },
     endingTurn: {
-      entry: "setEndOfTurnPhase",
+      entry: "prepareEndTurn",
       initial: "checkingEndHand",
       states: {
         checkingEndHand: {

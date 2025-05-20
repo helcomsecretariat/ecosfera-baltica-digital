@@ -20,26 +20,19 @@ import { DeckConfig } from "@/decks/schema";
 import { spawnDeck } from "@/state/deck-spawner";
 import { produce } from "immer";
 import { TurnMachineGuards } from "@/state/machines/guards";
-import {
-  compact,
-  concat,
-  countBy,
-  entries,
-  find,
-  first,
-  flatten,
-  intersection,
-  isEmpty,
-  map,
-  reject,
-  without,
-} from "lodash-es";
+import { compact, concat, countBy, entries, find, first, intersection, isEmpty, map, reject, without } from "lodash-es";
 import { calculateDurations, replaceItem, shuffle } from "@/state/utils";
-import { getAnimalHabitatPairs, getDuplicateElements, getSharedHabitats } from "./helpers/turn";
+import {
+  getAnimalHabitatPairs,
+  getDuplicateElements,
+  getPlayedAnimalsForHabitatUnlock,
+  getSharedHabitats,
+} from "./helpers/turn";
 import { toUiState } from "@/state/ui/positioner";
 import { capitalize, getCardComparator } from "@/lib/utils";
 import { expansionActions, expansionCardsEndTurnActions, expansionConditionChecks, expansionState } from "./expansion";
 import i18n from "@/i18n";
+import { t } from "i18next";
 
 type MachineConfig = {
   animSpeed?: number;
@@ -59,6 +52,8 @@ export type TurnMachineEvent =
   | { type: "iddqd"; context: Partial<TurnMachineContext> }
   | { type: "user.click.player.hand.card.token"; card: AnimalCard | PlantCard; abilityName: AbilityName }
   | { type: "user.click.stage.confirm" }
+  | { type: "user.click.stage.showCards" }
+  | { type: "user.click.stage.hideCards" }
   | { type: "user.click.market.deck.animal" }
   | { type: "user.click.market.deck.plant" }
   | { type: "user.click.player.deck" }
@@ -129,8 +124,12 @@ export const TurnMachine = setup({
             turn.borrowedElement = undefined;
           }
 
-          const drawnCard = draft.plantMarket.deck.shift()!;
-          draft.plantMarket.table = replaceItem(card, drawnCard, draft.plantMarket.table);
+          const drawnCard = draft.plantMarket.deck.shift();
+          if (drawnCard !== undefined) {
+            draft.plantMarket.table = replaceItem(card, drawnCard, draft.plantMarket.table);
+          } else {
+            draft.plantMarket.table = without(context.plantMarket.table, card);
+          }
           draft.turn.boughtPlant = true;
         }
 
@@ -147,8 +146,13 @@ export const TurnMachine = setup({
             .slice(0, 2);
 
           draft.turn.exhaustedCards.push(...toBeExhaustedPlants.map(({ uid }) => uid));
-          const drawnCard = draft.animalMarket.deck.shift()!;
-          draft.animalMarket.table = replaceItem(card, drawnCard, draft.animalMarket.table);
+
+          const drawnCard = draft.animalMarket.deck.shift();
+          if (drawnCard !== undefined) {
+            draft.animalMarket.table = replaceItem(card, drawnCard, draft.animalMarket.table);
+          } else {
+            draft.animalMarket.table = without(context.animalMarket.table, card);
+          }
           draft.turn.boughtAnimal = true;
         }
 
@@ -328,12 +332,12 @@ export const TurnMachine = setup({
           : capitalize(cardEffect);
         const eventType = `${base}${cause}${effect}` as const;
 
-        const causeUids = isHabitatAutoDraw ? draft.turn.unlockedHabitats : undefined;
+        const effectUids = isHabitatAutoDraw ? draft.turn.unlockedHabitats : undefined;
 
         draft.stage = {
           eventType,
-          cause: causeUids,
-          effect: [policyCard.uid],
+          effect: effectUids,
+          cause: [policyCard.uid],
           outcome: policyCard.effect === "positive" || policyCard.effect === "implementation" ? "positive" : "negative",
         };
         draft.turn.automaticPolicyDraw = undefined;
@@ -373,19 +377,12 @@ export const TurnMachine = setup({
     ),
     stageHabitatUnlock: assign(({ context }: { context: GameState }) =>
       produce(context, (draft) => {
-        const player = find(draft.players, { uid: draft.turn.player })!;
-
-        const playedAnimals =
-          (player.hand
-            .filter(({ uid }) => context.turn.playedCards.includes(uid))
-            .filter(({ type }) => type === "animal") as AnimalCard[]) ?? [];
-
-        const animalHabitatPairs = getAnimalHabitatPairs(playedAnimals);
+        const playedAnimals = getPlayedAnimalsForHabitatUnlock({ context });
         const sharedHabitats = context.habitatMarket.deck.filter(
           (marketHabitat) => !marketHabitat.isAcquired && getSharedHabitats(playedAnimals).includes(marketHabitat.name),
         );
 
-        if (animalHabitatPairs.length === 0) return;
+        if (sharedHabitats.length === 0) return;
 
         draft.habitatMarket.deck = context.habitatMarket.deck.map((habitatTile) => {
           return {
@@ -401,7 +398,7 @@ export const TurnMachine = setup({
 
         draft.stage = {
           eventType: "habitatUnlock",
-          cause: map(flatten(animalHabitatPairs), "uid"),
+          cause: map(playedAnimals, "uid"),
           effect: map(sharedHabitats, "uid"),
           outcome: "positive",
         };
@@ -607,9 +604,10 @@ export const TurnMachine = setup({
         turn.automaticEventChecks?.push(checkName);
       }),
     ),
-    setEndOfTurnPhase: assign(({ context }: { context: GameState }) =>
-      produce(context, ({ turn }) => {
-        turn.phase = "end";
+    prepareEndTurn: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        draft.turn.phase = "end";
+        draft.commandBar = undefined;
       }),
     ),
     setAbilityTargetCard: assign(({ context }: { context: GameState }, card: Card) =>
@@ -677,6 +675,26 @@ export const TurnMachine = setup({
       }),
     ),
 
+    stageShowCards: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        if (!draft.stage) return;
+
+        draft.stage.hidden = true;
+        draft.commandBar = {
+          text: t("commandBar.backToStageEvent"),
+        };
+      }),
+    ),
+
+    stageHideCards: assign(({ context }: { context: GameState }) =>
+      produce(context, (draft) => {
+        if (!draft.stage) return;
+
+        draft.stage.hidden = undefined;
+        draft.commandBar = undefined;
+      }),
+    ),
+
     ...expansionActions,
   },
   guards: {
@@ -723,6 +741,12 @@ export const TurnMachine = setup({
         ({ context }) => TurnMachineGuards.isActivePolicyCardPositive({ context }),
       ]),
     },
+    "user.click.stage.showCards": {
+      actions: "stageShowCards",
+    },
+    "user.click.stage.hideCards": {
+      actions: "stageHideCards",
+    },
   },
 
   states: {
@@ -731,7 +755,7 @@ export const TurnMachine = setup({
       history: "deep",
     },
     endingTurn: {
-      entry: "setEndOfTurnPhase",
+      entry: "prepareEndTurn",
       initial: "checkingEndHand",
       states: {
         checkingEndHand: {
@@ -873,7 +897,9 @@ export const TurnMachine = setup({
           },
         },
         drawingPolicy: {
-          entry: "stagePolicyDraw",
+          after: {
+            animationDuration: { actions: "stagePolicyDraw" },
+          },
           on: {
             "user.click.stage.confirm": { actions: "unstage", target: "#turn.usingAbility.done" },
             "user.click.policy.card.acquired": {
@@ -942,7 +968,7 @@ export const TurnMachine = setup({
         },
         habitatUnlock: {
           initial: "awaitingConfirmation",
-          entry: ["stageHabitatUnlock", { type: "setAutomaticPolicyDraw", params: "habitat" }],
+          entry: [{ type: "setAutomaticPolicyDraw", params: "habitat" }, "stageHabitatUnlock"],
           states: {
             awaitingConfirmation: {
               on: {
@@ -1025,7 +1051,7 @@ export const TurnMachine = setup({
         },
         extinction: {
           initial: "awaitingConfirmation",
-          entry: ["stageExtinction", { type: "setAutomaticPolicyDraw", params: "extinction" }],
+          entry: [{ type: "setAutomaticPolicyDraw", params: "extinction" }, "stageExtinction"],
           states: {
             awaitingConfirmation: {
               on: {
@@ -1048,7 +1074,7 @@ export const TurnMachine = setup({
         },
         massExtinction: {
           initial: "awaitingConfirmation",
-          entry: ["stageMassExtinction", { type: "setAutomaticPolicyDraw", params: "extinction" }],
+          entry: [{ type: "setAutomaticPolicyDraw", params: "extinction" }, "stageMassExtinction"],
           states: {
             awaitingConfirmation: {
               on: {
@@ -1233,7 +1259,7 @@ export const TurnMachine = setup({
         },
         moving: {
           initial: "pickingTarget",
-          entry: { type: "setCommandBar", params: i18n.t("abilities.commandBar.move.pickCard") },
+          entry: { type: "setCommandBar", params: () => i18n.t("abilities.commandBar.move.pickCard") },
           states: {
             pickingTarget: {
               on: {
@@ -1260,7 +1286,7 @@ export const TurnMachine = setup({
                       target: "waitingForAction",
                       actions: {
                         type: "setCommandBar",
-                        params: i18n.t("abilities.commandBar.move.pickDestinationSinglePlayer"),
+                        params: () => i18n.t("abilities.commandBar.move.pickDestinationSinglePlayer"),
                       },
                       guard: "isSinglePlayer",
                     },
@@ -1268,7 +1294,7 @@ export const TurnMachine = setup({
                       target: "waitingForAction",
                       actions: {
                         type: "setCommandBar",
-                        params: i18n.t("abilities.commandBar.move.pickDestination"),
+                        params: () => i18n.t("abilities.commandBar.move.pickDestination"),
                       },
                     },
                   ],
@@ -1319,7 +1345,7 @@ export const TurnMachine = setup({
           },
         },
         refreshing: {
-          entry: { type: "setCommandBar", params: i18n.t("abilities.commandBar.refresh.pickMarket") },
+          entry: { type: "setCommandBar", params: () => i18n.t("abilities.commandBar.refresh.pickMarket") },
           on: {
             "user.click.market.deck.animal": {
               target: "#turn.usingAbility.done",

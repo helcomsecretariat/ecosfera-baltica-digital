@@ -17,7 +17,8 @@
     "optimize-images": "node ./scripts/optimaze_images/script.js ./src/assets/ ./public/",
     "format": "npx prettier --write ./",
     "format-check": "npx prettier -c ./",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "update-locale-typings": "npx i18next-resources-for-ts interface -i ./src/locales/en -o ./src/@types/locale.d.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.1",
@@ -38,6 +39,8 @@
     "framer-motion": "^11.5.6",
     "framer-motion-3d": "^11.5.6",
     "i18next": "^24.0.2",
+    "i18next-browser-languagedetector": "^8.0.2",
+    "i18next-http-backend": "^3.0.1",
     "immer": "^10.1.1",
     "leva": "^0.9.35",
     "lodash-es": "^4.17.21",
@@ -71,6 +74,7 @@
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
     "globals": "^15.9.0",
+    "i18next-resources-for-ts": "^1.5.0",
     "lodash": "^4.17.21",
     "npm-run-all": "^4.1.5",
     "openai": "^4.63.0",

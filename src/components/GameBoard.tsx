@@ -16,8 +16,10 @@ import { useTestControls } from "@/hooks/useTestControls";
 import Menu from "./Menu";
 import { SRGBColorSpace } from "three";
 import { useExpPackControls } from "@/hooks/useExpPackControls";
+import { useDebugMode } from "@/hooks/useDebugMode";
 
 export default function GameBoard() {
+  const isDebugMode = useDebugMode();
   useBlocker();
   useTestControls();
   useExpPackControls();
@@ -79,7 +81,7 @@ export default function GameBoard() {
         </Suspense>
       </Canvas>
       <div className="absolute left-[20%] top-0 z-[2]">
-        <Leva collapsed flat hideCopyButton fill />
+        <Leva collapsed flat hideCopyButton fill hidden={!isDebugMode} />
       </div>
     </div>
   );

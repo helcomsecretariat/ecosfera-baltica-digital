@@ -1,11 +1,16 @@
-import { cardHeight, cardWidth, cardRadius } from "../constants/card";
+import {
+  cardHeight,
+  cardWidth,
+  cardRadius,
+  HIGHLIGHT_BORDER_COLOR,
+  HIGHLIGHT_BORDER_WIDTH,
+  CARD_Z_INDEX,
+} from "../constants/card";
 import GameElement from "./GameElement";
 import { Card, GamePieceAppearance } from "@/state/types";
 import { RoundedRectangleGeometry } from "@/components/shapes/roundedRect";
 import TextWithShadow from "@/components/shapes/TextWithShadow";
 import { useSRGBTexture } from "@/hooks/useSRGBTexture";
-import { useTexture } from "@react-three/drei";
-import { getHighlightTextureAssetPath } from "./utils";
 
 const Deck = ({
   gamePieceAppearance,
@@ -22,15 +27,12 @@ const Deck = ({
   cards: Card[];
   isDimmed?: boolean;
   isHighlighted?: boolean;
-  options?: { shuffleable: boolean };
 }) => {
   const texture = useSRGBTexture(texturePath);
-  const highlightTexture = useTexture(getHighlightTextureAssetPath());
-  const deckDepth = 0.1 * (1 + cards.length);
   const textPosition: [number, number, number] = [
     -cardWidth / 2 + cardWidth * 0.15,
     cardHeight / 2 - cardHeight * 0.11,
-    deckDepth + 0.15,
+    0.15,
   ];
 
   return (
@@ -42,13 +44,22 @@ const Deck = ({
         onClick={() => (isDimmed ? null : onClick())}
       >
         {isHighlighted && (
-          <mesh>
-            <RoundedRectangleGeometry args={[cardWidth + 8, cardHeight + 8, cardRadius, 0.01]} />
-            <meshBasicMaterial transparent={true} map={highlightTexture} />
+          <mesh position={[0, 0, CARD_Z_INDEX.HIGHLIGHT_BORDER]}>
+            <RoundedRectangleGeometry
+              args={[
+                cardWidth + HIGHLIGHT_BORDER_WIDTH,
+                cardHeight + HIGHLIGHT_BORDER_WIDTH,
+                cardRadius + HIGHLIGHT_BORDER_WIDTH / 2,
+                0,
+              ]}
+            />
+            <meshBasicMaterial transparent attach="material-0" color={HIGHLIGHT_BORDER_COLOR} />
+            <meshBasicMaterial transparent opacity={0} attach="material-1" />
+            <meshBasicMaterial transparent opacity={0} attach="material-2" />
           </mesh>
         )}
         <mesh>
-          <RoundedRectangleGeometry args={[cardWidth, cardHeight, cardRadius, deckDepth]} />
+          <RoundedRectangleGeometry args={[cardWidth, cardHeight, cardRadius, 0]} />
           <meshBasicMaterial attach="material-0" map={texture} color={isDimmed ? "#999" : "white"} />
           <meshBasicMaterial attach="material-1" map={texture} color={isDimmed ? "#999" : "white"} />
           <meshBasicMaterial attach="material-2" color={isDimmed ? "#999" : "white"} />
@@ -67,13 +78,6 @@ const Deck = ({
         >
           {cards.length}
         </TextWithShadow>
-
-        {/* {isDimmed && (
-          <mesh>
-            <RoundedRectangleGeometry args={[cardWidth + 0.1, cardHeight + 0.1, 1.5, deckDepth + 0.3]} />
-            <meshBasicMaterial color="black" transparent opacity={0.6} />
-          </mesh>
-        )} */}
       </GameElement>
     </>
   );

@@ -1,5 +1,13 @@
 import type { Card as CardType, GamePieceAppearance } from "@/state/types";
-import { CARD_Z_INDEX, cardHeight, cardRadius, cardWidth, coordScale } from "../constants/card";
+import {
+  CARD_Z_INDEX,
+  cardHeight,
+  cardRadius,
+  cardWidth,
+  coordScale,
+  HIGHLIGHT_BORDER_COLOR,
+  HIGHLIGHT_BORDER_WIDTH,
+} from "../constants/card";
 import GameElement from "./GameElement";
 import { getAssetPath } from "@/components/utils";
 import { useMemo } from "react";
@@ -14,6 +22,7 @@ import useHabitatIconTextures from "@/hooks/useHabitatIconTextures";
 import useAbilityTextures from "@/hooks/useAbilityTextures";
 import { DoubleSide, FrontSide } from "three";
 import useElementIconTextures, { ElementName } from "@/hooks/useElementIconTextures";
+import { useDebugMode, isDebugging } from "@/hooks/useDebugMode";
 
 const PADDING_MAP: Record<CardType["type"], [number, number, number, number]> = {
   animal: [6, 6, 8, 6].map((n) => n / coordScale) as [number, number, number, number],
@@ -31,9 +40,6 @@ const ABILITY_ICON_SIZE = HABITAT_ICON_SIZE + HABITAT_CONTAINER_PADDING * 2;
 const ABILITY_ICON_SPACING = 3 / coordScale;
 const ELEMENTS_BACKGROUND_HEIGHT = 18 / coordScale;
 
-const HIGHLIGHT_BORDER_WIDTH = 5 / coordScale;
-const HIGHLIGHT_BORDER_COLOR = "#3b82f6";
-
 export type CardOptions = {
   showAbilityButtons?: boolean;
   dimLevel?: number;
@@ -49,7 +55,7 @@ export type CardProps = {
   withFloatAnimation?: boolean;
 };
 
-const Card = ({
+export default function Card({
   card,
   gamePieceAppearance,
   onClick,
@@ -57,13 +63,23 @@ const Card = ({
   isHighlighted = false,
   isDimmed = false,
   withFloatAnimation = false,
-}: CardProps) => {
+}: CardProps) {
   const { state } = useGameState();
   const { name, type } = card;
   const cardIMGURL = getAssetPath(type, name);
   const texture = useSRGBTexture(cardIMGURL);
   const backTexture = useSRGBTexture("/ecosfera_baltica/card_back.avif");
-  const { isShowUID, useDimmed } = useControls({ isShowUID: { value: false }, useDimmed: { value: true } });
+  const isDebugMode = useDebugMode();
+  const debugControls = useControls(
+    {
+      isShowUID: { value: false },
+      useDimmed: { value: true },
+    },
+    { disabled: !isDebugging },
+  );
+
+  const isShowUID = isDebugMode && debugControls.isShowUID;
+  const useDimmed = debugControls.useDimmed;
   const isPlantOrAnimal = card.type === "plant" || card.type === "animal";
   const habitatIconTextures = useHabitatIconTextures();
   const [paddingTop, paddingRight, paddingBottom, paddingLeft] = PADDING_MAP[card.type];
@@ -206,9 +222,9 @@ const Card = ({
             outlineOffsetY={1 / coordScale}
             outlineColor="#000"
             outlineBlur={3 / coordScale}
-            fontSize={1.9}
+            fontSize={1.6}
             overflowWrap="break-word"
-            maxWidth={cardWidth - paddingLeft - paddingRight}
+            maxWidth={cardWidth}
             anchorX="center"
             anchorY="bottom"
             textAlign="center"
@@ -281,6 +297,4 @@ const Card = ({
       </GameElement>
     )
   );
-};
-
-export default Card;
+}

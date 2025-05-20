@@ -1,6 +1,6 @@
-import { FaFish, FaHouse, FaTree, FaXmark } from "react-icons/fa6";
+import { FaHouse, FaXmark } from "react-icons/fa6";
 import { MdHexagon } from "react-icons/md";
-import { GiCardPickup } from "react-icons/gi";
+import { GiCardPickup, GiOctopus } from "react-icons/gi";
 import { useGameState } from "@/context/game-state/hook";
 import clsx from "clsx";
 import { useSelector } from "@xstate/react";
@@ -9,7 +9,7 @@ import {
   selectNumberOfHabitatsUnlocked,
   selectNumberOfPlantsBought,
 } from "@/state/machines/selectors";
-
+import { PiPlantFill } from "react-icons/pi";
 const Menu = () => {
   const { emit, guards, state, showPolicies, setShowPolicies, gameConfig, actorRef, test } = useGameState();
   const numberOfAnimalsBought = useSelector(actorRef, selectNumberOfAnimalsBought);
@@ -32,23 +32,31 @@ const Menu = () => {
         <FaHouse className="h-6 w-6" />
       </button>
       <div className="flex">
-        {gameConfig.useSpecialCards && !guards.isPolicyCancellationBlocked() && guards.isActivePolicyCardPositive() && (
-          <CancelButton onClick={emit.cancelPolicyCard()} />
-        )}
+        {gameConfig.useSpecialCards &&
+          state.commandBar &&
+          !guards.isPolicyCancellationBlocked() &&
+          guards.isActivePolicyCardPositive() && <CancelButton onClick={emit.cancelPolicyCard()} />}
         {state.commandBar && test.cancelAbility() && <CancelButton onClick={emit.cancelAbility()} />}
         {state.commandBar && (
           <div
-            className="-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all"
+            className={clsx(
+              "-mr-8 flex items-center bg-[#0087BE] pl-10 pr-10 text-white transition-all",
+              state.stage?.hidden ? "cursor-pointer hover:bg-[#0087BE]/80" : "",
+            )}
             style={{
               clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
               WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 20px 100%)",
             }}
-            onClick={() => setShowPolicies(!showPolicies)}
+            onClick={() => {
+              if (state.stage?.hidden) {
+                emit.stageHideCards()();
+              }
+            }}
           >
             {state.commandBar.text}
           </div>
         )}
-        {gameConfig.useSpecialCards && (
+        {gameConfig.useSpecialCards && state.stage === undefined && (
           <button
             className={clsx(
               "-mr-6 bg-[#204B7B] pl-10 pr-8 text-white transition-all hover:bg-[#3070b8]",
@@ -64,29 +72,26 @@ const Menu = () => {
           </button>
         )}
         <div
-          className="flex items-center justify-between space-x-3 bg-blue-500 pl-12 pr-8 text-white"
+          className="flex items-center justify-between space-x-6 bg-blue-500 pl-12 pr-8 text-white"
           style={{
             clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 10% 100%)",
             WebkitClipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 10% 100%)",
             backgroundImage: "url(/ecosfera_baltica/lobby_bg.avif",
-            backgroundPosition: "60% 50%",
+            backgroundPosition: "10% 55%",
             backgroundSize: "240%",
           }}
         >
-          <div className="flex items-center space-x-2 text-xl">
-            <FaTree className="h-6 w-6 text-green-500" />
-            <span>{numberOfPlantsBought}</span>
+          <div className="flex items-center space-x-1 text-xl">
+            <PiPlantFill className="h-[28px] w-[28px] text-[#D7DD70]" />
+            <span className="mt-1">{numberOfPlantsBought}</span>
           </div>
-          <div className="flex items-center space-x-2 text-xl">
-            <FaFish className="h-6 w-6 text-orange-500" />
-            <span>{numberOfAnimalsBought}</span>
+          <div className="flex items-center space-x-1 text-xl">
+            <GiOctopus className="h-6 w-6 text-[#f7ba4c]" />
+            <span className="mt-1">{numberOfAnimalsBought}</span>
           </div>
-          <div className="flex items-center space-x-2 text-xl">
-            <MdHexagon className="h-6 w-6 text-blue-500" />
-            <span>
-              {numberOfHabitatsUnlocked}
-              /6
-            </span>
+          <div className="flex items-center space-x-1 text-xl">
+            <MdHexagon className="h-6 w-6 text-[#3ebfe3]" />
+            <span className="mt-1">{numberOfHabitatsUnlocked}/6</span>
           </div>
         </div>
       </div>

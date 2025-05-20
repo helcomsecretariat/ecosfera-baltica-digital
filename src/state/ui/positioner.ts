@@ -197,6 +197,7 @@ export const discardPositions = (gameState: GameState): Coordinate[] => {
 };
 
 export const positionStagedCards = (gameState: GameState): GamePieceCoordsDict => {
+  if (gameState.stage?.hidden) return {};
   const cause = gameState.stage?.cause || [];
   const effect = gameState.stage?.effect;
   const pieceCoordinates: GamePieceCoordsDict = {};
@@ -337,7 +338,11 @@ export const positionAbilityTokens = (gameState: GameState): GamePieceCoordsDict
     });
 
     // refreshing abilities
-    if (player.uid === gameState.turn.player && gameState.stage?.eventType === "abilityRefresh") {
+    if (
+      player.uid === gameState.turn.player &&
+      gameState.stage?.eventType === "abilityRefresh" &&
+      !gameState.stage?.hidden
+    ) {
       const canRefresh = TurnMachineGuards.canRefreshAbility({ context: gameState });
       const lastRefreshedAbility = find(player.abilities, { uid: last(gameState.turn.refreshedAbilityUids) });
       const abilitiesOnStage = canRefresh ? player.abilities.filter(({ isUsed }) => isUsed) : [lastRefreshedAbility!];
@@ -350,7 +355,7 @@ export const positionAbilityTokens = (gameState: GameState): GamePieceCoordsDict
               usedAbilities.length === 1
                 ? 0
                 : 0 - Math.ceil(usedAbilities.length / 2) * (abilityOffset / 2) + abilityOffset * index,
-            y: -cardHeight,
+            y: -cardHeight + 1.8,
             z: 50,
           },
           rotation: { x: 0, y: 0, z: 0 },

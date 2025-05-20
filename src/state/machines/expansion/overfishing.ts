@@ -4,7 +4,7 @@ import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
 import { concat, filter, find, without } from "lodash";
-import i18n from "@/i18n";
+import { TranslationKey } from "@/i18n";
 import * as StrictProtection from "./strict_protection";
 import * as Shared from "./shared";
 
@@ -13,10 +13,10 @@ export const cardName = "Overfishing";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.overfishing.name"),
-    description: i18n.t("deck.policies.overfishing.description"),
-    eventDescription: i18n.t("deck.policies.overfishing.eventDescription"),
-  },
+    name: "deck.policies.overfishing.name" as const,
+    description: "deck.policies.overfishing.description" as const,
+    eventDescription: "deck.policies.overfishing.eventDescription" as const,
+  } as Record<string, TranslationKey>,
 } as const;
 
 export const actions = {

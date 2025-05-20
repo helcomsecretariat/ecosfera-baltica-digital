@@ -1,6 +1,15 @@
-import { AbilityTile, AnimalCard, Card, CardType, GameState, HabitatName, PlantCard } from "@/state/types";
-import { countBy, find, compact, every, intersection, isEmpty, first } from "lodash";
-import { getAnimalHabitatPairs, getDuplicateElements } from "./helpers/turn";
+import {
+  AbilityTile,
+  AnimalCard,
+  Card,
+  CardType,
+  GameState,
+  HabitatName,
+  isExpansionStageEvent,
+  PlantCard,
+} from "@/state/types";
+import { countBy, find, compact, every, isEmpty, first } from "lodash";
+import { getAnimalHabitatPairs, getDuplicateElements, getPlayedAnimalsForHabitatUnlock } from "./helpers/turn";
 import { Tail } from "../../lib/types";
 
 export const TurnMachineGuards = {
@@ -80,25 +89,7 @@ export const TurnMachineGuards = {
     uid: Card["uid"],
   ) => !exhaustedCards.includes(uid),
 
-  canUnlockHabitats: ({ context: { turn, players, habitatMarket } }: { context: GameState }) => {
-    const { playedCards, player } = turn;
-
-    const playedAnimals =
-      (find(players, { uid: player })
-        ?.hand.filter(({ uid }) => playedCards.includes(uid))
-        .filter(({ type }) => type === "animal") as AnimalCard[]) ?? [];
-
-    const animalhabitatPairs = getAnimalHabitatPairs(playedAnimals);
-
-    return animalhabitatPairs.some(
-      (animalHabitatPair) =>
-        habitatMarket.deck.filter(
-          (habitat) =>
-            !habitat.isAcquired &&
-            intersection(animalHabitatPair[0].habitats, animalHabitatPair[1].habitats).includes(habitat.name),
-        ).length > 0,
-    );
-  },
+  canUnlockHabitats: ({ context }: { context: GameState }) => getPlayedAnimalsForHabitatUnlock({ context }).length > 0,
 
   abilityAvailable: ({ context: { players } }: { context: GameState }, token: AbilityTile) =>
     players[0].abilities.includes(token) && !token.isUsed,
@@ -295,6 +286,10 @@ export const TurnMachineGuards = {
 
   shouldAutomaticallyDrawPolicy: ({ context }: { context: GameState }) =>
     context.config.useSpecialCards && context.turn.automaticPolicyDraw !== undefined,
+
+  allowStageShowCards: ({ context }: { context: GameState }) =>
+    context.stage !== undefined &&
+    (context.stage.eventType === "abilityRefresh" || isExpansionStageEvent(context.stage.eventType)),
 };
 
 export type ContextInjectedGuardMap = {

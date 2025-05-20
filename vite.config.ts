@@ -28,13 +28,4 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "src"),
     },
   },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          three: ["three"], // Force Three.js into a single chunk
-        },
-      },
-    },
-  },
 }));

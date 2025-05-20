@@ -4,7 +4,7 @@ import { concat, filter, find, without } from "lodash";
 import { assign } from "@/state/machines/assign";
 import { ExpansionConditionConfig, ExpansionStateNodeConfig, ToParameterizedObject } from "@/lib/types";
 import { TurnMachineGuards } from "../guards";
-import i18n from "@/i18n";
+import i18n, { TranslationKey } from "@/i18n";
 import * as Shared from "./shared";
 
 export const cardPrefix = "fishingGearRegulation";
@@ -12,11 +12,12 @@ export const cardName = "Fishing gear regulation";
 
 export const uiStrings = {
   [cardName]: {
-    name: i18n.t("deck.policies.fishingGearRegulation.name"),
-    description: i18n.t("deck.policies.fishingGearRegulation.description"),
-    eventDescription: i18n.t("deck.policies.fishingGearRegulation.eventDescription"),
-  },
-};
+    name: "deck.policies.fishingGearRegulation.name" as const,
+    description: "deck.policies.fishingGearRegulation.description" as const,
+    eventDescription: "deck.policies.fishingGearRegulation.eventDescription" as const,
+    commandBar: "deck.policies.fishingGearRegulation.commandBarText" as const,
+  } as Record<string, TranslationKey>,
+} as const;
 
 const internalContext: { destination: Card | null } = {
   destination: null,
@@ -26,7 +27,7 @@ export const actions = {
   [`${cardPrefix}Init`]: assign(({ context }: { context: GameState }) =>
     produce(context, (draft) => {
       draft.commandBar = {
-        text: i18n.t("deck.policies.fishingGearRegulation.commandBarText"),
+        text: i18n.t(uiStrings[cardName].commandBar),
       };
     }),
   ),

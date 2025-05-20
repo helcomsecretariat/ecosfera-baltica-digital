@@ -31,7 +31,7 @@ const EndTurnButton = () => {
           }}
           onClick={emit.playerEndTurnClick()}
         >
-          {i18n.t("endTurnButton.endTurn")}
+          {i18n.t("buttons.endTurn")}
         </button>
       </Html>
     </motion.mesh>

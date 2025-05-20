@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { generateRandomName, generateRandomString } from "@/lib/utils";
+import { generateRandomName, generateRandomString, cn } from "@/lib/utils";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover";
 import { InfoIcon } from "@/components/ui/icons";
@@ -19,7 +19,7 @@ interface LobbyScreenProps {
 }
 
 const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
-  const { t } = useTranslation();
+  const { t, i18n, ready } = useTranslation();
   const searchParams = new URLSearchParams(window.location.search);
   const urlSeed = searchParams.get("seed") ?? generateRandomString(8);
 
@@ -32,6 +32,14 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
   const seedInputRef = useRef<HTMLInputElement>(null);
 
   const existingNames = new Set<string>();
+
+  const [isChangingLang, setIsChangingLang] = useState(false);
+
+  const handleLanguageChange = (langCode: string) => {
+    setIsChangingLang(true);
+    i18n.changeLanguage(langCode);
+    setIsChangingLang(false);
+  };
 
   useEffect(() => {
     // Generate unique player names when the number of players changes.
@@ -69,12 +77,38 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
     setplayerCount(playerCount - 1);
   };
 
+  const languages = [
+    { code: "en", name: "English", flag: "🇬🇧" },
+    { code: "fi", name: "Suomi", flag: "🇫🇮" },
+  ];
+
   return (
     <div
       className="flex min-h-screen flex-col items-center justify-center bg-cover bg-center p-4"
       style={{ backgroundImage: "url(/ecosfera_baltica/lobby_bg.avif)" }}
     >
       <section className="mt-auto flex w-full flex-col items-center justify-center space-y-5 rounded-lg p-2 pb-12 text-base text-white backdrop-blur-[3px] sm:w-8/12 md:w-5/12 lg:text-xl xl:text-2xl md:portrait:w-8/12 md:portrait:text-xl lg:portrait:text-3xl">
+        {/* Language Selector */}
+        <div className="flex w-full justify-between">
+          <span>{t("lobby.language")}</span>
+          <div className="flex gap-2">
+            {languages.map((lang) => (
+              <Button
+                key={lang.code}
+                variant={i18n.language.startsWith(lang.code) ? "secondary" : "tertiary"}
+                onClick={() => handleLanguageChange(lang.code)}
+                disabled={isChangingLang || !ready}
+                className={cn(
+                  "flex min-w-[80px] items-center justify-center gap-2",
+                  isChangingLang && "animate-pulse-opacity [&]:cursor-wait",
+                )}
+              >
+                <span className="text-lg">{lang.flag}</span>
+                {lang.name}
+              </Button>
+            ))}
+          </div>
+        </div>
         {/* Number of Players */}
         <div className="relative flex w-full flex-col gap-1">
           <AnimatePresence mode="popLayout">
@@ -205,7 +239,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
         </Accordion>
         {/* Start Game Button */}
         <div className="flex w-full justify-center pt-12">
-          <ImageButton onClick={handleStartGame}>{t("lobby.playButton")}</ImageButton>
+          <ImageButton onClick={handleStartGame}>{t("buttons.play")}</ImageButton>
         </div>
       </section>
     </div>

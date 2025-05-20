@@ -52,6 +52,9 @@ export function isPlayerUID(uid: string): uid is PlayerUID {
 export function isPolicyUID(uid: string): uid is PolicyUID {
   return uid.startsWith("policy-");
 }
+export function isExpansionStageEvent(eventType: StageEventType): eventType is ExpansionPackStageEvent {
+  return eventType.startsWith("policy_");
+}
 
 export interface GameState {
   turn: {
@@ -91,6 +94,7 @@ export interface GameState {
     cause: CardOrTileUID[] | undefined;
     effect: CardOrTileUID[] | undefined;
     outcome: "positive" | "negative";
+    hidden?: boolean;
   };
   commandBar?: {
     text: string;

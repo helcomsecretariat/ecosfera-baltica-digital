@@ -30,6 +30,8 @@ export interface ActionEmmiters {
   animalDeckClick: EmitterFunction<[]>;
   plantDeckClick: EmitterFunction<[]>;
   stageConfirm: EmitterFunction<[]>;
+  stageShowCards: EmitterFunction<[]>;
+  stageHideCards: EmitterFunction<[]>;
   iddqd: EmitterFunction<[context: Partial<TurnMachineContext>]>;
   acquiredPolicyCardClick: EmitterFunction<[card: PolicyCard]>;
   cancelPolicyCard: EmitterFunction<[]>;
@@ -59,6 +61,8 @@ const actionToEventMap: {
     abilityName,
   }),
   stageConfirm: () => ({ type: "user.click.stage.confirm" }),
+  stageShowCards: () => ({ type: "user.click.stage.showCards" }),
+  stageHideCards: () => ({ type: "user.click.stage.hideCards" }),
   iddqd: (context: Partial<TurnMachineContext>) => ({ type: "iddqd", context }),
   acquiredPolicyCardClick: (card: PolicyCard) => ({ type: "user.click.policy.card.acquired", card }),
   cancelPolicyCard: () => ({ type: "user.click.policies.cancel" }),

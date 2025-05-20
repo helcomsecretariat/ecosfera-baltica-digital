@@ -6,7 +6,7 @@
     "difficulty": "Vaikeustaso",
     "difficultyInfo": "Vaikeustaso vaikuttaa markkinoilta lainattavien elementtikorttien kokonaismäärään pelin aikana, ei vain yhdellä vuorolla.",
     "advancedOptions": "Lisäasetukset",
-    "useExpansionPack": "Käytä laajennuspakkausta",
+    "useExpansionPack": "Käytä laajennusosaa",
     "seed": "Siemen",
     "seedInfo": "Siemen varmistaa johdonmukaisen pakan sekoituksen. Saman siemenen käyttäminen johtaa samaan korttijärjestykseen joka kerta."
   },
@@ -16,14 +16,14 @@
         "implementation": "Nostit rahoituskortin, joka voi\nedistää toimenpiteen toteuttamista!",
         "negative": "Nostit erikoiskortin!",
         "dual": "Nostit erikoiskortin!",
-        "positive": "Nostit erikoisen toimenpidekortin!",
+        "positive": "Nostit erikoistoimenpidekortin!",
         "positiveExtra": {
-          "hasFunding": "Voit toteuttaa sen käyttämällä yhden rahoituskorteistasi.",
-          "noFunding": "Voit aktivoida sen, kun sinulla on rahoituskortti."
+          "hasFunding": "Voit toteuttaa toimenpiteen käyttämällä yhden rahoituskorteistasi.",
+          "noFunding": "Voit toteuttaa toimenpiteen, kun sinulla on rahoituskortti."
         },
         "automaticDraw": {
-          "habitat": "Tämä kortti nostettiin automaattisesti elinympäristön avaamisen jälkeen.",
-          "extinction": "Tämä kortti nostettiin automaattisesti sukupuuttotapahtuman jälkeen."
+          "habitat": "Tämä kortti nostettiin automaattisesti elinympäristönlaatan asettamisen jälkeen.",
+          "extinction": "Tämä kortti nostettiin automaattisesti vaikutuslaatan asettamisen jälkeen."
         }
       },
       "funding": {
@@ -33,145 +33,145 @@
       },
       "hazardousSubstanceRegulation": {
         "name": "Vaarallisten aineiden sääntely",
-        "description": "Voit yhdistää tuottajan ja eläimen, joilla on sama elinympäristösymboli, varmistaaksesi elinympäristölaatan",
-        "eventDescription": "Vaarallisten aineiden ennakoiva sääntely vähentää merkittävästi niiden käyttöä ja päästöjä Itämereen.",
-        "pickProducerCommandBarText": "Valitse tuottajakortti, jolla on sama elinympäristö kuin eläinkortilla",
-        "pickAnimalCommandBarText": "Valitse eläinkortti, jolla on sama elinympäristö kuin tuottajakortilla"
+        "description": "Voit yhdistää tuottajan ja kuluttajan, joilla on sama elinympäristösymboli, saadaksesi elinympäristölaatan",
+        "eventDescription": "Sääntelemällä ennaltaehkäisevästi vaarallisia aineita niiden käyttö ja päästöt Itämereen vähenevät merkittävästi.",
+        "pickProducerCommandBarText": "Valitse tuottajakortti, jolla on sama elinympäristö kuin kuluttajakortilla.",
+        "pickAnimalCommandBarText": "Valitse kuluttajakortti, jolla on sama elinympäristö kuin tuottajakortilla."
       },
       "wasteWaterTreatmentFailure": {
         "name": "Jätevedenpuhdistamon toimintahäiriö",
-        "description": "Jokainen pelaaja, jolla on vähintään yksi ravinnekortti kädessään, ottaa ihmistoimintakortin ja asettaa sen käteensä.",
-        "eventDescription": "Rankkasade aiheuttaa jätevedenpuhdistamon ylivuodon, vapauttaen ravinteita mereen."
+        "description": "Jokainen pelaaja, jolla on vähintään yksi ravinnekortti kädessään, ottaa painekortin käteensä.",
+        "eventDescription": "Rankkasade aiheuttaa jätevedenpuhdistamon ylivuodon, päästäen ravinteita mereen."
       },
       "warmSummer": {
         "name": "Lämmin kesä",
-        "description": "Jos vähintään yksi toimenpide on toteutettu kun tämä kortti nostetaan, kaikki pelaajat voivat aktivoida kaikki toimintamerkit. Jos toimenpiteitä ei ole toteutettu, kaikkien pelaajien täytyy deaktivoida kaikki toimintamerkit.",
-        "eventDescription": "Ilmastonmuutos johtaa lämpimään kesään ja meriveden lämpötila nousee, aiheuttaen painetta ekosysteemille. Muiden paineiden vähentäminen on tarpeen sietokyvyn lisäämiseksi."
+        "description": "Jos vähintään yksi toimenpide on toteutettu kun tämä kortti nostetaan, kaikki pelaajat voivat aktivoida kaikki kykymerkit. Jos toimenpiteitä ei ole toteutettu, kaikkien pelaajien täytyy deaktivoida kaikki kykymerkit.",
+        "eventDescription": "Ilmastonmuutos johtaa lämpimään kesään ja meriveden lämpötila nousee, aiheuttaen painetta ekosysteemille. Muita paineita on vähennettävä sietokyvyn lisäämiseksi."
       },
       "climateChange": {
         "name": "Ilmastonmuutos",
         "description": "Aina kun pelaaja saa vaikutuslaatan, lisätään ylimääräinen vaikutuslaatta vaikutuslaattapalapeliin.",
-        "eventDescription": "Ihmistoiminnan aiheuttamat CO2-päästöt johtavat muutoksiin lämpötilassa, sademäärissä, tuulen nopeudessa ja monessa muussa, aiheuttaen lisäpainetta Itämeren ekosysteemille.",
-        "stageEventText": "Ilmastonmuutoksen takia saat ylimääräisen sukupuuttolaatan!"
+        "eventDescription": "Ihmistoiminnan hiilidioksidipäästöt aiheuttavat muutoksia lämpötilaan, sademääriin, tuulen nopeuteen ja moneen muuhun, lisäten painetta Itämeren ekosysteemille.",
+        "stageEventText": "Ilmastonmuutoksen ansiosta saat ylimääräisen sukupuuttolaatan!"
       },
       "oilSpill": {
         "name": "Öljyvahinko",
         "description": "Poista kaikki pöydällä olevat linnut (pelaajien käsistä ja markkinoilta). Käsissä olevia kortteja ei korvata.",
-        "eventDescription": "Laivaonnettomuus aiheuttaa öljyvuodon, joka saavuttaa rannan ja vaikuttaa merelliseen suojelualueeseen (MPA)."
+        "eventDescription": "Laivaonnettomuus johtaa öljyvuotoon, joka iskee rannikon merensuojelualueeseen."
       },
       "hazardousIndustrialSubstances": {
         "name": "Teollisuuden vaaralliset aineet",
-        "description": "Poista kaikki pöydällä olevat tuottajakortit (jokaisen pelaajan kädestä ja markkinoilta). Käsissä olevia kortteja ei korvata.",
-        "eventDescription": "Vaarallisten aineiden päästöt vaikuttavat akuutisti planktoniin, vaikuttaen koko ravintoketjuun."
+        "description": "Poista kaikki pöydällä olevat tuottajakortit (pelaajien käsistä ja markkinoilta). Käsissä olevia kortteja ei korvata.",
+        "eventDescription": "Vaarallisten aineiden päästöt vaikuttavat voimakkaasti planktoniin ja sitä kautta koko muuhun ravintoketjuun."
       },
       "overfishing": {
         "name": "Ylikalastus",
         "description": "Poista kaikki pöydällä olevat kalat (pelaajien käsistä ja markkinoilta). Käsissä olevia kortteja ei korvata.",
-        "eventDescription": "Tieteellistä neuvonantoa kalastuksesta ei noudateta, minkä seurauksena tapahtuu kestämätöntä kalastusta. Kalakannat romahtavat, aiheuttaen epätasapainoa ekosysteemissä ja alhaisia saaliita tulevaisuudessa."
+        "eventDescription": "Tieteeseen perustuvia neuvoja ei noudateta, ja kalastuksesta tulee kestämätöntä. Kalakannat romahtavat horjuttaen ekosysteemin tasapainoa ja pienentäen tulevaisuuden kalasaaliita."
       },
       "hunting": {
         "name": "Metsästys",
-        "description": "Poista pysyvästi kaikki kädessäsi olevat nisäkkäät ja linnut pelistä.",
-        "eventDescription": "Jatkuva metsästys johtaa suureen määrään tapettuja alleja muuton aikana. Lajin toipuminen kärsii vakavasti ja laji pysyy uhanalaisena."
+        "description": "Poista pysyvästi kaikki kädessä olevat nisäkkäät ja linnut pelistä.",
+        "eventDescription": "Jatkuva metsästys johtaa suureen määrään tapettuja alleja niiden muuton aikana. Lajin toipuminen kärsii vakavasti ja laji luokitellaan edelleen uhanalaiseksi."
       },
       "atmosphericDeposition": {
         "name": "Vaarallisten aineiden ilmalaskeuma",
-        "description": "Poista Calanoida pelistä riippumatta siitä, missä se on.",
-        "eventDescription": "Vaaralliset aineet kuten dioksiinit ja elohopea kulkeutuvat pitkiä matkoja ilmakehässä, vaikuttaen alueisiin kaukana niiden alkuperästä, aiheuttaen mm. mutaatioita ja akuuttia kuolleisuutta."
+        "description": "Poista \"Calanoida -keijuhankajalkaiset\" -kortti pelistä riippumatta siitä, missä se on.",
+        "eventDescription": "Vaaralliset aineet kuten dioksiinit ja elohopea kulkeutuvat pitkiä matkoja ilmakehässä ja vaikuttavat alueisiin kaukana niiden alkuperästä, aiheuttaen mm. mutaatioita ja kuolleisuuden kasvua."
       },
       "habitatRestoration": {
         "name": "Elinympäristön ennallistaminen",
-        "description": "Voit poistaa yhden vaikutuslaatan vaikutuslaattapalapeliltä",
-        "eventDescription": "Rannikon elinympäristöjen ennallistaminen johtaa elinvoimaisiin kosteikkoihin ja selkeään kalojen lisääntymismenestyksen kasvuun sekä sietokyvyltään parempaan ekosysteemiin."
+        "description": "Voit poistaa yhden vaikutuslaatan vaikutuslaattapalapelistä",
+        "eventDescription": "Rannikon elinympäristöjen ennallistaminen muuttaa kosteikot elinvoimaisiksi. Kalojen lisääntymismenestys paranee ja ekosysteemin sietokyky kasvaa."
       },
       "bubbleCurtains": {
-        "name": "Ilmakuplaseinämät",
+        "name": "Kuplaverhot",
         "description": "Kaikki pelaajat voivat palauttaa kaikki kolme kykymerkkiään.",
-        "eventDescription": "Vedenalaisten rakennushankkeiden aikana käytetään ilmakuplaseiniä ja vedenalaisen melun leviäminen ja taso laskevat, minimoiden paineen melulle herkille lajeille."
+        "eventDescription": "Vedenalaisten rakennushankkeiden aikana käytetään kuplaverhoa joka pienentää vedenalaista melua ja estää sitä leviämästä. Melulle herkille lajeille aiheutuva paine minimoituu."
       },
       "nutrientUpwelling": {
         "name": "Ravinteiden kumpuaminen ja sisäinen kierto",
-        "description": "Kaikki pelaajat ottavat vuorollaan (alkaen aktiivisesta pelaajasta) enintään kaksi ravinnekorttia käteensä, tai kunnes markkinat ovat tyhjät.",
+        "description": "Kaikki pelaajat ottavat vuorollaan (alkaen vuorossa olevasta pelaajasta) enintään kaksi ravinnekorttia käteensä, tai kunnes markkinat ovat tyhjät.",
         "eventDescription": "Ravinteiden sisäinen kierto ja kumpuaminen tukee tuottajien kasvua, vaikuttaen ravintoketjuun positiivisesti tai negatiivisesti."
       },
       "excessiveFertilizerUse": {
         "name": "Liiallinen lannoitteiden käyttö",
-        "description": "Lisää kaksi ravinnekorttia aktiivisen pelaajan käteen. Jos markkinoilla ei ole enää ravinnekortteja, ota ihmistoimintakortti. Aseta kaikki kaikkien pelaajien käsissä olevat happikortit takaisin markkinoille.",
-        "eventDescription": "Liiallinen lannoitteiden käyttö maataloudessa johtaa lisääntyneisiin ravinnepäästöihin mereen."
+        "description": "Lisää kaksi ravinnekorttia vuorossa olevan pelaajan käteen. Jos markkinoilla ei ole enää ravinnekortteja, ota painekortti. Palauta kaikkien pelaajien kaikki kädessä olevat happikortit takaisin markkinoille.",
+        "eventDescription": "Liiallinen lannoitteiden käyttö maataloudessa lisää ravinnepäästöjä mereen."
       },
       "upgradedWasteWaterTreatment": {
-        "name": "Parannettu jätevedenpuhdistus",
-        "description": "Ota ylimääräinen ravinnekortti markkinoilta tai, jos sinulla on kolme ravinnekorttia kädessäsi, voit laittaa yhden takaisin markkinoille.",
+        "name": "Parempi jätevedenpuhdistus",
+        "description": "Ota ylimääräinen ravinnekortti markkinoilta tai jos sinulla on kolme ravinnekorttia kädessäsi, voit laittaa yhden takaisin markkinoille.",
         "eventDescription": "Investointi uusimman teknologian käyttöönottoon jätevedenpuhdistuksessa vähentää merkittävästi ravinnepäästöjä mereen."
       },
       "improvedNutrientRetention": {
-        "name": "Parannettu ravinteiden pidättäminen maataloudessa",
+        "name": "Parempi ravinteiden pidättyminen maataloudessa",
         "description": "Kaikki tuottajakortit vaativat yhden ravinteen vähemmän loppupelin ajan.",
-        "eventDescription": "Parhaiden käytettävissä olevien lannoitusteknologioiden hyödyntäminen vähentää riskiä ravinteiden valumisesta maataloudesta mereen."
+        "eventDescription": "Parhaiden käytettävissä olevien lannoitusteknologioiden hyödyntäminen vähentää riskiä ravinteiden valumisesta pelloilta mereen."
       },
       "migratoryBarrierRemoval": {
         "name": "Vaellusesteiden poisto",
-        "description": "Ota yksi kala- tai lintukortti markkinoilta ja lisää se minkä tahansa pelaajan käteen.",
+        "description": "Ota yksi kala- tai lintukortti markkinoilta ja lisää se kenen tahansa pelaajan käteen.",
         "eventDescription": "Patojen poistaminen joista lisää vaelluskalalajien liikkumista ja lisääntymismenestystä.",
-        "pickSpeciesCommandBarText": "Valitse kala- tai lintukortti markkinoilta",
-        "pickPlayerCommandBarText": "Valitse pelaajan käsi, johon valitsemasi kortti siirretään"
+        "pickSpeciesCommandBarText": "Valitse kala- tai lintukortti markkinoilta.",
+        "pickPlayerCommandBarText": "Valitse pelaaja, jonka käteen valitsemasi kortti lisätään."
       },
       "fishingGearRegulation": {
-        "name": "Kalastusvälineiden sääntely",
-        "description": "Lisää kaikki markkinoilla olevat kortit, joissa on mutasymboli, minkä tahansa pelaajan käteen.",
-        "eventDescription": "Pohjatroolauksen sääntely ja alueellinen jakautuminen mahdollistaa pohjan elinympäristöjen toipumisen.",
-        "commandBarText": "Valitse pelaajan käsi, johon kaikki mutakorttilajit siirretään"
+        "name": "Kalastusmenetelmien sääntely",
+        "description": "Lisää kaikki markkinoilla olevat kortit, joissa on mutaelinympäristösymboli, kenen tahansa pelaajan käteen.",
+        "eventDescription": "Pohjatroolauksen sääntely ja alueellinen jakautuminen mahdollistavat pohjan elinympäristöjen toipumisen.",
+        "commandBarText": "Valitse pelaajan, jonka käteen kaikki mutaelinympäristön kortit lisätään."
       },
       "recyclingAndWasteDisposal": {
         "name": "Kierrätys ja jätehuolto",
-        "description": "Poista kaksi ihmistoimintakorttia minkä tahansa pelaajan/pelaajien kädestä/käsistä ja korvaa kortit korteilla pelaajan/pelaajien pakasta/pakoista.",
-        "eventDescription": "Parantunut jätehuolto ja kierrätys yhdistettynä kertakäyttömuovin vähäisempään tuotantoon vähentää mereen päätyvän roskan määrää.",
-        "commandBarText": "Valitse poistettava katastrofikortti minkä tahansa pelaajan kädestä"
+        "description": "Poista kaksi painekorttia kenen tahansa pelaajan/pelaajien kädestä ja korvaa kortit pelaajan/pelaajien pakasta otetuilla korteilla.",
+        "eventDescription": "Parempi jätehuolto, kierrätys ja kertakäyttömuovin tuotannon rajoittaminen vähentävät mereen päätyvän roskan määrää.",
+        "commandBarText": "Valitse poistettava painekortti kenen tahansa pelaajan kädestä."
       },
       "greenEnergy": {
         "name": "Vihreä energia",
-        "description": "Jos rannikko-, kova- tai pehmeäpohjaisia elinympäristöjä on jo ennallistettu kun tämä kortti nostetaan, lisää vaikutuslaatta. Jos mitään näistä elinympäristöistä ei ole ennallistettu ennen tämän kortin nostamista, valitse yksi näistä elinympäristöistä ennallistettavaksi välittömästi.",
-        "eventDescription": "Merellä tapahtuva vihreän energian kehittäminen vaatii tilaa, ja asennusten positiiviset ja/tai negatiiviset vaikutukset ekosysteemiin riippuvat suoraan suunnitteluprosessin laadusta ja ajoituksesta.",
-        "commandBarText": "Valitse joko Kallio- tai Muta-elinympäristö avattavaksi"
+        "description": "Jos kallio-, muta- tai rannikkoelinympäristö on jo ennallistettu kun tämä kortti nostetaan, lisää vaikutuslaatta. Jos mitään näistä elinympäristöistä ei ole ennallistettu ennen tämän kortin nostamista, valitse yksi näistä elinympäristöistä ennallistettavaksi välittömästi.",
+        "eventDescription": "Merellä tapahtuva vihreän energian kehittäminen vaatii tilaa, ja rakennushankkeiden positiiviset ja/tai negatiiviset vaikutukset ekosysteemiin riippuvat suoraan suunnitteluprosessin laadusta ja ajoituksesta.",
+        "commandBarText": "Valitse joko kallio-, muta- tai rannikkoelinympäristölaatta avattavaksi."
       },
       "underwaterNoise": {
         "name": "Vedenalainen melu",
-        "description": "Seuraava pelaaja ei saa käyttää kykyjä.",
-        "eventDescription": "Vilkas laivaliikenne aiheuttaa liikaa melua veden alla, vaikeuttaen kalojen ja pyöriäisten ravinnon löytämistä."
+        "description": "Seuraava pelaaja ei saa käyttää kykymerkkejään.",
+        "eventDescription": "Vilkas laivaliikenne aiheuttaa liikaa melua veden alla vaikeuttaen kalojen ja pyöriäisten ravinnon löytämistä."
       },
       "beachLitter": {
         "name": "Rantaroska",
         "description": "Ohita seuraavan pelaajan vuoro. Tämä kortti lisätään roskana kortin nostaneen pelaajan pakkaan.",
-        "eventDescription": "Huonot tilat ja käyttäytyminen johtavat roskan päätymiseen mereen. Rannoista tulee epämiellyttäviä, vaikuttaen paikallisiin ja turisteihin."
+        "eventDescription": "Huonot käytös ja jätehuollon puute johtavat roskan päätymiseen mereen. Rannoista tulee epämiellyttäviä paikallisille asukkaille ja turisteille."
       },
       "strictProtection": {
         "name": "Tiukka suojelu",
-        "description": "Lajeja ei voida poistaa toimintakortin seurauksena.",
-        "eventDescription": "Tiukat suojelutoimenpiteet merellisillä suojelualueilla (MPA) johtavat lajien runsauden kasvuun. Ne leviävät myös suojelualueen ulkopuolelle.",
-        "stageEventText": "Suojelutoimenpiteet estivät lajien poistamisen",
-        "protectionActivationText": "Sinulla on mahdollisuus estää vaikutuksia tiukalla suojelulla."
+        "description": "Lajeja ei voida poistaa painekortin seurauksena.",
+        "eventDescription": "Tiukat suojelutoimenpiteet merensuojelualueilla johtavat lajien runsastumiseen. Lajit levittäytyvät myös suojelualueen ulkopuolelle.",
+        "stageEventText": "Suojelutoimenpiteet estivät lajien poistamisen.",
+        "protectionActivationText": "Sinulla on mahdollisuus estää paineita tiukalla suojelulla."
       }
     }
   },
   "stageEventText": {
-    "congratulations": "Onnittelut!",
-    "earnedHabitat_one": "Ansaitsit {{habitatText}} elinympäristön",
-    "earnedHabitat_other": "Ansaitsit {{habitatText}} elinympäristöt",
+    "congratulations": "Onneksi olkoon!",
+    "earnedHabitat_one": "Ansaitsit {{habitatText}}elinympäristön",
+    "earnedHabitat_other": "Ansaitsit {{habitatText}}elinympäristöt",
     "boughtCard": "Ostit {{cardName}}",
-    "disaster": "Et ostanut mitään.\nSaat katastrofikortin.",
-    "extinction": "Liian monta katastrofia aiheuttaa sukupuuton.\nSaat sukupuuttolaatan ja vuorosi päättyy.",
-    "massExtinction": "Liian monta katastrofia aiheuttaa massasukupuuton.\nSaat 3 sukupuuttolaattaa ja vuorosi päättyy.",
-    "elementalDisaster": "Liian monta elementtiä aiheuttaa katastrofin.\nSaat katastrofikortin ja vuorosi päättyy.",
-    "abilityRefreshed": "{{abilityName}} kykysi on palautettu!",
-    "canRefreshAbility": "Voit nyt palauttaa yhden käytetyistä kyvyistäsi.",
-    "gameWin": "Onnittelut!\nPelastit Itämeren ekosysteemin!",
-    "gameLoss": "Peli ohi!\nEt pystynyt pelastamaan Itämeren ekosysteemiä.",
-    "abilityUseBlocked": "Et voi käyttää kykyjäsi juuri nyt.",
+    "disaster": "Et ostanut mitään.\nSaat painekortin.",
+    "extinction": "Liian monta ihmistoiminnan painetta aiheuttaa haitallisia vaikutuksia ekosysteemissä.\nSaat vaikutuslaatan ja vuorosi päättyy.",
+    "massExtinction": "Liian monta ihmistoiminnan painetta aiheuttaa haitallisia kerrannaisvaikutuksia.\nSaat 3 vaikutuslaattaa ja vuorosi päättyy.",
+    "elementalDisaster": "Liian monta elementtiä aiheuttaa painetta ekosysteemille.\nSaat painekortin ja vuorosi päättyy.",
+    "abilityRefreshed": "{{abilityName}}-kykysi on palautettu!",
+    "canRefreshAbility": "Voit nyt palauttaa yhden käytetyistä kykymerkeistäsi.",
+    "gameWin": "Onneksi olkoon!\nPelastit Itämeren ekosysteemin!",
+    "gameLoss": "Peli päättyi!\nEt pystynyt pelastamaan Itämeren ekosysteemiä.",
+    "abilityUseBlocked": "Et voi käyttää kykymerkkejäsi juuri nyt.",
     "skipTurn": "Sinun täytyy odottaa seuraavaa vuoroa."
   },
   "policies": {
     "active": "Aktiiviset toimenpiteet",
-    "acquired": "Hankitut toimenpiteet",
+    "acquired": "Nostetut toimenpiteet",
     "funding": "Rahoitus",
     "activate": "Aktivoi"
   },
@@ -188,12 +188,12 @@
   "abilities": {
     "commandBar": {
       "move": {
-        "pickCard": "Valitse kortti kädestäsi siirrettäväksi",
-        "pickDestination": "Valitse kohde, johon valitsemasi kortti siirretään",
+        "pickCard": "Valitse kädestäsi siirrettävä kortti.",
+        "pickDestination": "Valitse kohde, johon valitsemasi kortti siirretään.",
         "pickDestinationSinglePlayer": "Valitse kohde, johon valitsemasi kortti siirretään. Oman pakkasi valitseminen tekee kortista käytettävän seuraavalla vuorollasi."
       },
       "refresh": {
-        "pickMarket": "Valitse uudistettavat markkinat"
+        "pickMarket": "Valitse uudistettavat markkinat."
       }
     }
   },

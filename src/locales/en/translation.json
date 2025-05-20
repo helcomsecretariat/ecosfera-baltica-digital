@@ -51,7 +51,7 @@
       "climateChange": {
         "name": "Climate change",
         "description": "Each time a player gets an impact-tile an additional impact-tile is added to the impact tile puzzle.",
-        "eventDescription": "CO2 released from human activities results in changes to temperature, rainfall, wind speed and much more, putting additional pressure on the Baltic Sea ecosystem.",
+        "eventDescription": "CO₂ released from human activities results in changes to temperature, rainfall, wind speed and much more, putting additional pressure on the Baltic Sea ecosystem.",
         "stageEventText": "Because of climate change you get an additional extinction tile!"
       },
       "oilSpill": {

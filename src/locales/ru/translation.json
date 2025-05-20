@@ -2,202 +2,202 @@
   "lobby": {
     "language": "Язык",
     "player": "Игрок {{number}}",
-    "addPlayer": "Добавь игрока",
+    "addPlayer": "Добавить игрока",
     "difficulty": "Сложность",
-    "difficultyInfo": "На сложность влияет общее количество карточек элементов, которые можно взять с раздачи на протяжении всей игры, а не только за один ход.",
-    "advancedOptions": "Дополнительные опции",
-    "useExpansionPack": "Используй дополнение",
-    "seed": "Seed",
-    "seedInfo": "The seed ensures a consistent game deck shuffle. Using the same seed will result in the same deck order each time."
+    "difficultyInfo": "Сложность влияет на общее количество карт элементов, которые можно брать из рынка за всю игру (не только за один ход).",
+    "advancedOptions": "Дополнительные параметры",
+    "useExpansionPack": "Использовать дополнение",
+    "seed": "Сид",
+    "seedInfo": "Сид обеспечивает воспроизводимое перетасовывание колоды. Используя один и тот же сид, вы получите одинаковый порядок карт каждый раз."
   },
   "deck": {
     "policies": {
       "drawMessage": {
-        "implementation": "You drew a funding card that can\ncontribute towards the implementation of a measure!",
-        "negative": "You drew a special card!",
-        "dual": "You drew a special card!",
-        "positive": "You drew a special measure card!",
+        "implementation": "Вы вытянули карту финансирования, которая может\nпомочь в реализации меры!",
+        "negative": "Вы вытянули особую карту!",
+        "dual": "Вы вытянули особую карту!",
+        "positive": "Вы вытянули особую карту меры!",
         "positiveExtra": {
-          "hasFunding": "You can implement it by spending one of your Funding cards.",
-          "noFunding": "You can activate it once you have a Funding card."
+          "hasFunding": "Вы можете активировать её, потратив одну из своих карт финансирования.",
+          "noFunding": "Вы сможете активировать её, когда у вас будет карта финансирования."
         },
         "automaticDraw": {
-          "habitat": "This card was automatically drawn after unlocking a habitat.",
-          "extinction": "This card was automatically drawn after an extinction event."
+          "habitat": "Эта карта была автоматически вытянута после разблокировки среды обитания.",
+          "extinction": "Эта карта была автоматически вытянута после события вымирания."
         }
       },
       "funding": {
-        "name": "Funding",
-        "description": "This card must be paired with a measure card to allow the measure card to be implemented.",
-        "eventDescription": "This card must be paired with a measure card to allow the measure card to be implemented."
+        "name": "Финансирование",
+        "description": "Эта карта должна быть объединена с картой меры, чтобы мера могла быть реализована.",
+        "eventDescription": "Эта карта должна быть объединена с картой меры, чтобы мера могла быть реализована."
       },
       "hazardousSubstanceRegulation": {
-        "name": "Hazardous substance regulation",
-        "description": "You can pair a producer and an animal sharing the same habitat symbol to secure a habitat-tile",
-        "eventDescription": "Pre-emptive regulation of a group of hazardous substances significantly reduces their use, and their inputs to the Baltic Sea.",
-        "pickProducerCommandBarText": "Pick a producer card that shares a habitat with an animal card",
-        "pickAnimalCommandBarText": "Pick an animal card that shares a habitat with a producer card"
+        "name": "Регулирование опасных веществ",
+        "description": "Вы можете соединить производителя и животное с одним символом среды обитания, чтобы получить плитку среды обитания",
+        "eventDescription": "Превентивное регулирование группы опасных веществ значительно снижает их использование и поступления в Балтийское море.",
+        "pickProducerCommandBarText": "Выберите карту производителя, которая разделяет среду обитания с картой животного",
+        "pickAnimalCommandBarText": "Выберите карту животного, которая разделяет среду обитания с картой производителя"
       },
       "wasteWaterTreatmentFailure": {
-        "name": "Waste water treatment failure",
-        "description": "Every player with at least one nutrient card in their hand takes a human activity card and places it in their hand.",
-        "eventDescription": "Heavy rainfall causes a wastewater treatment plant to overflow, releasing nutrients into the sea."
+        "name": "Сбой очистки сточных вод",
+        "description": "Каждый игрок, имеющий хотя бы одну карту питательного вещества в руке, берёт карту человеческой деятельности и кладёт её в руку.",
+        "eventDescription": "Сильные осадки вызывают переполнение очистных сооружений, выбрасывая питательные вещества в море."
       },
       "warmSummer": {
-        "name": "Warm summer",
-        "description": "If min. one measure has been implemented when this card is lifted, all players can activate all action-tokens. If no measures have been implemented all players need to deactivate all action-token.",
-        "eventDescription": "Climate change results in a warm summer and the sea temperature increases, putting pressure on the ecosystem. To increase resilience other pressures need to be minimised. "
+        "name": "Тёплое лето",
+        "description": "Если к моменту поднятия этой карты была реализована хотя бы одна мера, все игроки могут восстановить все свои жетоны действия. Если меры не реализованы, все игроки должны деактивировать все свои жетоны действия.",
+        "eventDescription": "Из-за изменения климата наступает тёплое лето, температура моря повышается, усиливая давление на экосистему. Чтобы повысить устойчивость, необходимо минимизировать другие давления."
       },
       "climateChange": {
-        "name": "Climate change",
-        "description": "Each time a player gets an impact-tile an additional impact-tile is added to the impact tile puzzle.",
-        "eventDescription": "CO2 released from human activities results in changes to temperature, rainfall, wind speed and much more, putting additional pressure on the Baltic Sea ecosystem.",
-        "stageEventText": "Because of climate change you get an additional extinction tile!"
+        "name": "Изменение климата",
+        "description": "Каждый раз, когда игрок получает плитку влияния, к пазлу плиток влияния добавляется дополнительная плитка.",
+        "eventDescription": "CO₂, выброшенный в результате человеческой деятельности, изменяет температуру, осадки, ветры и многое другое, создавая дополнительное давление на экосистему Балтийского моря.",
+        "stageEventText": "Из-за изменения климата вы получаете дополнительную плитку вымирания!"
       },
       "oilSpill": {
-        "name": "Oil spill",
-        "description": "Discard all birds open on the table (in players hands and in the market). Cards in hands are not replaced.",
-        "eventDescription": "A shipping accident causes an oil spill which reaches land, impacting a Marine Protected Area (MPA). "
+        "name": "Разлив нефти",
+        "description": "Сбросьте всех птиц, открытых на столе (в руках игроков и на рынке). Карты в руках не заменяются.",
+        "eventDescription": "Судоходная авария вызывает разлив нефти, который достигает побережья и затрагивает морскую охраняемую территорию."
       },
       "hazardousIndustrialSubstances": {
-        "name": "Hazardous substances from industry",
-        "description": "Discard all producer cards on the table (in each players hands and in the market). Cards in hands are not replaced.",
-        "eventDescription": "Releasing hazardous substances acutely affect plankton, cascading through the rest of the food web."
+        "name": "Выброс опасных промышленных веществ",
+        "description": "Сбросьте все карты производителей на столе (в руках каждого игрока и на рынке). Карты в руках не заменяются.",
+        "eventDescription": "Выброс опасных веществ остро влияет на планктон, что каскадом отражается на всей пищевой сети."
       },
       "overfishing": {
-        "name": "Overfishing",
-        "description": "Discard all fish open on the table (in players hands and in the market). Cards in hands are not replaced.",
-        "eventDescription": "Scientific advice on fishing is ignored, subsequently unsustainable fishing occurs. The fish populations crash, causing ecosystem imbalance and low catches in the future."
+        "name": "Чрезмерный вылов рыбы",
+        "description": "Сбросьте всю открытую рыбу на столе (в руках игроков и на рынке). Карты в руках не заменяются.",
+        "eventDescription": "Игнорирование научных рекомендаций приводит к неустойчивому лову. Популяции рыб сокращаются, вызывая дисбаланс экосистемы и низкие уловы в будущем."
       },
       "hunting": {
-        "name": "Hunting",
-        "description": "Permanently remove all mammals and birds in your hand from the game.",
-        "eventDescription": "Persistent hunting results in large numbers of long-tailed ducks being killed during migration. The species' recovery is severely impacted and the species remains listed as Endangered."
+        "name": "Охота",
+        "description": "Безвозвратно удалите всех млекопитающих и птиц из вашей руки из игры.",
+        "eventDescription": "Постоянная охота приводит к массовой гибели долгоклювых уток во время миграции. Восстановление вида серьёзно затруднено, и он остаётся в статусе «На грани исчезновения»."
       },
       "atmosphericDeposition": {
-        "name": "Atmospheric deposition of hazardous substances",
-        "description": "Remove Calanoida from the game, irrespective of where it is.",
-        "eventDescription": "Hazardous substances like dioxins and mercury travel long distances through the atmosphere, affecting areas far beyond their origin, causing e.g. mutation and acute mortality."
+        "name": "Атмосферное выпадение опасных веществ",
+        "description": "Удалите планктон (Calanoida) из игры, независимо от его расположения.",
+        "eventDescription": "Опасные вещества, такие как диоксины и ртуть, переносятся на большие расстояния по атмосфере, вызывая мутации и высокую смертность."
       },
       "habitatRestoration": {
-        "name": "Habitat restoration",
-        "description": "You can remove one impact-tile from the impact tile-puzzle",
-        "eventDescription": "Coastal habitat restoration results in vibrant wetlands and a clear increase in fish breeding success, as well as more resilient ecosystem."
+        "name": "Восстановление среды обитания",
+        "description": "Вы можете убрать одну плитку влияния из пазла плиток влияния",
+        "eventDescription": "Восстановление прибрежных сред обитания оживляет болота и заметно повышает нерест рыб, делая экосистему более устойчивой."
       },
       "bubbleCurtains": {
-        "name": "Bubble curtains",
-        "description": "All players can restore all three of their ability tokens.",
-        "eventDescription": "During underwater construction projects bubble curtains are used and the spread and level of underwater noise is lowered, minimising the pressure on noise sensitive species."
+        "name": "Пузырьковый барьер",
+        "description": "Все игроки могут восстановить все три своих жетона способностей.",
+        "eventDescription": "Во время подводных строительных работ пузырьковые барьеры снижают уровень шума, снижая давление на шумочувствительные виды."
       },
       "nutrientUpwelling": {
-        "name": "Nutrient upwelling and internal nutrient cycling",
-        "description": "All players take turns (starting from the active player) to add up to two nutrient cards to their hand, or until the market is empty.",
-        "eventDescription": "Internal cycling and upwelling of nutrients supports growth of producer, positively or negatively affecting the food web."
+        "name": "Подъём питательных веществ и внутренний цикл",
+        "description": "Игроки по очереди (начиная с активного) добавляют до двух карт питательного вещества в руку, пока рынок не опустеет.",
+        "eventDescription": "Внутренняя циркуляция и подъём питательных веществ поддерживают рост производителей, положительно или отрицательно влияя на пищевую сеть."
       },
       "excessiveFertilizerUse": {
-        "name": "Excessive fertiliser use",
-        "description": "Add two nutrient card to the active player's hand. If there are no more nutrient cards in the market, take a human activity card. Place all oxygen cards in all players hands back in the market.",
-        "eventDescription": "Use of too much fertiliser in agriculture results in increased amounts of nutrients entering the sea."
+        "name": "Чрезмерное использование удобрений",
+        "description": "Добавьте две карты питательного вещества в руку активного игрока. Если на рынке их нет, возьмите карту человеческой деятельности. Верните все карты кислорода из рук игроков на рынок.",
+        "eventDescription": "Слишком большое внесение удобрений в сельском хозяйстве увеличивает приток питательных веществ в море."
       },
       "upgradedWasteWaterTreatment": {
-        "name": "Upgraded waste water treatment",
-        "description": "Take an additional nutrient card from the market or, if you have three nutrient cards in your hand, you can put one back in the market.",
-        "eventDescription": "Investment to implement the latest technology in wastewater treatment  markedly reduces the release of nutrients to the sea."
+        "name": "Модернизирование очистки сточных вод",
+        "description": "Возьмите дополнительную карту питательного вещества на рынке или, если у вас три такие карты в руке, можете вернуть одну на рынок.",
+        "eventDescription": "Инвестиции в новейшие технологии очистки сточных вод значительно сокращают выброс питательных веществ в море."
       },
       "improvedNutrientRetention": {
-        "name": "Improved nutrient retention in agriculture",
-        "description": "All producer cards requires one nutrient less for the rest of the game.",
-        "eventDescription": "Utilizing the best available technologies for fertilization reduces the risk of nutrients draining from agricultural to the sea."
+        "name": "Улучшенное удержание питательных веществ",
+        "description": "Все карты производителей требуют на одно питательное вещество меньше до конца игры.",
+        "eventDescription": "Применение лучших доступных технологий удобрения снижает риск вымывания питательных веществ в море."
       },
       "migratoryBarrierRemoval": {
-        "name": "Migratory barrier removal",
-        "description": "Take one fish or bird card from the market and add it to any players hand.",
-        "eventDescription": "Removal of dams in rivers increases the movement and breeding success of migratory fish species.",
-        "pickSpeciesCommandBarText": "Pick a fish or bird card from the market",
-        "pickPlayerCommandBarText": "Pick a player's hand to move your chosen card to"
+        "name": "Удаление миграционных барьеров",
+        "description": "Возьмите одну карту рыбы или птицы на рынке и добавьте её в руку любого игрока.",
+        "eventDescription": "Снос плотин в реках улучшает миграцию и размножение мигрирующих рыб.",
+        "pickSpeciesCommandBarText": "Выберите карту рыбы или птицы на рынке",
+        "pickPlayerCommandBarText": "Выберите руку игрока, чтобы переместить выбранную карту"
       },
       "fishingGearRegulation": {
-        "name": "Fishing gear regulation",
-        "description": "Add all cards in the market which have a mud symbol to any players hand.",
-        "eventDescription": "Regulation and spatial distribution of fishing effort of bottom trawling allows for benthic habitats to recover.",
-        "commandBarText": "Pick a player's hand to move all the mud species to"
+        "name": "Регулирование рыболовных снастей",
+        "description": "Добавьте все карты на рынке с символом ила в руку любого игрока.",
+        "eventDescription": "Регулирование и распределение донного траления позволяют бентосной среде обитания восстановиться.",
+        "commandBarText": "Выберите руку игрока, чтобы переместить туда все «иловые» виды"
       },
       "recyclingAndWasteDisposal": {
-        "name": "Recycling and waste disposal",
-        "description": "Remove two human activity cards from the hand(s) of any player(s) and replace the cards with cards from the player(s) deck(s).",
-        "eventDescription": "Improved waste disposal and recycling, combined with lower production of single use plastic, reduces litter levels entering the sea.",
-        "commandBarText": "Pick a disaster card to discard from any player's hand"
+        "name": "Переработка и утилизация отходов",
+        "description": "Удалите две карты человеческой деятельности из руки любого игрока(ов) и замените их картами из их колод.",
+        "eventDescription": "Улучшенная утилизация и переработка отходов, вместе с меньшим производством одноразового пластика, снижают уровень мусора в море.",
+        "commandBarText": "Выберите карту бедствия для сброса из руки любого игрока"
       },
       "greenEnergy": {
-        "name": "Green energy",
-        "description": "If coastal, hard- or soft bottom habitats have already been restored when this card is lifted, add an impact tile. If none of the above habitats have been restored prior to lifting this card, choose one of these habitats to immediately restore.",
-        "eventDescription": "Green energy development at sea requires space, and the positive and/or negative effects on the ecosystem of the installations dependend directly on the quality and timelyness of the planning process.",
-        "commandBarText": "Choose either the Rock or Mud habitat to unlock"
+        "name": "Зелёная энергия",
+        "description": "Если к моменту поднятия этой карты уже восстановлены прибрежные, каменистые или илистые среды обитания, добавьте плитку влияния. Если ни одно из этих сред обитания не восстановлено, выберите одно из них для немедленного восстановления.",
+        "eventDescription": "Развитие зелёной энергетики в море требует пространства; позитивный и/или негативный эффект зависит от качества и своевременности планирования.",
+        "commandBarText": "Выберите среду обитания Скалы или Ил для разблокировки"
       },
       "underwaterNoise": {
-        "name": "Underwater noise",
-        "description": "The next player is not allowed to use abilities.",
-        "eventDescription": "Intense shipping traffic causes too much noise under water, making it hard for fish and harbour porpoise to find food."
+        "name": "Подводный шум",
+        "description": "Следующий игрок не может использовать способности.",
+        "eventDescription": "Интенсивное судоходство создаёт слишком много шума под водой, мешая рыбе и морским свиньям искать пищу."
       },
       "beachLitter": {
-        "name": "Beach litter",
-        "description": "Skip the next player's turn. This card will be added as a litter to the drawing player's deck.",
-        "eventDescription": "Poor facilities and behaviour result in litter entering the sea. Beaches become unpleasant, affecting locals and tourists alike."
+        "name": "Пляжный мусор",
+        "description": "Пропустите ход следующего игрока. Эта карта будет добавлена как мусор в колоду тянущего.",
+        "eventDescription": "Плохая инфраструктура и поведение приводят к попаданию мусора в море. Пляжи становятся неприятными для местных жителей и туристов."
       },
       "strictProtection": {
-        "name": "Strict protection",
-        "description": "Species cannot be discarded as a result of an action card.",
-        "eventDescription": "Strict protection measures in Marine Protected Area (MPAs) leads to a boost in species abundances. Letting them spread also outside of the MPA.",
-        "stageEventText": "Protection measures prevented the discarding of species",
-        "protectionActivationText": "You have the opportunity to block effects with strict protection."
+        "name": "Строгая природоохранная зона",
+        "description": "Виды не могут быть сброшены в результате действия карты.",
+        "eventDescription": "Строгая охрана в природоохранной зоне ведёт к росту численности видов, распространяющихся и за пределы зоны.",
+        "stageEventText": "Меры охраны предотвратили сброс видов",
+        "protectionActivationText": "У вас есть возможность заблокировать негативные эффекты с помощью строгой природоохранной зоны."
       }
     }
   },
   "stageEventText": {
-    "congratulations": "Поздравления!",
-    "earnedHabitat_one": "Вы заслужили {{habitatText}} среду обитания",
-    "earnedHabitat_other": "Вы заслужили {{habitatText}} несколько сред обитания",
-    "boughtCard": "Вы купили  {{cardName}}",
-    "disaster": "Вы ничего не купили\nВы получаете карточку нагрузок.",
-    "extinction": "Большое количество нагрузок оказывает воздействие\nВы получаете плитку (шестиугольник) воздействия, и ваш ход заканчивается.",
-    "massExtinction": "Большое количество нагрузок оказывает существенное воздействие.\nВы получаете 3 плитки воздействия, и ваш ход заканчивается.",
-    "elementalDisaster": "Большое количество элементов вызывают нагрузку.\nВы получаете карточку нагрузок и ваш ход заканчивается.",
-    "abilityRefreshed": "Your {{abilityName}} ability has been refreshed!",
-    "canRefreshAbility": "Теперь вы можете восстановить одну из использованных способностей",
-    "gameWin": "Поздравления!\nВы спасли экосистему Балтики!",
-    "gameLoss": "Игра завершена!\nВы не смогли спасти экосистему Балтики.",
-    "abilityUseBlocked": "You cannot use your abilities right now.",
-    "skipTurn": "Вам придется дождаться следующего хода"
+    "congratulations": "Поздравляем!",
+    "earnedHabitat_one": "Вы получили среду обитания {{habitatText}}",
+    "earnedHabitat_other": "Вы получили среды обитания {{habitatText}}",
+    "boughtCard": "Вы купили {{cardName}}",
+    "disaster": "Вы ничего не купили.\nВы получаете карту бедствия.",
+    "extinction": "Слишком много бедствий приводит к вымиранию.\nВы получаете плитку вымирания и ваш ход заканчивается.",
+    "massExtinction": "Слишком много бедствий приводит к массовому вымиранию.\nВы получаете 3 плитки вымирания и ваш ход заканчивается.",
+    "elementalDisaster": "Слишком много элементов приводит к бедствию.\nВы получаете карту бедствия и ваш ход заканчивается.",
+    "abilityRefreshed": "Ваша способность \"{{abilityName}}\" восстановлена!",
+    "canRefreshAbility": "Теперь вы можете восстановить одну из использованных способностей.",
+    "gameWin": "Поздравляем!\nВы спасли Балтийскую экосистему!",
+    "gameLoss": "Игра окончена!\nВам не удалось спасти Балтийскую экосистему.",
+    "abilityUseBlocked": "Сейчас вы не можете использовать способности.",
+    "skipTurn": "Вам придётся подождать следующий ход."
   },
   "policies": {
-    "active": "Active Policies",
-    "acquired": "Acquired Policies",
-    "funding": "Funding",
-    "activate": "Activate"
+    "active": "Активные политики",
+    "acquired": "Полученные политики",
+    "funding": "Финансирование",
+    "activate": "Активировать"
   },
   "blocker": {
     "leavePageMessage": "Вы уверены, что хотите покинуть эту страницу?"
   },
   "buttons": {
-    "showCards": "Покажите карточки",
-    "endTurn": "Конец хода",
+    "showCards": "Показать карты",
+    "endTurn": "Закончить ход",
     "newGame": "Новая игра",
-    "ok": "Ok",
-    "play": "Играй!"
+    "ok": "Ок",
+    "play": "Играть!"
   },
   "abilities": {
     "commandBar": {
       "move": {
-        "pickCard": "Выберите карточку из вашего ряда, чтобы сделать ход",
-        "pickDestination": "Выберите место назначения, чтобы переместить выбранную вами карточку.",
-        "pickDestinationSinglePlayer": "Выберите место назначения для перемещения выбранной карточки. Выбор собственной колоды сделает карточку доступной для использования в следующем ходу."
+        "pickCard": "Выберите карту из вашей руки для перемещения",
+        "pickDestination": "Выберите куда переместить выбранную карту",
+        "pickDestinationSinglePlayer": "Выберите куда переместить выбранную карту; выбор своей колоды сделает карту доступной в ваш следующий ход."
       },
       "refresh": {
-        "pickMarket": "Обновите колоду, взяв новую с раздачи"
+        "pickMarket": "Выберите рынок для обновления"
       }
     }
   },
   "commandBar": {
-    "backToStageEvent": "Нажмите сюда, чтобы вернуться к событию"
+    "backToStageEvent": "Нажмите здесь, чтобы вернуться к событию"
   }
 }

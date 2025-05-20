@@ -51,7 +51,7 @@
       "climateChange": {
         "name": "Klimawandel",
         "description": "Jedesmal, wenn ein(e) Spielende(r) eine Wirkungskachel erhält, wird eine zweites Wirkungskachel dem Puzzle hinzugefügt.",
-        "eventDescription": "CO2-Ausstöße durch menschliche Aktivitäten führen zu Änderungen bei Temperatur, Regen, Windgeschwindigkeit und vielem anderen, wodurch das Ökosystem der Ostsee weiter unter Druck gerät.",
+        "eventDescription": "CO₂-Ausstöße durch menschliche Aktivitäten führen zu Änderungen bei Temperatur, Regen, Windgeschwindigkeit und vielem anderen, wodurch das Ökosystem der Ostsee weiter unter Druck gerät.",
         "stageEventText": "Wegen Klimawandels erhältst du eine weitere Wirkungskachel!"
       },
       "oilSpill": {

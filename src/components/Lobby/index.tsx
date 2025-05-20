@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { generateRandomName, generateRandomString, cn } from "@/lib/utils";
+import { generateRandomName, generateRandomString } from "@/lib/utils";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover";
 import { InfoIcon } from "@/components/ui/icons";

@@ -1,0 +1,203 @@
+{
+  "lobby": {
+    "language": "Språk",
+    "player": "Spelare {{number}}",
+    "addPlayer": "Lägg till spelare",
+    "difficulty": "Svårighetsgrad",
+    "difficultyInfo": "Svårighetsgraden påverkar det totala antalet elementkort som finns tillgängliga i marknaden under hela spelet, inte endast under en tur.",
+    "advancedOptions": "Avancerade alternativ",
+    "useExpansionPack": "Använd politik-kort",
+    "seed": "Seed",
+    "seedInfo": "Koden säkerställer en konsekvent blandning av kortleken. Att använda samma kod kommer att resultera i samma kortleksordning varje gång"
+  },
+  "deck": {
+    "policies": {
+      "drawMessage": {
+        "implementation": "Du lyfte ett finansieringskort som kan\nbidra till genomförandet av en positiv åtgärd!",
+        "negative": "Du drog ett specialkort!",
+        "dual": "Du drog ett specialkort!",
+        "positive": "Du drog ett positivt åtgärdskort!",
+        "positiveExtra": { 
+          "hasFunding": "Du kan aktivera det genom att använda ett av dina finansieringskort.",
+          "noFunding": "Du kan aktivera det när du har ett finansieringskort."
+        },
+        "automaticDraw": {
+          "habitat": "Detta kort drogs automatiskt efter att en habitatbricka erhållits.",
+          "extinction": "Detta kort drogs automatiskt efter att en inverkanbricka erhållits"
+        }
+      },
+      "funding": {
+        "name": "Finansiering",
+        "description": "Detta kort måste paras ihop med ett positivt åtgärdskort för att åtgärdskortet ska kunna användas.",
+        "eventDescription": "Detta kort måste paras ihop med ett positivt åtgärdskort för att åtgärdskortet ska kunna användas."
+      },
+      "hazardousSubstanceRegulation": {
+        "name": "Reglering av farliga ämnen",
+        "description": "Du kan para ihop en producent och ett djur som delar samma habitatsymbol för att ethålla en habitatbricka.",
+        "eventDescription": "Förebyggande reglering av en grupp av farliga ämnen minskar deras användning och deras tillförsel till Östersjön avsevärt.",
+        "pickProducerCommandBarText": "Välj ett producentkort som delar ett habitat med ett konsumentkort",
+        "pickAnimalCommandBarText": "Välj ett konsumentkort som delar ett habitat med ett producentkort"
+      },
+      "wasteWaterTreatmentFailure": {
+        "name": "Misslyckad rening av avloppsvatten",
+        "description": "Varje spelare med minst ett näringskort i sin rad tar ett påverkankort och placerar det i sin rad.",
+        "eventDescription": "Kraftiga nederbörd gör att ett avloppsreningsverk svämmar över och släpper ut näringsämnen i havet."
+      },
+      "warmSummer": {
+        "name": "Varm sommar",
+        "description": "Om minst en positiv åtgärd har genomförts när detta kort lyfts, kan alla spelare aktivera alla förmågemarkörer. Om inga positiva åtgärder har genomförts måste alla spelare inaktivera alla förmågemarkörer.",
+        "eventDescription": "Klimatförändringar resulterar i en varm sommar och havstemperaturen ökar, vilket sätter press på ekosystemet. För att öka motståndskraften måste andra påfrestningar minimeras."
+      },
+      "climateChange": {
+        "name": "Klimatförändring",
+        "description": "Varje gång en spelare får en inverkanbricka läggs en extra inverkanbricka till i inverkansbrickspusslet.",
+        "eventDescription": "CO2 som frigörs från mänskliga aktiviteter leder till förändringar i temperatur, nederbörd, vindhastighet och mycket mer, vilket sätter ytterligare press på Östersjöns ekosystem.",
+        "stageEventText": "På grund av klimatförändringarna erhåller du en extra inverkanbricka!"
+      },
+      "oilSpill": {
+        "name": "Oljeutsläpp",
+        "description": "Kassera alla fåglelkort som är öppna på bordet (i varje spelares rad och på marknaden). Korten i spelarnas rader ersätts inte.",
+        "eventDescription": "En sjöfartsolycka orsakar ett oljeutsläpp som når land och påverkar ett marint skyddsområde."
+      },
+      "hazardousIndustrialSubstances": {
+        "name": "Farliga ämnen från industrin",
+        "description": "Kassera alla producentkort på bordet (i varje spelares rad och i marknaden). Korten i spelarnas rader ersätts inte.",
+        "eventDescription": "Frigörande av farliga ämnen påverkar akut plankton och därigenom resten av näringsväven."
+      },
+      "overfishing": {
+        "name": "Ohållbart fiske",
+        "description": "Kassera alla öppna fiskkort på bordet (i varje spelares rad och i marknaden). Korten i spelarnas rader ersätts inte.",
+        "eventDescription": "Vetenskapliga råd om fiskekvoter ignoreras, vilket resulterar i ohållbart fiske. Fiskpopulationerna kollapsar, vilket orsakar obalans i ekosystemet och låga fångster i framtiden."
+      },
+      "hunting": {
+        "name": "Jakt",
+        "description": "Ta bort permanent bort alla däggdjurs- och fåglelkort i din rad från spelet.",
+        "eventDescription": "Återkommande jakt resulterar i att stora mängder alfågel dödas under flyttningen. Artens återhämtning är allvarligt påverkad och arten är fortsättningsvis listad som hotad."
+      },
+      "atmosphericDeposition": {
+        "name": "Atmosfärisk spridning av farliga ämnen",
+        "description": "Ta bort Calanoida från spelet, oavsett var kortet är.",
+        "eventDescription": "Farliga ämnen som dioxiner och kvicksilver färdas långa sträckor via atmosfären och påverkar områden långt bortom deras ursprung och orsakar t.ex. mutation och akut dödlighet."
+      },
+      "habitatRestoration": {
+        "name": "Återställande av habitat",
+        "description": "Du kan ta bort en inverkanbricka från inverkanbricka-pusslet",
+        "eventDescription": "Återställande av kusthabitat resulterar i livskraftiga våtmarker och en tydlig ökning i fiskare förökningsframgånge , samt ett mer motståndskraftigt ekosystem."
+      },
+      "bubbleCurtains": {
+        "name": "Bubbelgardiner",
+        "description": "Alla spelare kan återställa alla tre av deras förmågemarkörer.",
+        "eventDescription": "Under byggnadsprojekt under vattnet används bubbelgardiner och spridningen och nivån av undervattensbuller sänks, vilket minimerar trycket på bullerkänsliga arter."
+      },
+      "nutrientUpwelling": {
+        "name": "Näringsämnesuppvällning och intern näringsämnescykel",
+        "description": "Alla spelare turas om (börjande från den aktiva spelaren) att lägga till upp till två näringskort från marknaden i sin rad, eller tills marknaden är tom.",
+        "eventDescription": "Intern cirkulation och uppvällning av näringsämnen stöder producentens tillväxt, vilket kan påverkar näringsväven positivt eller negativt."
+      },
+      "excessiveFertilizerUse": {
+        "name": "Överdriven användning av gödselmedel",
+        "description": "Lägg till två näringskort till den aktiva spelarens rad. Om det inte finns fler näringskort i marknaden, ta ett påverkankort. Placera alla syrekort i alla spelares rader tillbaka i marknaden.",
+        "eventDescription": "Användning av för mycket gödningsmedel i jordbruket leder till att ökade mängder näringsämnen kommer ut i havet."
+      },
+      "upgradedWasteWaterTreatment": {
+        "name": "Förbättrad avloppsvattenrening",
+        "description": "Ta ett extra näringskort från marknaden eller, om du har tre näringskort i din rad, kan du sätta tillbaka ett på marknaden.",
+        "eventDescription": "Investeringar för att implementera den senaste tekniken inom avloppsvattenrening minskar markant utsläppet av näringsämnen till havet."
+      },
+      "improvedNutrientRetention": {
+        "name": "Förbättrad lagring av näringsämnen i jorden som en del av jordbruket",
+        "description": "Alla producentkort kräver ett färre näringsämneskort under resten av spelet.",
+        "eventDescription": "Genom att använda den bästa tillgängliga tekniken för gödsling minskar risken för att näringsämnen från jordbruket sköljs ut till havet."
+      },
+      "migratoryBarrierRemoval": {
+        "name": "Borttagning av migrationshinder",
+        "description": "Ta ett fisk- eller fågelkort från marknaden och lägg till det i valfri spelares rad.",
+        "eventDescription": "Eliminering av dammar i floder och älvar ökar rörelsen och förökningsframgången för migrerande fiskarter.",
+        "pickSpeciesCommandBarText": "Välj ett fisk- eller fågelkort från marknaden.",
+        "pickPlayerCommandBarText": "Välj en spelares rad att flytta ditt valda kort till."
+      },
+      "fishingGearRegulation": {
+        "name": "Reglering av fiskeredskap",
+        "description": "Ta alla kort i marknade som har symbolen för lera och lägg till dem i valfri spelares rad.",
+        "eventDescription": "Reglering och rumslig fördelning av bottentrålning gör det möjligt för bentiska habitat att återhämta sig.",
+        "commandBarText": "Välj en spelares rad att flytta alla arter med symbolen för lera till"
+      },
+      "recyclingAndWasteDisposal": {
+        "name": "Återvinning och avfallshantering",
+        "description": "Ta bort totalt två påverkankort från raden/raderna för en eller två spelare och ersätt korten med kort från spelarens/spelarnas kortlek.",
+        "eventDescription": "Förbättrad avfallshantering och återvinning, i kombination med lägre produktion av engångsplastartikla, minskar mängden skräp som kommer ut i havet.",
+        "commandBarText": "Välj ett påverkankort att kassera från valfri(a) spelares rad(er)."
+      },
+      "greenEnergy": {
+        "name": "Grön energi",
+        "description": "Om kust-, sten- eller lerhabitat redan har återställts när detta kort lyfts, lägg till en inverkanbricka. Om ingen av ovanstående habitat har återställts innan detta kort lyftes, välj en av dessa habitat för att omedelbart återställa.",
+        "eventDescription": "Utveckling av grön energi till havs kräver utrymme och de positiva och/eller negativa effekterna av anläggningarna på ekosystem beror på tidpunkten i planeringsprocessen och hur kvalitativ processen är.",
+        "commandBarText": "Välj antingen sten-, kust- eller ler-habitatet att låsa upp."
+      },
+      "underwaterNoise": {
+        "name": "Undervattensbuller",
+        "description": "Nästa spelare får inte använda några förmågor.",
+        "eventDescription": "Intensiv sjötrafik orsakar för mycket buller under vattnet, vilket gör det svårt för fisk och tumlare att hitta mat."
+      },
+      "beachLitter": {
+        "name": "Strandskräp",
+        "description": "Hoppa över nästa spelares tur. Detta kort kommer att läggas till som skräp i den nuvrnade spelarens kortlek.",
+        "eventDescription": "Dåliga faciliteter och dåligt beteende leder till att skräp kommer ut i havet. Stränderna blir obehagliga och det påverkar både lokalbefolkningen och turister."
+      },
+      "strictProtection": {
+        "name": "Strikt naturskydd",
+        "description": "Arter kan inte kasseras till följd av ett politik-kort.",
+        "eventDescription": "Strikta skyddsåtgärder i marina naturskyddsområden leder till en ökning av artförekomsten som låter dem spridas sig även utanför skyddsområdet.",
+        "stageEventText": "Skyddsåtgärder förhindrade kasseringen av arterkort.",
+        "protectionActivationText": "Du har möjlighet att blockera effekter genom att använda strikt skydd"
+      }
+    }
+  },
+  "stageEventText": {
+    "congratulations": "Grattis!",
+    "earnedHabitat_one": "Du har erhållit habitatet {{habitatText}}",
+    "earnedHabitat_other": "Du har erhållit habitaten {{habitatText}}",
+    "boughtCard": "Du har införskaffat {{cardName}}",
+    "disaster": "Du införskaffade ingenting.\nDu erhåller ett påverkankort.",
+    "extinction": "För mycket mänsklig påverkan orsakar inverkan.\nDå erhåller en inverkanbricka och din tur är över.",
+    "massExtinction": "För mycket påverkan orsakar massive inverkan.\nDu erhåller tre inverkanbrickor och din tur är över.",
+    "elementalDisaster": "För mycket av ett och samma element orsakar påverkan.\nDu erhåller ett påverkankort och din tur är över.",
+    "abilityRefreshed": "Din {{abilityName}} förmåga har återställts!",
+    "canRefreshAbility": "Du kan återställa en av dina förmågor.",
+    "gameWin": "Grattis!\nDu har räddat Östersjöns ekosystem!",
+    "gameLoss": "Spelet är över!\nDu kunde inte rädda Östersjöns ekosystem.",
+    "abilityUseBlocked": "Du kan inte använda dina förmågor för tillfället.",
+    "skipTurn": "Du måste vänta till nästa tur."
+  },
+  "policies": {
+    "active": "Aktiva politik-kort",
+    "acquired": "Erhållna politk-kort",
+    "funding": "Finansiering",
+    "activate": "Aktivera"
+  },
+  "blocker": {
+    "leavePageMessage": "Är du säker att du vill lämna sidan?"
+  },
+  "buttons": {
+    "showCards": "Visa kort",
+    "endTurn": "Avsluta tur",
+    "newGame": "Nytt spel",
+    "ok": "Ok",
+    "play": "Spela!"
+  },
+  "abilities": {
+    "commandBar": {
+      "move": {
+        "pickCard": "Välj ett kort från din rad att flytta",
+        "pickDestination": "Välj en destination att flytta ditt kort till",
+        "pickDestinationSinglePlayer": "Välj en destination att flytta ditt kort till, om du väljer din egen kortlek kommer kortet att vara tillgängligt att användas nästa tur."
+      },
+      "refresh": {
+        "pickMarket": "Välj vilken rad i marknaden som skall bytas ut"
+      }
+    }
+  },
+  "commandBar": {
+    "backToStageEvent": "Klicka här för att gå tillbaka till händelsen"
+  }
+}

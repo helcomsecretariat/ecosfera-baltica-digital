@@ -1,0 +1,203 @@
+{
+  "lobby": {
+    "language": "Sprache",
+    "player": "Spieler {{number}}",
+    "addPlayer": "Spielende(n) hinzufügen",
+    "difficulty": "Schwierigkeit",
+    "difficultyInfo": "Die Schwierigkeit betrifft die Gesamtzahl der Elementenkarten, die während des gesamten Spiels (nicht nur während eines einzelnen Zugs) vom Markt entliehen werden können.",
+    "advancedOptions": "Fortgeschrittene Optionen",
+    "useExpansionPack": "Erweiterungspaket verwenden",
+    "seed": "Seed",
+    "seedInfo": "Der Seed stellt sicher, dass die Karten konstant gemischt werden. Die Verwendung desselben Seeds führt dazu, das jedesmal der gleiche Stapel angezeigt wird."
+  },
+  "deck": {
+    "policies": {
+      "drawMessage": {
+        "implementation": "Du hast eine Finanzierungskarte gezogen, die\nZur Umsetzung einer Maßnahme beitragen kann!",
+        "negative": "Du hast eine Spezialkarte gezogen!",
+        "dual": "Du hast eine Spezialkarte gezogen!",
+        "positive": "Du hast eine Spezialmaßnahmenkarte gezogen!",
+        "positiveExtra": {
+          "hasFunding": "Du kannst sie umsetzen, indem du eine deiner Finanzierungskarten verwendest.",
+          "noFunding": "Du kannst sie aktivieren, wenn du eine Finanzierungskarte bekommst."
+        },
+        "automaticDraw": {
+          "habitat": "Diese Karte wurde automatisch gezogen, nachdem ein Lebensraum eröffnet wurde.",
+          "extinction": "Diese Karte wurde automatisch gezogen, nachdem eine Wirkung eingetreten ist."
+        }
+      },
+      "funding": {
+        "name": "Finanzierung",
+        "description": "Diese Karte muss mit einer Maßnahmenkarte kombiniert werden, um die Maßnahme umsetzen zu können.",
+        "eventDescription": "Diese Karte muss mit einer Maßnahmenkarte kombiniert werden, um die Maßnahmenkarte umsetzen zu können."
+      },
+      "hazardousSubstanceRegulation": {
+        "name": "Schadstoffregulierung",
+        "description": "Du kannst einen Produzenten und ein Tier, die denselben Lebensraum teilen kombinieren, um ein Lebensraumkachel zu erhalten.",
+        "eventDescription": "PVorsorgliche Regulierung einer Gruppe von Schadstoffen führt zu einem deutlichen Rückgang ihres Gebrauchs und ihres Eintrags in die Ostsee.",
+        "pickProducerCommandBarText": "Ziehe eine Produzentenkarte, die einen Lebensraum mit einer Tierkarte gemeinsam hat.",
+        "pickAnimalCommandBarText": "Ziehe eine Tierkarte, die einen Lebensraum mit einer Produzentenkarte gemeinsam hat."
+      },
+      "wasteWaterTreatmentFailure": {
+        "name": "Versagen einer Kläranlage",
+        "description": "Alle Spielenden, die zumindest eine Nährstoffkarte in ihrer Kartenreihe haben, ziehen eine Umweltbelastungskarte und fügen sie ihrer Kartenreihe hinzu.",
+        "eventDescription": "HStarkregen führt dazu, dass eine Kläranlage überläuft und Nährstoffe in die See fließen."
+      },
+      "warmSummer": {
+        "name": "Warmer Sommer",
+        "description": "Wenn mindestens eine Maßnahme umgesetzt wurde, wenn diese Karte gezogen wird, können alle Spielenden Aktionsspielsteine aktivieren. Wurden keine Maßnahmen umgesetzt, müsen alle Aktionsspielsteine deaktiviert werden.",
+        "eventDescription": "Der Klimawandel führt zu einem warmen Sommer und die Meerestemperatur steigt, wodurch das Ökosystem belastet wird. Um die Resilienz zu erhöhen, müssen andere Maßnahmen auf ein Minimum reduziert werden."
+      },
+      "climateChange": {
+        "name": "Klimawandel",
+        "description": "Jedesmal, wenn ein(e) Spielende(r) eine Wirkungskachel erhält, wird eine zweites Wirkungskachel dem Puzzle hinzugefügt.",
+        "eventDescription": "CO2-Ausstöße durch menschliche Aktivitäten führen zu Änderungen bei Temperatur, Regen, Windgeschwindigkeit und vielem anderen, wodurch das Ökosystem der Ostsee weiter unter Druck gerät.",
+        "stageEventText": "Wegen Klimawandels erhältst du eine weitere Wirkungskachel!"
+      },
+      "oilSpill": {
+        "name": "Ölteppich",
+        "description": "Entferne alle Vögel, die aufgedeckt auf dem Tisch liegen (in den Kartenreihen der Spielenden und auf dem Markt). Die Karten in den Kartenreihen der Spielenden werden nicht ersetzt.",
+        "eventDescription": "Ein Schiffsunfall verursacht einen Ölteppich, der ans Land gespült wird und dadurch Auswirkungen auf ein Meeresschutzgebiet hat."
+      },
+      "hazardousIndustrialSubstances": {
+        "name": "Industrielle Schadstoffe",
+        "description": "Entferne alle Produzentenkarten auf dem Tisch (in den Kartenreihen der Spielenden und auf dem Markt). Die Karten in den Kartenreihen der Spielenden werden nicht ersetzt.",
+        "eventDescription": "Die Freisetzung von Schadstoffen führt zu einer akuten Schädigung von Plankton und setzt sich durch die gesamte Nahrungskette fort."
+      },
+      "overfishing": {
+        "name": "Überfischung",
+        "description": "Entferne alle Fische auf dem Tisch (in den Kartenreihen der Spielenden und auf dem Markt). Die Karten in den Kartenreihen der Spielenden werden nicht ersetzt.",
+        "eventDescription": "Wissenschaftlicher Rat zum Thema Fischerei wird ignoriert, woraufhin nicht nachhaltig gefischt wird. Die Fischpopulationen brechen ein, wodurch das Ökosystem aus der Balance gerät und die Fischfänge künftig niedrig sind."
+      },
+      "hunting": {
+        "name": "Jagd",
+        "description": "Entferne dauerhaft alle Säugetiere und Vögel aus Deiner Reihe.",
+        "eventDescription": "Durch dauernde Bejagung werden große Zahlen an Eisenten wähend der Vogelwanderung getötet. Die Erholung der Art wird schwer beeinträchtigt und sie bleibt auf der Liste der gefährdeten Arten."
+      },
+      "atmosphericDeposition": {
+        "name": "Atmosphärische Deposition von Gefahrstoffen",
+        "description": "Entferne Calanoida aus dem Spiel, egal wo sie sich befindet.",
+        "eventDescription": "Gefahrstoffe wie Dioxine und Quecksilber verbreiten sich über weite Strecken in der Atmosphäre, beeinträchtigen Gegenden weitab von ihrem Ursprungsgebiet und verursachen z.B. Mutationen und akute Mortalität."
+      },
+      "habitatRestoration": {
+        "name": "Wiederherstellung eines Lebensraums",
+        "description": "Du kannst eine Wirkungskachel aus dem Puzzle entfernen.",
+        "eventDescription": "Wiedergherstellung von Lebensräumen an der Küste führt zu lebendigen Feuchtgebieten und einem deutlichen Anstieg im Fortpflanzungserfolg von Fischen, sowie zu einem rersilienteren Ökosystem."
+      },
+      "bubbleCurtains": {
+        "name": "Blasenvorhänge",
+        "description": "Alle Spielenden dürfen alle drei Fähigkeitsspielsteine reaktivieren.",
+        "eventDescription": "Bei Bauprojekten unter Wasser werden Blasenvorhänge genutzt und die Ausbreitung und das Niveau des Unterwasserlärms werden verringert, wodurch der Druck auf lärmempfindliche Arten auf ein Minimum reduziert wird."
+      },
+      "nutrientUpwelling": {
+        "name": "Nährstoffreicher Wasseraufstieg und interner Nährstoffkreislauf",
+        "description": "Alle Spielenden (beginnend mit der/dem aktiven Spielenden) fügen ihrer Kartenreihe bis zu zwei Nährstoffkarten hinzu, bis auf dem Markt keine mehr zu finden sind.",
+        "eventDescription": "Interner Nährstoffkreislauf und ein nährstoffreicher Wasseraufstieg begünstigen das Wachstum eines Produzenten, was sich positiv oder negativ auf das Nahrungsnetz auswirkt."
+      },
+      "excessiveFertilizerUse": {
+        "name": "Übermäβiger Gebrauch von Dünger",
+        "description": "Legt zwei Nährstoffkarten in die Reihe des aktiven Spielers. Sind keine Nährstoffkarten mehr im Markt, nehmt eine Druckkarte. Legt alle Sauerstoffkarten aller Spielerreihen zurück in den Markt.",
+        "eventDescription": "Übermäβiger Düngemittelgebrauch in der Landwirtschaft führt zu erhöhtem Nährstoffeintrag in die See."
+      },
+      "upgradedWasteWaterTreatment": {
+        "name": "Verbesserte Abwasserbehandlung",
+        "description": "Entferne eine weitere Nährstoffkarte vom Markt oder gib eine zurück in den Markt, wenn du drei Nährstoffkarten in deiner Kartenreihe hast.",
+        "eventDescription": "Investitionen in die neueste Technologie zur Abwassserbehandlung verringern deutlich den Nährstoffeintrag ins Meer."
+      },
+      "improvedNutrientRetention": {
+        "name": "Verbesserte Nährstoffretention in der Landwirtschaft",
+        "description": "Für den Rest des Spiels erfordern alle Produzentenkarten einen Nährstoff weniger.",
+        "eventDescription": "Gebrauch der besten verfügbaren Technologie bei der Düngung reduziert das Risiko, dass Nährstoffe aus der Landwirtschaft ins Meer gelangen."
+      },
+      "migratoryBarrierRemoval": {
+        "name": "Entfernung einer Migrationsbarriere",
+        "description": "Nimm eine Fisch- oder Vogelkarte vom Markt und füge sie der Kartenreihe einer oder eines beliebigen Spielenden hinzu.",
+        "eventDescription": "Die entfernung von Dämmen in Flüssen führt zu einer Verbessrung des Fortpflanzungserfolgs wandernder Fischarten.",
+        "pickSpeciesCommandBarText": "Wähle eine Fisch- oder Vogelkarte vom Markt",
+        "pickPlayerCommandBarText": "Wähle die Kartenreihe einer/eines Spielenden und füge die gewählte Karte hinzu."
+      },
+      "fishingGearRegulation": {
+        "name": "Regulierung von Fischereiausrüstung",
+        "description": "Füge alle mit einem Schlammsymbol versehenen Karten auf dem Markt  der Kartenreihe eines/einer Spielenden hinzu.",
+        "eventDescription": "Regulierung und räumliche Verteilung der Fangtätigkeit bei der Bodenschleppnetzfischerei führen zu einer Erholung am Meeresboden lebender Arten.",
+        "commandBarText": "Wähle die Kartenreihe einer/eines Spielenden und füge ihr alle im Schlamm lebenden Arten hinzu."
+      },
+      "recyclingAndWasteDisposal": {
+        "name": "Recycling und Müllentsorgung",
+        "description": "Entferne zwei Umweltbelastungskarten aus den Kartenreihen von beliebigen Spielenden und ersetze sie durch Karten aus den Kartenstapeln der Spielenden.",
+        "eventDescription": "Aufgrund von verbesserte Müllentsorgung und Recycling, verbunden mit verringerter Produktion an Einwegplastik, gelangt weniger Müll ins Meer.",
+        "commandBarText": "Wähle eine Umweltbelastungskarte vom Stapel jedes Spielers und nimm sie aus dem Spiel."
+      },
+      "greenEnergy": {
+        "name": "Grüne Energie",
+        "description": "Wenn Küsten-, Stein- oder Schlammlebensräume beim Ziehen dieser Karte bereits wiederhergestellt worden sind, füge eine Wirkungskachel hinzu. Wenn zuvor keiner der obengenannten Lebensräume wiederhergestellt worden ist, wähle einen dieser Lebensräume zur sofortigen Wiederherstellung",
+        "eventDescription": "Die Entwicklung grüner Energie auf dem Meer erfordert Raum und der positive oder negative Effekt auf das Ökosystem hängt direkt von der Qualität und dem Zeitplan des Planungsprozesses ab.",
+        "commandBarText": "Wähle entweder den steinigen oder den schlammigen Lebensraum, um ihn zu eröffnen."
+      },
+      "underwaterNoise": {
+        "name": "Unterwasserlärm",
+        "description": "Der/die nächste Spielende darf keine Fähigkeiten anwenden.",
+        "eventDescription": "Intensiver Schiffsverkehr führt zu zuviel Unterwasserlärm, wodurch es für Fische und Schweinswale schwieriger wird, Nahrung zu finden."
+      },
+      "beachLitter": {
+        "name": "Strandmüll",
+        "description": "Die/der nächste Spielende muss eine Runde aussetzen. Diese Karte wird dem Kartenstapel der/des Spielenden hinzugefügt, die/der sie gezogen hat.",
+        "eventDescription": "Schlechte Anlagen und schlechtes Verhalten führen dazu, dass Müll im Meer landet. Strände werden unattraktiv, wodurch Touristen und Einheimisch gleichermaβen betroffen werden."
+      },
+      "strictProtection": {
+        "name": "Strenger Schutz",
+        "description": "Arten können nicht aufgrund einer Aktionskarte entfernt werden.",
+        "eventDescription": "SStrenge Schutzmaβnahmen in Meeresschutzgebieten führen zu einer Zunahme an Artenreichtum, so dass die Arten auch auβerhalb der Schutzgebiete erscheinen.",
+        "stageEventText": "Schutzma βnahmen verhindern die entfernung von Arten.",
+        "protectionActivationText": "Du kannst Auswirkungen durch strengen Schutz blockieren."
+      }
+    }
+  },
+  "stageEventText": {
+    "congratulations": "Herzlichen Glückwunsch!",
+    "earnedHabitat_one": "Du hast den {{habitatText}} Lebensraum erworben.",
+    "earnedHabitat_other": "Du hast die {{habitatText}} Lebensräume erworben.",
+    "boughtCard": "Du hast ein {{cardName}} gekauft.",
+    "disaster": "Du hast nichts gekauft.\nDu bekommst eine Umweltbelastungskarte.",
+    "extinction": "Zuviele Umweltbelastungen lösen eine Wirkung aus.\nDu bekommst eine Wirkungskarte und dein Zug endet.",
+    "massExtinction": "Zuviele Umweltbelastungen lösen eine massenhafte Wirkung aus.\nDu erhätst 3 Wirkungskacheln und dein Zug ist beendet.",
+    "elementalDisaster": "Zuviele elemente lösen eine Wirkung aus.\nDu bekommst eine Umweltbelastungskarte und dein Zug endet.",
+    "abilityRefreshed": "Deine {{abilityName}} Fähigkeit ist reaktiviert worden!",
+    "canRefreshAbility": "Du kannst eine deiner verwendeten Fähigkeiten reaktivieren.",
+    "gameWin": "Herzlichen Glückwunsch!\nDu hast das Ökosystem der Ostsee gerettet!",
+    "gameLoss": "Das Spiel ist aus!\nDu konntest das Ökosystem der Ostsee nicht retten.",
+    "abilityUseBlocked": "Du kannst deine Fähigkeiten im Moment nicht einsetzen.",
+    "skipTurn": "Du musst warten, bis du wieder am Zug bist."
+  },
+  "policies": {
+    "active": "Aktive Politik-karten",
+    "acquired": "Erworbene Politik-karten",
+    "funding": "Finanzierung",
+    "activate": "Aktivieren"
+  },
+  "blocker": {
+    "leavePageMessage": "Bist du sicher, dass du diese Seite verlassen willst?"
+  },
+  "buttons": {
+    "showCards": "Karten zeigen",
+    "endTurn": "Zug beenden",
+    "newGame": "Neues Spiel",
+    "ok": "Ok",
+    "play": "Spielen!"
+  },
+  "abilities": {
+    "commandBar": {
+      "move": {
+        "pickCard": "Wähle eine Karte aus deiner Kartenereihe um zu weitergeben.",
+        "pickDestination": "Wähle einen Zielort, an den du die von dir gewählte Karte legen kannst.",
+        "pickDestinationSinglePlayer": "Wähle eine Zielort, an den du deine gewählte Karte legen kannst. Wenn du deinen eigenen Kartenstapel wählst, kannst du die Karte beim nächsten Zug verwenden."
+      },
+      "refresh": {
+        "pickMarket": "Wähle eine Karte zum Reaktivieren."
+      }
+    }
+  },
+  "commandBar": {
+    "backToStageEvent": "Hier clicken, um zum Ereignis zurückzukehren."
+  }
+}

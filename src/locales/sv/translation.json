@@ -17,7 +17,7 @@
         "negative": "Du drog ett specialkort!",
         "dual": "Du drog ett specialkort!",
         "positive": "Du drog ett positivt åtgärdskort!",
-        "positiveExtra": { 
+        "positiveExtra": {
           "hasFunding": "Du kan aktivera det genom att använda ett av dina finansieringskort.",
           "noFunding": "Du kan aktivera det när du har ett finansieringskort."
         },
@@ -51,7 +51,7 @@
       "climateChange": {
         "name": "Klimatförändring",
         "description": "Varje gång en spelare får en inverkanbricka läggs en extra inverkanbricka till i inverkansbrickspusslet.",
-        "eventDescription": "CO2 som frigörs från mänskliga aktiviteter leder till förändringar i temperatur, nederbörd, vindhastighet och mycket mer, vilket sätter ytterligare press på Östersjöns ekosystem.",
+        "eventDescription": "CO₂ som frigörs från mänskliga aktiviteter leder till förändringar i temperatur, nederbörd, vindhastighet och mycket mer, vilket sätter ytterligare press på Östersjöns ekosystem.",
         "stageEventText": "På grund av klimatförändringarna erhåller du en extra inverkanbricka!"
       },
       "oilSpill": {

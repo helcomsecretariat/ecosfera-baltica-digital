@@ -13,6 +13,7 @@ import ImageButton from "../ui/imageButton";
 import { without } from "lodash";
 import { AnimatePresence, motion } from "framer-motion";
 import { Checkbox } from "../ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface LobbyScreenProps {
   onStartGame: (settings: GameConfig) => void;
@@ -80,6 +81,9 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
   const languages = [
     { code: "en", name: "English", flag: "🇬🇧" },
     { code: "fi", name: "Suomi", flag: "🇫🇮" },
+    { code: "ru", name: "Русский", flag: "🇷🇺" },
+    { code: "de", name: "Deutsch", flag: "🇩🇪" },
+    { code: "sv", name: "Svenska", flag: "🇸🇪" },
   ];
 
   return (
@@ -91,23 +95,25 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
         {/* Language Selector */}
         <div className="flex w-full justify-between">
           <span>{t("lobby.language")}</span>
-          <div className="flex gap-2">
-            {languages.map((lang) => (
-              <Button
-                key={lang.code}
-                variant={i18n.language.startsWith(lang.code) ? "secondary" : "tertiary"}
-                onClick={() => handleLanguageChange(lang.code)}
-                disabled={isChangingLang || !ready}
-                className={cn(
-                  "flex min-w-[80px] items-center justify-center gap-2",
-                  isChangingLang && "animate-pulse-opacity [&]:cursor-wait",
-                )}
-              >
-                <span className="text-lg">{lang.flag}</span>
-                {lang.name}
-              </Button>
-            ))}
-          </div>
+          <Select
+            value={i18n.language.split("-")[0]}
+            onValueChange={handleLanguageChange}
+            disabled={isChangingLang || !ready}
+          >
+            <SelectTrigger className="w-[180px] bg-white text-black">
+              <SelectValue placeholder={t("lobby.language")} />
+            </SelectTrigger>
+            <SelectContent className="bg-white text-black">
+              {languages.map((lang) => (
+                <SelectItem key={lang.code} value={lang.code}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{lang.flag}</span>
+                    {lang.name}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         {/* Number of Players */}
         <div className="relative flex w-full flex-col gap-1">

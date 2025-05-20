@@ -5,8 +5,9 @@ Ecosfera Baltica Digital is a digital adaptation of the original [Ecosfera](http
 ## Technologies Used
 
 - React + TypeScript + Tailwind
-- React Three Fiber + Framer Motion
-- Netlify
+- XSatate for state management
+- React Three Fiber + Framer Motion for smooth animations
+- Netlify for CI/CD
 
 ## Development
 
@@ -29,6 +30,10 @@ Ecosfera Baltica Digital is a digital adaptation of the original [Ecosfera](http
 ## CI/CD
 
 We use [Netlify](https://app.netlify.com/sites/ecosfera) to deploy the project. To access Netlify account ask [@i-j-r](https://github.com/i-j-r) for details.
+
+### Deploy to production
+
+Just update `prod` branch. Netlify will build and deploy it to https://ecosfera.netlify.app/ (and https://ecosferabaltica.helcom.fi/).
 
 ## License
 

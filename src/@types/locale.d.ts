@@ -9,7 +9,8 @@ interface Resources {
       "advancedOptions": "Advanced Options",
       "useExpansionPack": "Use expansion pack",
       "seed": "Seed",
-      "seedInfo": "The seed ensures a consistent game deck shuffle. Using the same seed will result in the same deck order each time."
+      "seedInfo": "The seed ensures a consistent game deck shuffle. Using the same seed will result in the same deck order each time.",
+      "rulebook": "Game rules"
     },
     "deck": {
       "policies": {
@@ -160,9 +161,9 @@ interface Resources {
       "earnedHabitat_other": "You earned the {{habitatText}} habitats",
       "boughtCard": "You bought a {{cardName}}",
       "disaster": "You did not buy anything.\nYou get a disaster card.",
-      "extinction": "Too many disasters causes an extinction.\nYou get an extinction tile.",
-      "massExtinction": "Too many disasters causes a mass extinction.\nYou get 3 extinction tiles.",
-      "elementalDisaster": "Too many elements causes a disaster.\nYou get a disaster card.",
+      "extinction": "Too many disasters causes an extinction.\nYou get an extinction tile and your turn ends.",
+      "massExtinction": "Too many disasters causes a mass extinction.\nYou get 3 extinction tiles and your turn ends.",
+      "elementalDisaster": "Too many elements causes a disaster.\nYou get a disaster card and your turn ends.",
       "abilityRefreshed": "Your {{abilityName}} ability has been refreshed!",
       "canRefreshAbility": "You can now refresh one of your used abilities.",
       "gameWin": "Congratulations!\nYou saved the Baltic ecosystem!",

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,11 +36,19 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
 
   const [isChangingLang, setIsChangingLang] = useState(false);
 
-  const handleLanguageChange = (langCode: string) => {
-    setIsChangingLang(true);
-    i18n.changeLanguage(langCode);
-    setIsChangingLang(false);
-  };
+  const handleLanguageChange = useCallback(
+    async (langCode: string) => {
+      try {
+        setIsChangingLang(true);
+        await i18n.changeLanguage(langCode);
+      } catch (error) {
+        console.error("Failed to change language:", error);
+      } finally {
+        setIsChangingLang(false);
+      }
+    },
+    [i18n],
+  );
 
   useEffect(() => {
     // Generate unique player names when the number of players changes.

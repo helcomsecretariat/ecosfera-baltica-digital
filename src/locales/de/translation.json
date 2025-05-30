@@ -2,13 +2,14 @@
   "lobby": {
     "language": "Sprache",
     "player": "Spieler {{number}}",
-    "addPlayer": "Spielende(n) hinzufügen",
-    "difficulty": "Schwierigkeit",
-    "difficultyInfo": "Die Schwierigkeit betrifft die Gesamtzahl der Elementenkarten, die während des gesamten Spiels (nicht nur während eines einzelnen Zugs) vom Markt entliehen werden können.",
-    "advancedOptions": "Fortgeschrittene Optionen",
+    "addPlayer": "Spieler hinzufügen",
+    "difficulty": "Schwierigkeitsgrad",
+    "difficultyInfo": "Der Schwierigkeitsgrad beeinflusst die Gesamtzahl der Elementkarten, die während des Spiels vom Markt entnommen werden können, nicht nur in einem einzelnen Zug.",
+    "advancedOptions": "Erweiterte Optionen",
     "useExpansionPack": "Erweiterungspaket verwenden",
     "seed": "Seed",
-    "seedInfo": "Der Seed stellt sicher, dass die Karten konstant gemischt werden. Die Verwendung desselben Seeds führt dazu, das jedesmal der gleiche Stapel angezeigt wird."
+    "seedInfo": "Der Seed gewährleistet eine konsistente Mischung des Spielkartenstapels. Die Verwendung des gleichen Seeds führt jedes Mal zur gleichen Kartenreihenfolge.",
+    "rulebook": "Spielregeln"
   },
   "deck": {
     "policies": {

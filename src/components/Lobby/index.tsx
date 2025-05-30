@@ -84,6 +84,8 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
     { code: "ru", name: "Русский", flag: "🇷🇺" },
     { code: "de", name: "Deutsch", flag: "🇩🇪" },
     { code: "sv", name: "Svenska", flag: "🇸🇪" },
+    { code: "da", name: "Dansk", flag: "🇩🇰" },
+    { code: "lt", name: "Lietuvių", flag: "🇱🇹" },
   ];
 
   return (
@@ -184,6 +186,19 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
             </Popover>
           </div>
         </div>
+
+        {/* Rulebook Link */}
+        {/* <div className="flex w-full">
+          <a
+            href={t("lobby.rulebook")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white underline transition-colors hover:text-gray-300"
+          >
+            {t("lobby.rulebook")} <FaExternalLinkAlt className="ml-1 inline-block text-sm" />
+          </a>
+        </div> */}
+
         {/* Advanced Options */}
         <Accordion type="single" collapsible className="!mt-0 w-full">
           <AccordionItem value="advanced">
@@ -243,6 +258,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
+
         {/* Start Game Button */}
         <div className="flex w-full justify-center pt-12">
           <ImageButton onClick={handleStartGame}>{t("buttons.play")}</ImageButton>

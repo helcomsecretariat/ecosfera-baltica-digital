@@ -1,0 +1,204 @@
+{
+  "lobby": {
+    "language": "Kalba",
+    "player": "Žaidėjas {{number}}",
+    "addPlayer": "Pridėti žaidėją",
+    "difficulty": "Sudėtingumas",
+    "difficultyInfo": "Sudėtingumas turi įtakos bendram elementų kortelių skaičiui, kurias galima pasiskolinti iš rinkos viso žaidimo metu, o ne tik per vieną ėjimą.",
+    "advancedOptions": "Išplėstinės parinktys",
+    "useExpansionPack": "Naudoti papildymo paketą",
+    "seed": "Seed",
+    "seedInfo": "Sėkla užtikrina nuoseklų žaidimo kortų kaladės maišymą. Naudojant tą pačią sėklą kiekvieną kartą žaidimo kortų kaladės tvarka bus ta pati.",
+    "rulebook": "Žaidimo taisyklės"
+  },
+  "deck": {
+    "policies": {
+      "drawMessage": {
+        "implementation": "Ištraukėte finansavimo kortą, kuri gali\nprisidėti prie priemonės įgyvendinimo!",
+        "negative": "Ištraukėte ypatingą kortą!",
+        "dual": "Ištraukėte ypatingą kortą!",
+        "positive": "Ištraukėte ypatingą priemonės kortą!",
+        "positiveExtra": {
+          "hasFunding": "Galite tai įgyvendinti išleisdami vieną iš savo finansavimo kortų.",
+          "noFunding": "Galite tai suaktyvinti, kai turėsite finansavimo kortą."
+        },
+        "automaticDraw": {
+          "habitat": "Ši korta buvo ištraukta automatiškai, atrakinant buveinę.",
+          "extinction": "Ši korta buvo automatiškai ištraukta įvykus neigiamam poveikiui."
+        }
+      },
+      "funding": {
+        "name": "Finansavimas",
+        "description": "Ši korta turi būti suporuota su priemonės korta tam, kad būtų galima įgyvendinti priemonę.",
+        "eventDescription": "Ši korta turi būti suporuota su priemonės korta tam, kad būtų galima įgyvendinti priemonę."
+      },
+      "hazardousSubstanceRegulation": {
+        "name": "Pavojingų medžiagų reglamentavimas",
+        "description": "Galite susieti gamintoją ir gyvūną, turintį tą patį buveinės simbolį, kad užsitikrintumėte buveinės plytelę",
+        "eventDescription": "Pavojingų medžiagų grupės prevencinis reguliavimas žymiai sumažina jų naudojimą ir patekimą į Baltijos jūrą.",
+        "pickProducerCommandBarText": "Pasirinkite gamintojo, kurio buveinė yra bendra su gyvūnu, kortą",
+        "pickAnimalCommandBarText": "Pasirinkite gyvūno, kurio buveinė yra bendra su gamintoju, kortą"
+      },
+      "wasteWaterTreatmentFailure": {
+        "name": "Nuotekų valymo gedimas",
+        "description": "Kiekvienas žaidėjas, kurio eilutėje yra bent viena maistinių medžiagų korta, paima spaudimo kortą ir įdeda ją į savo eilę.",
+        "eventDescription": "Dėl gausių kritulių nuotekų valymo įrenginiai persipildo ir į jūrą patenka maistinių medžiagų."
+      },
+      "warmSummer": {
+        "name": "Šilta vasara",
+        "description": "Jei pakėlus šią kortelę buvo įgyvendinta bent viena priemonė, visi žaidėjai gali aktyvuoti visus veiksmų žetonus. Jei nebuvo įgyvendintos jokios priemonės, visi žaidėjai turi deaktyvuoti visus veiksmų žetonus.",
+        "eventDescription": "Dėl klimato kaitos vasaros šila, o jūros temperatūra pakyla, o tai daro spaudimą ekosistemai. Norint padidinti atsparumą, reikia sumažinti kitus spaudimus. "
+      },
+      "climateChange": {
+        "name": "Klimato kaita",
+        "description": "Kiekvieną kartą, kai žaidėjas gauna neigiamo poveikio plytelę, prie neigiamų poveikių plytelių dėlionės pridedama papildoma neigiamo poveikio plytelė.",
+        "eventDescription": "Dėl žmogaus veiklų išsiskiriantis CO2 keičia temperatūrą, kritulių kiekį, vėjo greitį ir daug daugiau, o tai daro papildomą spaudimą Baltijos jūros ekosistemai",
+        "stageEventText": "Dėl klimato kaitos gaunate papildomą neigiamo poveikio plytelę!"
+      },
+      "oilSpill": {
+        "name": "Naftos išsiliejimas",
+        "description": "Išmeskite visas paukščių kortas ant stalo (žaidėjų eilutėse ir turguje). Kortos žaidėjų eilutėse nekeičiamos.",
+        "eventDescription": "Laivybos avarija sukelia naftos išsiliejimą, kuris pasiekia sausumą ir paveikia saugomą jūrų zoną. "
+      },
+      "hazardousIndustrialSubstances": {
+        "name": "Pavojingos medžiagos iš pramonės",
+        "description": "Išmeskite visas gamintojo kortas ant stalo (žaidėjų eilutėse ir turguje). Kortos žaidėjų eilutėse nekeičiamos.",
+        "eventDescription": "Pavojingų medžiagų išskyrimas smarkiai paveikia planktoną ir likusį maisto tinklą."
+      },
+      "overfishing": {
+        "name": "Perteklinė žvejyba",
+        "description": "Išmeskite visas žuvų kortas ant stalo (žaidėjų eilutėse ir turguje). Kortos žaidėjų eilutėse nekeičiamos.",
+        "eventDescription": "Mokslinių rekomendacijų dėl žvejybos nepaisoma, vėliau atsiranda netvari žvejyba. Žuvų populiacijos žlunga, sukeldamos ekosistemų disbalansą ir sumažėjusį laimikio kiekį ateityje."
+      },
+      "hunting": {
+        "name": "Medžioklė",
+        "description": "Visam laikui pašalinkite iš žaidimo visus savo eilutėje turimas žinduolių ir paukščių kortas.",
+        "eventDescription": "Dėl nuolatinės medžioklės migracijos metu žūva daug ilgauodegių ančių. Rūšies atsigavimas yra labai paveiktas, o rūšis tebėra įtraukta į nykstančių rūšių sąrašą."
+      },
+      "atmosphericDeposition": {
+        "name": "Pavojingų medžiagų nusėdimas atmosferoje",
+        "description": "Pašalinkite Calanoidą iš žaidimo, nesvarbu, kur ji yra",
+        "eventDescription": "Pavojingos medžiagos, tokios kaip dioksinai ir gyvsidabris, per atmosferą keliauja dideliais atstumais, paveikdamos vietoves, esančias toli už jų kilmės ribų, sukeldamos pvz. mutaciją ir ūmų mirtingumą."
+      },
+      "habitatRestoration": {
+        "name": "Buveinės atkūrimas",
+        "description": "Galite pašalinti vieną neigiamo poveikio plytelę iš neigiamų poveikių plytelių dėlionės",
+        "eventDescription": "Atkūrus pakrantės buveines, atsiranda gyvybingų šlapžemių ir akivaizdžiai padidėja žuvų veisimosi sėkmė, taip pat tampa atsparesnė ekosistema."
+      },
+      "bubbleCurtains": {
+        "name": "Burbulinės užuolaidos",
+        "description": "Visi žaidėjai gali atkurti visus tris savo gebėjimų žetonus.",
+        "eventDescription": "Vykdant povandeninius statybos projektus naudojamos burbulinės užuolaidos, sumažinamas povandeninio triukšmo sklidimas ir lygis, taip sumažinant spaudimą triukšmui jautrioms rūšims."
+      },
+      "nutrientUpwelling": {
+        "name": "Maistinių medžiagų papildymas ir vidinis maistinių medžiagų ciklas",
+        "description": "Visi žaidėjai paeiliui (pradedant nuo aktyvaus žaidėjo) į savo eilutę prideda iki dviejų maistinių medžiagų kortelių arba kol rinka bus tuščia.",
+        "eventDescription": "Vidinis ciklas ir maistinių medžiagų pasipildymas palaiko gamintojo augimą, teigiamai arba neigiamai veikiant maisto tinklą."
+      },
+      "excessiveFertilizerUse": {
+        "name": "Per didelis trąšų naudojimas",
+        "description": "Į aktyvaus žaidėjo eilutę pridėkite dvi maistinių medžiagų kortas. Jei rinkoje nebėra maistinių medžiagų kortų, pasiimkite spaudimo kortą. Padėkite visas deguonies kortasį visas žaidėjų eiles atgal į rinką.",
+        "eventDescription": "Žemės ūkyje naudojant per daug trąšų, į jūrą patenka daugiau maistinių medžiagų."
+      },
+      "upgradedWasteWaterTreatment": {
+        "name": "Atnaujintas nuotekų valymas",
+        "description": "Paimkite papildomą maistinių medžiagų kortą iš rinkos arba, jei savo eilėje turite tris maistinių medžiagų kortas, galite grąžinti vieną į rinką.",
+        "eventDescription": "Investicijos į naujausių nuotekų valymo technologijų diegimą žymiai sumažina maistinių medžiagų išmetimą į jūrą."
+      },
+      "improvedNutrientRetention": {
+        "name": "Pagerintas maistinių medžiagų išlaikymas žemės ūkyje",
+        "description": "Visoms gamintojo kortelėms likusiai žaidimo daliai reikia viena maistine medžiaga mažiau.",
+        "eventDescription": "Naudojant geriausias turimas tręšimo technologijas, sumažėja maisto medžiagų nutekėjimo iš žemės ūkio į jūrą rizika."
+      },
+      "migratoryBarrierRemoval": {
+        "name": "Migracijos barjero pašalinimas",
+        "description": "Paimkite vieną žuvies ar paukščio kortą iš rinkos ir pridėkite ją prie bet kurio žaidėjo eilės.",
+        "eventDescription": "Užtvankų pašalinimas upėse padidina migruojančių žuvų rūšių judėjimą ir veisimosi sėkmę.",
+        "pickSpeciesCommandBarText": "Išsirinkite žuvies ar paukščio kortą iš rinkos",
+        "pickPlayerCommandBarText": "Pasirinkite žaidėjo eilutę, į kurią norite perkelti pasirinktą kortelę"
+      },
+      "fishingGearRegulation": {
+        "name": "Žvejybos įrankių reguliavimas",
+        "description": "Prie bet kurios žaidėjų eilės pridėkite visas rinkoje esančias korteles, kuriose yra dumblo simbolis.",
+        "eventDescription": "Dugninio tralavimo žvejybos pastangų reguliavimas ir erdvinis paskirstymas leidžia atsistatyti bentoso buveinėms.",
+        "commandBarText": "Pasirinkite žaidėjo eilutę, į kurią norite perkelti visas dumblo rūšis"
+      },
+      "recyclingAndWasteDisposal": {
+        "name": "Perdirbimas ir atliekų šalinimas",
+        "description": "Iš bet kurio (-ių) žaidėjo (-ių) eilės (-ių) išimkite dvi spaudimo kortas ir pakeiskite jas kortomis iš žaidėjo (-ų) kaladės (-ių).",
+        "eventDescription": "Patobulintas atliekų šalinimas ir perdirbimas kartu su mažesne vienkartinio plastiko gamyba sumažina į jūrą patenkančių šiukšlių kiekį.",
+        "commandBarText": "Pasirinkite spaudimo kortą, kurią norite išmesti iš bet kurio žaidėjo eilės"
+      },
+      "greenEnergy": {
+        "name": "Žalioji energija",
+        "description": "Jei pakrantės, uolų ar dumblo buveinės jau buvo atkurtos pakėlus šią kortą, pridėkite neigiamo poveikio plytelę. Jei prieš pakeliant šią kortą nebuvo atkurta nė viena iš aukščiau išvardytų buveinių, pasirinkite vieną iš šių buveinių, kad būtų nedelsiant atkurta.",
+        "eventDescription": "Žaliosios energijos plėtrai jūroje reikia erdvės, o teigiamas ir/ar neigiamas poveikis įrenginių ekosistemai tiesiogiai priklauso nuo planavimo proceso kokybės ir savalaikiškumo.",
+        "commandBarText": "Pasirinkite, kurią buveinę atrakinti: uolos arba dumblo"
+      },
+      "underwaterNoise": {
+        "name": "Povandeninis triukšmas",
+        "description": "Sekantis žaidėjas negali naudoti gebėjimų.",
+        "eventDescription": "Intensyvus laivybos eismas sukelia per daug triukšmo po vandeniu, todėl žuvims ir jūrų kiaulėms sunku rasti maisto."
+      },
+      "beachLitter": {
+        "name": "Paplūdimio šiukšlės",
+        "description": "Kitas žaidėjas praleidžia įjimą. Ši korta bus pridėta kaip šiukšlė į ją ištraukusio žaidėjo kaladę.",
+        "eventDescription": "Šiukšlės patenka į jūrą dėl prastos įrangos ir elgesio. Paplūdimiai tampa nemalonūs, nukenčia ir vietiniai, ir turistai."
+      },
+      "strictProtection": {
+        "name": "Griežta apsauga",
+        "description": "Rušių kortos negali būti išmetamos dėl veiksmo kortos.",
+        "eventDescription": "Griežtos apsaugos priemonės saugomose jūrų zonose padidina rūšių gausą. Tai leidžia joms plisti ir už saugomų jūrų zonų ribų.",
+        "stageEventText": "Apsaugos priemonės neleidžia išmesti rušių kortų",
+        "protectionActivationText": "Naudodami griežtą apsaugą turite galimybę blokuoti poveikius."
+      }
+    }
+  },
+  "stageEventText": {
+    "boughtCard": "Nusipirkote {{cardName}}",
+    "disaster": "Nieko nepirkote.\nGaunate spaudimo kortą.",
+    "extinction": "Per daug spaudimų sukelia neigiamą poveikį.\nGaunate neigiamo poveikio plytelę ir jūsų ėjimas baigiasi.",
+    "massExtinction": "Per daug spaudimų sukelia masinį neigiamą poveikį.\nGaunate 3 neigiamo poveikio plyteles ir jūsų ėjimas baigiasi.",
+    "elementalDisaster": "Per daug elementų sukelia spaudimą.\nGaunate spaudimo kortą ir jūsų ėjimas baigiasi.",
+    "abilityRefreshed": "Jūsų {{abilityName}} gebėjimas yra atnaujintas!",
+    "congratulations": "Sveikinimai!",
+    "earnedHabitat_one": "Gavote {{habitatText}} buveinę",
+    "earnedHabitat_other": "Gavote {{habitatText}} buveines",
+    "canRefreshAbility": "Dabar galite atnaujinti vieną iš savo naudotų gebėjimų.",
+    "gameWin": "Sveikinimai!\nJūs išgelbėjote Baltijos ekosistemą!",
+    "gameLoss": "Žaidimas baigtas!\nJums nepavyko išgelbėti Baltijos ekosistemos.",
+    "abilityUseBlocked": "Šiuo metu negalite naudotis savo sugebėjimais.",
+    "skipTurn": "Teks palaukti kito ėjimo."
+  },
+  "policies": {
+    "active": "Aktyvios politikos",
+    "acquired": "Įgytos politikos",
+    "funding": "Finansavimas",
+    "activate": "Aktyvuoti"
+  },
+  "blocker": {
+    "leavePageMessage": "Ar tikrai norite palikti šį puslapį?"
+  },
+  "buttons": {
+    "showCards": "Rodyti kortas",
+    "endTurn": "Pabaigti ėjimą",
+    "newGame": "Nauja žaidimas",
+    "ok": "Ok",
+    "play": "Žaiskite!"
+  },
+  "abilities": {
+    "commandBar": {
+      "move": {
+        "pickCard": "Pasirinkite kortą iš savo eilutės, kurią norite perkelti",
+        "pickDestination": "Pasirinkite vietą, į kurią norite perkelti pasirinktą kortą",
+        "pickDestinationSinglePlayer": "Pasirinkite vietą, į kurią norite perkelti pasirinktą kortą, o pasirinkę savo kaladę galėsite ją naudoti kitame savo ėjime."
+      },
+      "refresh": {
+        "pickMarket": "Pasirinkite, kurią rinką atnaujinti"
+      }
+    }
+  },
+  "commandBar": {
+    "backToStageEvent": "Spustelėkite čia, kad grįžtumėte į įvykį"
+  }
+}

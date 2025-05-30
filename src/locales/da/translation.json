@@ -1,0 +1,204 @@
+{
+  "lobby": {
+    "language": "Sprog",
+    "player": "Spiller {{number}}",
+    "addPlayer": "Tilføj spiller",
+    "difficulty": "Sværhedsgrad",
+    "difficultyInfo": "Sværhedsgraden påvirker det samlede antal elementkort, der kan lånes fra markedet i løbet af spillet, ikke kun i en enkelt tur.",
+    "advancedOptions": "Udvidet muligheder",
+    "useExpansionPack": "Brug udvidelsespakken",
+    "seed": "Frø",
+    "seedInfo": "Frøet sikrer en ensartet blanding af spilkortene. Ved at bruge det samme Frø vil kortbunken have den samme rækkefølge hver gang.",
+    "rulebook": "Spilregler"
+  },
+  "deck": {
+    "policies": {
+      "drawMessage": {
+        "implementation": "Du trak et financerings kort, som kan\nbidrag til implementeringen af en foranstaltning!",
+        "negative": "Du trak et special kort!",
+        "dual": "Du trak et special kort!",
+        "positive": "Du trak et special foranstaltningskort!",
+        "positiveExtra": {
+          "hasFunding": "Du kan implementere det ved at bruge et af dine Finansieringskort.",
+          "noFunding": "Du kan aktivere det, når du har et Finansieringskort."
+        },
+        "automaticDraw": {
+          "habitat": "Dette kort blev trukket automatisk efter oplåsning af et habitat.",
+          "extinction": "Dette kort blev trukket automatisk efter en påvirkningsbegivenhed."
+        }
+      },
+      "funding": {
+        "name": "Finansiering",
+        "description": "Dette kort skal parres med et foranstaltningskort for at tillade implementering af foranstaltningskortet.",
+        "eventDescription": "Dette kort skal parres med et foranstaltningskort for at tillade implementering af foranstaltningskortet."
+      },
+      "hazardousSubstanceRegulation": {
+        "name": "Regulering af farlige stoffer",
+        "description": "Du kan parre en producent og et dyr, der deler det samme habitatsymbol, for at få en habitatbrik",
+        "eventDescription": "Forebyggende regulering af en gruppe farlige stoffer reducerer markant deres brug og dermed deres tilførsel til Østersøen.",
+        "pickProducerCommandBarText": "Vælg et producentkort, der deler habitat med et dyrekort",
+        "pickAnimalCommandBarText": "Vælg et dyrekort, der deler habitat med et producentkort"
+      },
+      "wasteWaterTreatmentFailure": {
+        "name": "Fejl i spildevandsrensning",
+        "description": "Hver spiller med mindst ét næringsstofkort i sin række tager et preskort og placerer det i sin række.",
+        "eventDescription": "Kraftig regn får et rensningsanlæg til at løbe over, hvilket frigiver næringsstoffer i havet."
+      },
+      "warmSummer": {
+        "name": "Varm sommer",
+        "description": "Hvis minimum én foranstaltning er implementeret, når dette kort løftes, kan alle spillere aktivere alle handlingsbrikker. Hvis ingen foranstaltninger er implementeret, skal alle spillere deaktivere alle handlingsbrikker.",
+        "eventDescription": "Klimaforandring resulterer i en varm sommer, og havtemperaturen stiger, hvilket lægger pres på økosystemet. For at øge modstandskraften skal andre pres minimeres. "
+      },
+      "climateChange": {
+        "name": "Klimaforandring",
+        "description": "Hver gang en spiller får en påvirkningsbrik, tilføjes en ekstra påvirkningsbrik til påvirkningsbriks-puslespillet.",
+        "eventDescription": "CO2 udledt af menneskelige aktiviteter resulterer i ændringer i temperatur, nedbør, vindhastighed og meget mere, hvilket lægger yderligere pres på Østersøens økosystem.",
+        "stageEventText": "På grund af klimaforandringer får du en ekstra påvirkningsbrik!"
+      },
+      "oilSpill": {
+        "name": "Olieudslip",
+        "description": "Kasser alle fugle, der ligger åbent på bordet (i spillernes rækker og på markedet). Kort i spillernes rækker erstattes ikke.",
+        "eventDescription": "En skibsulykke forårsager et olieudslip, som når kysten og påvirker et Maritimt Beskyttet Område (MPA). "
+      },
+      "hazardousIndustrialSubstances": {
+        "name": "Farlige stoffer fra industrien",
+        "description": "Kasser alle producentkort på bordet (i hver spillers rækker og på markedet). Kort i spillernes rækker erstattes ikke.",
+        "eventDescription": "Frigivelse af farlige stoffer påvirker akut plankton, hvilket kaskaderer gennem resten af fødekæden."
+      },
+      "overfishing": {
+        "name": "Overfiskeri",
+        "description": "Kasser alle fisk, der ligger åbent på bordet (i spillernes rækker og på markedet). Kort i spillernes rækker erstattes ikke.",
+        "eventDescription": "Videnskabelig rådgivning om fiskeri ignoreres, hvorefter uholdbart fiskeri finder sted. Fiskebestandene kollapser, hvilket forårsager ubalance i økosystemet og lave fangster i fremtiden."
+      },
+      "hunting": {
+        "name": "Jagt",
+        "description": "Fjern permanent alle pattedyr og fugle i din række fra spillet.",
+        "eventDescription": "Vedvarende jagt resulterer i, at store antal havlitter (long-tailed ducks according to google)  dræbes under træk. Artens genopretning påvirkes alvorligt, og arten forbliver opført som truet (Endangered)."
+      },
+      "atmosphericDeposition": {
+        "name": "Atmosfærisk aflejring af farlige stoffer",
+        "description": "Fjern Calanoida fra spillet, uanset hvor det er",
+        "eventDescription": "Farlige stoffer som dioxiner og kviksølv rejser lange afstande gennem atmosfæren og påvirker områder langt ud over deres oprindelse, hvilket f.eks. forårsager mutation og akut dødelighed."
+      },
+      "habitatRestoration": {
+        "name": "Habitatgenopretning",
+        "description": "Du kan fjerne én påvirkningsbrik fra påvirkningsbrikpuslespillet",
+        "eventDescription": "Kysthabitatgenopretning resulterer i levende vådområder og en klar stigning i fiskenes ynglesucces samt et mere modstandsdygtigt økosystem."
+      },
+      "bubbleCurtains": {
+        "name": "Boblegardiner",
+        "description": "Alle spillere kan genoprette alle tre af deres evnebrikker.",
+        "eventDescription": "Under undersøiske byggeprojekter bruges boblegardiner, og spredningen og niveauet af undervandsstøj sænkes, hvilket minimerer presset på støjfølsomme arter."
+      },
+      "nutrientUpwelling": {
+        "name": "Næringsstofopstrømning og intern næringsstofcyklus",
+        "description": "Alle spillere skiftes (startende fra den aktive spiller) til at tilføje op til to næringsstofkort til deres række, eller indtil markedet er tomt.",
+        "eventDescription": "Intern cyklus og opstrømning af næringsstoffer understøtter væksten af producenter, hvilket påvirker fødekæden positivt eller negativt."
+      },
+      "excessiveFertilizerUse": {
+        "name": "Overdreven gødningsbrug",
+        "description": "Tilføj to næringsstofkort til den aktive spillers række. Hvis der ikke er flere næringsstofkort på markedet, tag et preskort. Placer alle iltkort i alle spilleres rækker tilbage på markedet.",
+        "eventDescription": "Brug af for meget gødning i landbruget resulterer i øgede mængder af næringsstoffer, der kommer ud i havet.)"
+      },
+      "upgradedWasteWaterTreatment": {
+        "name": "Opgraderet spildevandsrensning",
+        "description": "Tag et ekstra næringsstofkort fra markedet, eller hvis du har tre næringsstofkort i din række, kan du lægge et tilbage på markedet.)",
+        "eventDescription": "Investering i at implementere den nyeste teknologi inden for spildevandsrensning reducerer markant udledningen af næringsstoffer til havet."
+      },
+      "improvedNutrientRetention": {
+        "name": "Forbedret næringsstof-tilbageholdelse i landbruget",
+        "description": "Alle producentkort kræver et næringsstof mindre resten af spillet.",
+        "eventDescription": "Anvendelse af de bedste tilgængelige teknologier til gødskning reducerer risikoen for, at næringsstoffer drænes fra landbruget til havet."
+      },
+      "migratoryBarrierRemoval": {
+        "name": "Fjernelse af migrations-hindringer",
+        "description": "Tag et fiske- eller fuglekort fra markedet og tilføj det til en vilkårlig spillers række.",
+        "eventDescription": "Fjernelse af dæmninger i floder øger migrations-fiskearters bevægelse og ynglesucces.",
+        "pickSpeciesCommandBarText": "Vælg et fiske- eller fuglekort fra markedet",
+        "pickPlayerCommandBarText": "Vælg en spillers række at flytte dit valgte kort til"
+      },
+      "fishingGearRegulation": {
+        "name": "Regulering af fiskeredskaber",
+        "description": "Tilføj alle kort på markedet, der har et mudder-symbol, til en vilkårlig spillers række.",
+        "eventDescription": "Regulering og rumlig fordeling af fiskeri-indsatsen med bundtrawl giver mulighed for, at bundhabitater kan komme sig.",
+        "commandBarText": "Vælg en spillers række at flytte alle mudderarterne til"
+      },
+      "recyclingAndWasteDisposal": {
+        "name": "Genbrug og affaldshåndtering",
+        "description": "Fjern to preskort fra en eller flere spilleres række(r) og erstat kortene med kort fra spillerens/spillernes bunke(r).",
+        "eventDescription": "Forbedret affaldshåndtering og genbrug, kombineret med lavere produktion af engangsplastik, reducerer mængden af affald, der kommer ud i havet.",
+        "commandBarText": "Vælg et preskort at kassere fra en vilkårlig spillers række"
+      },
+      "greenEnergy": {
+        "name": "Grøn energi",
+        "description": "Hvis kyst-, sten- eller mudderhabitater allerede er genoprettet, når dette kort løftes, tilføj en påvirkningsbrik. Hvis ingen af de ovennævnte habitater er genoprettet før løft af dette kort, vælg et af disse habitater til øjeblikkelig genopretning.",
+        "eventDescription": "Udvikling af grøn energi til havs kræver plads, og de positive og/eller negative effekter på økosystemet fra installationerne afhænger direkte af kvaliteten og rettidigheden af planlægningsprocessen.",
+        "commandBarText": "Vælg enten Sten- eller Mudderhabitatet at oplåse"
+      },
+      "underwaterNoise": {
+        "name": "Undervandsstøj",
+        "description": "Næste spiller må ikke bruge evner.",
+        "eventDescription": "Intens skibstrafik forårsager for meget støj under vandet, hvilket gør det svært for fisk og marsvin at finde føde."
+      },
+      "beachLitter": {
+        "name": "Strandaffald",
+        "description": "Spring næste spillers tur over. Dette kort tilføjes som affald til den trækkende spillers bunke.",
+        "eventDescription": "Dårlige faciliteter og adfærd resulterer i, at affald kommer ud i havet. Strande bliver ubehagelige, hvilket påvirker både lokale og turister."
+      },
+      "strictProtection": {
+        "name": "Streng beskyttelse",
+        "description": "Arter kan ikke kasseres som følge af et handlingskort.",
+        "eventDescription": "Strenge beskyttelsesforanstaltninger i Maritime Beskyttede Områder (MPA'er) fører til en stigning i artsantal. At lade dem sprede sig også uden for MPA'et.",
+        "stageEventText": "Beskyttelsesforanstaltninger forhindrede kassering af arter",
+        "protectionActivationText": "Du har mulighed for at blokere effekter med streng beskyttelse."
+      }
+    }
+  },
+  "stageEventText": {
+    "congratulations": "Tillykke!",
+    "earnedHabitat_one": "Du har tjent  {{habitatText}} habitatet",
+    "earnedHabitat_other": "Du har tjent {{habitatText}} habitatet",
+    "boughtCard": "Du har købt et {{cardName}}",
+    "disaster": "Du har ikke købt noget.\nDu får et pres-kort.",
+    "extinction": "For mange pres forårsager en påvirkning.\nDu får en påvirkningsbrik, og din tur slutter.",
+    "massExtinction": "For mange pres forårsager en massiv påvirkning.\nDu får 3 påvirkningsbrikker, og din tur slutter.",
+    "elementalDisaster": "For mange elementer forårsager et pres.\nYDu får et preskort, og din tur slutter.",
+    "abilityRefreshed": "Din {{abilityName}} -evne er blevet genopfrisket",
+    "canRefreshAbility": "Du kan nu genopfriske en af dine brugte evner.",
+    "gameWin": "Tillykke!\nDu reddede Østersøens økosystem.",
+    "gameLoss": "Spillet er slut!\nDu kunne ikke redde Østersøens økosystem.",
+    "abilityUseBlocked": "Du kan ikke bruge dine evner lige nu.",
+    "skipTurn": "Du bliver nødt til at vente til næste tur."
+  },
+  "policies": {
+    "active": "Aktive Politikker",
+    "acquired": "Tiltjente politikker",
+    "funding": "Finansiering",
+    "activate": "Aktivér"
+  },
+  "blocker": {
+    "leavePageMessage": "Er du sikker på, at du vil forlade denne side?"
+  },
+  "buttons": {
+    "showCards": "Vis kort",
+    "endTurn": "Slut tur",
+    "newGame": "Nyt spil",
+    "ok": "Ok",
+    "play": "Spil!"
+  },
+  "abilities": {
+    "commandBar": {
+      "move": {
+        "pickCard": "Vælg et kort fra din række at flytte",
+        "pickDestination": "Vælg en destination at flytte dit valgte kort til",
+        "pickDestinationSinglePlayer": "Vælg en destination at flytte dit valgte kort til; vælger du din egen bunke, bliver kortet tilgængeligt til brug i din næste tur."
+      },
+      "refresh": {
+        "pickMarket": "Vælg et marked at genopfriske"
+      }
+    }
+  },
+  "commandBar": {
+    "backToStageEvent": "Klik her for at gå tilbage til begivenheden"
+  }
+}

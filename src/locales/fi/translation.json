@@ -8,7 +8,8 @@
     "advancedOptions": "Lisäasetukset",
     "useExpansionPack": "Käytä laajennusosaa",
     "seed": "Siemen",
-    "seedInfo": "Siemen varmistaa johdonmukaisen pakan sekoituksen. Saman siemenen käyttäminen johtaa samaan korttijärjestykseen joka kerta."
+    "seedInfo": "Siemen varmistaa johdonmukaisen pakan sekoituksen. Saman siemenen käyttäminen johtaa samaan korttijärjestykseen joka kerta.",
+    "rulebook": "Pelisäännöt"
   },
   "deck": {
     "policies": {

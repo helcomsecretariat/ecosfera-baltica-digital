@@ -9,7 +9,8 @@
     "useExpansionPack": "Erweiterungspaket verwenden",
     "seed": "Seed",
     "seedInfo": "Der Seed gewährleistet eine konsistente Mischung des Spielkartenstapels. Die Verwendung des gleichen Seeds führt jedes Mal zur gleichen Kartenreihenfolge.",
-    "rulebook": "Spielregeln"
+    "rulebook": "Spielregeln",
+    "rulebook_filename": "de.pdf"
   },
   "deck": {
     "policies": {

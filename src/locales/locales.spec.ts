@@ -3,6 +3,17 @@ import fs from "fs";
 import path from "path";
 import type Resources from "@/@types/locale";
 
+// Helper function to get all nested keys from an object
+const getAllNestedKeys = (obj: any, prefix = ""): string[] => {
+  return Object.entries(obj).reduce((keys: string[], [key, value]) => {
+    const newKey = prefix ? `${prefix}.${key}` : key;
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return [...keys, ...getAllNestedKeys(value, newKey)];
+    }
+    return [...keys, newKey];
+  }, []);
+};
+
 // Detect available locales by reading directory names
 const locales = fs
   .readdirSync(__dirname)
@@ -25,23 +36,41 @@ describe("Translation keys consistency", () => {
     localeData[locale] = loadLocale(locale);
   });
 
-  // Get all keys from the first locale
-  const allKeys = new Set(Object.keys(localeData[locales[0]]));
+  // Get all nested keys from the first locale
+  const allKeys = new Set(getAllNestedKeys(localeData[locales[0]]));
 
   locales.forEach((locale) => {
     test(`should have all keys in ${locale}`, () => {
-      const missingKeys = Array.from(allKeys).filter(
-        (key) => !Object.prototype.hasOwnProperty.call(localeData[locale], key),
-      );
-      expect(missingKeys).toHaveLength(0);
+      const localeKeys = new Set(getAllNestedKeys(localeData[locale]));
+      // const missingKeys = Array.from(allKeys).filter((key) => !localeKeys.has(key));
+      expect(localeKeys, `Missing keys in ${locale} locale`).toEqual(allKeys);
     });
   });
 
   // Check if there are any extra keys in each locale
   locales.forEach((locale) => {
     test(`should not have extra keys in ${locale}`, () => {
-      const extraKeys = Object.keys(localeData[locale]).filter((key) => !allKeys.has(key));
-      expect(extraKeys).toHaveLength(0);
+      const localeKeys = new Set(getAllNestedKeys(localeData[locale]));
+      const extraKeys = Array.from(localeKeys).filter((key) => !allKeys.has(key));
+
+      expect(extraKeys, `Extra keys found in ${locale} locale`).toEqual([]);
+    });
+  });
+});
+
+describe("Rulebook file existence", () => {
+  const rulebookDir = path.resolve(__dirname, "../../public/pdfs/rulebook");
+
+  test("should have all referenced rulebook files", () => {
+    locales.forEach((locale) => {
+      const translation = loadLocale(locale);
+      const rulebookFilename = translation.lobby.rulebook_filename;
+      const filePath = path.join(rulebookDir, rulebookFilename);
+
+      expect(
+        fs.existsSync(filePath),
+        `Rulebook file ${filePath} referenced in ${locale} translation does not exist`,
+      ).toBe(true);
     });
   });
 });

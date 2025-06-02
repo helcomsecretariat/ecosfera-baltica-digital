@@ -7,7 +7,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover";
 import { InfoIcon } from "@/components/ui/icons";
 import { GameConfig } from "@/state/types";
-import { FaPen, FaPlus, FaTimes } from "react-icons/fa";
+import { FaExternalLinkAlt, FaPen, FaPlus, FaTimes } from "react-icons/fa";
 import DifficultySelector from "./DifficultySelector";
 import ImageButton from "../ui/imageButton";
 import { without } from "lodash";
@@ -197,16 +197,16 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
         </div>
 
         {/* Rulebook Link */}
-        {/* <div className="flex w-full">
+        <div className="flex w-full">
           <a
-            href={t("lobby.rulebook")}
+            href={`/pdfs/rulebook/${t("lobby.rulebook_filename")}.pdf`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-white underline transition-colors hover:text-gray-300"
           >
             {t("lobby.rulebook")} <FaExternalLinkAlt className="ml-1 inline-block text-sm" />
           </a>
-        </div> */}
+        </div>
 
         {/* Advanced Options */}
         <Accordion type="single" collapsible className="!mt-0 w-full">

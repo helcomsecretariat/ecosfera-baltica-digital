@@ -9,7 +9,8 @@
     "useExpansionPack": "Käytä laajennusosaa",
     "seed": "Siemen",
     "seedInfo": "Siemen varmistaa johdonmukaisen pakan sekoituksen. Saman siemenen käyttäminen johtaa samaan korttijärjestykseen joka kerta.",
-    "rulebook": "Pelisäännöt"
+    "rulebook": "Pelisäännöt",
+    "rulebook_filename": "en.pdf"
   },
   "deck": {
     "policies": {

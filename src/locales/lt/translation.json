@@ -9,7 +9,8 @@
     "useExpansionPack": "Naudoti papildymo paketą",
     "seed": "Seed",
     "seedInfo": "Sėkla užtikrina nuoseklų žaidimo kortų kaladės maišymą. Naudojant tą pačią sėklą kiekvieną kartą žaidimo kortų kaladės tvarka bus ta pati.",
-    "rulebook": "Žaidimo taisyklės"
+    "rulebook": "Žaidimo taisyklės",
+    "rulebook_filename": "lt.pdf"
   },
   "deck": {
     "policies": {

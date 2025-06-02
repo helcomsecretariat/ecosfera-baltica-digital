@@ -199,7 +199,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
         {/* Rulebook Link */}
         <div className="flex w-full">
           <a
-            href={`/pdfs/rulebook/${t("lobby.rulebook_filename")}.pdf`}
+            href={`/pdfs/rulebook/${t("lobby.rulebook_filename")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-white underline transition-colors hover:text-gray-300"

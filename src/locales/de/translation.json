@@ -133,7 +133,7 @@
         "name": "Grüne Energie",
         "description": "Wenn Küsten-, Stein- oder Schlammlebensräume beim Ziehen dieser Karte bereits wiederhergestellt worden sind, füge eine Wirkungskachel hinzu. Wenn zuvor keiner der obengenannten Lebensräume wiederhergestellt worden ist, wähle einen dieser Lebensräume zur sofortigen Wiederherstellung",
         "eventDescription": "Die Entwicklung grüner Energie auf dem Meer erfordert Raum und der positive oder negative Effekt auf das Ökosystem hängt direkt von der Qualität und dem Zeitplan des Planungsprozesses ab.",
-        "commandBarText": "Wähle entweder den steinigen oder den schlammigen Lebensraum, um ihn zu eröffnen."
+        "commandBarText": "Wähle entweder Küsten-, Stein- oder Schlammlebensräume, um es zu eröffnen."
       },
       "underwaterNoise": {
         "name": "Unterwasserlärm",

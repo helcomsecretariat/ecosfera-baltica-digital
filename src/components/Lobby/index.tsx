@@ -94,6 +94,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
     { code: "sv", name: "Svenska", flag: "🇸🇪" },
     { code: "da", name: "Dansk", flag: "🇩🇰" },
     { code: "lt", name: "Lietuvių", flag: "🇱🇹" },
+    { code: "et", name: "Eesti", flag: "🇪🇪" },
   ];
 
   return (

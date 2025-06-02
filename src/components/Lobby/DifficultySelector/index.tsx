@@ -6,11 +6,11 @@ const DifficultySelector = ({ onDifficultyChange }: { onDifficultyChange: (diffi
   const [difficulty, setDifficulty] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [direction, setDirection] = useState<"backwards" | "forwards">("forwards");
 
-  const handleDifficultyChange = (newDifficulty: number) => {
+  const handleDifficultyChange = (newDifficulty: 1 | 2 | 3 | 4 | 5 | 6) => {
     if (newDifficulty < 1 || newDifficulty > 6) return;
     setDirection(newDifficulty > difficulty ? "forwards" : "backwards");
     setDifficulty(newDifficulty as 1 | 2 | 3 | 4 | 5 | 6);
-    onDifficultyChange(difficulty);
+    onDifficultyChange(newDifficulty);
   };
 
   const variants = {
@@ -30,7 +30,7 @@ const DifficultySelector = ({ onDifficultyChange }: { onDifficultyChange: (diffi
     <div className="flex select-none items-center space-x-1 overflow-hidden">
       <button
         className={clsx("flex h-8 w-8 items-center justify-center", difficulty <= 1 ? "invisible" : "visible")}
-        onClick={() => handleDifficultyChange(difficulty - 1)}
+        onClick={() => handleDifficultyChange((difficulty - 1) as 1 | 2 | 3 | 4 | 5)}
       >
         &lt;
       </button>
@@ -49,7 +49,7 @@ const DifficultySelector = ({ onDifficultyChange }: { onDifficultyChange: (diffi
       </AnimatePresence>
       <button
         className={clsx("flex h-8 w-8 items-center justify-center", difficulty >= 6 ? "invisible" : "visible")}
-        onClick={() => handleDifficultyChange(difficulty + 1)}
+        onClick={() => handleDifficultyChange((difficulty + 1) as 2 | 3 | 4 | 5 | 6)}
       >
         &gt;
       </button>

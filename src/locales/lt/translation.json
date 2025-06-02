@@ -133,7 +133,7 @@
         "name": "Žalioji energija",
         "description": "Jei pakrantės, uolų ar dumblo buveinės jau buvo atkurtos pakėlus šią kortą, pridėkite neigiamo poveikio plytelę. Jei prieš pakeliant šią kortą nebuvo atkurta nė viena iš aukščiau išvardytų buveinių, pasirinkite vieną iš šių buveinių, kad būtų nedelsiant atkurta.",
         "eventDescription": "Žaliosios energijos plėtrai jūroje reikia erdvės, o teigiamas ir/ar neigiamas poveikis įrenginių ekosistemai tiesiogiai priklauso nuo planavimo proceso kokybės ir savalaikiškumo.",
-        "commandBarText": "Pasirinkite, kurią buveinę atrakinti: uolos arba dumblo"
+        "commandBarText": "Pasirinkite, kurią buveinę atrakinti: pakrantės, uolų arba dumblo"
       },
       "underwaterNoise": {
         "name": "Povandeninis triukšmas",

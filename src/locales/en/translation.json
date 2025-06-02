@@ -133,7 +133,7 @@
         "name": "Green energy",
         "description": "If coastal, hard- or soft bottom habitats have already been restored when this card is lifted, add an impact tile. If none of the above habitats have been restored prior to lifting this card, choose one of these habitats to immediately restore.",
         "eventDescription": "Green energy development at sea requires space, and the positive and/or negative effects on the ecosystem of the installations dependend directly on the quality and timelyness of the planning process.",
-        "commandBarText": "Choose either the Rock or Mud habitat to unlock"
+        "commandBarText": "Choose either Coast, Rock or Mud habitat to unlock"
       },
       "underwaterNoise": {
         "name": "Underwater noise",

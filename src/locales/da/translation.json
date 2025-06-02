@@ -133,7 +133,7 @@
         "name": "Grøn energi",
         "description": "Hvis kyst-, sten- eller mudderhabitater allerede er genoprettet, når dette kort løftes, tilføj en påvirkningsbrik. Hvis ingen af de ovennævnte habitater er genoprettet før løft af dette kort, vælg et af disse habitater til øjeblikkelig genopretning.",
         "eventDescription": "Udvikling af grøn energi til havs kræver plads, og de positive og/eller negative effekter på økosystemet fra installationerne afhænger direkte af kvaliteten og rettidigheden af planlægningsprocessen.",
-        "commandBarText": "Vælg enten Sten- eller Mudderhabitatet at oplåse"
+        "commandBarText": "Vælg enten Kyst-, Sten- eller Mudderhabitatet at oplåse"
       },
       "underwaterNoise": {
         "name": "Undervandsstøj",

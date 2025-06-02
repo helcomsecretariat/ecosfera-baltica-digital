@@ -67,4 +67,14 @@ describe("game state", () => {
 
     expect(firstGameStateJSON).toBe(secondGameStateJSON);
   });
+
+  it("difficulty level affects element market deck size correctly", () => {
+    // Test difficulty level 1 (should have 8 cards)
+    const gameStateDifficulty1 = spawnDeck(deckConfig as unknown as DeckConfig, { ...gameConfig, difficulty: 1 });
+    expect(gameStateDifficulty1.elementMarket.deck.length / 5).toBe(8);
+
+    // Test difficulty level 6 (should have 3 cards)
+    const gameStateDifficulty6 = spawnDeck(deckConfig as unknown as DeckConfig, { ...gameConfig, difficulty: 6 });
+    expect(gameStateDifficulty6.elementMarket.deck.length / 5).toBe(3);
+  });
 });

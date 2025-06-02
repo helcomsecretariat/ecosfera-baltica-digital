@@ -4,11 +4,11 @@ import path from "path";
 import type Resources from "@/@types/locale";
 
 // Helper function to get all nested keys from an object
-const getAllNestedKeys = (obj: any, prefix = ""): string[] => {
+const getAllNestedKeys = (obj: Record<string, unknown>, prefix = ""): string[] => {
   return Object.entries(obj).reduce((keys: string[], [key, value]) => {
     const newKey = prefix ? `${prefix}.${key}` : key;
     if (value && typeof value === "object" && !Array.isArray(value)) {
-      return [...keys, ...getAllNestedKeys(value, newKey)];
+      return [...keys, ...getAllNestedKeys(value as Record<string, unknown>, newKey)];
     }
     return [...keys, newKey];
   }, []);

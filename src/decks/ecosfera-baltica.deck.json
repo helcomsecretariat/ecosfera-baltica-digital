@@ -219,7 +219,7 @@
       "abilities": ["move"],
       "flora_type": "vascular plant"
     },
-    "Chrysochomulina": {
+    "Chrysochromulina": {
       "elements": ["oxygen", "salinity", "nutrients"],
       "habitats": ["pelagic"],
       "abilities": ["move"],
@@ -297,7 +297,7 @@
       "abilities": ["refresh"],
       "flora_type": "diatom"
     },
-    "Ulva lactuta": {
+    "Ulva lactuca": {
       "elements": ["sun", "sun", "nutrients"],
       "habitats": ["coast"],
       "abilities": ["plus"],

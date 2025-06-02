@@ -1,0 +1,203 @@
+{
+  "lobby": {
+    "language": "Keel",
+    "player": "Mängija {{number}}",
+    "addPlayer": "Lisa mängija",
+    "difficulty": "Raskusaste",
+    "difficultyInfo": "Mängu raskusaste määrab, kui palju elemendikaarte saab kogu mängu vältel turult laenata.",
+    "advancedOptions": "Lisavalikud",
+    "useExpansionPack": "Kasuta laienduspaketti",
+    "seed": "Seed",
+    "seedInfo": "Algväärtus (seed) on kood, mis tagab kaardipakkide kindlas järjekorras segamise. Sama algväärtuse kasutamisel on kaartide järjekord mängus iga kord identne."
+  },
+  "deck": {
+    "policies": {
+      "drawMessage": {
+        "implementation": "Tõmbasid rahastuskaardi, mida saad\nkasutada meetmekaardi rakendamiseks.",
+        "negative": "Tõmbasid poliitikakaardi!",
+        "dual": "Tõmbasid poliitikakaardi!",
+        "positive": "Tõmbasid meetmekaardi!",
+        "positiveExtra": {
+          "hasFunding": "Meetme rakendamiseks tuleb see kombineerida rahastuskaardiga.",
+          "noFunding": "Saad selle aktiveerida kasutades rahastuskaarti."
+        },
+        "automaticDraw": {
+          "habitat": "See kaart tõmmati automaatselt pärast uue elupaigatähise omandamist.",
+          "extinction": "See kaart tõmmati automaatselt pärast keskkonnamõjuga tähise omandamist."
+        }
+      },
+      "funding": {
+        "name": "Rahastuskaart",
+        "description": "Seda kaarti saab kasutada ainult koos meetmekaardiga, et rakendada kirjeldatud meede.",
+        "eventDescription": "Seda kaarti saab kasutada meetmekaardi rakendamiseks. "
+      },
+      "hazardousSubstanceRegulation": {
+        "name": "Ohtlike ainete määrus",
+        "description": "Võid omavahel kombineerida sama elupaigasümboliga tootja- ja tarbijakaardi, et omandada üks elupaigatähistest.",
+        "eventDescription": "Ohtlike ainete ennetav reguleerimine vähendab oluliselt nende kasutamist ja sattumist Läänemerre.",
+        "pickProducerCommandBarText": "Vali tootjakaart, mille elupaik kattub tarbijakaardi elupaigaga",
+        "pickAnimalCommandBarText": "Vali tarbijakaart, mille elupaik kattub tootjakaardi elupaigaga"
+      },
+      "wasteWaterTreatmentFailure": {
+        "name": "Reoveepuhasti rike",
+        "description": "Iga mängija, kellel reas on vähemalt üks toitainete kaart, peab oma ritta lisama ühe survekaardi.",
+        "eventDescription": "Tugev vihmasadu põhjustab reoveepuhasti ülevoolu, mille tagajärjel satub merre toitainereostus."
+      },
+      "warmSummer": {
+        "name": "Soe suvi",
+        "description": "Kui selle kaardi tõmbamise hetkel on mängijad rakendanud vähemalt ühe meetmekaardi (kombineerides selle rahastuskaardiga), taasaktiveerige kõik mängulaual olevad võimemärgid. Vastasel juhul deaktiveerige kõik mängulaual olevad võimemärgid.",
+        "eventDescription": "Kliimamuutuste tagajärjel on suved soojad ja veetemperatuur tõuseb, mis võimendab survet keskkonnale. Ökosüsteemi vastupanuvõime suurendamiseks tuleb muid survetegureid vähendada. "
+      },
+      "climateChange": {
+        "name": "Kliimamuutused",
+        "description": "Iga kord, kui mängija peab asetama ühe keskkonnamõju tähise, asetatakse mängulauale teine keskkonnamõju tähis lisaks.",
+        "eventDescription": "Inimtegevuse tulemusena keskkonda paisatud CO2 muudab temperatuuri, sademetehulka, tuulekiirust ja muid tegureid, suurendades survet Läänemere ökosüsteemile.",
+        "stageEventText": "Kliimamuutuste tõttu saad lisaks veel ühe keskkonnamõju tähise!"
+      },
+      "oilSpill": {
+        "name": "Naftareostus",
+        "description": "Eemalda kõik laual olevad linnukaardid (nii mängijate ridadest kui turult). Mängijate ridades olnud kaarte uutega ei asendata.",
+        "eventDescription": "Laevaõnnetus põhjustab naftareostuse, mis jõuab rannikule ja mõjutab merekaitseala (MPA). "
+      },
+      "hazardousIndustrialSubstances": {
+        "name": "Ohtlikud ained tööstusest",
+        "description": "Eemalda kõik laual olevad tootjakaardid kaardid (nii iga mängija reast kui turult). Mängijate ridades olnud kaarte uutega ei asendata.",
+        "eventDescription": "Ohtlike ainete vabanemine keskkonda kahjustab rängalt planktonit, mõjutades seeläbi doominoefektina kogu ülejäänud toiduahelat."
+      },
+      "overfishing": {
+        "name": "Ülepüük",
+        "description": "Eemalda kõik laual olevad kalakaardid (nii mängijate ridadest kui turult). Mängijate ridades olnud kaarte uutega ei asendata.",
+        "eventDescription": "Teadussoovitusi kalapüügi mahtude kohta eiratakse, tuues kaasa jätkusuutmatu kalapüügi. Kalavarud ammenduvad, häirides ökosüsteemi tasakaalu ning vähendades tulevasi kalasaake."
+      },
+      "hunting": {
+        "name": "Küttimine",
+        "description": "Eemalda kõik hetkel sinu reas olevad imetajate ja lindude kaardid mängust jäädavalt.",
+        "eventDescription": "Pidev küttimine toob kaasa suure hulga jääkosklate hukkumise rände ajal. Liigi taastumine on oluliselt kahjustatud ja liik on määratletud kui “ohustatud”."
+      },
+      "atmosphericDeposition": {
+        "name": "Ohtlike ainete sadenemine atmosfäärist.",
+        "description": "Eemalda mängust Calanoida kaart, ükskõik kas see on hetkel laual või mõnes kaardipakis.",
+        "eventDescription": "Ohtlikud ained nagu dioksiinid ja elavhõbe kanduvad atmosfääris väga kaugele ja mõjutavad piirkondi ka kaugel oma tekkekohast, põhjustades sealgi liikide mutatsioone ja äkilist suremust."
+      },
+      "habitatRestoration": {
+        "name": "Elupaikade taastamine",
+        "description": "Võid ühe lauale asetatud keskkonnamõju tähise eemaldada",
+        "eventDescription": "Rannikuelupaikade taastamine aitab luua elujõulisi märgalasid, suurendab kalade sigimisedukust ning tugevdab ökosüsteemi vastupanuvõimet."
+      },
+      "bubbleCurtains": {
+        "name": "Mullikardin",
+        "description": "Kõik mängijad saavad taasaktiveerida oma kõik kolm võimemärki.",
+        "eventDescription": "Veealuste ehitustööde käigus kasutatakse mullikardinat, mis vähendab veealuse müra levikut ja mürataset ja minimeerib keskkonnasurvet müratundlikele liikidele."
+      },
+      "nutrientUpwelling": {
+        "name": "Toitainete süvakerge ja ökosüsteemi sisene toitainete ringlus",
+        "description": "Kõik mängijad lisavad kordamööda (alustades aktiivsest mängijast) oma reale kuni kaks toitainete kaarti või kuni turg on tühi.",
+        "eventDescription": "Toitainete ökosüsteemisisene ringlus ja nende süvakerge soodustab tootjate kiiret kasvu, mis võib toiduahelat nii positiivselt kui negatiivselt mõjutada."
+      },
+      "excessiveFertilizerUse": {
+        "name": "Liigne väetiste kasutamine",
+        "description": "Lisa aktiivse mängija reale kaks toitainete kaarti. Kui turul enam pole piisavalt toitainete kaarte, lisa mängija reale survekaart. Lisaks võta kõik hapnikukaardid kõigi mängijate ridadest ja pane need tagasi turule.",
+        "eventDescription": "Kui põllumajanduses kasutatakse liiga palju väetisi, jõuab merre suurenenud kogus toitaineid."
+      },
+      "upgradedWasteWaterTreatment": {
+        "name": "Tõhustatud reoveepuhastus",
+        "description": "Lisa oma ritta turult üks toitainekaart; või kui su reas on juba kaks toitainekaarti, võid soovi korral neist ühe turule tagastada.",
+        "eventDescription": "Investeeringud kaasaegsetesse reoveepuhastustehnoloogiatesse vähendavad märkimisväärselt merre sattuvate toitainete hulka."
+      },
+      "improvedNutrientRetention": {
+        "name": "Toitainete  tõhusam kasutamine põllumajanduses",
+        "description": "Kõigi tootjakaartide omandamise hind on ülejäänud mängu jooksul ühe toitainekaardi võrra väiksem.",
+        "eventDescription": "Parimate võimalike väetustehnoloogiate rakendamine vähendab toitainete merre sattumise riski põllumajandusest."
+      },
+      "migratoryBarrierRemoval": {
+        "name": "Rändetõkke eemaldamine",
+        "description": "Võta turult üks kala- või linnukaart ja lisa see ükskõik millise mängija ritta.",
+        "eventDescription": "Paisude eemaldamine jõgedest parandab siirdekalade liikumisvõimalusi ja nende sigimisedukust.",
+        "pickSpeciesCommandBarText": "Vali turult üks kala- või linnukaart.",
+        "pickPlayerCommandBarText": "Vali mängija rida, kuhu valitud kaart liigutada"
+      },
+      "fishingGearRegulation": {
+        "name": "Kalapüügivahendite määrus",
+        "description": "Lisa kõik turul olevad mudaelupaiga sümboliga kaardid ükskõik millise mängija reale.",
+        "eventDescription": "Põhjatraalimise püügikoormuse ja -piirkondade reguleerimine võimaldab merepõhja elupaikadel taastuda.",
+        "commandBarText": "Vali mängija rida, kuhu kõik mudaelupaigaga liigid liigutada"
+      },
+      "recyclingAndWasteDisposal": {
+        "name": "Jäätmete ringlussevõtt ja kõrvaldamine",
+        "description": "Eemalda ükskõik millise(te) mängija(te) reast/ridadest kaks survekaarti ja asenda need mängija(te) kaardipakist võetud kaartidega.",
+        "eventDescription": "Jäätmete käitlemise ja taaskasutuse parendamine koos väiksema ühekordsete plasttoodete tootmisega vähendab ka merre sattuva prügi hulka.",
+        "commandBarText": "Vali eemaldatav survekaart ükskõik millise mängija reast"
+      },
+      "greenEnergy": {
+        "name": "Roheenergia",
+        "description": "Kui ranniku-, kivi- või mudaelupaigad on selle kaardi võtmise hetkeks juba omandatud, lisa mängulauale üks keskkonnamõju tähis. Kui ükski neist elupaigatest pole enne selle kaardi võtmist taastatud, vali neist üks ja lisa see koheselt mängulaule.",
+        "eventDescription": "Roheenergia arendamine merel nõuab ruumi ning rajatiste positiivsed ja/või negatiivsed mõjud ökosüsteemile sõltuvad otseselt planeerimisprotsessi kvaliteedist ja selle õigeaegsusest.",
+        "commandBarText": "Vali taastamiseks kas ranniku-, kivi- või mudaelupaik"
+      },
+      "underwaterNoise": {
+        "name": "Veealune müra",
+        "description": "Järgmine mängija ei saa oma mängukorral erivõimeid kasutada.",
+        "eventDescription": "Intensiivne laevaliiklus tekitab liiga palju veealust müra, mis raskendab kalade ja pringli toiduotsinguid."
+      },
+      "beachLitter": {
+        "name": "Rannaprügi",
+        "description": "Järgmine mängija jätab oma käigu vahele. See kaart lisatakse kaardi võtnud mängija pakki prügina.",
+        "eventDescription": "Puuduliku taristu ja hoolimatu käitumise tõttu satub prügi merre. Rannad muutuvad ebameeldivaks, mõjutades nii kohalikke elanikke kui ka turiste."
+      },
+      "strictProtection": {
+        "name": "Ranged kaitsemeetmed",
+        "description": "Poliitikakaardid ei saa mängulaualt enam tootja- ega tarbijakaarte eemaldada.",
+        "eventDescription": "Merekaitsealadel (MPA) rakendatavad ranged kaitsemeetmed suurendavad liigirikkust. See võimaldab neil levida MPA-dest ka väljapoole.",
+        "stageEventText": "Kaitsemeetmed hoidsid ära liikide eemaldamise laualt",
+        "protectionActivationText": "Sul on võimalus rakendada rangeid kaitsemeetmeteid, et neid mõjusid tõkestada."
+      }
+    }
+  },
+  "stageEventText": {
+    "congratulations": "Palju õnne!",
+    "earnedHabitat_one": "Teenisid {{habitatText}} elupaiga",
+    "earnedHabitat_other": "Teenisid {{habitatText}} elupaigad",
+    "boughtCard": "Omandasid {{cardName}}",
+    "disaster": "Sa ei ostnud midagi.\nSaid survekaardi.",
+    "extinction": "Liiga paljude survetegurite tagajärjel on tekkinud keskkonnamõju.\nMängulauale asetatakse keskkonnamõju tähis ja su mängukord on läbi.",
+    "massExtinction": "Liiga palju survetegureid on tekitanud ulatusliku keskkonnamõju,\nMängulauale asetatakse 3 keskkonnamõju tähist ja su mängukord on läbi.",
+    "elementalDisaster": "Liigne hulk sama elementi on põhjustanud keskkonnasurve.\nSaad survekaardi ja su mängukord on läbi.",
+    "abilityRefreshed": "Su {{abilityName}} võime taasaktiveeriti!",
+    "canRefreshAbility": "Nüüd saad ühe oma ärakasutatud võimetest taaskativeerida.",
+    "gameWin": "Palju õnne!\nPäästsid Läänemere ökosüsteemi!",
+    "gameLoss": "Mäng on läbi!\nSa ei suutnud Läänemere ökosüsteemi päästa.",
+    "abilityUseBlocked": "Sa ei saa hetkel oma erivõimeid kasutada.",
+    "skipTurn": "Oota järgmist käigukorda."
+  },
+  "policies": {
+    "active": "Aktiivsed poliitikakaardid",
+    "acquired": "Omandatud meetmekaardid",
+    "funding": "Rahastus",
+    "activate": "Aktiveeri"
+  },
+  "blocker": {
+    "leavePageMessage": "Oled kindel, et tahad lehelt lahkuda?"
+  },
+  "buttons": {
+    "showCards": "Näita kaarte",
+    "endTurn": "Käigu lõpp",
+    "newGame": "Uus mäng",
+    "ok": "Ok",
+    "play": "Mängi!"
+  },
+  "abilities": {
+    "commandBar": {
+      "move": {
+        "pickCard": "Vali oma reast kaart, mida soovid liigutada",
+        "pickDestination": "Vali sihtkoht, kuhu oma valitud kaart liigutada ",
+        "pickDestinationSinglePlayer": "Vali sihtkoht, kuhu oma valitud kaart liigutada. Kui paned kaardi oma pakki tagasi, saad seda kasutada oma järgmisel käigul. "
+      },
+      "refresh": {
+        "pickMarket": "Vali ala turul, mida soovid uuendada"
+      }
+    }
+  },
+  "commandBar": {
+    "backToStageEvent": "Vajuta siia, et minna sündmuse juurde tagasi"
+  }
+}

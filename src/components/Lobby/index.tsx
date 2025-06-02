@@ -21,6 +21,7 @@ interface LobbyScreenProps {
 
 const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
   const { t, i18n, ready } = useTranslation();
+  const resolvedLang = i18n.resolvedLanguage?.split("-")[0] ?? "en";
   const searchParams = new URLSearchParams(window.location.search);
   const urlSeed = searchParams.get("seed") ?? generateRandomString(8);
 
@@ -106,11 +107,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
         {/* Language Selector */}
         <div className="flex w-full justify-between">
           <span>{t("lobby.language")}</span>
-          <Select
-            value={i18n.language.split("-")[0]}
-            onValueChange={handleLanguageChange}
-            disabled={isChangingLang || !ready}
-          >
+          <Select value={resolvedLang} onValueChange={handleLanguageChange} disabled={isChangingLang || !ready}>
             <SelectTrigger className="w-[180px] bg-white text-black">
               <SelectValue placeholder={t("lobby.language")} />
             </SelectTrigger>

@@ -42,7 +42,7 @@ const DifficultySelector = ({ onDifficultyChange }: { onDifficultyChange: (diffi
           initial="enter"
           animate="idle"
           exit="exit"
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.1 }}
         >
           Level {difficulty}
         </motion.span>

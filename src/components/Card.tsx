@@ -32,13 +32,13 @@ const PADDING_MAP: Record<CardType["type"], [number, number, number, number]> = 
   policy: [6, 6, 6, 6].map((n) => n / coordScale) as [number, number, number, number],
 };
 
-const ELEMENT_ICON_SIZE = 15 / coordScale;
+const ELEMENT_ICON_SIZE = 20 / coordScale;
 const HABITAT_ICON_SIZE = 11 / coordScale;
 const HABITAT_SPACING = 0.2;
 const HABITAT_CONTAINER_PADDING = 3 / coordScale;
 const ABILITY_ICON_SIZE = HABITAT_ICON_SIZE + HABITAT_CONTAINER_PADDING * 2;
 const ABILITY_ICON_SPACING = 3 / coordScale;
-const ELEMENTS_BACKGROUND_HEIGHT = 18 / coordScale;
+const ELEMENTS_BACKGROUND_HEIGHT = 22 / coordScale;
 
 export type CardOptions = {
   showAbilityButtons?: boolean;
@@ -243,7 +243,7 @@ export default function Card({
             <mesh
               position={[
                 0,
-                -cardHeight * 0.5 + ELEMENTS_BACKGROUND_HEIGHT / 2 + cardRadius,
+                -cardHeight * 0.5 + ELEMENTS_BACKGROUND_HEIGHT / 2 + cardRadius * 1.5,
                 CARD_Z_INDEX.ELEMENTS_BACKGROUND,
               ]}
             >

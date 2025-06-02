@@ -22,12 +22,13 @@ import { extinctionTileYStart, habitatTileYStart } from "@/constants/gameBoard";
 
 const Croupier = () => {
   const { state: gameState, uiState, actorRef, snap, gameConfig } = useGameState();
-  const { emit, test, hasTag, guards } = useGameState();
+  const { emit, test, hasTag, guards, showPolicies } = useGameState();
   const exhaustedCards = useSelector(actorRef, selectExhaustedCards);
   const { gl } = useThree();
   ColorManagement.enabled = true;
   gl.outputColorSpace = SRGBColorSpace;
   const currentAbility = useSelector(actorRef, selectCurrentAbility);
+  const shouldShowEndTurnButton = test.playerEndTurnClick() && !guards.endPhase() && !showPolicies;
 
   return (
     <AnimatePresence>
@@ -242,7 +243,7 @@ const Croupier = () => {
         ),
       )}
 
-      {test.playerEndTurnClick() && !guards.endPhase() && <EndTurnButton key="end-turn-button" />}
+      {shouldShowEndTurnButton && <EndTurnButton key="end-turn-button" />}
     </AnimatePresence>
   );
 };

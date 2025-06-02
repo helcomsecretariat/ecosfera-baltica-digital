@@ -10,7 +10,8 @@ interface Resources {
       "useExpansionPack": "Use expansion pack",
       "seed": "Seed",
       "seedInfo": "The seed ensures a consistent game deck shuffle. Using the same seed will result in the same deck order each time.",
-      "rulebook": "Game rules"
+      "rulebook": "Game rules",
+      "rulebook_filename": "string"
     },
     "deck": {
       "policies": {

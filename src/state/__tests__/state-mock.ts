@@ -48,7 +48,7 @@ function elementFromDeck(elementType: string): ElementCard {
   };
 }
 
-export const plant_ascophyllym = plantFromDeck("Ascophyllym nodosum");
+export const plant_ascophyllym = plantFromDeck("Ascophyllum nodosum");
 export const plant_nodularia = plantFromDeck("Nodularia spumigena");
 export const plant_bacteria = plantFromDeck("Bacteria");
 

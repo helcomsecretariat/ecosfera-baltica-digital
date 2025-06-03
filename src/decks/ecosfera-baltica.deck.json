@@ -225,7 +225,7 @@
       "abilities": ["move"],
       "flora_type": "phytoplankton"
     },
-    "Ascophyllym nodosum": {
+    "Ascophyllum nodosum": {
       "elements": ["sun", "oxygen", "salinity"],
       "habitats": ["coast", "rock"],
       "abilities": ["move"],
@@ -249,7 +249,7 @@
       "abilities": [],
       "flora_type": "vascular plant"
     },
-    "Fragmites australis": {
+    "Phragmites australis": {
       "elements": ["sun", "oxygen", "nutrients", "nutrients"],
       "habitats": ["coast", "mud"],
       "abilities": ["plus"],
@@ -303,7 +303,7 @@
       "abilities": ["plus"],
       "flora_type": "green algae"
     },
-    "Chara ssp.": {
+    "Chara spp.": {
       "elements": ["sun", "sun", "nutrients"],
       "habitats": ["coast", "mud"],
       "abilities": ["move"],
@@ -339,7 +339,7 @@
       "abilities": ["move", "plus"],
       "flora_type": "phytoplankton"
     },
-    "Zanichellia palustris": {
+    "Zannichellia palustris": {
       "elements": ["oxygen", "nutrients", "temperature"],
       "habitats": ["rivers"],
       "abilities": ["refresh", "special"],
@@ -363,7 +363,7 @@
       "abilities": [],
       "flora_type": "bacteria"
     },
-    "Nitzschia filifomis": {
+    "Nitzschia filiformis": {
       "elements": ["nutrients", "temperature", "temperature"],
       "habitats": ["mud", "rock"],
       "abilities": [],

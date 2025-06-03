@@ -51,40 +51,6 @@ test("moving back to market", async () => {
   expect(state.players[0].abilities.find(({ uid }) => uid === moveToken.uid)!.isUsed).toBe(true);
 });
 
-test("disaster can't be returned to market in multiplayer", async () => {
-  const { send, getState } = getTestActor();
-  const stateBefore = getState();
-  const moveToken = stateBefore.players[0].abilities.find(({ name }) => name === "move")!;
-
-  const disasterCard = stateBefore.disasterMarket.deck[0];
-  send({
-    type: "iddqd",
-    context: {
-      disasterMarket: {
-        ...stateBefore.disasterMarket,
-        deck: without(stateBefore.disasterMarket.deck, disasterCard),
-      },
-      players: [
-        {
-          ...stateBefore.players[0],
-          hand: [...stateBefore.players[0].hand, disasterCard],
-        },
-        ...stateBefore.players.slice(1),
-      ],
-    },
-  });
-
-  send({ type: "user.click.token", token: moveToken });
-  send({ type: "user.click.player.deck" });
-  let state = getState();
-  expect(state.turn.currentAbility?.piece.uid).toBe(moveToken.uid);
-
-  send({ type: "user.click.player.hand.card", card: disasterCard });
-  state = getState();
-  expect(state.players[0].hand).toContain(disasterCard);
-  expect(state.players[0].abilities.find(({ uid }) => uid === moveToken.uid)!.isUsed).toBe(false);
-});
-
 test("move card to supply in single player", async () => {
   const { send, getState } = getTestActor();
   const stateBefore = getState();
@@ -146,4 +112,45 @@ test("moving to other player's hand", async () => {
   expect(state.players[1].hand).toContain(cardToMove);
   expect(state.players[0].hand).not.toContain(cardToMove);
   expect(state.players[0].abilities.find(({ uid }) => uid === moveToken.uid)!.isUsed).toBe(true);
+});
+
+test("disaster can't be moved to other player", async () => {
+  const { send, getState } = getTestActor();
+  const stateBefore = getState();
+  const moveToken = stateBefore.players[0].abilities.find(({ name }) => name === "move")!;
+
+  // Add disaster card to first player's hand
+  const disasterCard = stateBefore.disasterMarket.deck[0];
+  send({
+    type: "iddqd",
+    context: {
+      disasterMarket: {
+        ...stateBefore.disasterMarket,
+        deck: without(stateBefore.disasterMarket.deck, disasterCard),
+      },
+      players: [
+        {
+          ...stateBefore.players[0],
+          hand: [...stateBefore.players[0].hand, disasterCard],
+        },
+        ...stateBefore.players.slice(1),
+      ],
+    },
+  });
+
+  // Try to move disaster card
+  send({ type: "user.click.token", token: moveToken });
+  let state = getState();
+  expect(state.turn.currentAbility?.piece.uid).toBe(moveToken.uid);
+  expect(state.commandBar?.text).toBe(i18n.t("abilities.commandBar.move.pickCard"));
+
+  send({ type: "user.click.player.hand.card", card: disasterCard });
+  state = getState();
+  expect(state.turn.currentAbility?.targetCard).toBeUndefined();
+  expect(state.commandBar?.text).toBe(i18n.t("abilities.commandBar.move.pickCard"));
+
+  // Verify move ability was not used
+  send({ type: "user.click.token", token: moveToken });
+  state = getState();
+  expect(state.players[0].abilities.find(({ uid }) => uid === moveToken.uid)!.isUsed).toBe(false);
 });

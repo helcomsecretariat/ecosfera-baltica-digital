@@ -10,7 +10,7 @@
     "seed": "Seed",
     "seedInfo": "Koden säkerställer en konsekvent blandning av kortleken. Att använda samma kod kommer att resultera i samma kortleksordning varje gång",
     "rulebook": "Spelregler",
-    "rulebook_filename": "en.pdf"
+    "rulebook_filename": "sv.pdf"
   },
   "deck": {
     "policies": {

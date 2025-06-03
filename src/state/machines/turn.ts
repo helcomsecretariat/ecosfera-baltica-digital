@@ -1270,9 +1270,7 @@ export const TurnMachine = setup({
                     ({ context, event: { card } }) => TurnMachineGuards.notExhausted({ context }, card.uid),
                     ({ context, event: { card } }) => TurnMachineGuards.ownsCard({ context }, card.uid),
                     ({ context, event: { card } }) => TurnMachineGuards.notSameCard({ context }, card),
-                    ({ context, event: { card } }) =>
-                      TurnMachineGuards.notDisasterCard({ context }, card) ||
-                      TurnMachineGuards.isMultiplayer({ context }),
+                    ({ context, event: { card } }) => TurnMachineGuards.notDisasterCard({ context }, card),
                   ]),
                 },
               },

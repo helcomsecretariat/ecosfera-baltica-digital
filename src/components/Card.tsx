@@ -32,7 +32,7 @@ const PADDING_MAP: Record<CardType["type"], [number, number, number, number]> = 
   policy: [6, 6, 6, 6].map((n) => n / coordScale) as [number, number, number, number],
 };
 
-const ELEMENT_ICON_SIZE = 20 / coordScale;
+const ELEMENT_ICON_SIZE = 19 / coordScale;
 const HABITAT_ICON_SIZE = 11 / coordScale;
 const HABITAT_SPACING = 0.2;
 const HABITAT_CONTAINER_PADDING = 3 / coordScale;

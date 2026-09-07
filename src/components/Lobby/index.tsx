@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { generateRandomName, generateRandomString } from "@/lib/utils";
+import { SEED_PARAM } from "@/lib/navigation";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover";
 import { InfoIcon } from "@/components/ui/icons";
@@ -23,7 +24,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
   const { t, i18n, ready } = useTranslation();
   const resolvedLang = i18n.resolvedLanguage?.split("-")[0] ?? "en";
   const searchParams = new URLSearchParams(window.location.search);
-  const urlSeed = searchParams.get("seed") ?? generateRandomString(8);
+  const urlSeed = searchParams.get(SEED_PARAM) ?? generateRandomString(8);
 
   const [playerCount, setplayerCount] = useState<number>(3);
   const [playerNames, setPlayerNames] = useState<string[]>(Array(4).fill(""));
@@ -78,7 +79,7 @@ const LobbyScreen = ({ onStartGame }: LobbyScreenProps) => {
     });
 
     const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set("seed", seed);
+    currentUrl.searchParams.set(SEED_PARAM, seed);
     window.history.pushState({}, "", currentUrl.toString());
   };
 

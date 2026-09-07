@@ -9,6 +9,7 @@ import { useSRGBTexture } from "@/hooks/useSRGBTexture";
 import { useSelector } from "@xstate/react";
 import { AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { returnToLobby } from "@/lib/navigation";
 import { selectIsPositiveStageEvent, selectStageEventText } from "@/state/machines/selectors";
 
 const Stage = () => {
@@ -62,7 +63,7 @@ const Stage = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   if (state.stage?.terminationEvent) {
-                    window.location.reload();
+                    returnToLobby();
                     return;
                   }
                   emit.stageConfirm()();

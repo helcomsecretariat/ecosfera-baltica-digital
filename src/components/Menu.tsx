@@ -10,6 +10,8 @@ import {
   selectNumberOfPlantsBought,
 } from "@/state/machines/selectors";
 import { PiPlantFill } from "react-icons/pi";
+import { returnToLobby } from "@/lib/navigation";
+
 const Menu = () => {
   const { emit, guards, state, showPolicies, setShowPolicies, gameConfig, actorRef, test } = useGameState();
   const numberOfAnimalsBought = useSelector(actorRef, selectNumberOfAnimalsBought);
@@ -27,7 +29,7 @@ const Menu = () => {
           backgroundPosition: "25% 50%",
           backgroundSize: "240%",
         }}
-        onClick={() => window.location.reload()}
+        onClick={() => returnToLobby()}
       >
         <FaHouse className="h-6 w-6" />
       </button>

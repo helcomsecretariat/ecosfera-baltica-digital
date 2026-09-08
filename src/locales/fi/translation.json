@@ -10,7 +10,8 @@
     "seed": "Siemen",
     "seedInfo": "Siemen varmistaa johdonmukaisen pakan sekoituksen. Saman siemenen käyttäminen johtaa samaan korttijärjestykseen joka kerta.",
     "rulebook": "Pelisäännöt",
-    "rulebook_filename": "fi.pdf"
+    "rulebook_filename": "fi.pdf",
+    "loading": "Ladataan…"
   },
   "deck": {
     "policies": {

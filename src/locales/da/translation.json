@@ -10,7 +10,8 @@
     "seed": "Frø",
     "seedInfo": "Frøet sikrer en ensartet blanding af spilkortene. Ved at bruge det samme Frø vil kortbunken have den samme rækkefølge hver gang.",
     "rulebook": "Spilregler",
-    "rulebook_filename": "da.pdf"
+    "rulebook_filename": "da.pdf",
+    "loading": "Indlæser…"
   },
   "deck": {
     "policies": {

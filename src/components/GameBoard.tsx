@@ -4,10 +4,7 @@ import Grid from "./Grid";
 import { useControls } from "leva";
 import { OrbitControls, PerspectiveCamera, Preload } from "@react-three/drei";
 import { cameraZoom } from "../constants/gameBoard";
-import deckConfig from "@/decks/ecosfera-baltica.deck.json";
 import Croupier from "./Croupier";
-import PreloadAssets from "@/components/PreloadAssets";
-import { DeckConfig } from "@/decks/schema";
 import { Stats } from "@react-three/drei";
 import { Leva } from "leva";
 import { useBlocker } from "@/hooks/useBlocker";
@@ -18,7 +15,14 @@ import { SRGBColorSpace } from "three";
 import { useExpPackControls } from "@/hooks/useExpPackControls";
 import { useDebugMode } from "@/hooks/useDebugMode";
 
-export default function GameBoard() {
+// Renders nothing; mounts only once the surrounding suspense boundary has resolved,
+// signalling that the scene is ready to be revealed.
+function SceneReady({ onReady }: { onReady?: () => void }) {
+  useEffect(() => onReady?.(), [onReady]);
+  return null;
+}
+
+export default function GameBoard({ onSceneReady }: { onSceneReady?: () => void }) {
   const isDebugMode = useDebugMode();
   useBlocker();
   useTestControls();
@@ -75,8 +79,8 @@ export default function GameBoard() {
 
             {FPS && <Stats />}
 
-            <PreloadAssets config={deckConfig as unknown as DeckConfig} />
             <Preload all />
+            <SceneReady onReady={onSceneReady} />
           </MaterialProvider>
         </Suspense>
       </Canvas>

@@ -10,7 +10,8 @@
     "seed": "Seed",
     "seedInfo": "Algväärtus (seed) on kood, mis tagab kaardipakkide kindlas järjekorras segamise. Sama algväärtuse kasutamisel on kaartide järjekord mängus iga kord identne.",
     "rulebook": "Mängu reeglid",
-    "rulebook_filename": "et.pdf"
+    "rulebook_filename": "et.pdf",
+    "loading": "Laadimine…"
   },
   "deck": {
     "policies": {

@@ -10,7 +10,8 @@
     "seed": "Seed",
     "seedInfo": "Sėkla užtikrina nuoseklų žaidimo kortų kaladės maišymą. Naudojant tą pačią sėklą kiekvieną kartą žaidimo kortų kaladės tvarka bus ta pati.",
     "rulebook": "Žaidimo taisyklės",
-    "rulebook_filename": "lt.pdf"
+    "rulebook_filename": "lt.pdf",
+    "loading": "Kraunama…"
   },
   "deck": {
     "policies": {
